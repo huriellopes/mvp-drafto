@@ -23,6 +23,7 @@ return new class() extends Migration
             $table->string('password');
             $table->string('role')->default(RoleEnum::READER->value);
             $table->string('status')->default(UserStatusEnum::PENDING->value);
+            $table->ipAddress('ip_address')->nullable();
             $table->timestamp('last_login_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

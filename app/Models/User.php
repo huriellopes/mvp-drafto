@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
+use App\Notifications\Auth\ResetPasswordNotification;
+use App\Notifications\Auth\VerifyEmailNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,6 +27,7 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'password',
     'role',
     'status',
+    'ip_address',
     'last_login_at',
     'email_verified_at',
 ])]
@@ -142,6 +145,30 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->following()
             ->where('followed_id', $user->id)
             ->exists();
+    }
+
+    public function hasVerificationExpired(): bool
+    {
+        if ($this->hasVerifiedEmail()) {
+            return false;
+        }
+
+        return $this->created_at->addDays(7)->isPast();
+    }
+
+    public function daysLeftToVerify(): int
+    {
+        return (int) max(0, now()->diffInDays($this->created_at->addDays(7), false));
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification());
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     protected function casts(): array
