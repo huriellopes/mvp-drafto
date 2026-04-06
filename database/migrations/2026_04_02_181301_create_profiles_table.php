@@ -17,16 +17,24 @@ return new class() extends Migration
                 ->unique()
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('username')->unique();
-            $table->text('bio')->nullable();
+            $table->string('name')
+                ->nullable()
+                ->index();
+            $table->string('username')->unique()->index();
+            $table->string('email')
+                ->index()
+                ->nullable()
+                ->unique();
+            $table->text('bio', 160)->nullable();
             $table->string('avatar_path')->nullable();
             $table->string('cover_path')->nullable();
             $table->string('website_url')->nullable();
             $table->string('location')->nullable();
             $table->string('theme_mode')->default(ThemePlatformEnum::SYSTEM->value);
-            $table->string('primary_color', 20)->nullable();
-            $table->string('accent_color', 20)->nullable();
+            $table->string('primary_color', 7)->default('#18181b');
+            $table->string('accent_color', 7)->default('#3f3f46');
             $table->boolean('show_email_publicly')->default(false);
+            $table->boolean('is_searchable')->default(true)->index();
             $table->timestamps();
         });
     }

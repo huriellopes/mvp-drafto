@@ -10,6 +10,7 @@ use Illuminate\View\View;
 use Livewire\Attributes\{Computed, Layout, Title};
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Meu Perfil', 'subheading' => 'Personalize sua identidade na plataforma'])]
 #[Title('Editar Perfil')]
@@ -51,11 +52,11 @@ class EditProfile extends Component
     public function save(): void
     {
         $this->form->update();
-        $this->dispatch('notify', message: 'Perfil atualizado com sucesso!');
+        Toaster::success('Perfil atualizado com sucesso!');
     }
 
     public function render() : View
     {
-        return view('livewire.dashboard.edit-profile');
+        return view('livewire.dashboard.profile.edit-profile');
     }
 }

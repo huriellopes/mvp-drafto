@@ -10,7 +10,7 @@
 
         <x-ui.info-card
             title="E-mail"
-            :value="$this->user->email"
+            :value="$this->user?->profile?->email ?? $this->user->email"
         />
 
         <x-ui.info-card
@@ -19,7 +19,7 @@
         />
 
         <div class="mt-6 pt-6 border-t border-zinc-100">
-            <a href="#" class="text-sm font-semibold text-zinc-900 hover:underline flex items-center gap-2">
+            <a href="{{ route('dashboard.account') }}" wire:navigate.hover class="text-sm font-semibold text-zinc-900 hover:underline flex items-center gap-2">
                 <x-lucide-settings class="h-4 w-4" />
                 Configurações da conta
             </a>

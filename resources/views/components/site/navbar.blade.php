@@ -1,0 +1,103 @@
+<nav
+    x-data="{ mobileMenuOpen: false }"
+    class="fixed top-0 z-[100] w-full border-b border-zinc-100 bg-white/80 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/80 transition-colors duration-300"
+>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-20 items-center justify-between">
+
+            {{-- Lado Esquerdo: Logo e Nav Desktop --}}
+            <div class="flex items-center gap-10">
+                <a href="/" class="flex items-center gap-2 text-2xl font-black tracking-tighter text-zinc-900 dark:text-white group">
+                    <div class="h-8 w-8 rounded-xl bg-zinc-900 dark:bg-white group-hover:rotate-12 transition-transform"></div>
+                    Drafto.
+                </a>
+
+                <div class="hidden lg:flex items-center gap-8">
+                    <a href="{{ route('home') }}" @class([
+                        'text-sm font-bold transition',
+                        'text-zinc-900 dark:text-white' => request()->routeIs('home'),
+                        'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white' => !request()->routeIs('home')
+                    ])>Início</a>
+
+                    <a href="{{ route('posts.explore') }}" @class([
+                        'text-sm font-bold transition',
+                        'text-zinc-900 dark:text-white' => request()->routeIs('posts.explore'),
+                        'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white' => !request()->routeIs('posts.explore')
+                    ])>Artigos</a>
+
+                    <a href="{{ route('writers.explore') }}" @class([
+                        'text-sm font-bold transition',
+                        'text-zinc-900 dark:text-white' => request()->routeIs('writers.explore'),
+                        'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white' => !request()->routeIs('writers.explore')
+                    ])>Escritores</a>
+                </div>
+            </div>
+
+            {{-- Lado Direito: Theme Toggle, Auth e Hamburguer --}}
+            <div class="flex items-center gap-3 md:gap-6">
+
+                {{-- Theme Toggle --}}
+                <button @click="darkMode = !darkMode"
+                        class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-500 transition hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800">
+                    <x-lucide-sun x-show="!darkMode" class="h-5 w-5" />
+                    <x-lucide-moon x-show="darkMode" class="h-5 w-5" x-cloak />
+                </button>
+
+                <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-800 hidden md:block"></div>
+
+                {{-- Auth Desktop --}}
+                <div class="hidden md:flex items-center gap-4">
+                    @auth
+                        <a href="{{ route('dashboard.index') }}" class="text-sm font-bold text-zinc-900 dark:text-white">Dashboard</a>
+                        <x-ui.button href="{{ route('dashboard.posts.create') }}" size="sm">Escrever</x-ui.button>
+                    @else
+                        <a href="{{ route('login') }}" class="text-sm font-bold text-zinc-500 dark:text-zinc-400">Entrar</a>
+                        <x-ui.button href="{{ route('register') }}" size="sm">Criar conta</x-ui.button>
+                    @endauth
+                </div>
+
+                {{-- Botão Hamburguer Mobile --}}
+                <button
+                    @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white lg:hidden"
+                >
+                    <x-lucide-menu x-show="!mobileMenuOpen" class="h-5 w-5" />
+                    <x-lucide-x x-show="mobileMenuOpen" class="h-5 w-5" x-cloak />
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Menu Mobile Panel --}}
+    <div
+        x-show="mobileMenuOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 -translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-4"
+        class="lg:hidden bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-800"
+        x-cloak
+    >
+        <div class="space-y-1 px-4 pb-6 pt-2">
+            <a href="{{ route('home') }}" class="block rounded-xl px-4 py-3 text-base font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900">Início</a>
+            <a href="{{ route('posts.explore') }}" class="block rounded-xl px-4 py-3 text-base font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900">Artigos</a>
+            <a href="{{ route('writers.explore') }}" class="block rounded-xl px-4 py-3 text-base font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900">Escritores</a>
+
+            <div class="my-4 h-px bg-zinc-100 dark:bg-zinc-800"></div>
+
+            @auth
+                <a href="{{ route('dashboard.index') }}" class="block rounded-xl px-4 py-3 text-base font-bold text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900">Dashboard</a>
+                <div class="px-4 pt-2">
+                    <x-ui.button href="{{ route('dashboard.posts.create') }}" class="w-full">Escrever</x-ui.button>
+                </div>
+            @else
+                <a href="{{ route('login') }}" class="block rounded-xl px-4 py-3 text-base font-bold text-zinc-500 dark:text-zinc-400">Entrar</a>
+                <div class="px-4 pt-2">
+                    <x-ui.button href="{{ route('register') }}" class="w-full">Criar conta</x-ui.button>
+                </div>
+            @endauth
+        </div>
+    </div>
+</nav>

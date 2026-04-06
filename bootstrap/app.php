@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\CheckEmailVerificationInterval;
+use App\Http\Middleware\TrackPostView;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.verification.interval' => CheckEmailVerificationInterval::class,
             'username.prefix' => EnsureUsernameHasAtPrefix::class,
+            'track.post' => TrackPostView::class,
         ]);
 
         $middleware->web(append: [CheckEmailVerificationInterval::class]);

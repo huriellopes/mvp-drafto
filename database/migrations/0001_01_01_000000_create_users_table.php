@@ -25,6 +25,8 @@ return new class() extends Migration
             $table->string('status')->default(UserStatusEnum::PENDING->value);
             $table->ipAddress('ip_address')->nullable();
             $table->timestamp('last_login_at')->nullable();
+            $table->timestamp('banned_until')->nullable()->index();
+            $table->string('ban_reason')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

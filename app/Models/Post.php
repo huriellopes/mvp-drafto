@@ -7,15 +7,18 @@ namespace App\Models;
 use App\Enums\PostStatusEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\PostVisibilityEnum;
+use App\Traits\HasSlug;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
 #[Fillable([
@@ -41,6 +44,7 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory, KeepsDeletedModels;
+    use HasSlug;
 
     public function author(): BelongsTo
     {
@@ -122,6 +126,19 @@ class Post extends Model
     public function isRegularPost(): bool
     {
         return $this->type === PostTypeEnum::POST;
+    }
+
+    protected function coverImageUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (!$this->cover_image_path) return null;
+
+            if (filter_var($this->cover_image_path, FILTER_VALIDATE_URL)) {
+                return $this->cover_image_path;
+            }
+
+            return Storage::disk('public')->url($this->cover_image_path);
+        });
     }
 
     protected function casts(): array

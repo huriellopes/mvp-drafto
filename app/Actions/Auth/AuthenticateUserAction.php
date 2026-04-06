@@ -37,6 +37,14 @@ final class AuthenticateUserAction
             ]);
         }
 
+        if (!empty($user->banned_until)) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => __("Sua conta está banida por" . Carbon::now()->diffInDays(auth()->user()->banned_until). " dias."),
+            ]);
+        }
+
         session()->regenerate();
 
         $user->forceFill([

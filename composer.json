@@ -10,10 +10,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "diglactic/laravel-breadcrumbs": "^10.1",
+        "intervention/image": "^4.0",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.2",
+        "maatwebsite/excel": "^3.1",
         "mallardduck/blade-lucide-icons": "^1.26",
+        "mantix/livewire-jodit-text-editor": "^1.9",
+        "masmerise/livewire-toaster": "^2.10",
+        "masterminds/html5": "^2.10",
+        "ralphjsmit/laravel-seo": "^1.8",
         "spatie/laravel-data": "^4.21",
         "spatie/laravel-deleted-models": "^1.2"
     },

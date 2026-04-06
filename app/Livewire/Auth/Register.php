@@ -21,7 +21,7 @@ class Register extends Component
     public function mount(): void
     {
         if (Auth::check()) {
-            $this->redirectRoute('dashboard', navigate: true);
+            $this->redirectRoute('dashboard.index', navigate: true);
         }
     }
 
@@ -34,7 +34,7 @@ class Register extends Component
 
         session()->flash('success', 'Conta criada com sucesso! Bem-vindo à Drafto.');
 
-        $this->redirectRoute('dashboard', navigate: true);
+        $this->redirectRoute('dashboard.index', navigate: true);
     }
 
     public function render(): View

@@ -6,6 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? config('app.name') }}</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
+
+    <script>
+        document.addEventListener('trix-before-initialize', () => {
+            Trix.config.blockAttributes.heading2 = {
+                tagName: 'h2',
+                terminal: true,
+                breakOnReturn: true,
+                group: false,
+            };
+
+            Trix.config.textAttributes.code = {
+                tagName: 'code',
+                inheritable: true,
+                parser(element) {
+                    return element.tagName === 'CODE' && element.parentElement?.tagName !== 'PRE';
+                },
+            };
+
+            Trix.config.blockAttributes.codeBlock = {
+                tagName: 'pre',
+                terminal: true,
+                breakOnReturn: false,
+                group: false,
+                parser(element) {
+                    return element.tagName === 'PRE';
+                },
+            };
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -117,6 +152,17 @@
 
                     <div class="flex items-center gap-3">
                         {{ $headerActions ?? '' }}
+                        <button
+                            @click="$dispatch('toggleNotifications')"
+                            class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:bg-zinc-50"
+                        >
+                            <x-lucide-bell class="h-5 w-5" />
+                            @if(auth()->user()->unreadNotifications->count() > 0)
+                                <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                                    {{ auth()->user()->unreadNotifications->count() }}
+                                </span>
+                            @endif
+                        </button>
                     </div>
                 </div>
             </header>
@@ -129,6 +175,10 @@
         </div>
     </div>
 </div>
+
+<x-toaster-hub />
+
+<livewire:dashboard.notifications-sidebar />
 
 @livewireScripts
 </body>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Admin\Users;
 
+use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
 use Illuminate\View\View;
 use App\Actions\Users\{ListUsersAction, DeleteUserAction, ToggleUserStatusAction};
@@ -12,6 +13,7 @@ use App\Models\User;
 use Livewire\Attributes\{Computed, Layout, Lazy, Title, Url};
 use Livewire\Component;
 use Livewire\WithPagination;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Gestão de Usuários', 'subheading' => 'Administre as contas da plataforma'])]
 #[Title('Usuários')]
@@ -28,20 +30,44 @@ class UserIndex extends Component
     #[Url(history: true)]
     public string $role = '';
 
-    public bool $isModalOpen = false;
+    #[Url(history: true)]
+    public string $sort = 'created_at';
 
+    #[Url(history: true)]
+    public string $direction = 'desc';
+
+    public bool $isModalOpen = false;
     public ?int $userIdBeingDeleted = null;
+
+    public function sortBy(string $column): void
+    {
+        if ($this->sort === $column) {
+            $this->direction = $this->direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sort = $column;
+            $this->direction = 'asc';
+        }
+        $this->resetPage();
+    }
 
     #[Computed]
     public function users()
     {
-        return app(ListUsersAction::class)->exec(
-            filters: [
+        $paginator = app(ListUsersAction::class)->exec(
+            filters: UserFilterData::fromArray([
                 'search' => $this->search,
                 'role' => $this->role,
+                'sort' => $this->sort,
+                'direction' => $this->direction,
                 'per_page' => 10
-            ]
+            ])
         );
+
+        $paginator->setCollection(
+            $paginator->getCollection()->reject(fn ($user) => $user->id === auth()->id())
+        );
+
+        return $paginator;
     }
 
     public function updatedSearch(): void
@@ -64,7 +90,7 @@ class UserIndex extends Component
     public function toggleStatus(User $user, ?string $statusValue = null): void
     {
         if ($user->id === auth()->id()) {
-            $this->dispatch('notify', message: 'Você não pode alterar seu próprio status.', type: 'error');
+            Toaster::warning('Você não pode alterar seu próprio status.');
             return;
         }
 
@@ -76,7 +102,7 @@ class UserIndex extends Component
                 targetStatus: $targetStatus
             );
 
-        $this->dispatch('notify', message: 'Status atualizado com sucesso.');
+        Toaster::success('Status atualizado com sucesso.');
     }
 
     public function confirmUserDeletion(int $userId): void
@@ -92,7 +118,8 @@ class UserIndex extends Component
         $user = User::find($this->userIdBeingDeleted);
 
         if ($user && app(DeleteUserAction::class)->exec($user)) {
-            $this->dispatch('notify', message: 'Usuário removido com sucesso.');
+            $this->clearUserCache();
+            Toaster::success('Usuário removido com sucesso.');
         }
 
         $this->userIdBeingDeleted = null;
@@ -105,12 +132,18 @@ class UserIndex extends Component
     public function save(): void
     {
         $this->form->save();
+        $this->clearUserCache();
         $this->dispatch('close-modal', name: 'user-form-modal');
         $this->form->reset();
     }
 
+    private function clearUserCache(): void
+    {
+        Cache::increment('users_cache_version');
+    }
+
     public function render() : View
     {
-        return view('livewire.admin.users.user-index');
+        return view('livewire.dashboard.admin.users.user-index');
     }
 }

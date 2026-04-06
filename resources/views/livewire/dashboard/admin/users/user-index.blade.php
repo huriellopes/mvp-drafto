@@ -8,13 +8,11 @@
             <x-ui.input
                 wire:model.live.debounce.300ms="search"
                 placeholder="Buscar usuário..."
-                class="max-w-md"
                 type="search"
             />
 
-            <x-ui.select wire:model.live="role" class="w-48">
+            <x-ui.select wire:model.live="role">
                 <option value="">Todos os papéis</option>
-
                 @foreach(RoleEnum::options() as $role)
                     <option value="{{ $role['value'] }}">{{ $role['label'] }}</option>
                 @endforeach
@@ -30,10 +28,10 @@
     {{-- Tabela de Usuários --}}
     <x-ui.table>
         <x-slot:header>
-            <th class="px-6 py-4">Usuário</th>
-            <th class="px-6 py-4">Papel</th>
-            <th class="px-6 py-4">Status</th>
-            <th class="px-6 py-4">Último Login</th>
+            <x-ui.table.th label="Usuário" column="name" :sort="$sort" :direction="$direction" />
+            <x-ui.table.th label="Papel" column="role" :sort="$sort" :direction="$direction" />
+            <x-ui.table.th label="Status" column="status" :sort="$sort" :direction="$direction" />
+            <x-ui.table.th label="Último Login" column="last_login_at" :sort="$sort" :direction="$direction" />
             <th class="px-6 py-4 text-right">Ações</th>
         </x-slot:header>
 
@@ -50,7 +48,7 @@
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 text-zinc-600 text-xs">
+                <td class="px-6 py-4 text-zinc-600 text-xs italic">
                     {{ $user->role->label() }}
                 </td>
                 <td class="px-6 py-4">
@@ -62,7 +60,7 @@
                     >
                         <span @class([
                             'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition',
-                            'bg-emerald-50 text-emerald-700' => $user->status === UserStatusEnum::ACTIVE,
+                            'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' => $user->status === UserStatusEnum::ACTIVE,
                             'bg-zinc-100 text-zinc-700' => $user->status === UserStatusEnum::PENDING,
                             'bg-amber-50 text-amber-700' => $user->status === UserStatusEnum::SUSPENDED,
                             'bg-red-50 text-red-700' => $user->status === UserStatusEnum::BLOCKED,
@@ -88,7 +86,7 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                     <div class="flex justify-end gap-2">
-                        <button wire:click="edit({{ $user->id }})" class="p-2 text-zinc-400 hover:text-zinc-900">
+                        <button wire:click="edit({{ $user->id }})" class="p-2 text-zinc-400 hover:text-zinc-900 transition">
                             <x-lucide-pencil class="h-4 w-4" />
                         </button>
                         @if($user->id !== auth()->id())
@@ -106,17 +104,20 @@
         @empty
             <tr>
                 <td colspan="5" class="px-6 py-12">
-                    <x-ui.empty-state title="Nenhum usuário encontrado" description="Tente ajustar seus filtros de busca." />
+                    <x-ui.empty-state title="Nenhum usuário encontrado" description="Tente ajustar seus filtros de busca ou limpe os parâmetros de ordenação." />
                 </td>
             </tr>
         @endforelse
 
         <x-slot:footer>
-            {{ $this->users->links() }}
+            <div class="flex items-center justify-between">
+                <p class="text-xs text-zinc-500">Mostrando {{ $this->users->count() }} de {{ $this->users->total() }} usuários</p>
+                {{ $this->users->links() }}
+            </div>
         </x-slot:footer>
     </x-ui.table>
 
-    {{-- Modal de Formulário --}}
+    {{-- Modais e Confirmadores permanecem conforme original para manter integridade --}}
     <x-ui.modal name="user-form-modal" :title="$form->user ? 'Editar Usuário' : 'Novo Usuário'">
         <form wire:submit="save" class="space-y-4">
             <x-ui.input wire:model="form.name" label="Nome" :error="$errors->first('form.name')" />

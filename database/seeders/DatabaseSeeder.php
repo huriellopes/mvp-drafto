@@ -9,6 +9,7 @@ use App\Enums\ReportReasonEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\Comment;
+use App\Models\NewsletterSubscriber;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostView;
@@ -76,6 +77,7 @@ class DatabaseSeeder extends Seeder
         $this->seedSavedPosts($readers, $posts);
         $this->seedPostLikes($readers, $posts);
         $this->seedCommentLikes($readers, $comments);
+        $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
 
         $this->command?->info('==========================================');
@@ -333,6 +335,19 @@ class DatabaseSeeder extends Seeder
         $this->command?->info(sprintf('✔ %d comentários criados.', $comments->count()));
 
         return $comments->values();
+    }
+
+    private function seedNewsletter(Collection $categories): void
+    {
+        $this->command?->warn('Criando assinantes da newsletter...');
+
+        foreach(range(1, 30) as $i) {
+            NewsletterSubscriber::query()
+                ->create([
+                    'email' => fake()->unique()->safeEmail(),
+                    'category_id' => $categories->random()->id
+                ]);
+        }
     }
 
     /**

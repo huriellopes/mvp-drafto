@@ -30,6 +30,8 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'ip_address',
     'last_login_at',
     'email_verified_at',
+    'banned_until',
+    'ban_reason',
 ])]
 #[Hidden([
     'password',
@@ -100,14 +102,17 @@ class User extends Authenticatable implements MustVerifyEmail
         )->withTimestamps();
     }
 
+    public function collections(): HasMany
+    {
+        return $this->hasMany(Collection::class);
+    }
+
     public function savedPosts(): BelongsToMany
     {
-        return $this->belongsToMany(
-            Post::class,
-            'saved_posts',
-            'user_id',
-            'post_id',
-        )->withTimestamps();
+        return $this->belongsToMany(Post::class, 'saved_posts')
+            ->using(SavedPost::class)
+            ->withPivot('collection_id', 'id')
+            ->withTimestamps();
     }
 
     public function reports(): HasMany
@@ -179,6 +184,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
+            'banned_until' => 'datetime'
         ];
     }
 }
