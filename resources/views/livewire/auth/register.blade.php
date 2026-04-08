@@ -18,7 +18,13 @@
         <x-ui.input wire:model.blur="form.email" label="E-mail" placeholder="voce@exemplo.com" :error="$errors->first('form.email')" />
         <x-ui.input wire:model.blur="form.password" label="Senha" type="password" placeholder="••••••••" :error="$errors->first('form.password')" />
 
-        <x-ui.button loading="register">
+        <x-ui.button
+            type="submit"
+            loading="register"
+            variant="primary"
+            sizes="lg"
+            class="w-full"
+        >
             Criar minha conta
         </x-ui.button>
 

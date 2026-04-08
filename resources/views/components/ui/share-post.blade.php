@@ -1,21 +1,36 @@
 @props(['post'])
 
 <div x-data="{
-    share() {
+    async share() {
         const url = '{{ route('posts.show', $post->slug) }}';
+
         if (navigator.share) {
-            navigator.share({
-                title: '{{ $post->title }}',
-                text: 'Confira este conteúdo na Drafto',
-                url: url
-            });
+            try {
+                await navigator.share({
+                    title: '{{ $post->title }}',
+                    text: 'Confira este conteúdo incrível no Drafto:',
+                    url: url
+                });
+            } catch (err) {
+                console.log('Compartilhamento cancelado');
+            }
         } else {
-            navigator.clipboard.writeText(url);
-            alert('Link copiado!');
+            try {
+                await navigator.clipboard.writeText(url);
+                // Usando o Toaster que já temos no projeto para um feedback elegante
+                $dispatch('toaster:info', { message: 'Link copiado para a área de transferência!' });
+            } catch (err) {
+                console.error('Falha ao copiar', err);
+            }
         }
     }
-}" class="flex items-center gap-2">
-    <button @click="share" class="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-profile-primary transition shadow-sm">
-        <x-lucide-share-2 class="h-5 w-5" />
+}">
+    <button
+        @click="share"
+        type="button"
+        title="Compartilhar Artigo"
+        class="group flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-profile-primary hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-profile-primary dark:hover:bg-zinc-800"
+    >
+        <x-lucide-share-2 class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-profile-primary dark:text-zinc-400" />
     </button>
 </div>

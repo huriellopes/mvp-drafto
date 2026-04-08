@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\PostStatusEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\PostVisibilityEnum;
+use App\Services\Post\ReadingTimeCalculator;
 use App\Traits\HasSlug;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -35,6 +36,7 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'published_at',
     'featured_at',
     'comments_enabled',
+    'seo_enabled',
     'reading_time',
     'views_count',
     'likes_count',
@@ -141,6 +143,15 @@ class Post extends Model
         });
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Post $post) {
+            if ($post->isDirty('content')) {
+                $post->reading_time = ReadingTimeCalculator::calculate($post->content);
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
@@ -148,6 +159,7 @@ class Post extends Model
             'status' => PostStatusEnum::class,
             'visibility' => PostVisibilityEnum::class,
             'comments_enabled' => 'boolean',
+            'seo_enabled' => 'boolean',
             'reading_time' => 'integer',
             'views_count' => 'integer',
             'likes_count' => 'integer',

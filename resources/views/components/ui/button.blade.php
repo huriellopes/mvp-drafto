@@ -4,6 +4,7 @@
     'loading' => null,
     'type' => 'button',
     'icon' => null,
+    'href' => null, // Adicionado suporte a href
 ])
 
 @php
@@ -28,25 +29,29 @@
     $classes = "inline-flex items-center justify-center gap-2 font-bold rounded-2xl transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 " .
                ($variants[$variant] ?? $variants['primary']) . " " .
                ($sizes[$size] ?? $sizes['md']);
+
+    // Define se será uma tag <a> ou <button>
+    $tag = $href ? 'a' : 'button';
 @endphp
 
-<button
-    {{ $attributes->merge(['type' => $type, 'class' => $classes]) }}
-    @if($target)
-        wire:loading.attr="disabled"
-    wire:target="{{ $target }}"
-    @endif
+<{{ $tag }}
+    {{ $href ? "href=$href" : '' }}
+    {{ $attributes->merge(['type' => $href ? null : $type, 'class' => $classes]) }}
+    @if($target && !$href)
+    wire:loading.attr="disabled"
+wire:target="{{ $target }}"
+@endif
 >
-    @if($icon && !$target)
-        <x-dynamic-component :component="'lucide-' . $icon" class="h-4 w-4" />
-    @endif
+@if($icon && !$target)
+    <x-dynamic-component :component="'lucide-' . $icon" class="h-4 w-4" />
+@endif
 
-    <span @if($target) wire:loading.remove wire:target="{{ $target }}" @endif class="flex items-center gap-2">
+<span @if($target && !$href) wire:loading.remove wire:target="{{ $target }}" @endif class="flex items-center gap-2">
         {{ $slot }}
     </span>
 
-    @if($target)
-        <span wire:loading wire:target="{{ $target }}">
+@if($target && !$href)
+    <span wire:loading wire:target="{{ $target }}">
             <div class="flex items-center gap-2">
                 <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -55,5 +60,5 @@
                 @if($size !== 'xs') <span>Processando...</span> @endif
             </div>
         </span>
-    @endif
-</button>
+@endif
+</{{ $tag }}>

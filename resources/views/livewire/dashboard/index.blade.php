@@ -1,5 +1,15 @@
 @use(App\Enums\RoleEnum)
 <div class="space-y-8">
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {{ Breadcrumbs::render('dashboard.index') }}
+
+        {{-- Exemplo de Badge de Status Opcional ao lado do Breadcrumb --}}
+        <div class="hidden sm:flex items-center gap-2">
+            <span class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]"></span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Sistema Online</span>
+        </div>
+    </div>
+
     <x-dashboard.verification-banner />
 
     <section class="flex flex-col gap-4 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
@@ -21,12 +31,20 @@
     <livewire:dashboard.widgets.stats-overview lazy />
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div class="xl:col-span-2">
+        <div class="xl:col-span-2 space-y-6">
             <livewire:dashboard.widgets.recent-activity lazy />
+
+            @if(auth()->user()->hasRole(RoleEnum::READER))
+                <livewire:dashboard.widgets.suggested-writers />
+            @endif
         </div>
 
-        <div>
+        <div class="space-y-6">
             <livewire:dashboard.widgets.profile-info />
+
+            @if(!auth()->user()->hasRole(RoleEnum::READER))
+                <livewire:dashboard.widgets.suggested-writers />
+            @endif
         </div>
     </div>
 </div>

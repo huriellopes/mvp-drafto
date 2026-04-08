@@ -1,4 +1,6 @@
 <div class="max-w-4xl space-y-10 pb-20">
+    {{ Breadcrumbs::render('dashboard.account') }}
+
     <form wire:submit="save" class="space-y-10">
         {{-- Dados Pessoais --}}
         <x-ui.section-card title="Informações da Conta" description="Atualize seu nome de exibição e endereço de e-mail institucional.">
@@ -48,7 +50,12 @@
         </x-ui.section-card>
 
         <div class="flex justify-end gap-3 border-t border-zinc-200 pt-8">
-            <x-ui.button loading="save" class="px-12">
+            <x-ui.button
+                type="submit"
+                loading="save"
+                class="px-12 w-full"
+                sizes="lg"
+            >
                 Salvar Alterações
             </x-ui.button>
         </div>

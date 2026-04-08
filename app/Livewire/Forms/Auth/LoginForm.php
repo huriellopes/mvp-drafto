@@ -11,14 +11,27 @@ use Livewire\Form;
 
 class LoginForm extends Form
 {
-    #[Validate(['required', 'email'])]
     public string $email = '';
 
-    #[Validate(['required', 'string'])]
     public string $password = '';
 
-    #[Validate(['boolean'])]
     public bool $remember = false;
+
+    public function rules() : array
+    {
+        return [
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+            'remember' => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function messages() : array
+    {
+        return [
+            'email.required' => 'O campo email é obrigatório.'
+        ];
+    }
 
     /**
      * @throws AuthenticationException

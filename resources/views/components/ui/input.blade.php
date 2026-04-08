@@ -22,12 +22,14 @@
             </span>
         @endif
 
-        <input
+            <input
             {{ $attributes->merge([
                 'id' => $id,
-                'class' => 'block w-full bg-transparent px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400'
+                'autocomplete' => 'off',
+            'spellcheck' => 'false',
+            'class' => 'block w-full bg-transparent px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 focus:placeholder:opacity-50 transition-all'
             ]) }}
-        />
+            />
 
         @if($suffix)
             <span class="pr-4 pl-2 text-zinc-400 font-medium select-none">

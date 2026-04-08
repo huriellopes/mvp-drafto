@@ -56,20 +56,19 @@
 
     {{-- 2. CTA STATS - Refatorado para visibilidade total --}}
     <section class="max-w-5xl mx-auto px-4 -mt-32 relative z-20">
-        {{-- Fundo alterna entre zinc-900 e zinc-950 no dark, no light mantemos escuro para destaque ou ajustamos --}}
-        <div class="bg-zinc-900 border border-zinc-800 dark:bg-zinc-950 dark:border-zinc-800/50 rounded-[3.5rem] p-12 flex flex-col md:flex-row items-center justify-between gap-12 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)]">
+        <div class="bg-zinc-900 border border-zinc-800 dark:bg-zinc-950 dark:border-zinc-800/50 rounded-[3.5rem] p-12 flex flex-col md:flex-row items-center justify-between gap-12 shadow-xs hover:shadow-sm">
             <div class="flex gap-16">
                 <div class="text-center md:text-left group">
-                    <p class="text-6xl font-black text-white leading-none transition-transform group-hover:scale-110">{{ $data->totalPosts }}</p>
-                    <p class="text-profile-primary text-[10px] font-black uppercase tracking-[0.2em] mt-3">Posts Criados</p>
+                    <p class="text-6xl font-black text-white leading-none transition-transform">{{ $data->totalPosts }}</p>
+                    <p class="text-profile-primary text-[10px] font-black text-white uppercase tracking-[0.2em] mt-3">Posts Criados</p>
                 </div>
                 <div class="h-16 w-px bg-zinc-800 hidden md:block"></div>
                 <div class="text-center md:text-left group">
-                    <p class="text-6xl font-black text-white leading-none transition-transform group-hover:scale-110">{{ $data->totalUsers }}</p>
-                    <p class="text-profile-primary text-[10px] font-black uppercase tracking-[0.2em] mt-3">Escritores</p>
+                    <p class="text-6xl font-black text-white leading-none transition-transform">{{ $data->totalUsers }}</p>
+                    <p class="text-profile-primary text-[10px] font-black text-white uppercase tracking-[0.2em] mt-3">Escritores</p>
                 </div>
             </div>
-            <x-ui.button href="{{ route('register') }}" size="lg" class="px-10 py-6 text-lg hover:shadow-[0_0_30px_rgba(var(--profile-primary-rgb),0.4)] transition-all">
+            <x-ui.button href="{{ route('register') }}" size="lg" class="px-10 py-6 text-lg hover:shadow-[0_0_30px_rgba(var(--profile-primary-rgb),0.4)] bg-gray-700 dark:bg-black transition-all">
                 Criar meu perfil
             </x-ui.button>
         </div>

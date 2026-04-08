@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\ModuleEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\ReportReasonEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\Comment;
+use App\Models\Module;
 use App\Models\NewsletterSubscriber;
 use App\Models\Post;
 use App\Models\PostCategory;
@@ -79,6 +81,7 @@ class DatabaseSeeder extends Seeder
         $this->seedCommentLikes($readers, $comments);
         $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
+        $this->seedModules();
 
         $this->command?->info('==========================================');
         $this->command?->info('Seed concluído com sucesso.');
@@ -542,5 +545,100 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command?->info('✔ Denúncias criadas.');
+    }
+
+    private function seedModules() : void
+    {
+        $this->command?->warn('Semeando módulos do sistema...');
+
+        $modules = [
+            [
+                'slug' => ModuleEnum::PROFILE,
+                'name' => 'Perfil Público',
+                'description' => 'Visualização pública do autor, biografia e seus artigos publicados.',
+                'icon' => 'user-circle',
+                'settings' => [
+                    'show_metrics' => true,
+                    'allow_custom_colors' => true,
+                    'max_bio_length' => 255
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::ACCOUNT,
+                'name' => 'Configurações de Conta',
+                'description' => 'Gestão de dados sensíveis, segurança e preferências de sistema.',
+                'icon' => 'settings',
+                'settings' => [
+                    'require_email_verification' => true,
+                    'two_factor_available' => false
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::MY_POSTS,
+                'name' => 'Meus Artigos',
+                'description' => 'Central de gerenciamento de conteúdos publicados e agendados.',
+                'icon' => 'library',
+                'settings' => [
+                    'allow_mass_delete' => false,
+                    'enable_stats_per_post' => true
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::DRAFT,
+                'name' => 'Rascunhos',
+                'description' => 'Ambiente de escrita com salvamento automático para textos em progresso.',
+                'icon' => 'file-text',
+                'settings' => [
+                    'autosave_interval_seconds' => 30,
+                    'max_drafts_per_user' => 50
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::FOLLOWS,
+                'name' => 'Rede de Seguidores',
+                'description' => 'Sistema de conexões sociais entre escritores e leitores.',
+                'icon' => 'users-round',
+                'settings' => [
+                    'notify_on_new_follower' => true,
+                    'allow_private_profiles' => true
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::SAVED_POST,
+                'name' => 'Itens Salvos',
+                'description' => 'Biblioteca pessoal para organizar conteúdos para leitura posterior.',
+                'icon' => 'bookmark',
+                'settings' => [
+                    'max_saved_items' => 100,
+                    'enable_folders' => false // Para uma futura feature de pastas
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::COMMENTS,
+                'name' => 'Comentários',
+                'description' => 'Habilita a seção de discussões e feedback nos posts.',
+                'icon' => 'message-square',
+                'settings' => [
+                    'allow_images' => false,
+                    'moderation_queue' => true,
+                    'max_depth' => 3 // Nível de respostas (threads)
+                ],
+            ],
+        ];
+
+        foreach ($modules as $module) {
+            Module::query()->updateOrCreate(
+                ['slug' => $module['slug']],
+                [
+                    'name' => $module['name'],
+                    'description' => $module['description'],
+                    'icon' => $module['icon'],
+                    'is_enabled' => true,
+                    'settings' => $module['settings'],
+                ]
+            );
+        }
+
+        $this->command?->info('✔ ' . count($modules) . ' módulos semeados com sucesso.');
     }
 }

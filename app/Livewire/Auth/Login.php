@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.auth')]
 class Login extends Component
@@ -29,6 +30,10 @@ class Login extends Component
     public function login(): void
     {
         $this->form->authenticate();
+
+        Toaster::success('Login realizado com sucesso! redirecionando....');
+
+        sleep(2);
 
         $this->redirectRoute('dashboard.index', navigate: true);
     }

@@ -1,4 +1,5 @@
 <div class="space-y-8 pb-20">
+    {{ Breadcrumbs::render('dashboard.follows') }}
     {{-- Header / Tabs e Sort --}}
     <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-2 rounded-[2rem] bg-zinc-100 p-1.5 w-fit">

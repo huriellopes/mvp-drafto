@@ -14,7 +14,13 @@
                 class="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 text-sm outline-none focus:border-profile-primary transition min-h-[100px]"
             ></textarea>
             <div class="flex justify-end">
-                <x-ui.button loading="save" class="w-auto px-8">Publicar Comentário</x-ui.button>
+                <x-ui.button
+                    type="submit"
+                    loading="save"
+                    class="w-auto px-8"
+                >
+                    Publicar Comentário
+                </x-ui.button>
             </div>
         </form>
     @else

@@ -1,5 +1,6 @@
 @use(App\Enums\PostStatusEnum)
 <div>
+    {{ Breadcrumbs::render('dashboard.posts.index') }}
     <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-2xl font-bold text-zinc-900 leading-tight">Gerenciar Publicações</h2>

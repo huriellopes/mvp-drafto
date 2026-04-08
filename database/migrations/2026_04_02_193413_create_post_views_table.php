@@ -23,8 +23,8 @@ return new class() extends Migration
                 ->nullOnDelete();
 
             $table->string('session_id')->nullable();
-            $table->string('ip_hash')->nullable();
-            $table->string('user_agent')->nullable();
+            $table->text('ip_hash')->nullable();
+            $table->text('user_agent')->nullable();
             $table->timestamp('viewed_at');
             $table->timestamps();
 

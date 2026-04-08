@@ -42,18 +42,29 @@ class PostView extends Model
     }
 
     /**
-     * Accessor e Mutator para IP com Fallback de segurança
+     * Accessor Inteligente: Tenta descriptografar, se falhar (ou se for um hash SHA),
+     * retorna o valor original ou um fallback.
      */
     protected function ipHash(): Attribute
     {
         return Attribute::make(
-            get: function (string $value) {
+            get: function (?string $value) {
+                if (!$value) return '0.0.0.0';
+
+                // Se o valor não parecer um payload encriptado (não tem o formato JSON/Base64 do Laravel)
+                if (!str_contains($value, 'iv')) {
+                    // Pode ser um hash SHA256 do Seeder, retornamos os primeiros 8 caracteres por privacidade
+                    return strlen($value) > 32 ? substr($value, 0, 12) . '...' : $value;
+                }
+
                 try {
                     return Crypt::decryptString($value);
                 } catch (DecryptException) {
-                    return $value;
+                    // Fallback para quando a APP_KEY mudou ou o dado está corrompido
+                    return 'Hashed: ' . substr($value, 0, 8);
                 }
             },
+            // Garante que ao salvar um novo, ele sempre use a criptografia atual
             set: fn (string $value) => Crypt::encryptString($value),
         );
     }
@@ -62,6 +73,7 @@ class PostView extends Model
     {
         return [
             'viewed_at' => 'datetime',
+//            'ip_hash' => 'encrypted'
         ];
     }
 }

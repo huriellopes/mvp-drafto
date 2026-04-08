@@ -38,7 +38,13 @@
             <span>Lembrar de mim</span>
         </label>
 
-        <x-ui.button loading="login">
+        <x-ui.button
+            type="submit"
+            variant="primary"
+            loading="login"
+            size="lg"
+            class="w-full"
+        >
             Entrar
         </x-ui.button>
 

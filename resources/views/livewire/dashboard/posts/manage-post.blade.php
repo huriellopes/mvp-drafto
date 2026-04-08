@@ -2,6 +2,7 @@
 @use(App\Enums\PostTypeEnum)
 
 <div class="mx-auto w-full max-w-7xl px-4 pb-20 2xl:max-w-[1550px]">
+    {{ Breadcrumbs::render('dashboard.posts.create') }}
     <form wire:submit="save" class="space-y-6">
 
         {{-- Header Sticky --}}

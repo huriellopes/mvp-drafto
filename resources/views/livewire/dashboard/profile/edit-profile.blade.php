@@ -2,6 +2,8 @@
 @use(App\Enums\ProfileVisibilityEnum)
 
 <div class="space-y-10 pb-20">
+    {{ Breadcrumbs::render('dashboard.profile') }}
+
     <form wire:submit="save" class="space-y-10">
         {{-- Seção Visual --}}
         <section class="overflow-hidden rounded-3xl border border-zinc-200 bg-white dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
@@ -196,7 +198,11 @@
         </x-ui.section-card>
 
         <div class="flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800 pt-8">
-            <x-ui.button type="submit" loading="save" class="w-full md:w-auto">
+            <x-ui.button
+                type="submit"
+                loading="save"
+                sizes="lg"
+                class="w-full">
                 Atualizar Perfil
             </x-ui.button>
         </div>

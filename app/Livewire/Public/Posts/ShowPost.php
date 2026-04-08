@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire\Public\Posts;
 
+use App\Actions\Public\GetRelatedPostsAction;
 use App\Enums\PostVisibilityEnum;
 use App\Models\Post;
+use App\Services\Post\PostSeoGenerator;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -30,6 +32,15 @@ class ShowPost extends Component
             $this->post->timestamps = false;
             $this->post->increment('views_count');
         }
+    }
+
+    #[Computed]
+    public function relatedPosts()
+    {
+        return app(GetRelatedPostsAction::class)
+            ->exec(
+                post: $this->post
+            )->posts;
     }
 
     #[Computed]
@@ -71,7 +82,7 @@ class ShowPost extends Component
             ->layout('layouts.site', [
                 'title' => $this->post->title . ' | Drafto',
                 'primaryColor' => $profile->primary_color,
-                // Passamos os dados de SEO do post aqui futuramente
+                'seo' => PostSeoGenerator::generate($this->post),
             ]);
     }
 }
