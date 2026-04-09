@@ -15,19 +15,31 @@ use Livewire\Form;
 class ProfileForm extends Form
 {
     public ?string $name = '';
+
     public string $username = '';
+
     public ?string $email = '';
+
     public ?string $bio = '';
+
     public ?string $website_url = '';
+
     public ?string $location = '';
+
     public string $primary_color = '#18181b';
+
     public string $accent_color = '#3f3f46';
+
     public string $theme_mode = 'system';
+
     public string $visibility = 'public';
+
     public bool $show_email_publicly = false;
 
     public bool $is_searchable = true;
+
     public $avatar;
+
     public $cover;
 
     public function setUser(User $user): void
@@ -71,11 +83,11 @@ class ProfileForm extends Form
     {
         $this->validate();
 
-        $dto = UpdateProfileData::fromArray($this->all());
+        $dto = UpdateProfileData::from($this->all());
 
         app(UpdateProfileAction::class)->exec(
             user: auth()->user(),
-            data: $dto
+            data: $dto,
         );
     }
 }

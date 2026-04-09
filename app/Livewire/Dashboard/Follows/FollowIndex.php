@@ -9,8 +9,12 @@ use App\DTOs\FollowersFilterData;
 use App\Models\Follower;
 use App\Models\User;
 use Illuminate\View\View;
-use Livewire\Attributes\{Computed, Layout, Title, Url};
-use Livewire\{Component, WithPagination};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Comunidade', 'subheading' => 'Gerencie suas conexões na rede'])]
@@ -52,7 +56,9 @@ class FollowIndex extends Component
 
     public function unfollow(): void
     {
-        if (!$this->userIdToUnfollow) return;
+        if (!$this->userIdToUnfollow) {
+            return;
+        }
 
         $user = User::findOrFail($this->userIdToUnfollow);
         auth()->user()->following()->detach($user->id);
@@ -66,8 +72,8 @@ class FollowIndex extends Component
     {
         return app(ListFollowsAction::class)->exec(
             user: auth()->user(),
-            filters: FollowersFilterData::fromArray(['search' => $this->search]),
-            type: $this->tab
+            filters: FollowersFilterData::from(['search' => $this->search]),
+            type: $this->tab,
         );
     }
 

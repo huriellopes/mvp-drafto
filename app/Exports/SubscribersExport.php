@@ -7,14 +7,17 @@ namespace App\Exports;
 use App\DTOs\NewsletterFilterData;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Database\Eloquent\Builder;
-use Maatwebsite\Excel\Concerns\{FromQuery, WithHeadings, WithMapping, Exportable};
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
 class SubscribersExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
 
     public function __construct(
-        private readonly NewsletterFilterData $filters
+        private readonly NewsletterFilterData $filters,
     ) {}
 
     public function query()

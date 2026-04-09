@@ -11,7 +11,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name') }}</title>
+    @if(isset($seo))
+        {!! seo($seo) !!}
+    @else
+        {!! seo() !!}
+    @endif
+
+    @if(!isset($seo))
+        <title>{{ $title ?? config('app.name') }}</title>
+    @endif
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -40,6 +48,7 @@
 <body class="font-sans antialiased bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 selection:bg-profile-primary/30 transition-colors duration-300">
 
 <x-toaster-hub />
+<livewire:public.report-modal />
 
 {{-- Navbar --}}
 <x-site.navbar />
@@ -52,5 +61,7 @@
 <x-site.footer />
 
 @livewireScripts
+
+<x-toaster-hub />
 </body>
 </html>

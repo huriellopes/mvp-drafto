@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -12,7 +14,7 @@ class NewsletterSubscriber extends Model
 {
     use KeepsDeletedModels;
 
-    public function category() : BelongsTo
+    public function category(): BelongsTo
     {
         return $this->belongsTo(PostCategory::class, 'category_id', 'id');
     }

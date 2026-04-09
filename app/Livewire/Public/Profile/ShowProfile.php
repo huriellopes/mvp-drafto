@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Livewire\Public\Profile;
 
 use App\Models\User;
-use App\Models\Profile;
 use App\Services\Profile\ProfileSeoGenerator;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Livewire\Component;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts.guest')]
 class ShowProfile extends Component
 {
     use WithPagination;
@@ -22,18 +21,16 @@ class ShowProfile extends Component
 
     public function mount(string $username): void
     {
-        $this->username = strtolower(str_replace('@', '', $username));
+        $this->username = mb_strtolower(str_replace('@', '', $username));
     }
 
     #[Computed]
     public function user()
     {
         return User::query()
-            ->whereHas('profile', function ($query) {
-                $query->whereRaw('LOWER(username) = ?', [$this->username]);
-            })
+            ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
             ->with(['profile', 'followers', 'following'])
-            ->first();
+            ->firstOrFail();
     }
 
     #[Computed]
@@ -43,7 +40,7 @@ class ShowProfile extends Component
 
         return !empty($profile?->name)
             && !empty($this->user->email)
-            && !empty($profile?->username);
+            && !empty($profile?->bio);
     }
 
     #[Computed]
@@ -61,24 +58,15 @@ class ShowProfile extends Component
             ->paginate(12);
     }
 
-    public function render() : View
+    public function render(): View
     {
-        $user = $this->user;
-
-        // Se o perfil não existe de fato no banco, aí sim lançamos o 404 manual
-        if (!$user) {
-            abort(404, 'Escritor não encontrado.');
-        }
-
-        $profile = $user->profile;
-        $displayName = $profile->name ?? $profile->username;
+        $profile = $this->user->profile;
 
         return view('livewire.public.profile.show-profile')
-            ->layout('layouts.guest', [
+            ->layoutData([
                 'themeMode' => $profile->theme_mode->value ?? 'light',
-                'primaryColor' => $profile->primary_color ?? '#18181b',
-                'accentColor' => $profile->accent_color ?? '#3f3f46',
-                'title' => "{$displayName} (@{$profile->username}) | Drafto",
+                'primaryColor' => $profile->primary_color,
+                'accentColor' => $profile->accent_color,
                 'seo' => ProfileSeoGenerator::generate($profile),
             ]);
     }

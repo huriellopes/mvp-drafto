@@ -12,6 +12,7 @@ use App\Enums\UserStatusEnum;
 use App\Models\Comment;
 use App\Models\Module;
 use App\Models\NewsletterSubscriber;
+use App\Models\Plan;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostView;
@@ -82,6 +83,7 @@ class DatabaseSeeder extends Seeder
         $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
         $this->seedModules();
+        $this->seedPlans();
 
         $this->command?->info('==========================================');
         $this->command?->info('Seed concluído com sucesso.');
@@ -344,11 +346,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->command?->warn('Criando assinantes da newsletter...');
 
-        foreach(range(1, 30) as $i) {
+        foreach (range(1, 30) as $i) {
             NewsletterSubscriber::query()
                 ->create([
                     'email' => fake()->unique()->safeEmail(),
-                    'category_id' => $categories->random()->id
+                    'category_id' => $categories->random()->id,
                 ]);
         }
     }
@@ -547,9 +549,9 @@ class DatabaseSeeder extends Seeder
         $this->command?->info('✔ Denúncias criadas.');
     }
 
-    private function seedModules() : void
+    private function seedModules(): void
     {
-        $this->command?->warn('Semeando módulos do sistema...');
+        $this->command?->warn('Semeando módulos com limites de planos (Free/Plus/Pro)...');
 
         $modules = [
             [
@@ -558,19 +560,40 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Visualização pública do autor, biografia e seus artigos publicados.',
                 'icon' => 'user-circle',
                 'settings' => [
+                    'max_bio_length' => [
+                        'free' => 160,
+                        'plus' => 500,
+                        'pro' => 1000,
+                    ],
+                    'allow_custom_colors' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
                     'show_metrics' => true,
-                    'allow_custom_colors' => true,
-                    'max_bio_length' => 255
                 ],
             ],
             [
-                'slug' => ModuleEnum::ACCOUNT,
-                'name' => 'Configurações de Conta',
-                'description' => 'Gestão de dados sensíveis, segurança e preferências de sistema.',
-                'icon' => 'settings',
+                'slug' => ModuleEnum::PROFILE_BADGE,
+                'name' => 'Crachá do Escritor',
+                'description' => 'Gerador de cards de identidade portáteis para compartilhamento.',
+                'icon' => 'badge-check',
                 'settings' => [
-                    'require_email_verification' => true,
-                    'two_factor_available' => false
+                    'render_quality_ratio' => [
+                        'free' => 2,
+                        'plus' => 3,
+                        'pro' => 4,
+                    ],
+                    'allow_iframe_embed' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                    'themes_available' => [
+                        'free' => ['light', 'dark'],
+                        'plus' => ['light', 'dark', 'brand'],
+                        'pro' => ['all'],
+                    ],
                 ],
             ],
             [
@@ -579,38 +602,43 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Central de gerenciamento de conteúdos publicados e agendados.',
                 'icon' => 'library',
                 'settings' => [
-                    'allow_mass_delete' => false,
-                    'enable_stats_per_post' => true
+                    'max_monthly_posts' => [
+                        'free' => 5,
+                        'plus' => 20,
+                        'pro' => -1, // Ilimitado
+                    ],
+                    'enable_stats_per_post' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
                 ],
             ],
             [
                 'slug' => ModuleEnum::DRAFT,
                 'name' => 'Rascunhos',
-                'description' => 'Ambiente de escrita com salvamento automático para textos em progresso.',
+                'description' => 'Ambiente de escrita com salvamento automático.',
                 'icon' => 'file-text',
                 'settings' => [
-                    'autosave_interval_seconds' => 30,
-                    'max_drafts_per_user' => 50
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::FOLLOWS,
-                'name' => 'Rede de Seguidores',
-                'description' => 'Sistema de conexões sociais entre escritores e leitores.',
-                'icon' => 'users-round',
-                'settings' => [
-                    'notify_on_new_follower' => true,
-                    'allow_private_profiles' => true
+                    'max_drafts' => [
+                        'free' => 3,
+                        'plus' => 15,
+                        'pro' => -1,
+                    ],
+                    'autosave_interval' => 30,
                 ],
             ],
             [
                 'slug' => ModuleEnum::SAVED_POST,
                 'name' => 'Itens Salvos',
-                'description' => 'Biblioteca pessoal para organizar conteúdos para leitura posterior.',
+                'description' => 'Biblioteca pessoal para organizar conteúdos.',
                 'icon' => 'bookmark',
                 'settings' => [
-                    'max_saved_items' => 100,
-                    'enable_folders' => false // Para uma futura feature de pastas
+                    'max_saved_items' => [
+                        'free' => 20,
+                        'plus' => 100,
+                        'pro' => -1,
+                    ],
                 ],
             ],
             [
@@ -619,9 +647,51 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Habilita a seção de discussões e feedback nos posts.',
                 'icon' => 'message-square',
                 'settings' => [
-                    'allow_images' => false,
-                    'moderation_queue' => true,
-                    'max_depth' => 3 // Nível de respostas (threads)
+                    'allow_images' => [
+                        'free' => false,
+                        'plus' => false,
+                        'pro' => true,
+                    ],
+                    'moderation_tools' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::CATEGORIES,
+                'name' => 'Categorias',
+                'description' => 'Ambiente de categorias próprias.',
+                'icon' => 'folder-open',
+                'settings' => [
+                    'max_categories' => [
+                        'free' => 3,
+                        'plus' => 10,
+                        'pro' => -1,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::FOLLOWS,
+                'name' => 'Rede de Seguidores',
+                'description' => 'Sistema de conexões sociais.',
+                'icon' => 'users-round',
+                'settings' => [
+                    'notify_on_new_follower' => true,
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::ACCOUNT,
+                'name' => 'Configurações de Conta',
+                'description' => 'Gestão de segurança e preferências.',
+                'icon' => 'settings',
+                'settings' => [
+                    'two_factor_available' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
                 ],
             ],
         ];
@@ -635,10 +705,32 @@ class DatabaseSeeder extends Seeder
                     'icon' => $module['icon'],
                     'is_enabled' => true,
                     'settings' => $module['settings'],
-                ]
+                ],
             );
         }
 
-        $this->command?->info('✔ ' . count($modules) . ' módulos semeados com sucesso.');
+        $this->command?->info('✔ ' . count($modules) . ' módulos semeados com lógica de planos.');
+    }
+
+    private function seedPlans(): void
+    {
+        $this->command?->warn('Sincronizando planos com config/plans.php...');
+
+        $plans = config('plans');
+
+        foreach ($plans as $slug => $data) {
+            Plan::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'name' => $data['name'],
+                    'stripe_id' => $data['stripe_id'],
+                    'price' => $data['price'],
+                    'features' => $data['features'],
+                    'is_active' => true,
+                ],
+            );
+        }
+
+        $this->command?->info('✔ Planos sincronizados.');
     }
 }

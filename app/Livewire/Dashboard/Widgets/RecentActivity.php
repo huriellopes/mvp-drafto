@@ -30,9 +30,9 @@ class RecentActivity extends Component
         // Leitor vê os posts que ele interagiu (curtiu ou comentou)
         return Post::query()
             ->where(function ($query) use ($user) {
-                $query->whereHas('comments', fn($q) => $q->where('user_id', $user->id))
-                    ->orWhereHas('likedByUsers', fn($q) => $q->where('user_id', $user->id))
-                    ->orWhereHas('savedByUsers', fn($q) => $q->where('user_id', $user->id));
+                $query->whereHas('comments', fn ($q) => $q->where('user_id', $user->id))
+                    ->orWhereHas('likedByUsers', fn ($q) => $q->where('user_id', $user->id))
+                    ->orWhereHas('savedByUsers', fn ($q) => $q->where('user_id', $user->id));
             })
             ->with(['author.profile', 'category'])
             ->latest()

@@ -4,11 +4,24 @@ declare(strict_types=1);
 
 namespace App\Livewire\Public\Site;
 
-use App\Models\User;
+use App\Actions\Public\ListExploreWritersAction;
+use App\DTOs\Public\ExploreWritersFilterData;
+use Illuminate\View\View;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\{Url, Computed};
+use RalphJSmit\Laravel\SEO\Support\SEOData;
 
+#[Layout('layouts.site', [
+    'seo' => new SEOData(
+        title: 'Descubra Escritores | Drafto',
+        description: 'Conheça as mentes brilhantes que escrevem no Drafto.',
+    ),
+])]
+#[Lazy]
 class ExploreWriters extends Component
 {
     use WithPagination;
@@ -16,20 +29,27 @@ class ExploreWriters extends Component
     #[Url(history: true)]
     public string $search = '';
 
-    public function updatedSearch() { $this->resetPage(); }
-
-    public function render()
+    public function updatedSearch(): void
     {
-        $writers = User::query()
-            ->with(['profile'])
-            ->whereHas('profile')
-            ->when($this->search, fn($q) => $q->where('name', 'like', "%{$this->search}%")
-                ->orWhereHas('profile', fn($p) => $p->where('username', 'like', "%{$this->search}%")))
-            ->withCount('publishedPosts')
-            ->orderBy('published_posts_count', 'desc')
-            ->paginate(16);
+        $this->resetPage();
+    }
 
-        return view('livewire.public.site.explore-writers', ['writers' => $writers])
-            ->layout('layouts.site');
+    public function placeholder(): View
+    {
+        return view('livewire.public.site.placeholders.explore-writers');
+    }
+
+    #[Computed]
+    public function writers()
+    {
+        return app(ListExploreWritersAction::class)
+            ->exec(
+                data: new ExploreWritersFilterData(search: $this->search),
+            );
+    }
+
+    public function render(): View
+    {
+        return view('livewire.public.site.explore-writers');
     }
 }

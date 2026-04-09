@@ -18,71 +18,59 @@ class ShowPost extends Component
 
     public function mount(string $slug): void
     {
-        $this->post = Post::where('slug', $slug)
+        $this->post = Post::query()
+            ->where('slug', $slug)
             ->published()
-            ->with([
-                'author.profile',
-                'author.followers',
-                'category',
-                'tags'
-            ])
+            ->with(['author.profile', 'category', 'tags'])
             ->firstOrFail();
 
         if ($this->canReadContent) {
-            $this->post->timestamps = false;
-            $this->post->increment('views_count');
+            $this->incrementViews();
         }
-    }
-
-    #[Computed]
-    public function relatedPosts()
-    {
-        return app(GetRelatedPostsAction::class)
-            ->exec(
-                post: $this->post
-            )->posts;
     }
 
     #[Computed]
     public function canReadContent(): bool
     {
-        // 1. Se for público, todos leem
-        if ($this->post->visibility === PostVisibilityEnum::PUBLIC) {
-            return true;
-        }
+        return match ($this->post->visibility) {
+            PostVisibilityEnum::PUBLIC, PostVisibilityEnum::UNLISTED => true,
+            PostVisibilityEnum::FOLLOWERS_ONLY => $this->checkFollowerAccess(),
+            default => false,
+        };
+    }
 
-        // 2. Se for unlisted, quem tem o link lê (estilo YouTube)
-        if ($this->post->visibility === PostVisibilityEnum::UNLISTED) {
-            return true;
-        }
-
-        // 3. Se for Followers Only
-        if ($this->post->visibility === PostVisibilityEnum::FOLLOWERS_ONLY) {
-            if (!auth()->check()) return false;
-
-            $user = auth()->user();
-
-            // Admin e o próprio Autor sempre leem
-            if ($user->isAdmin() || $user->id === $this->post->user_id) {
-                return true;
-            }
-
-            // Verifica se o usuário logado segue o autor
-            return $user->isFollowing($this->post->author);
-        }
-
-        return false;
+    #[Computed]
+    public function relatedPosts()
+    {
+        return app(GetRelatedPostsAction::class)->exec(post: $this->post)->posts;
     }
 
     public function render(): View
     {
-        $profile = $this->post->author->profile;
-
         return view('livewire.public.posts.show-post')
             ->layout('layouts.site', [
                 'title' => $this->post->title . ' | Drafto',
-                'primaryColor' => $profile->primary_color,
+                'primaryColor' => $this->post->author->profile->primary_color,
                 'seo' => PostSeoGenerator::generate($this->post),
             ]);
+    }
+
+    private function incrementViews(): void
+    {
+        $this->post->timestamps = false;
+        $this->post->increment('views_count');
+    }
+
+    private function checkFollowerAccess(): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        $user = auth()->user();
+
+        return $user->isAdmin() ||
+            $user->id === $this->post->user_id ||
+            $user->isFollowing($this->post->author);
     }
 }

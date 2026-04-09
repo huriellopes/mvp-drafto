@@ -4,13 +4,22 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Saved;
 
-use App\Livewire\Forms\Saved\CollectionForm;
-use App\Actions\Saved\{DeleteCollectionAction, ListSavedPostsAction, MoveToCollectionAction, ToggleSavePostAction};
+use App\Actions\Saved\DeleteCollectionAction;
+use App\Actions\Saved\ListSavedPostsAction;
+use App\Actions\Saved\MoveToCollectionAction;
+use App\Actions\Saved\ToggleSavePostAction;
 use App\DTOs\SavedPostsFilterData;
-use App\Models\{Post, PostCategory, Collection};
+use App\Livewire\Forms\Saved\CollectionForm;
+use App\Models\Collection;
+use App\Models\Post;
+use App\Models\PostCategory;
 use Illuminate\View\View;
-use Livewire\Attributes\{Computed, Layout, Title, Url};
-use Livewire\{Component, WithPagination};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Biblioteca', 'subheading' => 'Gerencie seus itens salvos e coleções'])]
@@ -31,8 +40,11 @@ class SavedIndex extends Component
     public ?string $collection = null;
 
     public ?int $postIdBeingRemoved = null;
+
     public ?int $postIdBeingMoved = null;
+
     public ?int $targetCollectionId = null;
+
     public ?int $collectionIdBeingDeleted = null;
 
     public function updatedSearch(): void
@@ -43,16 +55,6 @@ class SavedIndex extends Component
     public function updatedCollection(): void
     {
         $this->resetPage();
-    }
-
-    protected function getCurrentCollectionId(): ?int
-    {
-        if (!$this->collection) return null;
-
-        return Collection::query()
-            ->where('user_id', auth()->id())
-            ->where('slug', $this->collection)
-            ->value('id');
     }
 
     public function createCollection(): void
@@ -84,10 +86,11 @@ class SavedIndex extends Component
 
     public function deleteCollection(): void
     {
-        if (!$this->collectionIdBeingDeleted) return;
+        if (!$this->collectionIdBeingDeleted) {
+            return;
+        }
 
         $collection = Collection::findOrFail($this->collectionIdBeingDeleted);
-
 
         if ($this->collection === $collection->slug) {
             $this->collection = null;
@@ -95,7 +98,7 @@ class SavedIndex extends Component
 
         app(DeleteCollectionAction::class)
             ->exec(
-                collection: $collection
+                collection: $collection,
             );
 
         $this->collectionIdBeingDeleted = null;
@@ -110,7 +113,9 @@ class SavedIndex extends Component
 
     public function unsave(ToggleSavePostAction $action): void
     {
-        if (!$this->postIdBeingRemoved) return;
+        if (!$this->postIdBeingRemoved) {
+            return;
+        }
 
         $post = Post::findOrFail($this->postIdBeingRemoved);
         $action->exec(auth()->user(), $post);
@@ -128,13 +133,15 @@ class SavedIndex extends Component
 
     public function moveToCollection(): void
     {
-        if (!$this->postIdBeingMoved) return;
+        if (!$this->postIdBeingMoved) {
+            return;
+        }
 
         app(MoveToCollectionAction::class)
             ->exec(
                 user: auth()->user(),
                 postId: $this->postIdBeingMoved,
-                collectionId: $this->targetCollectionId ?: null
+                collectionId: $this->targetCollectionId ?: null,
             );
 
         $this->postIdBeingMoved = null;
@@ -156,7 +163,9 @@ class SavedIndex extends Component
     #[Computed]
     public function categories()
     {
-        return PostCategory::orderBy('name')->get();
+        return PostCategory::query()
+            ->orderBy('name')
+            ->get();
     }
 
     #[Computed]
@@ -164,16 +173,28 @@ class SavedIndex extends Component
     {
         return app(ListSavedPostsAction::class)->exec(
             user: auth()->user(),
-            filters: SavedPostsFilterData::fromArray([
+            filters: SavedPostsFilterData::from([
                 'search' => $this->search,
                 'categoryId' => $this->categoryId,
                 'collectionId' => $this->getCurrentCollectionId(),
-            ])
+            ]),
         );
     }
 
     public function render(): View
     {
         return view('livewire.dashboard.saved.saved-index');
+    }
+
+    protected function getCurrentCollectionId(): ?int
+    {
+        if (!$this->collection) {
+            return null;
+        }
+
+        return Collection::query()
+            ->where('user_id', auth()->id())
+            ->where('slug', $this->collection)
+            ->value('id');
     }
 }

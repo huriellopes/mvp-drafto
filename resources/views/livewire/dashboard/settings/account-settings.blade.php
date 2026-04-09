@@ -3,18 +3,18 @@
 
     <form wire:submit="save" class="space-y-10">
         {{-- Dados Pessoais --}}
-        <x-ui.section-card title="Informações da Conta" description="Atualize seu nome de exibição e endereço de e-mail institucional.">
+        <x-ui.section-card title="{{ __('dashboard.account.settings.info_section.title') }}" description="{{ __('dashboard.account.settings.info_section.description') }}">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <x-ui.input
                     wire:model="form.name"
-                    label="Nome Completo"
+                    label="{{ __('dashboard.account.settings.info_section.name_label') }}"
                     placeholder="Seu nome"
                     :error="$errors->first('form.name')"
                 />
 
                 <x-ui.input
                     wire:model="form.email"
-                    label="E-mail"
+                    label="{{ __('dashboard.account.settings.info_section.email_label') }}"
                     type="email"
                     placeholder="seu@email.com"
                     :error="$errors->first('form.email')"
@@ -22,19 +22,19 @@
             </div>
 
             @if(auth()->user()->email_verified_at === null)
-                <div class="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 p-4 text-sm text-amber-700 border border-amber-100">
+                <div class="mt-4 flex items-center gap-2 rounded-2xl bg-amber-50 dark:bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">
                     <x-lucide-alert-circle class="h-4 w-4" />
-                    Seu e-mail ainda não foi verificado. Verifique sua caixa de entrada.
+                    {{ __('dashboard.account.settings.info_section.not_verified') }}
                 </div>
             @endif
         </x-ui.section-card>
 
         {{-- Segurança --}}
-        <x-ui.section-card title="Segurança" description="Altere sua senha periodicamente para manter sua conta protegida. Deixe em branco se não desejar alterar.">
+        <x-ui.section-card title="{{ __('dashboard.account.settings.security_section.title') }}" description="{{ __('dashboard.account.settings.security_section.description') }}">
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <x-ui.input
                     wire:model="form.password"
-                    label="Nova Senha"
+                    label="{{ __('dashboard.account.settings.security_section.password_label') }}"
                     type="password"
                     placeholder="••••••••"
                     :error="$errors->first('form.password')"
@@ -42,21 +42,21 @@
 
                 <x-ui.input
                     wire:model="form.password_confirmation"
-                    label="Confirmar Nova Senha"
+                    label="{{ __('dashboard.account.settings.security_section.confirm_password_label') }}"
                     type="password"
                     placeholder="••••••••"
                 />
             </div>
         </x-ui.section-card>
 
-        <div class="flex justify-end gap-3 border-t border-zinc-200 pt-8">
+        <div class="flex justify-end gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-8">
             <x-ui.button
                 type="submit"
                 loading="save"
                 class="px-12 w-full"
                 sizes="lg"
             >
-                Salvar Alterações
+                {{ __('dashboard.account.settings.submit_button') }}
             </x-ui.button>
         </div>
     </form>

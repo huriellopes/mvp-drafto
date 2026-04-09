@@ -4,41 +4,50 @@ declare(strict_types=1);
 
 namespace App\Actions\Public;
 
-use App\Models\Post;
+use App\DTOs\Public\PostFilterData;
 use App\Enums\PostVisibilityEnum;
+use App\Models\Post;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 final class ListPublicPostsAction
 {
-    public function exec(array $filters = []): LengthAwarePaginator
+    public function exec(PostFilterData $filters): LengthAwarePaginator
     {
         return Post::query()
-            ->with(['author.profile', 'category'])
+            ->with(['author.profile', 'category', 'tags'])
             ->published()
             ->where(function (Builder $query) {
                 $query->where('visibility', PostVisibilityEnum::PUBLIC)
-
                     ->orWhere(function (Builder $q) {
-                        $q->where('visibility', PostVisibilityEnum::FOLLOWERS_ONLY)
-                            ->where(function ($sub) {
-                                if (auth()->check()) {
-                                    $user = auth()->user();
-                                    if ($user->isAdmin()) return;
+                        $q->where('visibility', PostVisibilityEnum::FOLLOWERS_ONLY);
 
-                                    $sub->whereHas('author.followers', function ($f) use ($user) {
-                                        $f->where('follower_id', $user->id);
-                                    })
-                                        ->orWhere('user_id', $user->id);
-                                } else {
-                                    $sub->whereRaw('1 = 0');
-                                }
-                            });
+                        if (auth()->guest()) {
+                            $q->whereRaw('1 = 0');
+
+                            return;
+                        }
+
+                        $user = auth()->user();
+
+                        if ($user->isAdmin()) {
+                            return;
+                        }
+
+                        $q->where(fn ($sub) => $sub->whereHas('author.followers', fn ($f) => $f->where('follower_id', $user->id))
+                            ->orWhere('user_id', $user->id),
+                        );
                     });
             })
-            ->when($filters['search'] ?? null, fn($q, $s) => $q->where('title', 'like', "%{$s}%"))
-            ->when($filters['category'] ?? null, fn($q, $c) => $q->whereHas('category', fn($cat) => $cat->where('slug', $c)))
-            ->latest()
-            ->paginate(12);
+            ->when($filters->search, fn ($q, $s) => $q->where('title', 'like', "%{$s}%"))
+            ->when($filters->category, fn ($q, $c) => $q->whereHas('category', fn ($cat) => $cat->where('slug', $c)))
+            ->when($filters->tag, fn ($q, $t) => $q->whereHas('tags', fn ($tag) => $tag->where('slug', $t)))
+            ->when($filters->type, fn ($q, $type) => $q->where('type', $type))
+            ->tap(fn ($q) => match ($filters->sort) {
+                'popular' => $q->orderBy('views_count', 'desc'),
+                'commented' => $q->orderBy('comments_count', 'desc'),
+                default => $q->latest(),
+            })
+            ->paginate($filters->perPage);
     }
 }

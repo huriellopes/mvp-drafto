@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\DTOs;
 
-readonly class ReportFilterData
+use Spatie\LaravelData\Data;
+
+class ReportFilterData extends Data
 {
     public function __construct(
         public ?string $search = null,
@@ -13,15 +15,4 @@ readonly class ReportFilterData
         public string $sort = 'created_at',
         public string $direction = 'desc',
     ) {}
-
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            search: $data['search'] ?? null,
-            status: $data['status'] ?? null,
-            reason: $data['reason'] ?? null,
-            sort: $data['sort'] ?? 'created_at',
-            direction: $data['direction'] ?? 'desc',
-        );
-    }
 }

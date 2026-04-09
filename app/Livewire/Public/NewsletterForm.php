@@ -1,26 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Public;
 
-use App\Models\NewsletterSubscriber;
-use Livewire\Component;
+use App\Actions\Public\SubscribeNewsletterAction;
+use App\DTOs\Public\NewsletterData;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class NewsletterForm extends Component
 {
-    #[Validate('required|email|unique:newsletter_subscribers,email')]
+    #[Validate('required|email')]
     public string $email = '';
+
     public ?int $categoryId = null;
 
-    public function subscribe()
+    public function subscribe(): void
     {
         $this->validate();
-        NewsletterSubscriber::create(['email' => $this->email, 'category_id' => $this->categoryId]);
+
+        app(SubscribeNewsletterAction::class)->exec(
+            new NewsletterData(email: $this->email, categoryId: $this->categoryId),
+        );
+
         $this->reset('email');
-        $this->dispatch('notify', message: 'Inscrição realizada com sucesso!');
+        Toaster::success('Bem-vindo ao Radar Drafto!');
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.public.newsletter-form');
     }

@@ -1,23 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard\Posts;
 
 use App\Actions\Posts\ListPostsAction;
-use App\DTOs\PostFiltersDTO;
+use App\DTOs\PostFiltersData;
 use App\Enums\PostStatusEnum;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
-#[Layout('layouts.app', [
-    'heading' => 'Meus Conteúdos'
-])]
-#[Lazy]
+#[Layout('layouts.app', ['heading' => 'Publicações', 'subheading' => 'Gerencie todos os seus textos publicados'])]
+#[Title('Minhas Publicações')]
 class IndexPosts extends Component
 {
     use WithPagination;
@@ -36,7 +36,7 @@ class IndexPosts extends Component
 
     public ?int $postIdBeingDeleted = null;
 
-    public function updatedSearch(): void
+    public function updatedSearch()
     {
         $this->resetPage();
     }
@@ -59,7 +59,9 @@ class IndexPosts extends Component
 
     public function deletePost(): void
     {
-        if (!$this->postIdBeingDeleted) return;
+        if (!$this->postIdBeingDeleted) {
+            return;
+        }
 
         $post = auth()->user()->posts()->findOrFail($this->postIdBeingDeleted);
         $post->delete();
@@ -73,18 +75,18 @@ class IndexPosts extends Component
     public function posts()
     {
         return app(ListPostsAction::class)->exec(
-            new PostFiltersDTO(
+            new PostFiltersData(
                 search: $this->search,
                 status: PostStatusEnum::tryFrom($this->status),
                 notStatus: PostStatusEnum::DRAFT,
                 sort: $this->sort,
                 direction: $this->direction,
-                perPage: 10
-            )
+                perPage: 10,
+            ),
         );
     }
 
-    public function render() : View
+    public function render(): View
     {
         return view('livewire.dashboard.posts.index-posts');
     }

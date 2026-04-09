@@ -9,8 +9,12 @@ use App\DTOs\CommentFilterData;
 use App\Livewire\Forms\Dashboard\CommentForm;
 use App\Models\Comment;
 use Illuminate\View\View;
-use Livewire\Attributes\{Computed, Layout, Title, Url};
-use Livewire\{Component, WithPagination};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Comentários', 'subheading' => 'Gerencie suas interações e feedbacks nos posts'])]
@@ -81,7 +85,9 @@ class CommentIndex extends Component
 
     public function delete(): void
     {
-        if (! $this->commentIdBeingDeleted) return;
+        if (!$this->commentIdBeingDeleted) {
+            return;
+        }
 
         $comment = Comment::findOrFail($this->commentIdBeingDeleted);
         $this->authorize('delete', $comment);
@@ -97,12 +103,12 @@ class CommentIndex extends Component
     {
         return app(ListCommentsAction::class)->exec(
             user: auth()->user(),
-            filters: CommentFilterData::fromArray([
+            filters: CommentFilterData::from([
                 'search' => $this->search,
                 'status' => $this->status,
                 'sort' => $this->sort,
                 'direction' => $this->direction,
-            ])
+            ]),
         );
     }
 

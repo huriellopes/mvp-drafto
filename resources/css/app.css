@@ -261,19 +261,30 @@ trix-editor figure {
     margin: 1.5rem 0;
 }
 
-trix-editor figure img {
+trix-editor figure img,
+.trix-content figure img,
+.prose figure img {
     width: 100%;
     height: auto;
-    border-radius: 1rem;
+    border-radius: 1.5rem;
     display: block;
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
 }
 
-trix-editor figure figcaption {
-    margin-top: .75rem;
+.trix-content figure,
+.prose figure {
+    margin: 2rem 0;
+    padding: 0;
+}
+
+trix-editor figure figcaption,
+.trix-content figure figcaption,
+.prose figure figcaption {
+    margin-top: 1rem;
     font-size: .875rem;
     color: rgb(113 113 122);
     text-align: center;
+    font-style: italic;
 }
 
 trix-editor ::selection {

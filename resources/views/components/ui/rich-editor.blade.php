@@ -6,7 +6,6 @@
 
 @php
     $uniqueId = 'trix-' . Illuminate\Support\Str::random(10);
-    $modelName = $attributes->wire('model')->value();
 @endphp
 
 <div
@@ -18,12 +17,16 @@
         init() {
             const editorElement = this.$refs.editor;
 
-            // Carrega valor inicial
-            if (this.value && editorElement.editor) {
-                editorElement.editor.loadHTML(this.value);
-            }
+            // Carrega valor inicial. 
+            // Usamos setTimeout para garantir que o editor Trix esteja totalmente pronto
+            setTimeout(() => {
+                if (this.value && editorElement.editor) {
+                    editorElement.editor.loadHTML(this.value);
+                }
+            }, 10);
 
-            // Monitora mudanças externas SEM perder o foco
+            // Monitora mudanças externas. 
+            // Só atualizamos se o valor for diferente E o usuário não estiver editando (foco)
             this.$watch('value', v => {
                 if (editorElement.editor && v !== editorElement.value && !this.isFocused) {
                     editorElement.editor.loadHTML(v || '');
@@ -41,6 +44,12 @@
             // Upload de anexos
             editorElement.addEventListener('trix-attachment-add', async (event) => {
                 const attachment = event.attachment;
+                
+                // Se o anexo já tiver URL (veio do loadHTML), não fazemos nada
+                if (attachment.getAttributes().url) {
+                    return;
+                }
+
                 if (!attachment?.file || !@js($uploadUrl)) return;
 
                 const formData = new FormData();
@@ -56,7 +65,7 @@
                         body: formData,
                     });
 
-                    if (!response.ok) throw new Error();
+                    if (!response.ok) throw new Error('Upload failed');
                     const data = await response.json();
 
                     attachment.setAttributes({
@@ -66,7 +75,7 @@
                     });
                 } catch (error) {
                     attachment.remove();
-                    alert('Erro ao enviar imagem.');
+                    console.error('Trix Upload Error:', error);
                 }
             });
         }
@@ -79,6 +88,6 @@
         input="{{ $uniqueId }}"
         placeholder="{{ $placeholder }}"
         class="trix-content block w-full"
-        {{ $attributes->except(['wire:model', 'upload-url']) }}
+        {{ $attributes->except(['wire:model', 'upload-url', 'uploadUrl']) }}
     ></trix-editor>
 </div>

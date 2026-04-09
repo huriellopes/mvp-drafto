@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class Follower extends Pivot
 {
-    protected $table = 'followers';
     public $incrementing = true;
+
+    protected $table = 'followers';
 }

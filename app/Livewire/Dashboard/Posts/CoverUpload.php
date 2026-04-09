@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard\Posts;
 
+use App\Actions\Posts\UploadCoverImageAction;
 use App\Models\Post;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -12,9 +15,13 @@ class CoverUpload extends Component
     use WithFileUploads;
 
     public ?Post $post = null;
+
     public $image;
+
     public $imageUrl;
+
     public $cropData;
+
     public bool $isCropped = false;
 
     public function mount(?Post $post = null): void
@@ -37,8 +44,17 @@ class CoverUpload extends Component
     public function saveCrop($data): void
     {
         $this->cropData = $data;
+
+        // Realiza o upload e o crop imediatamente
+        $path = app(UploadCoverImageAction::class)->exec(
+            $this->image,
+            $this->cropData,
+        );
+
         $this->isCropped = true;
-        $this->dispatch('cover-prepared', cropData: $data, temporaryFile: $this->image);
+
+        // Envia apenas o PATH para o pai
+        $this->dispatch('cover-prepared', coverPath: $path);
     }
 
     public function render(): View

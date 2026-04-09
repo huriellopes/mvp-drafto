@@ -20,19 +20,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @isset($seo)
+    @if(isset($seo))
         {!! seo($seo) !!}
     @else
         <title>{{ $title ?? config('app.name') }}</title>
-    @endisset
+        {!! seo() !!}
+    @endif
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
     <style>
         :root {
-            --profile-primary: {{ $primaryColor }};
-            --profile-accent: {{ $accentColor }};
+            --profile-primary: {{ $primaryColor ?? '#18181b' }};
+            --profile-accent: {{ $accentColor ?? '#3f3f46' }};
+            /* Adicionamos a conversão RGB aqui para suportar transparências no Tailwind */
+            @php
+                $hex = str_replace('#', '', $primaryColor ?? '18181b');
+                if(strlen($hex) == 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
+                $r = hexdec(substr($hex, 0, 2));
+                $g = hexdec(substr($hex, 2, 2));
+                $b = hexdec(substr($hex, 4, 2));
+            @endphp
+            --profile-primary-rgb: {{ $r }}, {{ $g }}, {{ $b }};
         }
     </style>
 

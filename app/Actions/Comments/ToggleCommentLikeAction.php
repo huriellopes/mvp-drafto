@@ -20,6 +20,7 @@ final class ToggleCommentLikeAction
             if ($isAttached && $comment->user_id !== $user->id) {
                 $comment->user->notify(new SocialInteractionNotification('like_comment', $comment, $user));
             }
+
             return $isAttached;
         });
     }

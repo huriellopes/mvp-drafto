@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Forms\Public;
 
-use Livewire\Form;
 use Livewire\Attributes\Validate;
+use Livewire\Form;
 
 class ReportForm extends Form
 {
     public ?string $reportable_type = null;
+
     public ?int $reportable_id = null;
 
     #[Validate('required')]

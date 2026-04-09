@@ -16,9 +16,9 @@
 
                 <label class="absolute bottom-4 right-4 cursor-pointer rounded-xl bg-white/90 px-3 py-2 text-xs font-semibold text-zinc-900 backdrop-blur hover:bg-white transition shadow-sm border border-zinc-200/50">
                     <input type="file" wire:model="form.cover" class="sr-only">
-                    <span wire:loading.remove wire:target="form.cover">Alterar Capa</span>
+                    <span wire:loading.remove wire:target="form.cover">{{ __('dashboard.profile.edit.visual_section.change_cover') }}</span>
                     <span wire:loading wire:target="form.cover" class="flex items-center gap-2 text-zinc-600">
-                         <x-lucide-loader-2 class="h-3 w-3 animate-spin" /> Processando...
+                         <x-lucide-loader-2 class="h-3 w-3 animate-spin" /> {{ __('dashboard.profile.edit.visual_section.processing') }}
                     </span>
                 </label>
             </div>
@@ -46,13 +46,13 @@
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2 mb-2">
                     <x-ui.input
                         wire:model.blur="form.name"
-                        label="Nome"
+                        label="{{ __('dashboard.profile.edit.visual_section.name_label') }}"
                         placeholder="John Doe"
                         :error="$errors->first('form.name')"
                     />
                     <x-ui.input
                         wire:model.blur="form.email"
-                        label="E-Mail"
+                        label="{{ __('dashboard.profile.edit.visual_section.email_label') }}"
                         placeholder="johndoe@example.com"
                         :error="$errors->first('form.email')"
                     />
@@ -61,14 +61,14 @@
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <x-ui.input
                         wire:model.blur="form.username"
-                        label="Nome de usuário"
+                        label="{{ __('dashboard.profile.edit.visual_section.username_label') }}"
                         prefix="@"
                         placeholder="exemplo"
                         :error="$errors->first('form.username')"
                     />
                     <x-ui.input
                         wire:model.blur="form.website_url"
-                        label="Website"
+                        label="{{ __('dashboard.profile.edit.visual_section.website_label') }}"
                         placeholder="https://exemplo.com"
                         :error="$errors->first('form.website_url')"
                     />
@@ -77,27 +77,27 @@
         </section>
 
         {{-- Seção de Informações (Bio/Localização) --}}
-        <x-ui.section-card title="Sobre você" description="Conte aos outros quem você é e onde você está.">
+        <x-ui.section-card title="{{ __('dashboard.profile.edit.about_section.title') }}" description="{{ __('dashboard.profile.edit.about_section.description') }}">
             <div class="space-y-6">
                 <div>
                     <x-ui.textarea
-                        label="Bio"
+                        label="{{ __('dashboard.profile.edit.about_section.bio_label') }}"
                         wire:model.blur="form.bio"
                         :error="$errors->first('form.bio')"
                     />
                 </div>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <x-ui.select wire:model.live="selectedUf" label="Estado (UF)">
-                        <option value="">Selecione o estado</option>
+                    <x-ui.select wire:model.live="selectedUf" label="{{ __('dashboard.profile.edit.about_section.state_label') }}">
+                        <option value="">{{ __('dashboard.profile.edit.about_section.select_state') }}</option>
                         @foreach($ufs as $uf)
                             <option value="{{ $uf['sigla'] }}">{{ $uf['nome'] }}</option>
                         @endforeach
                     </x-ui.select>
 
                     <div class="relative">
-                        <x-ui.select wire:model="form.location" label="Cidade" wire:loading.attr="disabled" wire:target="selectedUf" :error="$errors->first('form.location')">
-                            <option value="">{{ $selectedUf ? 'Selecione a cidade' : 'Selecione um estado primeiro' }}</option>
+                        <x-ui.select wire:model="form.location" label="{{ __('dashboard.profile.edit.about_section.city_label') }}" wire:loading.attr="disabled" wire:target="selectedUf" :error="$errors->first('form.location')">
+                            <option value="">{{ $selectedUf ? __('dashboard.profile.edit.about_section.select_city') : __('dashboard.profile.edit.about_section.select_state_first') }}</option>
                             @foreach($this->municipios as $municipio)
                                 <option value="{{ $municipio['nome'] }}, {{ $selectedUf }}">{{ $municipio['nome'] }}</option>
                             @endforeach
@@ -111,11 +111,11 @@
         </x-ui.section-card>
 
         {{-- Personalização --}}
-        <x-ui.section-card title="Personalização de Estilo" description="Isso afetará como os visitantes veem seu perfil e posts.">
+        <x-ui.section-card title="{{ __('dashboard.profile.edit.style_section.title') }}" description="{{ __('dashboard.profile.edit.style_section.description') }}">
             <div class="space-y-8">
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
                     <div>
-                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cor Principal</label>
+                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('dashboard.profile.edit.style_section.primary_color') }}</label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.primary_color" class="h-12 w-20 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1">
                             <span class="text-sm font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -125,7 +125,7 @@
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">Cor de Destaque</label>
+                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('dashboard.profile.edit.style_section.accent_color') }}</label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.accent_color" class="h-12 w-20 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1">
                             <span class="text-sm font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -135,7 +135,7 @@
                     </div>
 
                     <div>
-                        <x-ui.select wire:model="form.theme_mode" label="Modo de Cor (Tema)">
+                        <x-ui.select wire:model="form.theme_mode" label="{{ __('dashboard.profile.edit.style_section.theme_mode') }}">
                             @foreach(ThemePlatformEnum::options() as $option)
                                 <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                             @endforeach
@@ -146,27 +146,23 @@
         </x-ui.section-card>
 
         {{-- Seção de Privacidade --}}
-        <x-ui.section-card title="Privacidade" description="Controle quem pode encontrar e ver as informações do seu perfil.">
+        <x-ui.section-card title="{{ __('dashboard.profile.edit.privacy_section.title') }}" description="{{ __('dashboard.profile.edit.privacy_section.description') }}">
             <div class="space-y-8">
-                {{-- Grid para alinhar os controles de forma limpa --}}
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-
-                    {{-- Coluna 1: Controle de E-mail (Toggle Style) --}}
                     <div class="flex flex-col justify-between rounded-2xl border border-zinc-100 bg-zinc-50/50 p-5 transition-colors hover:border-zinc-200">
                         <x-ui.checkbox
                             wire:model="form.show_email_publicly"
-                            label="Exibir e-mail publicamente"
-                            description="Seu endereço ({{ $form->email }}) será visível para qualquer visitante."
+                            label="{{ __('dashboard.profile.edit.privacy_section.show_email') }}"
+                            description="{{ __('dashboard.profile.edit.privacy_section.show_email_desc', ['email' => $form->email]) }}"
                             :error="$errors->first('form.show_email_publicly')"
                         />
                     </div>
 
-                    {{-- Coluna 2: Seletor de Visibilidade --}}
                     <div class="flex flex-col justify-center rounded-2xl border border-zinc-100 bg-zinc-50/50 p-5 transition-colors hover:border-zinc-200">
                         <x-ui.select
                             wire:model="form.visibility"
-                            label="Visibilidade do perfil"
-                            description="Define quem pode acessar sua estante pública."
+                            label="{{ __('dashboard.profile.edit.privacy_section.visibility') }}"
+                            description="{{ __('dashboard.profile.edit.privacy_section.visibility_desc') }}"
                             :error="$errors->first('form.visibility')"
                             class="w-full"
                         >
@@ -177,24 +173,44 @@
                     </div>
                 </div>
 
-                {{-- Badge de Status (Feedback Visual Sênior) --}}
                 <div class="flex items-center gap-2 px-1 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
                     <x-lucide-shield-check class="h-3.5 w-3.5 {{ $form->visibility === 'public' ? 'text-emerald-500' : 'text-amber-500' }}" />
-                    Status Atual:
+                    {{ __('dashboard.profile.edit.privacy_section.current_status') }}
                     <span class="{{ $form->visibility === 'public' ? 'text-emerald-600' : 'text-amber-600' }}">
-                {{ $form->visibility === 'public' ? 'Perfil Descoberto' : 'Perfil Restrito' }}
-            </span>
+                        {{ $form->visibility === 'public' ? __('dashboard.profile.edit.privacy_section.discovered') : __('dashboard.profile.edit.privacy_section.restricted') }}
+                    </span>
                 </div>
             </div>
         </x-ui.section-card>
 
-        <x-ui.section-card title="Visibilidade e SEO" description="Aumente seu alcance ou mantenha-se discreto.">
-            <x-ui.checkbox
-                wire:model="form.is_searchable"
-                label="Permitir indexação por mecanismos de busca"
-                description="Ao desativar, o Google e outros buscadores serão instruídos a não exibir seu perfil nos resultados."
-                :error="$errors->first('form.is_searchable')"
-            />
+        <x-ui.section-card
+            title="{{ __('dashboard.profile.edit.seo_section.title') }}"
+            description="{{ __('dashboard.profile.edit.seo_section.description') }}"
+        >
+            <div class="space-y-6">
+                <div @class([
+            'rounded-2xl border p-5 transition-all duration-300',
+            $form->is_searchable
+                ? 'border-emerald-100 bg-emerald-50/30 dark:border-emerald-500/10 dark:bg-emerald-500/5'
+                : 'border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50'
+        ])>
+                    <x-ui.checkbox
+                        wire:model.live="form.is_searchable" {{-- Use .live para o feedback visual --}}
+                    label="{{ __('dashboard.profile.edit.seo_section.indexable') }}"
+                        description="{{ __('dashboard.profile.edit.seo_section.indexable_desc') }}"
+                        :error="$errors->first('form.is_searchable')"
+                    />
+
+                    <div class="mt-4 flex items-start gap-3 px-1 text-[10px] font-medium leading-relaxed text-zinc-500">
+                        <x-lucide-info class="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                        @if($form->is_searchable)
+                            <p>Seu perfil ficará visível em buscadores como Google e Bing. Isso pode levar alguns dias para ser processado pelos motores de busca.</p>
+                        @else
+                            <p class="text-amber-600 dark:text-amber-500/80">Adicionaremos uma tag 'noindex'. Buscadores serão instruídos a não exibir seu perfil nos resultados de pesquisa.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </x-ui.section-card>
 
         <div class="flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800 pt-8">
@@ -203,7 +219,7 @@
                 loading="save"
                 sizes="lg"
                 class="w-full">
-                Atualizar Perfil
+                {{ __('dashboard.profile.edit.submit_button') }}
             </x-ui.button>
         </div>
     </form>

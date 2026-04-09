@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Public;
 
+use App\DTOs\Public\NewsletterData;
 use App\Models\NewsletterSubscriber;
 
 final class SubscribeNewsletterAction
 {
-    public function exec(array $data): NewsletterSubscriber
+    public function exec(NewsletterData $data): void
     {
-        return NewsletterSubscriber::query()
-            ->create($data);
+        NewsletterSubscriber::updateOrCreate(
+            ['email' => $data->email],
+            ['category_id' => $data->categoryId],
+        );
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
-use App\Models\Module;
+declare(strict_types=1);
+
 use App\Enums\ModuleEnum;
 use App\Enums\RoleEnum;
+use App\Models\Module;
 
 if (!function_exists('is_module_enabled')) {
     /**

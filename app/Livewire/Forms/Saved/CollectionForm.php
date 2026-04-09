@@ -16,7 +16,9 @@ class CollectionForm extends Form
     public ?Collection $collection = null;
 
     public string $name = '';
+
     public ?string $slug = '';
+
     public ?string $description = '';
 
     public function rules(): array
@@ -27,13 +29,13 @@ class CollectionForm extends Form
                 'string',
                 'min:3',
                 'max:50',
-                Rule::unique('collections', 'name')->where('user_id', auth()->id())
+                Rule::unique('collections', 'name')->where('user_id', auth()->id()),
             ],
             'slug' => [
                 'nullable',
                 'string',
                 'min:3',
-                Rule::unique('collections', 'slug')->where('user_id', auth()->id())
+                Rule::unique('collections', 'slug')->where('user_id', auth()->id()),
             ],
             'description' => ['nullable', 'string', 'max:255'],
         ];
@@ -57,8 +59,8 @@ class CollectionForm extends Form
                 data: new CollectionData(
                     name: $this->name,
                     slug: $this->slug,
-                    description: $this->description
-                )
+                    description: $this->description,
+                ),
             );
 
         $this->reset();
@@ -71,7 +73,7 @@ class CollectionForm extends Form
                 'required', 'string', 'min:3', 'max:50',
                 Rule::unique('collections', 'name')
                     ->where('user_id', auth()->id())
-                    ->ignore($this->collection->id)
+                    ->ignore($this->collection->id),
             ],
             'description' => ['nullable', 'string', 'max:255'],
         ]);
@@ -81,8 +83,8 @@ class CollectionForm extends Form
             data: new CollectionData(
                 name: $this->name,
                 slug: $this->slug,
-                description: $this->description
-            )
+                description: $this->description,
+            ),
         );
 
         $this->reset(['name', 'description', 'collection']);

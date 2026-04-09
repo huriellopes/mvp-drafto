@@ -4,46 +4,30 @@ declare(strict_types=1);
 
 namespace App\Livewire\Auth;
 
-use App\Actions\Auth\ResetPasswordAction;
+use App\Livewire\Forms\Auth\ResetPasswordForm;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.auth')]
 #[Title('Redefinir Senha')]
 class ResetPassword extends Component
 {
-    public string $token;
-
-    #[Validate(['required', 'email'])]
-    public string $email = '';
-
-    #[Validate(['required', 'string', 'min:8', 'confirmed'])]
-    public string $password = '';
-
-    public string $password_confirmation = '';
+    public ResetPasswordForm $form;
 
     public function mount(string $token): void
     {
-        $this->token = $token;
-        $this->email = request()->query('email', '');
+        $this->form->token = $token;
+        $this->form->email = request()->query('email', '');
     }
 
     public function resetPassword(): void
     {
-        $this->validate();
+        $this->form->submit();
 
-        app(ResetPasswordAction::class)->exec([
-            'token' => $this->token,
-            'email' => $this->email,
-            'password' => $this->password,
-            'password_confirmation' => $this->password_confirmation,
-        ]);
-
-        session()->flash('success', 'Sua senha foi redefinida com sucesso.');
-
+        Toaster::success('Sua senha foi redefinida com sucesso.');
         $this->redirectRoute('login', navigate: true);
     }
 

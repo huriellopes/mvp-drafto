@@ -6,7 +6,7 @@
     <form wire:submit="save" class="space-y-6">
 
         {{-- Header Sticky --}}
-        <div class="sticky top-0 z-40 -mx-4 border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-md sm:mx-0 sm:rounded-b-[2rem]">
+        <div class="sticky top-0 z-0 -mx-4 border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-md sm:mx-0 sm:rounded-b-[2rem]">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-4">
                     <a href="{{ $post?->isPublished() ? route('dashboard.posts.index') : route('dashboard.posts.draft') }}"
@@ -51,7 +51,7 @@
                         <x-ui.rich-editor
                             wire:model="form.content"
                             placeholder="Conte sua história..."
-                            upload-url="{{ route('trix.attachments.store') }}"
+                            uploadUrl="{{ route('trix.attachments.store') }}"
                         />
                     </div>
                 </div>
@@ -69,9 +69,20 @@
 
                         <x-ui.select label="Categoria" wire:model="form.category_id">
                             <option value="">Escolha uma...</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
+                            
+                            <optgroup label="Padrão do Sistema">
+                                @foreach($categories->whereNull('user_id') as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </optgroup>
+
+                            @if($categories->whereNotNull('user_id')->count() > 0)
+                                <optgroup label="Minhas Categorias">
+                                    @foreach($categories->whereNotNull('user_id') as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
                         </x-ui.select>
 
                         <x-ui.select label="Tipo de conteúdo" wire:model="form.type">
@@ -86,6 +97,22 @@
                             <span class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Comentários</span>
                             <input type="checkbox" wire:model="form.comments_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
                         </div>
+                    </div>
+
+                    {{-- SEO --}}
+                    <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-zinc-900">Otimização (SEO)</h3>
+                            <input type="checkbox" wire:model.live="form.seo_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                        </div>
+
+                        @if($form->seo_enabled)
+                            <div class="space-y-4 pt-2 border-t border-zinc-100">
+                                <x-ui.input label="Título SEO" wire:model="form.seo_title" placeholder="Título para o Google" />
+                                <x-ui.textarea label="Descrição SEO" wire:model="form.seo_description" rows="3" placeholder="Pequeno resumo para atrair cliques" />
+                                <p class="text-[10px] text-zinc-400 italic">Deixe em branco para usar o título e resumo originais.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </aside>

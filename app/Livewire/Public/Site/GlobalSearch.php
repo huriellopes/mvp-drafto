@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Public\Site;
 
 use App\Actions\Public\GlobalSearchAction;
@@ -8,6 +10,7 @@ use Livewire\Component;
 class GlobalSearch extends Component
 {
     public string $search = '';
+
     public bool $isOpen = false;
 
     public function updatedSearch(): void

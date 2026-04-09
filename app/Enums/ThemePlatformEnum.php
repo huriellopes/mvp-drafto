@@ -28,10 +28,13 @@ enum ThemePlatformEnum: string
         };
     }
 
-    public static function defaultPrimary(): string {
+    public static function defaultPrimary(): string
+    {
         return '#18181b';
     }
-    public static function defaultAccent(): string {
+
+    public static function defaultAccent(): string
+    {
         return '#3f3f46';
     }
 

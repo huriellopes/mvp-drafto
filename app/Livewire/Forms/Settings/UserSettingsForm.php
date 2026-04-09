@@ -13,8 +13,11 @@ use Livewire\Form;
 class UserSettingsForm extends Form
 {
     public string $name = '';
+
     public string $email = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     public function setUser(User $user): void
@@ -30,7 +33,7 @@ class UserSettingsForm extends Form
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore(auth()->id())
+                Rule::unique('users', 'email')->ignore(auth()->id()),
             ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ];
@@ -42,7 +45,7 @@ class UserSettingsForm extends Form
 
         app(UpdateUserSettingsAction::class)->exec(
             user: auth()->user(),
-            data: UpdateUserSettingsData::fromArray($this->all())
+            data: UpdateUserSettingsData::fromArray($this->all()),
         );
 
         $this->reset(['password', 'password_confirmation']);

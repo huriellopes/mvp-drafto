@@ -11,7 +11,9 @@ final class ToggleFollowAction
 {
     public function exec(User $follower, User $target): bool
     {
-        if ($follower->id === $target->id) return false;
+        if ($follower->id === $target->id) {
+            return false;
+        }
 
         $result = $follower->following()->toggle($target->id);
         $isAttached = count($result['attached']) > 0;

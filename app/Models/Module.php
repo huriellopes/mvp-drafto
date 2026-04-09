@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
     'description',
     'icon',
     'is_enabled',
-    'settings'
+    'settings',
 ])]
 class Module extends Model
 {
@@ -27,17 +27,17 @@ class Module extends Model
         });
     }
 
+    public function getSetting(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->settings, $key, $default);
+    }
+
     protected static function booted(): void
     {
         // Limpa o cache sempre que o módulo for atualizado
         static::updated(function ($module) {
             Cache::forget("module_status_{$module->slug->value}");
         });
-    }
-
-    public function getSetting(string $key, mixed $default = null): mixed
-    {
-        return data_get($this->settings, $key, $default);
     }
 
     protected function casts(): array

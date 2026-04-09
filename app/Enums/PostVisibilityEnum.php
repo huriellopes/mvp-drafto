@@ -16,6 +16,7 @@ enum PostVisibilityEnum: string
             self::PUBLIC => __('enums.post_visibility.public'),
             self::UNLISTED => __('enums.post_visibility.unlisted'),
             self::FOLLOWERS_ONLY => __('enums.post_visibility.followers_only'),
+            self::PREMIUM => 'Premium (Assinantes)',
         };
     }
 
@@ -25,10 +26,12 @@ enum PostVisibilityEnum: string
             self::PUBLIC => 'green',
             self::UNLISTED => 'yellow',
             self::FOLLOWERS_ONLY => 'blue',
+            self::PREMIUM => 'purple',
         };
     }
 
     case PUBLIC = 'public';
     case UNLISTED = 'unlisted';
     case FOLLOWERS_ONLY = 'followers_only';
+    case PREMIUM = 'premium';
 }

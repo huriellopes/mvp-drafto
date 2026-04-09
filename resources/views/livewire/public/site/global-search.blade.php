@@ -98,44 +98,54 @@
                             <h3 class="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4">Resultados da Biblioteca</h3>
                             <div class="space-y-2">
                                 @foreach($posts as $post)
-                                    <a href="{{ route('posts.show', $post->slug) }}" class="flex flex-col gap-1 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
-                                        <div class="flex items-start justify-between gap-4">
-                                            <div class="flex-1 min-w-0">
-                                                {{-- Lógica para destacar se o match foi no título ou tag --}}
-                                                <p @class([
-                                                    'text-sm font-bold transition-colors',
-                                                    'text-zinc-900 dark:text-white group-hover:text-profile-primary' => str_contains(strtolower($post->title), strtolower($search)),
-                                                    'text-zinc-700 dark:text-zinc-300' => !str_contains(strtolower($post->title), strtolower($search))
-                                                ])>
-                                                    {{ $post->title }}
-                                                </p>
-                                                <p class="text-xs text-zinc-500 mt-1 line-clamp-1 italic font-medium">Por {{ $post->author->name }}</p>
-                                            </div>
-
-                                            <span @class([
-                                                'shrink-0 text-[9px] font-black px-2 py-1 rounded-lg uppercase tracking-widest border transition-colors',
-                                                'bg-profile-primary/10 border-profile-primary text-profile-primary' => str_contains(strtolower($post->category->name), strtolower($search)),
-                                                'bg-zinc-100 dark:bg-zinc-800 border-transparent text-zinc-400' => !str_contains(strtolower($post->category->name), strtolower($search))
-                                            ])>
-                                                {{ $post->category->name }}
-                                            </span>
+                                    <a href="{{ route('posts.show', $post->slug) }}" class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
+                                        <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
+                                            @if($post->cover_image_url)
+                                                <img src="{{ $post->cover_image_url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                            @else
+                                                <div class="flex h-full w-full items-center justify-center">
+                                                    <x-lucide-file-text class="h-5 w-5 text-zinc-300" />
+                                                </div>
+                                            @endif
                                         </div>
 
-                                        {{-- Exibição de Tags se houver match --}}
-                                        @php
-                                            $matchedTags = $post->tags->filter(fn($tag) => str_contains(strtolower($tag->name), strtolower($search)));
-                                        @endphp
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start justify-between gap-4">
+                                                <div class="flex-1 min-w-0">
+                                                    <p @class([
+                                                        'text-sm font-bold transition-colors',
+                                                        'text-zinc-900 dark:text-white group-hover:text-profile-primary' => str_contains(strtolower($post->title), strtolower($search)),
+                                                        'text-zinc-700 dark:text-zinc-300' => !str_contains(strtolower($post->title), strtolower($search))
+                                                    ])>
+                                                        {{ $post->title }}
+                                                    </p>
+                                                    <p class="text-[10px] text-zinc-500 mt-0.5 line-clamp-1 italic font-medium uppercase tracking-widest">Por {{ $post->author->name }}</p>
+                                                </div>
 
-                                        @if($matchedTags->isNotEmpty())
-                                            <div class="flex flex-wrap gap-1.5 mt-2">
-                                                @foreach($matchedTags as $tag)
-                                                    <span class="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-500/20">
-                                                        <x-lucide-tag class="h-2 w-2" />
-                                                        {{ $tag->name }}
-                                                    </span>
-                                                @endforeach
+                                                <span @class([
+                                                    'shrink-0 text-[8px] font-black px-2 py-0.5 rounded-lg uppercase tracking-widest border transition-colors',
+                                                    'bg-profile-primary/10 border-profile-primary text-profile-primary' => str_contains(strtolower($post->category->name), strtolower($search)),
+                                                    'bg-zinc-100 dark:bg-zinc-800 border-transparent text-zinc-400' => !str_contains(strtolower($post->category->name), strtolower($search))
+                                                ])>
+                                                    {{ $post->category->name }}
+                                                </span>
                                             </div>
-                                        @endif
+
+                                            {{-- Exibição de Tags se houver match --}}
+                                            @php
+                                                $matchedTags = $post->tags->filter(fn($tag) => str_contains(strtolower($tag->name), strtolower($search)));
+                                            @endphp
+
+                                            @if($matchedTags->isNotEmpty())
+                                                <div class="flex flex-wrap gap-1 mt-1.5">
+                                                    @foreach($matchedTags as $tag)
+                                                        <span class="inline-flex items-center gap-1 text-[8px] font-bold text-emerald-600 dark:text-emerald-400">
+                                                            #{{ $tag->name }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
                                     </a>
                                 @endforeach
                             </div>

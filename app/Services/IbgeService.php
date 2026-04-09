@@ -18,12 +18,12 @@ final class IbgeService
      */
     public function getMunicipios(?string $uf = null): array
     {
-        $cacheKey = "ibge_municipios_" . ($uf ?? 'brasil');
+        $cacheKey = 'ibge_municipios_' . ($uf ?? 'brasil');
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($uf) {
             $url = $uf
                 ? self::BASE_URL . "/estados/{$uf}/municipios"
-                : self::BASE_URL . "/municipios";
+                : self::BASE_URL . '/municipios';
 
             $response = $this->getHttpApi($url);
 
@@ -33,7 +33,7 @@ final class IbgeService
 
             return collect($response->json())
                 ->map(fn ($municipio) => [
-                    'id'   => $municipio['id'],
+                    'id' => $municipio['id'],
                     'nome' => $municipio['nome'],
                 ])
                 ->sortBy('nome')
@@ -57,9 +57,9 @@ final class IbgeService
 
             return collect($response->json())
                 ->map(fn ($estado) => [
-                    'id'    => $estado['id'],
+                    'id' => $estado['id'],
                     'sigla' => $estado['sigla'],
-                    'nome'  => $estado['nome'],
+                    'nome' => $estado['nome'],
                 ])
                 ->sortBy('sigla')
                 ->values()

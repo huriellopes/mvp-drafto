@@ -5,25 +5,15 @@ declare(strict_types=1);
 namespace App\Livewire\Auth;
 
 use App\Livewire\Forms\Auth\RegisterForm;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 use Throwable;
 
 #[Layout('layouts.auth')]
-#[Title('Criar conta')]
 class Register extends Component
 {
     public RegisterForm $form;
-
-    public function mount(): void
-    {
-        if (Auth::check()) {
-            $this->redirectRoute('dashboard.index', navigate: true);
-        }
-    }
 
     /**
      * @throws Throwable
@@ -32,7 +22,7 @@ class Register extends Component
     {
         $this->form->store();
 
-        session()->flash('success', 'Conta criada com sucesso! Bem-vindo à Drafto.');
+        session()->flash('success', __('auth.status.account_created'));
 
         $this->redirectRoute('dashboard.index', navigate: true);
     }

@@ -11,15 +11,20 @@ use App\Enums\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
+use Throwable;
 
 class UserForm extends Form
 {
     public ?User $user = null;
 
     public string $name = '';
+
     public string $email = '';
+
     public string $password = '';
+
     public string $role = 'reader';
+
     public string $status = 'active';
 
     public function rules(): array
@@ -44,7 +49,7 @@ class UserForm extends Form
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function save(): void
     {
@@ -54,14 +59,15 @@ class UserForm extends Form
             app(UpdateUserAction::class)
                 ->exec(
                     user: $this->user,
-                    data: $this->except('user')
+                    data: $this->except('user'),
                 );
+
             return;
         }
 
         app(StoreUserAction::class)
             ->exec(
-                data: $this->all()
+                data: $this->all(),
             );
     }
 }

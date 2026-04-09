@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Saved;
 
-use App\Models\User;
 use App\Models\Post;
+use App\Models\User;
 
 final class ToggleSavePostAction
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTOs\Public;
 
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 readonly class HomeDataDTO
 {

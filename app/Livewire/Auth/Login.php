@@ -31,9 +31,7 @@ class Login extends Component
     {
         $this->form->authenticate();
 
-        Toaster::success('Login realizado com sucesso! redirecionando....');
-
-        sleep(2);
+        Toaster::success(__('auth.status.logged_in'));
 
         $this->redirectRoute('dashboard.index', navigate: true);
     }

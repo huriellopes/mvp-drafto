@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Auth;
 
+use App\DTOs\ResetPasswordData;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -11,9 +12,9 @@ use Illuminate\Validation\ValidationException;
 
 final class ResetPasswordAction
 {
-    public function exec(array $data): void
+    public function exec(ResetPasswordData $data): void
     {
-        $status = Password::reset($data, function ($user, $password) {
+        $status = Password::reset($data->toArray(), function ($user, $password) {
             $user->forceFill([
                 'password' => $password,
                 'remember_token' => Str::random(60),

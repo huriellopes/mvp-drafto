@@ -23,6 +23,7 @@ use App\Policies\ReportPolicy;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Cashier\Cashier;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -62,5 +63,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', function (User $user) {
             return $user->hasRole(RoleEnum::SUPER_ADMIN);
         });
+
+        Cashier::useCustomerModel(User::class);
     }
 }

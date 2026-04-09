@@ -13,10 +13,13 @@ enum ReportStatusEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING => __('enums.report_status.pending'),
-            self::REVIEWED => __('enums.report_status.reviewed'),
-            self::DISMISSED => __('enums.report_status.dismissed'),
-            self::ACTION_TAKEN => __('enums.report_status.action_taken'),
+            self::PENDING => 'Pendente',
+            self::REVIEWED => 'Em Análise',
+            self::DISMISSED => 'Arquivado / Ignorado',
+            self::ACTION_TAKEN => 'Punição Aplicada',
+            self::ACKNOWLEDGED => 'Agradecido / Ciente',
+            self::IN_PLANNING => 'Em Planejamento',
+            self::IMPLEMENTED => 'Implementado',
         };
     }
 
@@ -27,6 +30,9 @@ enum ReportStatusEnum: string
             self::REVIEWED => 'blue',
             self::DISMISSED => 'gray',
             self::ACTION_TAKEN => 'red',
+            self::ACKNOWLEDGED => 'green',
+            self::IN_PLANNING => 'purple',
+            self::IMPLEMENTED => 'indigo',
         };
     }
 
@@ -34,4 +40,7 @@ enum ReportStatusEnum: string
     case REVIEWED = 'reviewed';
     case DISMISSED = 'dismissed';
     case ACTION_TAKEN = 'action_taken';
+    case ACKNOWLEDGED = 'acknowledged';
+    case IN_PLANNING = 'in_planning';
+    case IMPLEMENTED = 'implemented';
 }

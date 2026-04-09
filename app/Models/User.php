@@ -7,18 +7,22 @@ namespace App\Models;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
+use App\Models\Concerns\HasPlanLimits;
 use App\Notifications\Auth\ResetPasswordNotification;
 use App\Notifications\Auth\VerifyEmailNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Laravel\Cashier\Billable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
 #[Fillable([
@@ -27,6 +31,7 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'password',
     'role',
     'status',
+    'is_lifetime',
     'ip_address',
     'last_login_at',
     'email_verified_at',
@@ -39,8 +44,10 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 ])]
 class User extends Authenticatable implements MustVerifyEmail
 {
+    use Billable;
+
     /** @use HasFactory<UserFactory> */
-    use HasFactory, KeepsDeletedModels, Notifiable;
+    use HasFactory, HasPlanLimits, KeepsDeletedModels, Notifiable;
 
     public function profile(): HasOne
     {
@@ -152,6 +159,18 @@ class User extends Authenticatable implements MustVerifyEmail
             ->exists();
     }
 
+    /**
+     * Checks if the user has an active subscription or is a lifetime member.
+     */
+    public function hasPremiumAccess(): bool
+    {
+        if ($this->isAdmin() || $this->is_lifetime) {
+            return true;
+        }
+
+        return $this->subscribed('default') || $this->subscribed('pro');
+    }
+
     public function hasVerificationExpired(): bool
     {
         if ($this->hasVerifiedEmail()) {
@@ -176,15 +195,39 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new ResetPasswordNotification($token));
     }
 
+    public function greeting(): string
+    {
+        $hour = Carbon::now()->hour;
+
+        return match (true) {
+            $hour >= 5 && $hour < 12 => 'Bom dia',
+            $hour >= 12 && $hour < 18 => 'Boa tarde',
+            default => 'Boa noite',
+        };
+    }
+
+    protected function displayName(): Attribute
+    {
+        return Attribute::get(function () {
+            $rawName = match (true) {
+                request()->routeIs('dashboard.index') => $this->name,
+                default => $this->profile?->name ?: $this->name,
+            };
+
+            return format_display_name($rawName);
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'role' => RoleEnum::class,
             'status' => UserStatusEnum::class,
+            'is_lifetime' => 'boolean',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
-            'banned_until' => 'datetime'
+            'banned_until' => 'datetime',
         ];
     }
 }

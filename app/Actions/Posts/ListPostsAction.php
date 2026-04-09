@@ -1,32 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Posts;
 
-use App\DTOs\PostFiltersDTO;
+use App\DTOs\PostFiltersData;
 use App\Models\Post;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ListPostsAction
 {
-    public function exec(PostFiltersDTO $filters): LengthAwarePaginator
+    public function exec(PostFiltersData $filters): LengthAwarePaginator
     {
-        $query = Post::query()
-            ->with('category')
-            ->where('user_id', auth()->id());
-
-        if ($filters->search) {
-            $query->where('title', 'like', "%{$filters->search}%");
-        }
-
-        if ($filters->status) {
-            $query->where('status', $filters->status);
-        }
-
-        if ($filters->notStatus) {
-            $query->whereNot('status', $filters->notStatus);
-        }
-
-        return $query
+        return Post::query()
+            ->where('user_id', auth()->id())
+            ->with(['category', 'author.profile'])
+            ->when($filters->search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->when($filters->status, fn ($q) => $q->where('status', $filters->status))
+            ->when($filters->notStatus, fn ($q) => $q->where('status', '!=', $filters->notStatus))
             ->orderBy($filters->sort, $filters->direction)
             ->paginate($filters->perPage);
     }

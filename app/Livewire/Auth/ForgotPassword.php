@@ -4,29 +4,28 @@ declare(strict_types=1);
 
 namespace App\Livewire\Auth;
 
-use App\Actions\Auth\SendPasswordResetLinkAction;
+use App\Livewire\Forms\Auth\ForgotPasswordForm;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.auth')]
 #[Title('Recuperar senha')]
 class ForgotPassword extends Component
 {
-    #[Validate(['required', 'email'])]
-    public string $email = '';
+    public ForgotPasswordForm $form;
+
+    public bool $sent = false;
 
     public function sendResetLink(): void
     {
-        $this->validate();
+        $this->form->save();
 
-        app(SendPasswordResetLinkAction::class)
-            ->exec($this->email);
+        $this->sent = true;
 
-        session()->flash('success', 'Link de recuperação enviado para seu e-mail.');
-        $this->reset('email');
+        Toaster::success('Verifique sua caixa de entrada!');
     }
 
     public function render(): View

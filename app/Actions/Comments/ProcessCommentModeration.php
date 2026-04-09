@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Comments;
 
-use App\Models\Module;
 use App\Enums\ModuleEnum;
 use App\Models\Comment;
+use App\Models\Module;
 
 class ProcessCommentModeration
 {
@@ -16,6 +18,7 @@ class ProcessCommentModeration
         // 2. Se o módulo não existir ou estiver desativado, tratamos como erro ou padrão seguro
         if (!$module || !$module->is_enabled) {
             $comment->update(['status' => 'pending']);
+
             return;
         }
 
@@ -26,12 +29,12 @@ class ProcessCommentModeration
         if ($requiresModeration) {
             $comment->update([
                 'status' => 'pending',
-                'published_at' => null
+                'published_at' => null,
             ]);
         } else {
             $comment->update([
                 'status' => 'approved',
-                'published_at' => now()
+                'published_at' => now(),
             ]);
         }
     }

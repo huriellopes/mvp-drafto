@@ -49,19 +49,21 @@ class PostView extends Model
     {
         return Attribute::make(
             get: function (?string $value) {
-                if (!$value) return '0.0.0.0';
+                if (!$value) {
+                    return '0.0.0.0';
+                }
 
                 // Se o valor não parecer um payload encriptado (não tem o formato JSON/Base64 do Laravel)
                 if (!str_contains($value, 'iv')) {
                     // Pode ser um hash SHA256 do Seeder, retornamos os primeiros 8 caracteres por privacidade
-                    return strlen($value) > 32 ? substr($value, 0, 12) . '...' : $value;
+                    return mb_strlen($value) > 32 ? mb_substr($value, 0, 12) . '...' : $value;
                 }
 
                 try {
                     return Crypt::decryptString($value);
                 } catch (DecryptException) {
                     // Fallback para quando a APP_KEY mudou ou o dado está corrompido
-                    return 'Hashed: ' . substr($value, 0, 8);
+                    return 'Hashed: ' . mb_substr($value, 0, 8);
                 }
             },
             // Garante que ao salvar um novo, ele sempre use a criptografia atual
@@ -73,7 +75,7 @@ class PostView extends Model
     {
         return [
             'viewed_at' => 'datetime',
-//            'ip_hash' => 'encrypted'
+            //            'ip_hash' => 'encrypted'
         ];
     }
 }

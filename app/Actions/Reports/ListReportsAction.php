@@ -15,11 +15,11 @@ final class ListReportsAction
         return Report::query()
             ->with(['reporter.profile', 'reviewer.profile', 'reportable'])
             ->when($filters->search, function ($query, $search) {
-                $query->whereHas('reporter', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                $query->whereHas('reporter', fn ($q) => $q->where('name', 'like', "%{$search}%"))
                     ->orWhere('description', 'like', "%{$search}%");
             })
-            ->when($filters->status, fn($q) => $q->where('status', $filters->status))
-            ->when($filters->reason, fn($q) => $q->where('reason', $filters->reason))
+            ->when($filters->status, fn ($q) => $q->where('status', $filters->status))
+            ->when($filters->reason, fn ($q) => $q->where('reason', $filters->reason))
             ->orderBy($filters->sort, $filters->direction)
             ->paginate($perPage);
     }

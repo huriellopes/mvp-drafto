@@ -1,10 +1,12 @@
 <?php
 
-namespace App\DTOs;
+declare(strict_types=1);
 
 namespace App\DTOs;
 
-readonly class NewsletterFilterData
+use Spatie\LaravelData\Data;
+
+class NewsletterFilterData extends Data
 {
     public function __construct(
         public ?string $search = null,
@@ -12,14 +14,4 @@ readonly class NewsletterFilterData
         public string $sort = 'created_at',
         public string $direction = 'desc',
     ) {}
-
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            search: $data['search'] ?? null,
-            category_id: isset($data['category_id']) ? (int) $data['category_id'] : null,
-            sort: $data['sort'] ?? 'created_at',
-            direction: $data['direction'] ?? 'desc',
-        );
-    }
 }

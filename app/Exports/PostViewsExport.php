@@ -7,14 +7,17 @@ namespace App\Exports;
 use App\DTOs\PostViewFilterData;
 use App\Models\PostView;
 use Illuminate\Database\Eloquent\Builder;
-use Maatwebsite\Excel\Concerns\{FromQuery, WithHeadings, WithMapping, Exportable};
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
 class PostViewsExport implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
 
     public function __construct(
-        private readonly PostViewFilterData $filters
+        private readonly PostViewFilterData $filters,
     ) {}
 
     public function query()
@@ -23,8 +26,8 @@ class PostViewsExport implements FromQuery, WithHeadings, WithMapping
             ->with(['post:id,title', 'user:id,name']) // Eager loading seletivo
             ->when($this->filters->search, function (Builder $query, string $search) {
                 $query->where(function (Builder $q) use ($search) {
-                    $q->whereHas('post', fn($p) => $p->where('title', 'like', "%{$search}%"))
-                        ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
+                    $q->whereHas('post', fn ($p) => $p->where('title', 'like', "%{$search}%"))
+                        ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"))
                         ->orWhere('ip_hash', $search);
                 });
             })
@@ -45,7 +48,8 @@ class PostViewsExport implements FromQuery, WithHeadings, WithMapping
 
     /**
      * Mapeamento linha a linha do Excel.
-     * @param PostView $view
+     *
+     * @param  PostView  $view
      */
     public function map($view): array
     {

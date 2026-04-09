@@ -9,9 +9,13 @@ use Livewire\Form;
 class ReportFilterForm extends Form
 {
     public ?string $search = '';
+
     public ?string $status = '';
+
     public ?string $reason = '';
+
     public string $sort = 'created_at';
+
     public string $direction = 'desc';
 
     public function resetFilters(): void

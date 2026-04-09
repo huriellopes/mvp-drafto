@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Actions;
 
-use App\Models\Comment;
 use App\Actions\Comments\ToggleCommentLikeAction;
+use App\Models\Comment;
 use Livewire\Component;
 
 class LikeComment extends Component
@@ -26,7 +28,7 @@ class LikeComment extends Component
 
         return view('livewire.actions.like-comment', [
             'isLiked' => $isLiked,
-            'likesCount' => $likesCount
+            'likesCount' => $likesCount,
         ]);
     }
 }

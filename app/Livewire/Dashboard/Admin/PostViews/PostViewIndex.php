@@ -6,12 +6,15 @@ namespace App\Livewire\Dashboard\Admin\PostViews;
 
 use App\Actions\PostViews\ListPostViewsAction;
 use App\DTOs\PostViewFilterData;
-use App\Models\PostView;
 use App\Exports\PostViewsExport;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\PostView;
 use Illuminate\View\View;
-use Livewire\Attributes\{Computed, Layout, Title, Url};
-use Livewire\{Component, WithPagination};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Analytics', 'subheading' => 'Monitoramento de tráfego de posts'])]
@@ -39,7 +42,7 @@ class PostViewIndex extends Component
 
     public function export()
     {
-        $filters = PostViewFilterData::fromArray($this->all());
+        $filters = PostViewFilterData::from($this->all());
 
         return (new PostViewsExport($filters))
             ->download('analytics_posts_' . now()->format('Ymd_His') . '.xlsx');
@@ -64,8 +67,8 @@ class PostViewIndex extends Component
     {
         return app(ListPostViewsAction::class)
             ->exec(
-                PostViewFilterData::fromArray($this->all())
-        );
+                PostViewFilterData::from($this->all()),
+            );
     }
 
     public function render(): View

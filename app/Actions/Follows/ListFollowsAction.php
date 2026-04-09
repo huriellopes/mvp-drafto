@@ -14,7 +14,7 @@ final class ListFollowsAction
         User $user,
         FollowersFilterData $filters,
         string $type = 'followers',
-        int $perPage = 15
+        int $perPage = 15,
     ): LengthAwarePaginator {
 
         $query = $type === 'following' ? $user->following() : $user->followers();
@@ -24,7 +24,7 @@ final class ListFollowsAction
             ->when($filters->search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
-                        ->orWhereHas('profile', fn($p) => $p->where('username', 'like', "%{$search}%"));
+                        ->orWhereHas('profile', fn ($p) => $p->where('username', 'like', "%{$search}%"));
                 });
             })
             ->orderBy($filters->sort, $filters->direction)

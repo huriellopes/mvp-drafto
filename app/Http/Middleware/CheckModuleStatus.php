@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use App\Enums\ModuleEnum;
 use App\Enums\RoleEnum;
-use Closure;
 use App\Models\Module;
+use Closure;
 use Illuminate\Http\Request;
 
 class CheckModuleStatus

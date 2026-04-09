@@ -10,10 +10,6 @@ enum ProfileVisibilityEnum: string
 {
     use EnumOptions;
 
-    case PUBLIC = 'public';
-    case PRIVATE = 'private';
-    case UNLISTED = 'unlisted';
-
     public function label(): string
     {
         return match ($this) {
@@ -22,4 +18,8 @@ enum ProfileVisibilityEnum: string
             self::UNLISTED => 'Não Listado',
         };
     }
+
+    case PUBLIC = 'public';
+    case PRIVATE = 'private';
+    case UNLISTED = 'unlisted';
 }

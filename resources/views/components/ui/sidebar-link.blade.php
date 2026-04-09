@@ -7,14 +7,13 @@
     href="{{ $href }}"
     title="{{ $slot }}"
     @class([
-        'group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-all duration-200',
-        'bg-zinc-900 text-white shadow-md shadow-zinc-200' => $active,
-        'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900' => ! $active,
-        'justify-center lg:px-0' => false,
+        'group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold transition-all duration-300',
+        'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:bg-indigo-500 dark:shadow-indigo-500/10' => $active,
+        'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white' => ! $active,
     ])
 >
     <span @class([
-        'flex h-6 w-6 shrink-0 items-center justify-center transition-transform duration-200',
+        'flex h-6 w-6 shrink-0 items-center justify-center transition-transform duration-300',
         'scale-110' => $active,
         'group-hover:scale-110' => ! $active,
     ])>

@@ -1,11 +1,16 @@
 <div class="space-y-6">
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-zinc-900 dark:text-white leading-tight">{{ __('dashboard.admin.newsletter.title') }}</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('dashboard.admin.newsletter.subtitle') }}</p>
+    </div>
+
     {{-- Filtros e Ações --}}
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div class="flex flex-1 flex-col gap-4 md:flex-row md:items-center">
             <div class="w-full md:w-80">
                 <x-ui.input
                     wire:model.live.debounce.300ms="filters.search"
-                    placeholder="Buscar por e-mail..."
+                    placeholder="{{ __('dashboard.admin.newsletter.search_placeholder') }}"
                 >
                     <x-slot:prefix>
                         <x-lucide-search class="h-4 w-4 text-zinc-400" />
@@ -16,9 +21,9 @@
             <div class="w-full md:w-70">
                 <select
                     wire:model.live="filters.category_id"
-                    class="block w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-profile-primary focus:ring-0 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+                    class="block w-full rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-0 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
                 >
-                    <option value="">Todas as categorias</option>
+                    <option value="">{{ __('dashboard.admin.newsletter.all_categories') }}</option>
                     @foreach($this->categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
@@ -28,16 +33,17 @@
 
         <div class="flex items-center gap-3">
             <x-ui.button
-                variant="primary"
+                variant="dark"
                 x-on:click="$dispatch('open-modal', { name: 'manual-newsletter-modal' })"
-                title="Disparo Manual"
+                title="{{ __('dashboard.admin.newsletter.manual_title') }}"
+                class="!w-auto px-4"
             >
                 <x-lucide-send class="h-4 w-4" />
             </x-ui.button>
-            <x-ui.button wire:click="export" wire:loading.attr="disabled" class="px-6">
+            <x-ui.button wire:click="export" wire:loading.attr="disabled" class="!w-auto px-6">
                 <x-lucide-download wire:loading.remove wire:target="export" class="mr-2 h-4 w-4" />
                 <x-lucide-loader-2 wire:loading wire:target="export" class="mr-2 h-4 w-4 animate-spin" />
-                Excel
+                {{ __('dashboard.admin.newsletter.export_excel') }}
             </x-ui.button>
         </div>
     </div>
@@ -45,32 +51,32 @@
     {{-- Tabela --}}
     <x-ui.table>
         <x-slot:header>
-            <x-ui.table.th label="E-mail" column="email" :sort="$filters->sort" :direction="$filters->direction" />
-            <x-ui.table.th label="Categoria de Interesse" />
-            <x-ui.table.th label="Inscrito em" column="created_at" :sort="$filters->sort" :direction="$filters->direction" />
-            <x-ui.table.th label="Ações" align="right" />
+            <x-ui.table.th label="{{ __('dashboard.admin.newsletter.table.email') }}" column="email" :sort="$filters->sort" :direction="$filters->direction" />
+            <x-ui.table.th label="{{ __('dashboard.admin.newsletter.table.interest') }}" />
+            <x-ui.table.th label="{{ __('dashboard.admin.newsletter.table.joined_at') }}" column="created_at" :sort="$filters->sort" :direction="$filters->direction" />
+            <x-ui.table.th label="{{ __('dashboard.admin.newsletter.table.actions') }}" align="right" />
         </x-slot:header>
 
         @forelse($this->subscribers as $subscriber)
-            <tr wire:key="{{ $subscriber->id }}" class="group hover:bg-zinc-50/50 transition-colors">
+            <tr wire:key="{{ $subscriber->id }}" class="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors">
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 text-zinc-500">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
                             <x-lucide-mail class="h-4 w-4" />
                         </div>
-                        <span class="font-medium text-zinc-900">{{ $subscriber->email }}</span>
+                        <span class="font-bold text-zinc-900 dark:text-white">{{ $subscriber->email }}</span>
                     </div>
                 </td>
-                <td class="px-6 py-4 text-zinc-600">
+                <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400">
                     @if($subscriber->category)
-                        <span class="inline-flex items-center rounded-full bg-profile-primary/10 px-2.5 py-0.5 text-xs font-medium text-profile-primary">
+                        <span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
                             {{ $subscriber->category->name }}
                         </span>
                     @else
-                        <span class="text-xs text-zinc-400 italic">Geral</span>
+                        <span class="text-xs text-zinc-400 italic">{{ __('dashboard.admin.newsletter.table.general') }}</span>
                     @endif
                 </td>
-                <td class="px-6 py-4 text-zinc-500">
+                <td class="px-6 py-4 text-zinc-500 text-xs">
                     {{ $subscriber->created_at->translatedFormat('d M, Y H:i') }}
                 </td>
                 <td class="px-6 py-4">
@@ -89,7 +95,7 @@
                 <td colspan="4" class="px-6 py-20 text-center">
                     <div class="flex flex-col items-center justify-center text-zinc-400">
                         <x-lucide-inbox class="h-12 w-12 mb-4" />
-                        <p class="text-lg font-medium">Nenhum inscrito encontrado.</p>
+                        <p class="text-lg font-medium">{{ __('dashboard.admin.newsletter.empty_state') }}</p>
                     </div>
                 </td>
             </tr>
@@ -103,32 +109,32 @@
     {{-- Modal de Confirmação --}}
     <x-ui.confirm-modal
         name="confirm-subscriber-deletion"
-        title="Remover Inscrito"
-        content="Tem certeza que deseja remover este e-mail da newsletter? Esta ação não pode ser desfeita."
-        buttonText="Sim, Remover"
+        title="{{ __('dashboard.admin.newsletter.delete_modal.title') }}"
+        content="{{ __('dashboard.admin.newsletter.delete_modal.content') }}"
+        buttonText="{{ __('dashboard.admin.newsletter.delete_modal.confirm') }}"
         variant="danger"
         action="delete"
     />
 
-    <x-ui.modal name="manual-newsletter-modal" title="Disparo de Mensagem Direta">
+    <x-ui.modal name="manual-newsletter-modal" title="{{ __('dashboard.admin.newsletter.manual_modal.title') }}">
         <div class="space-y-6">
             <p class="text-sm text-zinc-500">
-                Esta mensagem será enviada para <strong>todos</strong> os inscritos da newsletter via fila de processamento.
+                {{ __('dashboard.admin.newsletter.manual_modal.description') }}
             </p>
 
             <x-ui.textarea
-                label="Conteúdo da Mensagem"
+                label="{{ __('dashboard.admin.newsletter.manual_modal.label') }}"
                 wire:model="customMessage"
-                placeholder="Olá leitores, temos novidades exclusivas..."
+                placeholder="{{ __('dashboard.admin.newsletter.manual_modal.placeholder') }}"
                 rows="5"
             />
 
-            <div class="flex justify-end gap-3 pt-4">
-                <x-ui.button variant="secondary" x-on:click="show = false">
-                    Cancelar
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <x-ui.button variant="secondary" x-on:click="show = false" class="!w-auto px-8">
+                    {{ __('dashboard.admin.newsletter.manual_modal.cancel') }}
                 </x-ui.button>
-                <x-ui.button wire:click="sendManualNewsletter" loading="sendManualNewsletter">
-                    Confirmar Disparo
+                <x-ui.button wire:click="sendManualNewsletter" loading="sendManualNewsletter" class="!w-auto px-10">
+                    {{ __('dashboard.admin.newsletter.manual_modal.confirm') }}
                 </x-ui.button>
             </div>
         </div>

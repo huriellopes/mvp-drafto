@@ -22,6 +22,7 @@ final class UpdateProfileAction
             'primary_color' => $data->primary_color,
             'accent_color' => $data->accent_color,
             'theme_mode' => $data->theme_mode,
+            'visibility' => $data->visibility,
             'show_email_publicly' => $data->show_email_publicly,
             'is_searchable' => $data->is_searchable,
         ];
@@ -38,7 +39,7 @@ final class UpdateProfileAction
 
         $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
-            $profileData
+            $profileData,
         );
     }
 

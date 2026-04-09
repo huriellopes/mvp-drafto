@@ -8,7 +8,6 @@ use App\DTOs\UserFilterData;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Cache;
 
 final class ListUsersAction
 {

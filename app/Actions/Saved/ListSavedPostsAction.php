@@ -34,7 +34,7 @@ final class ListSavedPostsAction
             ->when($filters->categoryId, function (Builder $q, $catId) {
                 $q->where('posts.category_id', $catId);
             })
-            ->when($filters->collectionId, function (Builder $q, $collId) use ($user) {
+            ->when($filters->collectionId, function (Builder $q, $collId) {
                 $q->where('saved_posts.collection_id', $collId);
             })
             ->orderBy($sortColumn, $filters->direction)

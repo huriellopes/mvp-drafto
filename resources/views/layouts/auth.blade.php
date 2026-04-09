@@ -18,5 +18,7 @@
     </main>
 
     @livewireScripts
+
+    <x-toaster-hub />
 </body>
 </html>

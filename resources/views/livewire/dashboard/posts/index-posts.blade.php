@@ -1,10 +1,11 @@
 @use(App\Enums\PostStatusEnum)
 <div>
     {{ Breadcrumbs::render('dashboard.posts.index') }}
+
     <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-bold text-zinc-900 leading-tight">Gerenciar Publicações</h2>
-            <p class="text-sm text-zinc-500">Acompanhe e organize seus conteúdos publicados e arquivados.</p>
+            <h2 class="text-2xl font-bold text-zinc-900 dark:text-white leading-tight">{{ __('dashboard.posts.index.title') }}</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('dashboard.posts.index.subtitle') }}</p>
         </div>
 
         <div class="flex flex-col sm:flex-row items-center gap-3">
@@ -12,7 +13,7 @@
             <div class="min-w-[280px]">
                 <x-ui.input
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Buscar publicação..."
+                    placeholder="{{ __('dashboard.posts.index.search_placeholder') }}"
                     class="!py-2.5"
                 >
                     <x-slot:iconLeft>
@@ -23,9 +24,9 @@
 
             <div class="min-w-[180px]">
                 <x-ui.select wire:model.live="status" class="!py-2.5">
-                    <option value="">Todos Status</option>
-                    <option value="{{ PostStatusEnum::PUBLISHED->value }}">Publicados</option>
-                    <option value="{{ PostStatusEnum::ARCHIVED->value }}">Arquivados</option>
+                    <option value="">{{ __('dashboard.posts.index.all_status') }}</option>
+                    <option value="{{ PostStatusEnum::PUBLISHED->value }}">{{ __('dashboard.posts.index.published') }}</option>
+                    <option value="{{ PostStatusEnum::ARCHIVED->value }}">{{ __('dashboard.posts.index.archived') }}</option>
                 </x-ui.select>
             </div>
         </div>
@@ -34,23 +35,23 @@
     <x-ui.table>
         <x-slot:header>
             <x-ui.table.th
-                label="Conteúdo"
+                label="{{ __('dashboard.posts.index.table.content') }}"
                 column="title"
                 :sort="$sort"
                 :direction="$direction"
             />
 
-            <x-ui.table.th label="Status" align="center" />
+            <x-ui.table.th label="{{ __('dashboard.posts.index.table.status') }}" align="center" />
 
             <x-ui.table.th
-                label="Visualizações"
+                label="{{ __('dashboard.posts.index.table.views') }}"
                 column="views_count"
                 align="center"
                 :sort="$sort"
                 :direction="$direction"
             />
 
-            <x-ui.table.th label="Ações" align="right" />
+            <x-ui.table.th label="{{ __('dashboard.posts.index.table.actions') }}" align="right" />
         </x-slot:header>
 
         @forelse($this->posts as $post)
@@ -59,8 +60,8 @@
             <tr>
                 <td colspan="4" class="px-6 py-12">
                     <x-ui.empty-state
-                        title="Nenhuma publicação encontrada"
-                        description="{{ $search ? 'Não existem resultados para sua busca atual.' : 'Você ainda não possui publicações ativas.' }}"
+                        title="{{ __('dashboard.posts.index.empty_state') }}"
+                        description="{{ $search ? __('dashboard.posts.index.empty_search') : __('dashboard.posts.index.empty_description') }}"
                     />
                 </td>
             </tr>
@@ -73,9 +74,9 @@
 
     <x-ui.confirm-modal
         name="confirm-post-deletion"
-        title="Excluir Conteúdo"
-        content="Tem certeza que deseja excluir esta publicação? Ela será movida para a lixeira e não aparecerá mais no seu perfil público."
-        buttonText="Sim, excluir agora"
+        title="{{ __('dashboard.posts.index.delete_modal.title') }}"
+        content="{{ __('dashboard.posts.index.delete_modal.content') }}"
+        buttonText="{{ __('dashboard.posts.index.delete_modal.confirm') }}"
         variant="danger"
         action="deletePost"
     />

@@ -4,16 +4,24 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Admin\Users;
 
+use App\Actions\Users\DeleteUserAction;
+use App\Actions\Users\ListUsersAction;
+use App\Actions\Users\ToggleUserStatusAction;
 use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
-use Illuminate\View\View;
-use App\Actions\Users\{ListUsersAction, DeleteUserAction, ToggleUserStatusAction};
 use App\Livewire\Forms\Admin\UserForm;
 use App\Models\User;
-use Livewire\Attributes\{Computed, Layout, Lazy, Title, Url};
+use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
+use Throwable;
 
 #[Layout('layouts.app', ['heading' => 'Gestão de Usuários', 'subheading' => 'Administre as contas da plataforma'])]
 #[Title('Usuários')]
@@ -37,6 +45,7 @@ class UserIndex extends Component
     public string $direction = 'desc';
 
     public bool $isModalOpen = false;
+
     public ?int $userIdBeingDeleted = null;
 
     public function sortBy(string $column): void
@@ -54,17 +63,18 @@ class UserIndex extends Component
     public function users()
     {
         $paginator = app(ListUsersAction::class)->exec(
-            filters: UserFilterData::fromArray([
+            filters: UserFilterData::from([
                 'search' => $this->search,
                 'role' => $this->role,
                 'sort' => $this->sort,
                 'direction' => $this->direction,
-                'per_page' => 10
-            ])
+                'per_page' => 10,
+            ]),
         );
 
+        // Remove o usuário logado da listagem administrativa para evitar auto-edição acidental
         $paginator->setCollection(
-            $paginator->getCollection()->reject(fn ($user) => $user->id === auth()->id())
+            $paginator->getCollection()->reject(fn ($user) => $user->id === auth()->id()),
         );
 
         return $paginator;
@@ -91,18 +101,35 @@ class UserIndex extends Component
     {
         if ($user->id === auth()->id()) {
             Toaster::warning('Você não pode alterar seu próprio status.');
+
             return;
         }
 
         $targetStatus = $statusValue ? UserStatusEnum::from($statusValue) : null;
 
-        app(ToggleUserStatusAction::class)
-            ->exec(
-                user: $user,
-                targetStatus: $targetStatus
-            );
+        app(ToggleUserStatusAction::class)->exec(
+            user: $user,
+            targetStatus: $targetStatus,
+        );
 
+        $this->clearUserCache();
         Toaster::success('Status atualizado com sucesso.');
+    }
+
+    public function toggleLifetime(User $user): void
+    {
+        if ($user->id === auth()->id()) {
+            Toaster::warning('Você não pode alterar seu próprio status vitalício.');
+
+            return;
+        }
+
+        $user->update([
+            'is_lifetime' => !$user->is_lifetime,
+        ]);
+
+        $this->clearUserCache();
+        Toaster::success($user->is_lifetime ? 'Acesso Vitalício concedido!' : 'Acesso Vitalício removido.');
     }
 
     public function confirmUserDeletion(int $userId): void
@@ -113,7 +140,9 @@ class UserIndex extends Component
 
     public function delete(): void
     {
-        if (!$this->userIdBeingDeleted) return;
+        if (!$this->userIdBeingDeleted) {
+            return;
+        }
 
         $user = User::find($this->userIdBeingDeleted);
 
@@ -127,7 +156,7 @@ class UserIndex extends Component
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function save(): void
     {
@@ -137,13 +166,13 @@ class UserIndex extends Component
         $this->form->reset();
     }
 
+    public function render(): View
+    {
+        return view('livewire.dashboard.admin.users.user-index');
+    }
+
     private function clearUserCache(): void
     {
         Cache::increment('users_cache_version');
-    }
-
-    public function render() : View
-    {
-        return view('livewire.dashboard.admin.users.user-index');
     }
 }

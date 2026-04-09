@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Mail\NewsletterNotification;
@@ -19,7 +21,7 @@ class SendNewsletterJob implements ShouldQueue
         protected NewsletterSubscriber $subscriber,
         protected array $posts = [],
         protected string $categoryName = 'Informativo',
-        protected ?string $customMessage = null
+        protected ?string $customMessage = null,
     ) {}
 
     public function handle(): void
@@ -29,8 +31,8 @@ class SendNewsletterJob implements ShouldQueue
                 $this->posts,
                 $this->categoryName,
                 $this->subscriber,
-                $this->customMessage
-            )
+                $this->customMessage,
+            ),
         );
     }
 }

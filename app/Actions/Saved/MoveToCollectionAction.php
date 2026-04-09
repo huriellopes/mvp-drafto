@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Saved;
 
-use App\Models\User;
 use App\Models\SavedPost;
+use App\Models\User;
 
 final class MoveToCollectionAction
 {
@@ -17,7 +17,7 @@ final class MoveToCollectionAction
             ->firstOrFail();
 
         $savedPost->update([
-            'collection_id' => $collectionId
+            'collection_id' => $collectionId,
         ]);
     }
 }

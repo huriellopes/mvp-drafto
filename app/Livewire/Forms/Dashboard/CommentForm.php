@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Livewire\Forms\Dashboard;
 
-use App\Models\Comment;
-use Livewire\Form;
-use Illuminate\Validation\Rule;
 use App\Enums\CommentStatusEnum;
+use App\Models\Comment;
+use Illuminate\Validation\Rule;
+use Livewire\Form;
 
 class CommentForm extends Form
 {
     public ?Comment $comment = null;
 
     public string $content = '';
+
     public string $status = '';
 
     public function setComment(Comment $comment): void

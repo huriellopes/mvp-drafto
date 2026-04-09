@@ -1,14 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Actions;
 
-use App\Models\User;
 use App\Actions\Users\ToggleFollowAction;
+use App\Models\User;
 use Livewire\Component;
 
 class FollowButton extends Component
 {
     public User $user;
+
+    public bool $compact = false;
+
+    public bool $iconOnly = false;
 
     public function toggle()
     {
@@ -24,7 +30,7 @@ class FollowButton extends Component
         $isFollowing = auth()->check() && auth()->user()->isFollowing($this->user);
 
         return view('livewire.actions.follow-button', [
-            'isFollowing' => $isFollowing
+            'isFollowing' => $isFollowing,
         ]);
     }
 }

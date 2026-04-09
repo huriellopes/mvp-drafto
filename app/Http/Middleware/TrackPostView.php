@@ -42,7 +42,7 @@ final class TrackPostView
                 'user_id' => auth()->id(),
                 'session_id' => $sessionId,
                 'ip_hash' => $request->ip(),
-                'user_agent' => substr($request->userAgent(), 0, 255),
+                'user_agent' => mb_substr($request->userAgent(), 0, 255),
                 'viewed_at' => now(),
             ]);
 

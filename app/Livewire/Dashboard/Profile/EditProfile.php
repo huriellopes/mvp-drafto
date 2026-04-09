@@ -7,7 +7,9 @@ namespace App\Livewire\Dashboard\Profile;
 use App\Livewire\Forms\Dashboard\ProfileForm;
 use App\Services\IbgeService;
 use Illuminate\View\View;
-use Livewire\Attributes\{Computed, Layout, Title};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Masmerise\Toaster\Toaster;
@@ -19,7 +21,9 @@ class EditProfile extends Component
     use WithFileUploads;
 
     public ProfileForm $form;
+
     public ?string $selectedUf = '';
+
     public array $ufs = [];
 
     public function mount(IbgeService $ibge): void
@@ -30,14 +34,14 @@ class EditProfile extends Component
 
         if ($this->form->location && str_contains($this->form->location, ',')) {
             $parts = explode(',', $this->form->location);
-            $this->selectedUf = trim(end($parts));
+            $this->selectedUf = mb_trim(end($parts));
         }
     }
 
     #[Computed]
     public function municipios(): array
     {
-        if (! $this->selectedUf) {
+        if (!$this->selectedUf) {
             return [];
         }
 
@@ -55,7 +59,7 @@ class EditProfile extends Component
         Toaster::success('Perfil atualizado com sucesso!');
     }
 
-    public function render() : View
+    public function render(): View
     {
         return view('livewire.dashboard.profile.edit-profile');
     }

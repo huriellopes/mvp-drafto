@@ -13,8 +13,12 @@ use App\Livewire\Forms\Admin\NewsletterFilterForm;
 use App\Models\NewsletterSubscriber;
 use App\Models\PostCategory;
 use Illuminate\View\View;
-use Livewire\Attributes\{Layout, Lazy, Title, Computed};
-use Livewire\{Component, WithPagination};
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -26,6 +30,7 @@ class NewsletterIndex extends Component
     use WithPagination;
 
     public NewsletterFilterForm $filters;
+
     public ?int $subscriberIdBeingDeleted = null;
 
     public string $customMessage = '';
@@ -49,7 +54,9 @@ class NewsletterIndex extends Component
 
     public function delete(DeleteSubscriberAction $action): void
     {
-        if (! $this->subscriberIdBeingDeleted) return;
+        if (!$this->subscriberIdBeingDeleted) {
+            return;
+        }
 
         $subscriber = NewsletterSubscriber::findOrFail($this->subscriberIdBeingDeleted);
         $action->exec($subscriber);
@@ -60,7 +67,7 @@ class NewsletterIndex extends Component
 
     public function export(): BinaryFileResponse
     {
-        $filters = NewsletterFilterData::fromArray($this->filters->all());
+        $filters = NewsletterFilterData::from($this->filters->all());
 
         return (new SubscribersExport($filters))
             ->download('inscritos-newsletter-' . now()->format('Y-m-d') . '.xlsx');
@@ -78,7 +85,7 @@ class NewsletterIndex extends Component
                     subscriber: $subscriber,
                     posts: [],
                     categoryName: 'Informativo',
-                    customMessage: $message
+                    customMessage: $message,
                 );
             }
         });
@@ -101,7 +108,7 @@ class NewsletterIndex extends Component
     {
         return app(ListSubscribersAction::class)
             ->exec(
-                filters: NewsletterFilterData::fromArray($this->filters->all())
+                filters: NewsletterFilterData::from($this->filters->all()),
             );
     }
 

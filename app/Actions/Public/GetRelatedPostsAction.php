@@ -6,7 +6,6 @@ namespace App\Actions\Public;
 
 use App\DTOs\Public\RelatedPostsData;
 use App\Models\Post;
-use Illuminate\Support\Collection;
 
 final class GetRelatedPostsAction
 {
@@ -22,7 +21,7 @@ final class GetRelatedPostsAction
             ->where(function ($query) use ($post, $tagIds) {
                 $query->where('category_id', $post->category_id)
                     ->when($tagIds->isNotEmpty(), function ($q) use ($tagIds) {
-                        $q->orWhereHas('tags', fn($t) => $t->whereIn('tags.id', $tagIds));
+                        $q->orWhereHas('tags', fn ($t) => $t->whereIn('tags.id', $tagIds));
                     });
             })
             ->latest()

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Forms\Public;
 
-use Livewire\Form;
 use Livewire\Attributes\Validate;
+use Livewire\Form;
 
 class CommentForm extends Form
 {

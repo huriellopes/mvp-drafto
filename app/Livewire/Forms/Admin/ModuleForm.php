@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Forms\Admin;
 
 use App\Models\Module;
@@ -8,6 +10,7 @@ use Livewire\Form;
 class ModuleForm extends Form
 {
     public ?Module $module;
+
     public bool $is_enabled = false;
 
     public function setModule(Module $module)

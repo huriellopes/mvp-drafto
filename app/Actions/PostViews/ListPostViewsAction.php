@@ -15,7 +15,7 @@ final class ListPostViewsAction
         return PostView::query()
             ->with(['post:id,title', 'user:id,name'])
             ->when($filters->search, function ($q, $search) {
-                $q->whereHas('post', fn($p) => $p->where('title', 'like', "%{$search}%"))
+                $q->whereHas('post', fn ($p) => $p->where('title', 'like', "%{$search}%"))
                     ->orWhere('ip_hash', 'like', "%{$search}%");
             })
             ->orderBy($filters->sort, $filters->direction)

@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Support\Facades\Storage;
+use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
 #[Fillable([
@@ -46,7 +46,8 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory, KeepsDeletedModels;
-    use HasSlug;
+
+    use HasSEO, HasSlug;
 
     public function author(): BelongsTo
     {
@@ -133,13 +134,15 @@ class Post extends Model
     protected function coverImageUrl(): Attribute
     {
         return Attribute::get(function () {
-            if (!$this->cover_image_path) return null;
+            if (!$this->cover_image_path) {
+                return;
+            }
 
-            if (filter_var($this->cover_image_path, FILTER_VALIDATE_URL)) {
+            if (str_starts_with($this->cover_image_path, 'http')) {
                 return $this->cover_image_path;
             }
 
-            return Storage::disk('public')->url($this->cover_image_path);
+            return asset('storage/' . $this->cover_image_path);
         });
     }
 
@@ -166,6 +169,8 @@ class Post extends Model
             'comments_count' => 'integer',
             'published_at' => 'datetime',
             'featured_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }

@@ -36,11 +36,20 @@ class Profile extends Model
 {
     /** @use HasFactory<ProfileFactory> */
     use HasFactory;
+
     use HasSEO;
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getColors(): object
+    {
+        return (object) [
+            'primary' => $this->primary_color ?? '#18181b',
+            'accent' => $this->accent_color ?? '#3f3f46',
+        ];
     }
 
     protected function handle(): Attribute
@@ -69,14 +78,6 @@ class Profile extends Model
         return Attribute::make(
             get: fn (?string $value) => $value ?? '#3f3f46', // Default Zinc-700
         );
-    }
-
-    public function getColors(): object
-    {
-        return (object) [
-            'primary' => $this->primary_color ?? '#18181b',
-            'accent' => $this->accent_color ?? '#3f3f46',
-        ];
     }
 
     protected function casts(): array

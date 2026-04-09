@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard;
 
 use Livewire\Attributes\On;
@@ -24,6 +26,7 @@ class NotificationsSidebar extends Component
 
         if ($notification) {
             $notification->markAsRead();
+
             return $this->redirect($notification->data['link'], navigate: true);
         }
     }
@@ -46,7 +49,7 @@ class NotificationsSidebar extends Component
     public function render()
     {
         return view('livewire.dashboard.notifications-sidebar', [
-            'notifications' => auth()->user()->notifications()->latest()->take(30)->get()
+            'notifications' => auth()->user()->notifications()->latest()->take(30)->get(),
         ]);
     }
 }

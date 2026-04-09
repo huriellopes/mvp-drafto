@@ -5,30 +5,41 @@ declare(strict_types=1);
 namespace App\Livewire\Forms\Auth;
 
 use App\Actions\Auth\RegisterUserAction;
+use App\Traits\Auth\WithRateLimiting;
 use Illuminate\Validation\Rules\Password;
-use Livewire\Attributes\Validate;
 use Livewire\Form;
 use Throwable;
 
 class RegisterForm extends Form
 {
-    #[Validate(['required', 'string', 'max:255'])]
+    use WithRateLimiting;
+
     public string $name = '';
 
-    #[Validate(['required', 'email', 'unique:users,email'])]
     public string $email = '';
 
-    #[Validate(['required', 'string'])] // Password::defaults() é excelente aqui
     public string $password = '';
 
-    #[Validate(['required', 'string', 'in:writer,reader'])]
     public string $role = 'reader';
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255', 'min:3'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', Password::default()],
+            'role' => ['required', 'string', 'in:writer,reader'],
+        ];
+    }
 
     /**
      * @throws Throwable
      */
     public function store(): void
     {
+        // Evita bot-spam de criação de conta por IP
+        $this->checkRateLimit(request()->ip(), maxAttempts: 3, decaySeconds: 3600);
+
         $this->validate();
 
         $user = app(RegisterUserAction::class)
@@ -37,5 +48,7 @@ class RegisterForm extends Form
             );
 
         auth()->login($user);
+
+        $this->clearAttempts(request()->ip());
     }
 }

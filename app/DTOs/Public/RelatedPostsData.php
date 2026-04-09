@@ -10,9 +10,9 @@ use Illuminate\Support\Collection;
 readonly class RelatedPostsData
 {
     /**
-     * @param Collection<Post> $posts
+     * @param  Collection<Post>  $posts
      */
     public function __construct(
-        public Collection $posts
+        public Collection $posts,
     ) {}
 }

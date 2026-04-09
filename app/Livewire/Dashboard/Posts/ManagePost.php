@@ -1,28 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Dashboard\Posts;
 
-use App\Actions\Posts\UploadCoverImageAction;
-use App\Models\Post;
-use App\Models\PostCategory;
-use App\Livewire\Forms\Dashboard\PostForm;
 use App\Actions\Posts\SavePostAction;
 use App\Enums\PostStatusEnum;
+use App\Livewire\Forms\Dashboard\PostForm;
+use App\Models\Post;
+use App\Models\PostCategory;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
-use Livewire\WithFileUploads;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
 class ManagePost extends Component
 {
-    use WithFileUploads;
-
     public PostForm $form;
+
     public ?Post $post = null;
 
-    public $temporaryCover;
-    public $cropData;
+    // Caminho da imagem de capa atualizada via componente CoverUpload
+    public ?string $updatedCoverPath = null;
 
     public function mount(?Post $post = null)
     {
@@ -34,30 +33,21 @@ class ManagePost extends Component
     }
 
     #[On('cover-prepared')]
-    public function setCover($cropData, $temporaryFile)
+    public function setCover(string $coverPath)
     {
-        $this->cropData = $cropData;
-        // O temporaryFile enviado pelo Livewire via evento pode ser usado diretamente
-        $this->temporaryCover = $temporaryFile;
+        $this->updatedCoverPath = $coverPath;
     }
 
     public function save()
     {
         $this->validate();
-        $data = $this->form->getAttributes();
 
-        if ($this->temporaryCover && $this->cropData) {
-            $path = app(UploadCoverImageAction::class)->exec(
-                $this->temporaryCover,
-                $this->cropData
-            );
-            $data['cover_image_path'] = $path; // Atualiza o path no array final
-        }
+        $dto = $this->form->toDTO($this->updatedCoverPath);
 
         $this->post = app(SavePostAction::class)->exec(
             auth()->user(),
-            $data,
-            $this->post
+            $dto,
+            $this->post,
         );
 
         Toaster::success('Seu progresso foi salvo com sucesso!');
@@ -73,18 +63,24 @@ class ManagePost extends Component
 
         $this->post->update([
             'status' => PostStatusEnum::PUBLISHED,
-            'published_at' => now()
+            'published_at' => now(),
         ]);
 
         Toaster::success('Publicação realizada com sucesso!');
     }
 
-    public function render() : View
+    public function render(): View
     {
+        // Busca categorias globais e as do usuário logado
+        $categories = PostCategory::forUser(auth()->id())
+            ->orderBy('user_id', 'asc') // Coloca as globais primeiro
+            ->orderBy('name', 'asc')
+            ->get();
+
         return view('livewire.dashboard.posts.manage-post', [
-            'categories' => PostCategory::orderBy('name')->get()
+            'categories' => $categories,
         ])->layout('layouts.app', [
-            'heading' => $this->post ? 'Editando: ' . $this->post->title : 'Nova Publicação'
+            'heading' => $this->post ? 'Editando: ' . $this->post->title : 'Nova Publicação',
         ]);
     }
 }

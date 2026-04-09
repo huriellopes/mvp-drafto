@@ -8,7 +8,7 @@
             x-show="!sidebarCollapsed"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 translate-y-2"
-            class="rounded-2xl bg-zinc-50 p-4 border border-zinc-100"
+            class="rounded-2xl bg-zinc-50 p-4 border border-zinc-100 mb-3"
         >
             <p class="text-sm font-semibold text-zinc-900 truncate">
                 {{ $user->name }}
@@ -16,6 +16,13 @@
             <p class="mt-0.5 truncate text-xs text-zinc-500">
                 {{ $user->email }}
             </p>
+            <button 
+                @click="$dispatch('openReportModal', { type: 'App\\Models\\User', id: {{ $user->id }} })"
+                class="mt-3 flex w-full items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-[10px] font-bold text-zinc-600 border border-zinc-200 hover:text-profile-primary hover:border-profile-primary transition shadow-sm"
+            >
+                <x-lucide-message-square-heart class="h-3 w-3" />
+                <span>Elogios e Feedbacks</span>
+            </button>
         </div>
 
         <div class="px-1">

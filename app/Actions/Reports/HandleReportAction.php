@@ -4,60 +4,65 @@ declare(strict_types=1);
 
 namespace App\Actions\Reports;
 
-use App\Enums\ReportStatusEnum;
+use App\DTOs\HandleReportData;
+use App\Enums\UserStatusEnum;
 use App\Models\Report;
 use App\Models\User;
-use App\Notifications\Reports\{ReportFeedbackNotification, UserBannedNotification};
+use App\Notifications\Reports\ReportFeedbackNotification;
+use App\Notifications\Reports\UserBannedNotification;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class HandleReportAction
 {
-    public function exec(
-        Report $report,
-        User $reviewer,
-        ReportStatusEnum $newStatus,
-        ?string $feedback = null,
-        bool $banUser = false,
-        ?string $banReason = null
-    ): void {
-        // 1. Atualiza a denúncia
-        $report->update([
-            'status' => $newStatus,
-            'admin_feedback' => $feedback,
-            'reviewed_by' => $reviewer->id,
-            'reviewed_at' => now(),
-        ]);
+    /**
+     * @throws Throwable
+     */
+    public function exec(HandleReportData $data, User $reviewer): void
+    {
+        DB::transaction(function () use ($data, $reviewer) {
+            $report = Report::findOrFail($data->reportId);
 
-        // 2. Notifica o denunciante (Reporter)
-        if ($report->reporter) {
+            // 1. Atualizar Denúncia
+            $report->update([
+                'status' => $data->status,
+                'admin_feedback' => $data->feedback,
+                'reviewed_by' => $reviewer->id,
+                'reviewed_at' => now(),
+            ]);
+
+            // 2. Notificar Denunciante (Assíncrono via Queue)
             $report->reporter->notify(new ReportFeedbackNotification($report));
-        }
 
-        // 3. Processa Banimento se ACTION_TAKEN
-        if ($banUser && $newStatus === ReportStatusEnum::ACTION_TAKEN) {
-            $reportedUser = $this->getReportedUser($report);
+            // 3. Processar Banimento
+            if ($data->shouldBanUser) {
+                $reportedUser = $this->resolveReportedUser($report);
 
-            if ($reportedUser) {
-                $reportedUser->update([
-                    'banned_until' => now()->addDays(30),
-                    'ban_reason' => $banReason ?? 'Violação das diretrizes da comunidade.',
-                ]);
+                if ($reportedUser) {
+                    $bannedUntil = Carbon::now()->addDays($data->banDays);
 
-                $reportedUser->notify(new UserBannedNotification(
-                    $reportedUser->banned_until,
-                    $reportedUser->ban_reason
-                ));
+                    $reportedUser->update([
+                        'status' => UserStatusEnum::BANNED,
+                        'banned_until' => $bannedUntil,
+                        'ban_reason' => $data->banReason ?? 'Violação das diretrizes da comunidade.',
+                    ]);
+
+                    $reportedUser->notify(new UserBannedNotification($bannedUntil, $reportedUser->ban_reason));
+                }
             }
-        }
+        });
     }
 
-    private function getReportedUser(Report $report): ?User
+    private function resolveReportedUser(Report $report): ?User
     {
         $target = $report->reportable;
 
-        if ($target instanceof User) return $target;
-        if (isset($target->user_id)) return User::find($target->user_id);
-        if (isset($target->user)) return $target->user;
-
-        return null;
+        return match (true) {
+            $target instanceof User => $target,
+            isset($target->author) => $target->author, // Caso de Posts
+            isset($target->user) => $target->user,     // Caso de Comentários
+            default => null,
+        };
     }
 }
