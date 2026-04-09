@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\ModuleEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\ReportReasonEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\Comment;
+use App\Models\Module;
+use App\Models\NewsletterSubscriber;
+use App\Models\Plan;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostView;
@@ -76,7 +80,10 @@ class DatabaseSeeder extends Seeder
         $this->seedSavedPosts($readers, $posts);
         $this->seedPostLikes($readers, $posts);
         $this->seedCommentLikes($readers, $comments);
+        $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
+        $this->seedModules();
+        $this->seedPlans();
 
         $this->command?->info('==========================================');
         $this->command?->info('Seed concluído com sucesso.');
@@ -335,6 +342,19 @@ class DatabaseSeeder extends Seeder
         return $comments->values();
     }
 
+    private function seedNewsletter(Collection $categories): void
+    {
+        $this->command?->warn('Criando assinantes da newsletter...');
+
+        foreach (range(1, 30) as $i) {
+            NewsletterSubscriber::query()
+                ->create([
+                    'email' => fake()->unique()->safeEmail(),
+                    'category_id' => $categories->random()->id,
+                ]);
+        }
+    }
+
     /**
      * @param  Collection<int, Post>  $posts
      * @param  Collection<int, User>  $users
@@ -527,5 +547,190 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command?->info('✔ Denúncias criadas.');
+    }
+
+    private function seedModules(): void
+    {
+        $this->command?->warn('Semeando módulos com limites de planos (Free/Plus/Pro)...');
+
+        $modules = [
+            [
+                'slug' => ModuleEnum::PROFILE,
+                'name' => 'Perfil Público',
+                'description' => 'Visualização pública do autor, biografia e seus artigos publicados.',
+                'icon' => 'user-circle',
+                'settings' => [
+                    'max_bio_length' => [
+                        'free' => 160,
+                        'plus' => 500,
+                        'pro' => 1000,
+                    ],
+                    'allow_custom_colors' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                    'show_metrics' => true,
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::PROFILE_BADGE,
+                'name' => 'Crachá do Escritor',
+                'description' => 'Gerador de cards de identidade portáteis para compartilhamento.',
+                'icon' => 'badge-check',
+                'settings' => [
+                    'render_quality_ratio' => [
+                        'free' => 2,
+                        'plus' => 3,
+                        'pro' => 4,
+                    ],
+                    'allow_iframe_embed' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                    'themes_available' => [
+                        'free' => ['light', 'dark'],
+                        'plus' => ['light', 'dark', 'brand'],
+                        'pro' => ['all'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::MY_POSTS,
+                'name' => 'Meus Artigos',
+                'description' => 'Central de gerenciamento de conteúdos publicados e agendados.',
+                'icon' => 'library',
+                'settings' => [
+                    'max_monthly_posts' => [
+                        'free' => 5,
+                        'plus' => 20,
+                        'pro' => -1, // Ilimitado
+                    ],
+                    'enable_stats_per_post' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::DRAFT,
+                'name' => 'Rascunhos',
+                'description' => 'Ambiente de escrita com salvamento automático.',
+                'icon' => 'file-text',
+                'settings' => [
+                    'max_drafts' => [
+                        'free' => 3,
+                        'plus' => 15,
+                        'pro' => -1,
+                    ],
+                    'autosave_interval' => 30,
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::SAVED_POST,
+                'name' => 'Itens Salvos',
+                'description' => 'Biblioteca pessoal para organizar conteúdos.',
+                'icon' => 'bookmark',
+                'settings' => [
+                    'max_saved_items' => [
+                        'free' => 20,
+                        'plus' => 100,
+                        'pro' => -1,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::COMMENTS,
+                'name' => 'Comentários',
+                'description' => 'Habilita a seção de discussões e feedback nos posts.',
+                'icon' => 'message-square',
+                'settings' => [
+                    'allow_images' => [
+                        'free' => false,
+                        'plus' => false,
+                        'pro' => true,
+                    ],
+                    'moderation_tools' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::CATEGORIES,
+                'name' => 'Categorias',
+                'description' => 'Ambiente de categorias próprias.',
+                'icon' => 'folder-open',
+                'settings' => [
+                    'max_categories' => [
+                        'free' => 3,
+                        'plus' => 10,
+                        'pro' => -1,
+                    ],
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::FOLLOWS,
+                'name' => 'Rede de Seguidores',
+                'description' => 'Sistema de conexões sociais.',
+                'icon' => 'users-round',
+                'settings' => [
+                    'notify_on_new_follower' => true,
+                ],
+            ],
+            [
+                'slug' => ModuleEnum::ACCOUNT,
+                'name' => 'Configurações de Conta',
+                'description' => 'Gestão de segurança e preferências.',
+                'icon' => 'settings',
+                'settings' => [
+                    'two_factor_available' => [
+                        'free' => false,
+                        'plus' => true,
+                        'pro' => true,
+                    ],
+                ],
+            ],
+        ];
+
+        foreach ($modules as $module) {
+            Module::query()->updateOrCreate(
+                ['slug' => $module['slug']],
+                [
+                    'name' => $module['name'],
+                    'description' => $module['description'],
+                    'icon' => $module['icon'],
+                    'is_enabled' => true,
+                    'settings' => $module['settings'],
+                ],
+            );
+        }
+
+        $this->command?->info('✔ ' . count($modules) . ' módulos semeados com lógica de planos.');
+    }
+
+    private function seedPlans(): void
+    {
+        $this->command?->warn('Sincronizando planos com config/plans.php...');
+
+        $plans = config('plans');
+
+        foreach ($plans as $slug => $data) {
+            Plan::updateOrCreate(
+                ['slug' => $slug],
+                [
+                    'name' => $data['name'],
+                    'stripe_id' => $data['stripe_id'],
+                    'price' => $data['price'],
+                    'features' => $data['features'],
+                    'is_active' => true,
+                ],
+            );
+        }
+
+        $this->command?->info('✔ Planos sincronizados.');
     }
 }

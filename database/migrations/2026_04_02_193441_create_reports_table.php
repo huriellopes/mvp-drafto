@@ -23,6 +23,7 @@ return new class() extends Migration
 
             $table->string('reason');
             $table->text('description')->nullable();
+            $table->text('admin_feedback')->nullable();
             $table->string('status')->default(ReportStatusEnum::PENDING->value);
 
             $table->foreignId('reviewed_by')

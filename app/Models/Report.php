@@ -15,8 +15,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[Fillable([
     'reporter_id',
+    'reportable_type',
+    'reportable_id',
     'reason',
     'description',
+    'admin_feedback',
     'status',
     'reviewed_by',
     'reviewed_at',

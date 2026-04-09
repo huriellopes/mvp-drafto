@@ -7,15 +7,19 @@ namespace App\Models;
 use App\Enums\PostStatusEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\PostVisibilityEnum;
+use App\Services\Post\ReadingTimeCalculator;
+use App\Traits\HasSlug;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
 #[Fillable([
@@ -32,6 +36,7 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'published_at',
     'featured_at',
     'comments_enabled',
+    'seo_enabled',
     'reading_time',
     'views_count',
     'likes_count',
@@ -41,6 +46,8 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory, KeepsDeletedModels;
+
+    use HasSEO, HasSlug;
 
     public function author(): BelongsTo
     {
@@ -124,6 +131,30 @@ class Post extends Model
         return $this->type === PostTypeEnum::POST;
     }
 
+    protected function coverImageUrl(): Attribute
+    {
+        return Attribute::get(function () {
+            if (!$this->cover_image_path) {
+                return;
+            }
+
+            if (str_starts_with($this->cover_image_path, 'http')) {
+                return $this->cover_image_path;
+            }
+
+            return asset('storage/' . $this->cover_image_path);
+        });
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Post $post) {
+            if ($post->isDirty('content')) {
+                $post->reading_time = ReadingTimeCalculator::calculate($post->content);
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
@@ -131,12 +162,15 @@ class Post extends Model
             'status' => PostStatusEnum::class,
             'visibility' => PostVisibilityEnum::class,
             'comments_enabled' => 'boolean',
+            'seo_enabled' => 'boolean',
             'reading_time' => 'integer',
             'views_count' => 'integer',
             'likes_count' => 'integer',
             'comments_count' => 'integer',
             'published_at' => 'datetime',
             'featured_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
         ];
     }
 }

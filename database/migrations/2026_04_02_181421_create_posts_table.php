@@ -45,6 +45,7 @@ return new class() extends Migration
             $table->timestamp('featured_at')->nullable();
 
             $table->boolean('comments_enabled')->default(true);
+            $table->boolean('seo_enabled')->default(true);
             $table->unsignedInteger('reading_time')->default(1);
 
             $table->unsignedBigInteger('views_count')->default(0);

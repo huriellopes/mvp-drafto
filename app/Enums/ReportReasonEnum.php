@@ -18,6 +18,9 @@ enum ReportReasonEnum: string
             self::HARASSMENT => __('enums.report_reason.harassment'),
             self::PLAGIARISM => __('enums.report_reason.plagiarism'),
             self::INAPPROPRIATE => __('enums.report_reason.inappropriate'),
+            self::PRAISE => 'Elogio / Feedback Positivo',
+            self::SUGGESTION => 'Sugestão de Melhoria',
+            self::BUG => 'Relatar um Bug / Problema',
             self::OTHER => __('enums.report_reason.other'),
         };
     }
@@ -28,6 +31,9 @@ enum ReportReasonEnum: string
             self::SPAM => 'yellow',
             self::ABUSE, self::INAPPROPRIATE, self::HARASSMENT => 'red',
             self::PLAGIARISM => 'orange',
+            self::PRAISE => 'green',
+            self::SUGGESTION => 'blue',
+            self::BUG => 'purple',
             self::OTHER => 'gray',
         };
     }
@@ -37,5 +43,8 @@ enum ReportReasonEnum: string
     case HARASSMENT = 'harassment';
     case PLAGIARISM = 'plagiarism';
     case INAPPROPRIATE = 'inappropriate';
+    case PRAISE = 'praise';
+    case SUGGESTION = 'suggestion';
+    case BUG = 'bug';
     case OTHER = 'other';
 }

@@ -23,8 +23,8 @@ class PostViewFactory extends Factory
             'post_id' => Post::factory()->published(),
             'user_id' => null,
             'session_id' => Str::uuid()->toString(),
-            'ip_hash' => hash('sha256', fake()->ipv4()),
-            'user_agent' => fake()->userAgent(),
+            'ip_hash' => fake()->ipv4(),
+            'user_agent' => Str::limit(fake()->userAgent(), 500),
             'viewed_at' => now()->subMinutes(fake()->numberBetween(1, 10000)),
         ];
     }

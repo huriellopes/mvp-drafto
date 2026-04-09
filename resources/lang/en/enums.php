@@ -9,6 +9,8 @@ return [
         'suspended' => 'Suspended',
         'pending' => 'Pending',
         'blocked' => 'Blocked',
+        'inactive' => 'Inactive',
+        'banned' => 'Banned',
     ],
 
     'theme' => [
