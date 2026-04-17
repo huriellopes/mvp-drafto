@@ -7,13 +7,14 @@ return [
     |--------------------------------------------------------------------------
     | Tradução da Paginação
     |--------------------------------------------------------------------------
-    |
-    | As seguintes linhas de idioma são usadas pela biblioteca de paginação para construir
-    | os links de paginação simples. Você é livre para alterá-las para qualquer
-    | coisa que queira personalizar suas visualizações para melhor atender ao seu aplicativo.
-    |
     */
 
-    'previous' => '&laquo; Anterior',
-    'next' => 'Próximo &raquo;',
+    'previous'   => '&laquo; Anterior',
+    'next'       => 'Próximo &raquo;',
+    'navigation' => 'Navegação da Paginação',
+    'showing'    => 'Mostrando',
+    'to'         => 'a',
+    'of'         => 'de',
+    'results'    => 'resultados',
+    'goto_page'  => 'Ir para a página :page',
 ];

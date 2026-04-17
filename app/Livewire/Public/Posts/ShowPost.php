@@ -6,6 +6,7 @@ namespace App\Livewire\Public\Posts;
 
 use App\Actions\Public\GetRelatedPostsAction;
 use App\Enums\PostVisibilityEnum;
+use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Services\Post\PostSeoGenerator;
 use Illuminate\View\View;
@@ -24,7 +25,7 @@ class ShowPost extends Component
             ->with(['author.profile', 'category', 'tags'])
             ->firstOrFail();
 
-        if ($this->canReadContent) {
+        if ($this->canReadContent && $this->shouldIncrementView()) {
             $this->incrementViews();
         }
     }
@@ -55,6 +56,15 @@ class ShowPost extends Component
             ]);
     }
 
+    private function shouldIncrementView(): bool
+    {
+        if (auth()->check() && auth()->id() === $this->post->user_id) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function incrementViews(): void
     {
         $this->post->timestamps = false;
@@ -69,8 +79,10 @@ class ShowPost extends Component
 
         $user = auth()->user();
 
-        return $user->isAdmin() ||
-            $user->id === $this->post->user_id ||
-            $user->isFollowing($this->post->author);
+        if ($user->id === $this->post->user_id || $user->hasRole(RoleEnum::SUPER_ADMIN)) {
+            return true;
+        }
+
+        return $user->isFollowing($this->post->author);
     }
 }

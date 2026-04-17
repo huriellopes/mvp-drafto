@@ -38,6 +38,10 @@ class ProfileForm extends Form
 
     public bool $is_searchable = true;
 
+    public string $seo_title = '';
+
+    public string $seo_description = '';
+
     public $avatar;
 
     public $cover;
@@ -57,6 +61,9 @@ class ProfileForm extends Form
         $this->visibility = $profile->visibility->value ?? ProfileVisibilityEnum::PUBLIC->value;
         $this->show_email_publicly = $profile->show_email_publicly ?? false;
         $this->is_searchable = $profile->is_searchable ?? true;
+
+        $this->seo_title = $profile->seo?->title ?? '';
+        $this->seo_description = $profile->seo?->description ?? '';
     }
 
     public function rules(): array
@@ -74,6 +81,8 @@ class ProfileForm extends Form
             'visibility' => ['required', Rule::enum(ProfileVisibilityEnum::class)],
             'show_email_publicly' => ['boolean'],
             'is_searchable' => ['boolean'],
+            'seo_title' => ['nullable', 'string', 'max:60'],
+            'seo_description' => ['nullable', 'string', 'max:160'],
             'avatar' => ['nullable', 'image', 'max:1024'],
             'cover' => ['nullable', 'image', 'max:2048'],
         ];

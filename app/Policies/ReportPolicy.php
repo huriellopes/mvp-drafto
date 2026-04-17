@@ -18,7 +18,7 @@ class ReportPolicy
 
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function view(User $user, Report $report): bool
@@ -38,12 +38,11 @@ class ReportPolicy
 
     public function delete(User $user, Report $report): bool
     {
-        return $report->reporter_id === $user->id
-            && $report->status === ReportStatusEnum::PENDING;
+        return $user->hasRole(RoleEnum::SUPER_ADMIN);
     }
 
     public function review(User $user, Report $report): bool
     {
-        return false;
+        return $user->isAdmin() && $report->status !== ReportStatusEnum::ACTION_TAKEN;
     }
 }

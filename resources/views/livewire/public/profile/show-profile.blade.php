@@ -9,6 +9,13 @@
             window.addEventListener('scroll', () => { this.scrolled = window.scrollY > 50 })
         }
      }">
+    @if($this->isOwner && !$this->isProfileComplete)
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl mb-8 flex items-center justify-between">
+            <p class="text-amber-800 text-sm font-medium">Seu perfil está incompleto. Adicione uma bio para atrair mais seguidores!</p>
+            <a href="{{ route('dashboard.profile') }}" class="text-amber-900 font-black uppercase text-[10px] tracking-widest">Completar agora</a>
+        </div>
+    @endif
+
     {{-- 1. Verificação de Perfil Incompleto para visitantes --}}
     @if($this->user->profile->visibility === ProfileVisibilityEnum::PRIVATE && !$this->isOwner)
         <div class="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center animate-in fade-in duration-700">

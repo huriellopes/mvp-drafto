@@ -16,7 +16,15 @@ class FollowerPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(RoleEnum::WRITER);
+        return $user->isActive();
+    }
+
+    public function canHaveFollowers(User $target): bool
+    {
+        // Criterioso: Talvez você queira que apenas usuários com plano Plus/Pro
+        // apareçam como "seguíveis" para criar exclusividade.
+        // Por enquanto, validamos se o módulo de seguidores está ativo no sistema.
+        return true;
     }
 
     public function delete(User $user, User $target): bool

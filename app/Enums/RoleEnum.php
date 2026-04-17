@@ -28,6 +28,14 @@ enum RoleEnum: string
         };
     }
 
+    public static function assignableOptions(): array
+    {
+        return collect(self::options())
+            ->reject(fn ($option) => $option['value'] === self::SUPER_ADMIN->value)
+            ->values()
+            ->toArray();
+    }
+
     case SUPER_ADMIN = 'super_admin';
     case WRITER = 'writer';
     case READER = 'reader';

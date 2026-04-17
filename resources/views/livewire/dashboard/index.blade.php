@@ -13,6 +13,9 @@
     {{-- Banner de Verificação --}}
     <x-dashboard.verification-banner />
 
+    {{-- Banner de Trial --}}
+    <x-dashboard.trial-banner />
+
     {{-- Banner de Boas-vindas (Reutilizável) --}}
     <x-dashboard.welcome-banner :user="$this->user" />
 

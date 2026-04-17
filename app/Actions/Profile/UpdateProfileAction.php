@@ -37,10 +37,20 @@ final class UpdateProfileAction
             $profileData['cover_path'] = $data->cover->store('covers', 'public');
         }
 
-        $user->profile()->updateOrCreate(
+        $profile = $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
             $profileData,
         );
+
+        if ($data->seo_title || $data->seo_description) {
+            $profile->seo()->updateOrCreate(
+                ['model_id' => $profile->id, 'model_type' => $profile->getMorphClass()],
+                [
+                    'title' => $data->seo_title,
+                    'description' => $data->seo_description,
+                ]
+            );
+        }
     }
 
     private function cleanupOldFile(?string $path): void

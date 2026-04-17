@@ -29,7 +29,6 @@
     @livewireStyles
 
     @php
-        // Solução Sênior: Função anônima para converter Hex para RGB e evitar o erro "undefined function"
         $hex = $primaryColor ?? '#18181b';
         $hex = str_replace('#', '', $hex);
         $r = hexdec(substr($hex, 0, 2));

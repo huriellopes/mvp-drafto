@@ -94,22 +94,24 @@
     </div>
 
     {{-- Gestão de Assinatura --}}
-    <div>
-        <x-ui.sidebar-group-title>{{ __('Assinatura e Planos') }}</x-ui.sidebar-group-title>
-        <nav class="space-y-2">
-            <x-ui.sidebar-link href="{{ route('dashboard.billing.plans') }}" :active="request()->routeIs('dashboard.billing.plans')" wire:navigate.hover>
-                <x-slot:icon><x-lucide-credit-card class="h-5 w-5" /></x-slot:icon>
-                {{ $user->subscribed() ? 'Mudar Plano' : 'Seja Pro' }}
-            </x-ui.sidebar-link>
-
-            @if($user->subscribed())
-                <x-ui.sidebar-link href="{{ route('dashboard.billing.portal') }}" wire:navigate="false">
-                    <x-slot:icon><x-lucide-external-link class="h-5 w-5" /></x-slot:icon>
-                    Gerenciar Pagamento
+    @module(ModuleEnum::SUBSCRIPTIONS)
+        <div>
+            <x-ui.sidebar-group-title>{{ __('Assinatura e Planos') }}</x-ui.sidebar-group-title>
+            <nav class="space-y-2">
+                <x-ui.sidebar-link href="{{ route('dashboard.billing.plans') }}" :active="request()->routeIs('dashboard.billing.plans')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-credit-card class="h-5 w-5" /></x-slot:icon>
+                    {{ $user->subscribed() ? 'Mudar Plano' : 'Seja Pro' }}
                 </x-ui.sidebar-link>
-            @endif
-        </nav>
-    </div>
+
+                @if($user->subscribed())
+                    <x-ui.sidebar-link href="{{ route('dashboard.billing.portal') }}" wire:navigate="false">
+                        <x-slot:icon><x-lucide-external-link class="h-5 w-5" /></x-slot:icon>
+                        Gerenciar Pagamento
+                    </x-ui.sidebar-link>
+                @endif
+            </nav>
+        </div>
+    @endmodule
 
     {{-- Gestão Master (Admin Only) --}}
     @can('admin')
@@ -119,6 +121,11 @@
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.users.index') }}" :active="request()->routeIs('dashboard.admin.users.*')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-users class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.users') }}
+                </x-ui.sidebar-link>
+
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.subscriptions.index') }}" :active="request()->routeIs('dashboard.admin.subscriptions.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-credit-card class="h-5 w-5" /></x-slot:icon>
+                    Assinaturas
                 </x-ui.sidebar-link>
 
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.newsletter.index') }}" :active="request()->routeIs('dashboard.admin.newsletter.*')" wire:navigate.hover>
@@ -144,17 +151,19 @@
         </div>
     @endcan
 
-    @if(!$user->subscribed('pro') && !$isAdmin)
+    @if(!$user->subscribed('pro') && !$user->onTrial() && !$isAdmin)
         <div class="px-4 pt-4">
-            <div class="rounded-[2rem] bg-indigo-600 p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden group">
+            <div class="rounded-[2.5rem] bg-indigo-600 p-6 text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden group">
                 <div class="absolute -right-4 -top-4 h-20 w-20 bg-white/10 rounded-full blur-2xl transition-all group-hover:scale-150"></div>
 
-                <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Drafto Plus</p>
-                <p class="text-xs font-bold leading-tight mb-4">Desbloqueie cores customizadas e crachás HD.</p>
+                <div class="relative z-10">
+                    <p class="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2 italic">Drafto Plus</p>
+                    <p class="text-xs font-bold leading-tight mb-4">Desbloqueie cores customizadas, crachás HD e estatísticas avançadas.</p>
 
-                <a href="{{ route('dashboard.billing.plans') }}" wire:navigate class="inline-flex w-full items-center justify-center rounded-xl bg-white py-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-zinc-100 transition">
-                    Fazer Upgrade
-                </a>
+                    <a href="{{ route('dashboard.billing.plans') }}" wire:navigate class="inline-flex w-full items-center justify-center rounded-2xl bg-white py-3 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:bg-zinc-100 transition shadow-lg active:scale-95">
+                        Fazer Upgrade
+                    </a>
+                </div>
             </div>
         </div>
     @endif

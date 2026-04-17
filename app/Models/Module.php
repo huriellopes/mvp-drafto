@@ -22,7 +22,7 @@ class Module extends Model
     // Helper Sênior: Verifica se um módulo está ativo com Cache para performance
     public static function isEnabled(ModuleEnum $slug): bool
     {
-        return Cache::rememberForever("module_status_{$slug->value}", function () use ($slug) {
+        return Cache::remember("module_status_{$slug->value}", now()->addMinutes(30), function () use ($slug) {
             return self::where('slug', $slug)->where('is_enabled', true)->exists();
         });
     }

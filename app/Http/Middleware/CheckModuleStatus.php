@@ -10,9 +10,12 @@ use App\Models\Module;
 use Closure;
 use Illuminate\Http\Request;
 
-class CheckModuleStatus
+final class CheckModuleStatus
 {
-    public function handle(Request $request, Closure $next, string $slug)
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next, string $slug): mixed
     {
         if (auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)) {
             return $next($request);

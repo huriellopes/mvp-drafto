@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Livewire\Public\Posts;
 
 use App\Actions\Comments\StoreCommentAction;
+use App\Enums\ModuleEnum;
 use App\Livewire\Forms\Public\CommentForm;
+use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -42,6 +44,8 @@ class PostComments extends Component
 
     public function save(): void
     {
+        $this->authorize('create', Comment::class);
+
         if (auth()->guest()) {
             $this->redirect(route('login'), navigate: true);
 
@@ -49,6 +53,12 @@ class PostComments extends Component
         }
 
         $this->validateOnly('form.content');
+
+        if (str_contains($this->form->content, '<img') && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images')) {
+            $this->addError('form.content', 'Seu plano atual não permite o envio de imagens nos comentários.');
+
+            return;
+        }
 
         app(StoreCommentAction::class)->exec(
             auth()->user(),
@@ -64,6 +74,14 @@ class PostComments extends Component
     {
         if (auth()->guest()) {
             $this->redirect(route('login'), navigate: true);
+
+            return;
+        }
+
+        $parent = Comment::findOrFail($this->replyingTo);
+
+        if (!$this->user()->can('reply', $parent)) {
+            Toaster::error('Esta conversa atingiu o limite de respostas para este plano.');
 
             return;
         }

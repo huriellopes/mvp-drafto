@@ -43,14 +43,32 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <style>
+        .livewire-progressive-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            width: 0;
+            background: #4f46e5;
+            z-index: 9999;
+            transition: width 300ms ease-out, opacity 150ms;
+            opacity: 0;
+        }
+    </style>
 </head>
 <body
     x-data="{
         sidebarOpen: false,
         sidebarCollapsed: false,
+        loading: false
     }"
+    x-on:livewire:navigating.window="loading = true"
+    x-on:livewire:navigated.window="loading = false"
     class="min-h-full bg-zinc-50 text-zinc-900 antialiased"
 >
+<div class="livewire-progressive-bar" :style="loading ? 'width: 100%; opacity: 1;' : 'width: 0%; opacity: 0; transition: none;'"></div>
 <div class="min-h-screen">
     <div class="flex min-h-screen">
         <div
@@ -152,17 +170,7 @@
 
                     <div class="flex items-center gap-3">
                         {{ $headerActions ?? '' }}
-                        <button
-                            @click="$dispatch('toggleNotifications')"
-                            class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:bg-zinc-50"
-                        >
-                            <x-lucide-bell class="h-5 w-5" />
-                            @if(auth()->user()->unreadNotifications->count() > 0)
-                                <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
-                                    {{ auth()->user()->unreadNotifications->count() }}
-                                </span>
-                            @endif
-                        </button>
+                        <livewire:dashboard.notification-bell />
                     </div>
                 </div>
             </header>
@@ -181,5 +189,7 @@
 <livewire:dashboard.notifications-sidebar />
 
 @livewireScripts
+
+<livewire:public.report-modal />
 </body>
 </html>

@@ -11,3 +11,7 @@ Artisan::command('inspire', function () {
 
 Schedule::command('drafto:send-newsletter')
     ->dailyAt('08:00');
+
+Schedule::command('app:expire-trials')
+    ->dailyAt('00:00')
+    ->runInBackground();

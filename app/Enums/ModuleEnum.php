@@ -18,6 +18,7 @@ enum ModuleEnum: string
             self::FOLLOWS => trans('dashboard.modules.items.follows'),
             self::SAVED_POST => trans('dashboard.modules.items.saved_post'),
             self::COMMENTS => trans('dashboard.modules.items.comments'),
+            self::SUBSCRIPTIONS => __('dashboard.modules.items.subscriptions'),
         };
     }
     case PROFILE = 'profile';
@@ -29,4 +30,5 @@ enum ModuleEnum: string
     case FOLLOWS = 'follows';
     case SAVED_POST = 'saved_post';
     case COMMENTS = 'comments';
+    case SUBSCRIPTIONS = 'subscription';
 }

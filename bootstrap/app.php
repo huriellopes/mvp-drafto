@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\CheckEmailVerificationInterval;
+use App\Http\Middleware\CheckModuleAccess;
 use App\Http\Middleware\CheckModuleStatus;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Http\Middleware\TrackPostView;
@@ -20,13 +22,18 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'check.verification.interval' => CheckEmailVerificationInterval::class,
+            'check.banned' => CheckBanned::class,
             'username.prefix' => EnsureUsernameHasAtPrefix::class,
             'track.post' => TrackPostView::class,
             'module' => CheckModuleStatus::class,
             'can' => Authorize::class,
+            'module.access' => CheckModuleAccess::class,
         ]);
 
-        $middleware->web(append: [CheckEmailVerificationInterval::class]);
+        $middleware->web(append: [
+            CheckEmailVerificationInterval::class,
+            CheckBanned::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

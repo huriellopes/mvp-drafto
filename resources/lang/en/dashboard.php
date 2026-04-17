@@ -194,6 +194,7 @@ return [
             'search_placeholder' => 'Search user...',
             'all_roles' => 'All roles',
             'new_button' => 'New User',
+            'export_button' => 'Export Excel',
             'table' => [
                 'user' => 'User',
                 'role' => 'Role',

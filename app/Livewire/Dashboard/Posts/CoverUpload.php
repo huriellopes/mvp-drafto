@@ -6,9 +6,11 @@ namespace App\Livewire\Dashboard\Posts;
 
 use App\Actions\Posts\UploadCoverImageAction;
 use App\Models\Post;
+use Exception;
 use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Masmerise\Toaster\Toaster;
 
 class CoverUpload extends Component
 {
@@ -43,18 +45,20 @@ class CoverUpload extends Component
 
     public function saveCrop($data): void
     {
-        $this->cropData = $data;
+        $this->validate(['image' => 'required|image']);
 
-        // Realiza o upload e o crop imediatamente
-        $path = app(UploadCoverImageAction::class)->exec(
-            $this->image,
-            $this->cropData,
-        );
+        try {
+            $path = app(UploadCoverImageAction::class)->exec(
+                $this->image,
+                $data,
+            );
 
-        $this->isCropped = true;
-
-        // Envia apenas o PATH para o pai
-        $this->dispatch('cover-prepared', coverPath: $path);
+            $this->isCropped = true;
+            $this->dispatch('cover-prepared', coverPath: $path);
+            Toaster::info('Capa preparada!');
+        } catch (Exception $e) {
+            Toaster::error('Falha ao processar imagem.');
+        }
     }
 
     public function render(): View

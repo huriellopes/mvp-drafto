@@ -8,6 +8,7 @@ use App\Actions\Public\StoreReportAction;
 use App\Livewire\Forms\Public\ReportForm;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 class ReportModal extends Component
 {
@@ -21,7 +22,16 @@ class ReportModal extends Component
         if (auth()->guest()) {
             return $this->redirect(route('login'), navigate: true);
         }
-        $this->form->setTarget($type, $id);
+
+        $normalizedType = mb_strtolower(class_basename($type));
+
+        $allowedTypes = ['post', 'comment', 'user'];
+
+        if (!in_array($normalizedType, $allowedTypes, true)) {
+            return;
+        }
+
+        $this->form->setTarget($normalizedType, $id);
         $this->show = true;
     }
 
@@ -30,11 +40,15 @@ class ReportModal extends Component
         $this->validate();
 
         app(StoreReportAction::class)->exec(
-            array_merge($this->form->all(), ['reporter_id' => auth()->id()]),
+            $this->form->getData(),
+            //            array_merge($this->form->all(), ['reporter_id' => auth()->id()]),
         );
+
         $this->reset(['show']);
+        $this->show = false;
         $this->form->reset();
-        $this->dispatch('notify', message: 'Denúncia enviada.');
+
+        Toaster::success('Enviado com sucesso! Obrigado pelo feedback.');
     }
 
     public function render()

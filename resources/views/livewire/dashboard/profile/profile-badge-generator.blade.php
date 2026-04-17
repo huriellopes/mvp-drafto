@@ -44,6 +44,7 @@
         }
     }
 }">
+    {{ Breadcrumbs::render('dashboard.profile.badge') }}
     <header class="space-y-2">
         <h2 class="text-4xl font-black tracking-tighter text-zinc-900 dark:text-white italic">
             {{ explode('.', __('dashboard.badge.title'))[0] }} <span class="text-indigo-600 dark:text-indigo-400">{{ explode('.', __('dashboard.badge.title'))[1] ?? '' }}</span>

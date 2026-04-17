@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -30,8 +32,10 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'email',
     'password',
     'role',
+    'plan_id',
     'status',
     'is_lifetime',
+    'trial_ends_at',
     'ip_address',
     'last_login_at',
     'email_verified_at',
@@ -52,6 +56,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
     }
 
     public function posts(): HasMany
@@ -137,6 +146,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(PostView::class);
     }
 
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class)
+            ->withPivot('is_enabled', 'settings')
+            ->withTimestamps();
+    }
+
     public function hasRole(RoleEnum $role): bool
     {
         return $this->role === $role;
@@ -164,11 +180,19 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasPremiumAccess(): bool
     {
-        if ($this->isAdmin() || $this->is_lifetime) {
+        if ($this->isAdmin() || $this->is_lifetime || $this->onTrial()) {
             return true;
         }
 
-        return $this->subscribed('default') || $this->subscribed('pro');
+        return $this->subscribed();
+    }
+
+    /**
+     * Checks if the user is currently on an active free trial.
+     */
+    public function onTrial(): bool
+    {
+        return $this->trial_ends_at && $this->trial_ends_at->isFuture();
     }
 
     public function hasVerificationExpired(): bool
@@ -206,6 +230,45 @@ class User extends Authenticatable implements MustVerifyEmail
         };
     }
 
+    /**
+     * Sênior: Cálculo de limite baseado no mês corrente.
+     * Isso impede que o usuário delete posts antigos para publicar novos se o plano for mensal.
+     */
+    public function hasReachedPostLimit(): bool
+    {
+        if ($this->isAdmin()) {
+            return false;
+        }
+
+        $limit = $this->getModuleSetting(ModuleEnum::MY_POSTS, 'max_monthly_posts');
+
+        if ($limit === -1) {
+            return false;
+        }
+
+        $publishedThisMonth = $this->posts()
+            ->where('status', PostStatusEnum::PUBLISHED)
+            ->whereMonth('published_at', now()->month)
+            ->count();
+
+        return $publishedThisMonth >= $limit;
+    }
+
+    public function isModuleAvailable(string $slug): bool
+    {
+        if ($this->hasRole(RoleEnum::SUPER_ADMIN)) {
+            return true;
+        }
+
+        $module = $this->modules->firstWhere('slug', $slug);
+
+        if (!$module) {
+            return false;
+        }
+
+        return $module->is_enabled && (bool) $module->pivot->is_enabled;
+    }
+
     protected function displayName(): Attribute
     {
         return Attribute::get(function () {
@@ -224,6 +287,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'role' => RoleEnum::class,
             'status' => UserStatusEnum::class,
             'is_lifetime' => 'boolean',
+            'trial_ends_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',

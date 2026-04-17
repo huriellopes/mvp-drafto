@@ -6,8 +6,9 @@ namespace App\DTOs\Public;
 
 use App\Models\Post;
 use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
 
-readonly class RelatedPostsData
+class RelatedPostsData extends Data
 {
     /**
      * @param  Collection<Post>  $posts

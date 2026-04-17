@@ -49,6 +49,52 @@
             </div>
         </x-ui.section-card>
 
+        {{-- Assinatura --}}
+        <x-ui.section-card title="Assinatura e Plano" description="Gerencie seu plano atual e informações de faturamento.">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <p class="text-sm font-bold text-zinc-900 dark:text-white">
+                        Plano Atual: 
+                        <span class="text-indigo-600 uppercase tracking-wider ml-1">
+                            {{ auth()->user()->getPlanName() }}
+                        </span>
+                    </p>
+                    <p class="text-xs text-zinc-500 mt-1">
+                        @if(auth()->user()->is_lifetime)
+                            Você possui acesso ilimitado para sempre ao Drafto.
+                        @elseif(auth()->user()->subscribed('plus') || auth()->user()->subscribed('pro'))
+                            Sua assinatura está ativa. Gerencie cobranças no portal do Stripe.
+                        @else
+                            Você está usando a versão gratuita com recursos limitados.
+                        @endif
+                    </p>
+                </div>
+
+                <div>
+                    @if(auth()->user()->subscribed('plus') || auth()->user()->subscribed('pro'))
+                        <x-ui.button 
+                            type="button"
+                            href="{{ route('dashboard.billing.portal') }}"
+                            variant="outline"
+                            sizes="sm"
+                            class="!rounded-xl"
+                        >
+                            Gerenciar Assinatura
+                        </x-ui.button>
+                    @else
+                        <x-ui.button 
+                            type="button"
+                            href="{{ route('dashboard.billing.plans') }}"
+                            sizes="sm"
+                            class="!rounded-xl"
+                        >
+                            Mudar de Plano
+                        </x-ui.button>
+                    @endif
+                </div>
+            </div>
+        </x-ui.section-card>
+
         <div class="flex justify-end gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-8">
             <x-ui.button
                 type="submit"

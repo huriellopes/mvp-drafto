@@ -16,21 +16,36 @@ class FollowButton extends Component
 
     public bool $iconOnly = false;
 
+    public bool $isFollowing = false;
+
+    public function mount(): void
+    {
+        $this->checkStatus();
+    }
+
     public function toggle()
     {
         if (auth()->guest()) {
             return $this->redirect(route('login'), navigate: true);
         }
 
+        if (auth()->id() === $this->user->id) {
+            return;
+        }
+
         app(ToggleFollowAction::class)->exec(auth()->user(), $this->user);
+        $this->checkStatus();
+
+        $this->dispatch('follow-updated');
     }
 
     public function render()
     {
-        $isFollowing = auth()->check() && auth()->user()->isFollowing($this->user);
+        return view('livewire.actions.follow-button');
+    }
 
-        return view('livewire.actions.follow-button', [
-            'isFollowing' => $isFollowing,
-        ]);
+    private function checkStatus(): void
+    {
+        $this->isFollowing = auth()->check() && auth()->user()->isFollowing($this->user);
     }
 }

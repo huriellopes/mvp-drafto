@@ -13,7 +13,7 @@ use Masmerise\Toaster\Toaster;
 
 class NewsletterForm extends Component
 {
-    #[Validate('required|email')]
+    #[Validate('required|email|unique:newsletter_subscriber,email')]
     public string $email = '';
 
     public ?int $categoryId = null;

@@ -1,5 +1,6 @@
 @use(App\Enums\ThemePlatformEnum)
 @use(App\Enums\ProfileVisibilityEnum)
+@use(App\Enums\ModuleEnum)
 
 <div class="space-y-10 pb-20">
     {{ Breadcrumbs::render('dashboard.profile') }}
@@ -8,7 +9,7 @@
         {{-- Seção Visual --}}
         <section class="overflow-hidden rounded-3xl border border-zinc-200 bg-white dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
             <div class="relative h-48 bg-zinc-100 dark:bg-zinc-800">
-                @if ($form->cover)
+                @if ($form->cover && method_exists($form->cover, 'temporaryUrl'))
                     <img src="{{ $form->cover->temporaryUrl() }}" class="h-full w-full object-cover" />
                 @elseif(auth()->user()->profile?->cover_path)
                     <img src="{{ Storage::url(auth()->user()->profile->cover_path) }}" class="h-full w-full object-cover">
@@ -26,7 +27,7 @@
             <div class="relative px-8 pb-8">
                 <div class="-mt-12 mb-6 relative inline-block">
                     <div class="h-24 w-24 overflow-hidden rounded-3xl border-4 border-white dark:border-zinc-900 bg-zinc-100 dark:bg-zinc-800 shadow-md">
-                        @if ($form->avatar)
+                        @if ($form->avatar && method_exists($form->avatar, 'temporaryUrl'))
                             <img src="{{ $form->avatar->temporaryUrl() }}" class="h-full w-full object-cover">
                         @elseif(auth()->user()->profile?->avatar_path)
                             <img src="{{ Storage::url(auth()->user()->profile->avatar_path) }}" class="h-full w-full object-cover">
@@ -51,7 +52,7 @@
                         :error="$errors->first('form.name')"
                     />
                     <x-ui.input
-                        wire:model.blur="form.email"
+                        wire:model.live="form.email"
                         label="{{ __('dashboard.profile.edit.visual_section.email_label') }}"
                         placeholder="johndoe@example.com"
                         :error="$errors->first('form.email')"
@@ -187,16 +188,16 @@
             title="{{ __('dashboard.profile.edit.seo_section.title') }}"
             description="{{ __('dashboard.profile.edit.seo_section.description') }}"
         >
-            <div class="space-y-6">
+            <div class="space-y-8">
                 <div @class([
-            'rounded-2xl border p-5 transition-all duration-300',
-            $form->is_searchable
-                ? 'border-emerald-100 bg-emerald-50/30 dark:border-emerald-500/10 dark:bg-emerald-500/5'
-                : 'border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50'
-        ])>
+                    'rounded-2xl border p-5 transition-all duration-300',
+                    $form->is_searchable
+                        ? 'border-emerald-100 bg-emerald-50/30 dark:border-emerald-500/10 dark:bg-emerald-500/5'
+                        : 'border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50'
+                ])>
                     <x-ui.checkbox
-                        wire:model.live="form.is_searchable" {{-- Use .live para o feedback visual --}}
-                    label="{{ __('dashboard.profile.edit.seo_section.indexable') }}"
+                        wire:model.live="form.is_searchable"
+                        label="{{ __('dashboard.profile.edit.seo_section.indexable') }}"
                         description="{{ __('dashboard.profile.edit.seo_section.indexable_desc') }}"
                         :error="$errors->first('form.is_searchable')"
                     />
@@ -210,6 +211,46 @@
                         @endif
                     </div>
                 </div>
+
+                @if($form->is_searchable)
+                    @if(auth()->user()->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', false))
+                        <div class="grid grid-cols-1 gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 animate-in fade-in duration-500">
+                            <x-ui.input
+                                wire:model.blur="form.seo_title"
+                                label="Título SEO Customizado"
+                                description="Título que aparecerá no Google (Recomendado: 50-60 caracteres)"
+                                placeholder="{{ $form->name }}"
+                                maxlength="60"
+                                :error="$errors->first('form.seo_title')"
+                            />
+
+                            <x-ui.textarea
+                                wire:model.blur="form.seo_description"
+                                label="Meta Descrição SEO"
+                                description="Breve resumo para os resultados de busca (Recomendado: 120-160 caracteres)"
+                                placeholder="{{ $form->bio }}"
+                                maxlength="160"
+                                rows="3"
+                                :error="$errors->first('form.seo_description')"
+                            />
+                        </div>
+                    @else
+                        <div class="rounded-[2.5rem] bg-zinc-50 dark:bg-zinc-800/50 p-8 border border-zinc-100 dark:border-zinc-700/50 text-center space-y-4 animate-in fade-in duration-500">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white mx-auto shadow-lg shadow-indigo-500/20">
+                                <x-lucide-sparkles class="h-6 w-6" />
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest italic">Personalização SEO</h4>
+                                <p class="text-xs text-zinc-500 mt-1 max-w-xs mx-auto">
+                                    Desbloqueie o controle total de como você aparece no Google com os planos <b>Plus</b> ou <b>Pro</b>.
+                                </p>
+                            </div>
+                            <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="!rounded-xl !px-8">
+                                Ver Planos
+                            </x-ui.button>
+                        </div>
+                    @endif
+                @endif
             </div>
         </x-ui.section-card>
 

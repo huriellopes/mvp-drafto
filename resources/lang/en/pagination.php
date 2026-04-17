@@ -14,6 +14,12 @@ return [
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next' => 'Next &raquo;',
+    'previous'   => '&laquo; Previous',
+    'next'       => 'Next &raquo;',
+    'navigation' => 'Pagination Navigation',
+    'showing'    => 'Showing',
+    'to'         => 'to',
+    'of'         => 'of',
+    'results'    => 'results',
+    'goto_page'  => 'Go to page :page',
 ];

@@ -90,7 +90,9 @@
             </div>
 
             {{-- Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12" wire:loading.class="opacity-30 blur-sm grayscale transition-all duration-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 min-h-[800px] transition-all duration-500" 
+                 wire:loading.class="opacity-40 grayscale pointer-events-none"
+            >
                 @forelse($posts as $post)
                     <x-public.post-card :$post wire:key="post-{{ $post->id }}" />
                 @empty

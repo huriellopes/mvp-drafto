@@ -8,7 +8,7 @@
         <button
             wire:click="toggle"
             wire:loading.attr="disabled"
-            title="{{ $isFollowing ? 'Deixar de seguir' : 'Seguir' }}"
+            title="{{ $this->isFollowing ? 'Deixar de seguir' : 'Seguir' }}"
             @class([
                 // Classes Base
                 'inline-flex items-center justify-center font-bold transition-all active:scale-95 disabled:opacity-50 shrink-0 select-none',
@@ -24,16 +24,16 @@
 
                 // ESTADO: SEGUINDO
                 'bg-emerald-50 border-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20'
-                    => $isFollowing,
+                    => $this->isFollowing,
 
                 // ESTADO: NÃO SEGUINDO
                 'bg-indigo-600 border-indigo-600 text-white dark:bg-indigo-500 dark:border-indigo-500 dark:text-white hover:bg-indigo-700 dark:hover:bg-indigo-400 hover:shadow-lg dark:hover:shadow-indigo-500/10 shadow-indigo-200'
-                    => !$isFollowing,
+                    => !$this->isFollowing,
             ])
         >
             {{-- Conteúdo do Botão --}}
             <div wire:loading.remove wire:target="toggle" class="flex items-center gap-2">
-                @if($isFollowing)
+                @if($this->isFollowing)
                     <x-lucide-user-check @class([($compact || $iconOnly) ? 'h-4 w-4' : 'h-5 w-5']) />
                     @if(!$iconOnly) <span>Seguindo</span> @endif
                 @else

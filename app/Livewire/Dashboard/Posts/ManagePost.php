@@ -30,6 +30,12 @@ class ManagePost extends Component
             $this->post = $post;
             $this->form->setPost($post);
         }
+
+        if (!$post && auth()->check() && auth()->user()->hasReachedPostLimit()) {
+            Toaster::error('Você atingiu o limite de posts do seu plano. Faça upgrade para publicar mais.');
+
+            return $this->redirect(route('dashboard.billing.plans'));
+        }
     }
 
     #[On('cover-prepared')]
@@ -42,31 +48,45 @@ class ManagePost extends Component
     {
         $this->validate();
 
-        $dto = $this->form->toDTO($this->updatedCoverPath);
+        $status = $this->post?->status ?? PostStatusEnum::DRAFT;
+        $dto = $this->form->toDTO($this->updatedCoverPath, $status);
 
-        $this->post = app(SavePostAction::class)->exec(
-            auth()->user(),
-            $dto,
-            $this->post,
-        );
+        try {
+            $this->post = app(SavePostAction::class)->exec(
+                auth()->user(),
+                $dto,
+                $this->post,
+            );
 
-        Toaster::success('Seu progresso foi salvo com sucesso!');
+            Toaster::success('Seu progresso foi salvo com sucesso!');
 
-        if (request()->routeIs('dashboard.posts.create')) {
-            return $this->redirect(route('dashboard.posts.edit', $this->post), navigate: true);
+            if (request()->routeIs('dashboard.posts.create')) {
+                return $this->redirect(route('dashboard.posts.edit', $this->post), navigate: true);
+            }
+        } catch (\Exception $e) {
+            Toaster::error($e->getMessage());
         }
     }
 
     public function publish()
     {
-        $this->save();
+        $this->validate();
+        
+        $dto = $this->form->toDTO($this->updatedCoverPath, PostStatusEnum::PUBLISHED);
 
-        $this->post->update([
-            'status' => PostStatusEnum::PUBLISHED,
-            'published_at' => now(),
-        ]);
+        try {
+            $this->post = app(SavePostAction::class)->exec(
+                auth()->user(),
+                $dto,
+                $this->post,
+            );
 
-        Toaster::success('Publicação realizada com sucesso!');
+            Toaster::success('Publicação realizada com sucesso!');
+            
+            return $this->redirect(route('dashboard.posts.index'), navigate: true);
+        } catch (\Exception $e) {
+            Toaster::error($e->getMessage());
+        }
     }
 
     public function render(): View

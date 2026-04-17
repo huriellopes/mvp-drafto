@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Admin;
 
 use App\Actions\Users\StoreUserAction;
 use App\Actions\Users\UpdateUserAction;
+use App\DTOs\SaveUserData;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
@@ -27,6 +28,8 @@ class UserForm extends Form
 
     public string $status = 'active';
 
+    public bool $is_lifetime = false;
+
     public function rules(): array
     {
         return [
@@ -35,6 +38,7 @@ class UserForm extends Form
             'password' => [$this->user ? 'nullable' : 'required', 'string', 'min:8'],
             'role' => ['required', Rule::enum(RoleEnum::class)],
             'status' => ['required', Rule::enum(UserStatusEnum::class)],
+            'is_lifetime' => ['boolean'],
         ];
     }
 
@@ -45,6 +49,7 @@ class UserForm extends Form
         $this->email = $user->email;
         $this->role = $user->role->value;
         $this->status = $user->status->value;
+        $this->is_lifetime = (bool) $user->is_lifetime;
         $this->password = '';
     }
 
@@ -67,7 +72,10 @@ class UserForm extends Form
 
         app(StoreUserAction::class)
             ->exec(
-                data: $this->all(),
+                data: SaveUserData::from([
+                    ...$this->all(),
+                    'send_welcome_email' => true,
+                ])
             );
     }
 }

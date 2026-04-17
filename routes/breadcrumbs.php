@@ -16,6 +16,11 @@ Breadcrumbs::for('dashboard.profile', function (BreadcrumbTrail $trail) {
     $trail->push('Meu Perfil Público', route('dashboard.profile'));
 });
 
+Breadcrumbs::for('dashboard.profile.badge', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Crachá do Escritor', route('dashboard.profile.badge'));
+});
+
 Breadcrumbs::for('dashboard.account', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Configurações', route('dashboard.account'));
@@ -30,6 +35,11 @@ Breadcrumbs::for('dashboard.posts.index', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('dashboard.posts.draft', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Rascunhos', route('dashboard.posts.draft'));
+});
+
+Breadcrumbs::for('dashboard.categories', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Categorias', route('dashboard.posts.categories.index'));
 });
 
 Breadcrumbs::for('dashboard.posts.create', function (BreadcrumbTrail $trail) {
@@ -77,6 +87,11 @@ Breadcrumbs::for('dashboard.newsletter.index', function (BreadcrumbTrail $trail)
 Breadcrumbs::for('dashboard.reports.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Moderação', route('dashboard.admin.reports.index'));
+});
+
+Breadcrumbs::for('dashboard.subscriptions.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Gestão de Assinaturas', route('dashboard.admin.subscriptions.index'));
 });
 
 Breadcrumbs::for('dashboard.posts.views', function (BreadcrumbTrail $trail) {

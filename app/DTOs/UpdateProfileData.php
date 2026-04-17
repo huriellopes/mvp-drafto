@@ -24,6 +24,8 @@ class UpdateProfileData extends Data
         public ProfileVisibilityEnum $visibility,
         public bool $show_email_publicly,
         public bool $is_searchable,
+        public ?string $seo_title = null,
+        public ?string $seo_description = null,
         public ?UploadedFile $avatar = null,
         public ?UploadedFile $cover = null,
     ) {

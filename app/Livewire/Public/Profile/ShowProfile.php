@@ -30,6 +30,7 @@ class ShowProfile extends Component
         return User::query()
             ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
             ->with(['profile', 'followers', 'following'])
+            ->withCount(['posts' => fn ($q) => $q->published()])
             ->firstOrFail();
     }
 
@@ -67,6 +68,7 @@ class ShowProfile extends Component
                 'themeMode' => $profile->theme_mode->value ?? 'light',
                 'primaryColor' => $profile->primary_color,
                 'accentColor' => $profile->accent_color,
+                'title' => $profile->display_name . ' (@' . $profile->username . ')',
                 'seo' => ProfileSeoGenerator::generate($profile),
             ]);
     }

@@ -16,8 +16,8 @@
             <p class="mt-0.5 truncate text-xs text-zinc-500">
                 {{ $user->email }}
             </p>
-            <button 
-                @click="$dispatch('openReportModal', { type: 'App\\Models\\User', id: {{ $user->id }} })"
+            <button
+                @click="$dispatch('openReportModal', { type: 'user', id: {{ $user->id }} })"
                 class="mt-3 flex w-full items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-[10px] font-bold text-zinc-600 border border-zinc-200 hover:text-profile-primary hover:border-profile-primary transition shadow-sm"
             >
                 <x-lucide-message-square-heart class="h-3 w-3" />

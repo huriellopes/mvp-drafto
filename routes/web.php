@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::livewire('/', 'public.site.home')
     ->name('home');
+Route::get('/sitemap.xml', [App\Http\Controllers\Public\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/artigos', ExplorePosts::class)
     ->name('posts.explore');
 Route::get('/escritores', ExploreWriters::class)
@@ -63,7 +64,8 @@ Route::middleware(['auth', 'check.verification.interval'])->prefix('dashboard')-
     Route::livewire('/', 'dashboard.index')->name('index');
 
     // Perfil e Conta (Base para todos)
-    Route::livewire('/perfil/editar', 'dashboard.profile.edit-profile')->middleware('module:profile')
+    Route::livewire('/perfil/editar', 'dashboard.profile.edit-profile')
+        ->middleware(['module:profile', 'module.access:profile'])
         ->name('profile');
     Route::livewire('/perfil/cracha', 'dashboard.profile.profile-badge-generator')
         ->name('profile.badge');
@@ -73,12 +75,24 @@ Route::middleware(['auth', 'check.verification.interval'])->prefix('dashboard')-
     /*
     |--- Área do Escritor (Writer/Admin) ---
     */
-    Route::prefix('posts')->name('posts.')->group(function () {
-        Route::livewire('/meus-conteudos', 'dashboard.posts.index-posts')->middleware('module:my_posts')->name('index');
-        Route::livewire('/rascunhos', 'dashboard.posts.draft-index')->middleware('module:draft')->name('draft');
-        Route::livewire('/create', 'dashboard.posts.manage-post')->middleware('module:my_posts')->name('create');
-        Route::livewire('/{post}/edit', 'dashboard.posts.manage-post')->middleware('module:my_posts')->name('edit');
-        Route::livewire('/categorias', 'dashboard.categories.category-index')->middleware('module:categories')->name('categories.index');
+    Route::prefix('posts')
+        ->name('posts.')
+        ->group(function () {
+            Route::livewire('/meus-conteudos', 'dashboard.posts.index-posts')
+                ->middleware(['module:my_posts', 'module.access:my_posts'])
+                ->name('index');
+            Route::livewire('/rascunhos', 'dashboard.posts.draft-index')
+                ->middleware('module:draft')
+                ->name('draft');
+            Route::livewire('/create', 'dashboard.posts.manage-post')
+                ->middleware('module:my_posts')
+                ->name('create');
+            Route::livewire('/{post}/edit', 'dashboard.posts.manage-post')
+                ->middleware('module:my_posts')
+                ->name('edit');
+            Route::livewire('/categorias', 'dashboard.categories.category-index')
+                ->middleware('module:categories')
+                ->name('categories.index');
     });
 
     /*
@@ -88,12 +102,18 @@ Route::middleware(['auth', 'check.verification.interval'])->prefix('dashboard')-
     Route::livewire('/comentarios', 'dashboard.comments.comment-index')->middleware('module:comments')->name('comments');
     Route::livewire('/comunidade', 'dashboard.follows.follow-index')->middleware('module:follows')->name('follows');
 
-    Route::prefix('faturamento')->name('billing.')->group(function () {
-        Route::livewire('/planos', 'dashboard.billing.plans-index')->name('plans');
+    Route::prefix('faturamento')
+        ->name('billing.')
+        ->middleware([
+            'module:subscriptions',
+            'module.access:subscriptions'
+        ])
+        ->group(function () {
+            Route::livewire('/planos', 'dashboard.billing.plans-index')->name('plans');
 
-        Route::get('/portal', function (Request $request) {
-            return $request->user()->redirectToBillingPortal(route('dashboard.account'));
-        })->name('portal');
+            Route::get('/portal', function (Request $request) {
+                return $request->user()->redirectToBillingPortal(route('dashboard.account'));
+            })->name('portal');
     });
 
     /*
@@ -107,7 +127,9 @@ Route::middleware(['auth', 'check.verification.interval'])->prefix('dashboard')-
 | Recursos de Sistema & Públicos Específicos
 |--------------------------------------------------------------------------
 */
-Route::post('/trix/attachments', TrixAttachmentController::class)->middleware('auth')->name('trix.attachments.store');
+Route::post('/trix/attachments', TrixAttachmentController::class)
+    ->middleware('auth')
+    ->name('trix.attachments.store');
 
 Route::livewire('/@{username}', 'public.profile.show-profile')->name('profile.show')
     ->middleware(EnsureUsernameHasAtPrefix::class)->where('username', '[a-z0-9._]+');
@@ -120,3 +142,5 @@ Route::get('/badge/@{username}', [ProfileBadgeController::class, 'show'])
     ->name('public.profile.badge');
 
 Route::get('/newsletter/unsubscribe/{email}', UnsubscribeController::class)->name('newsletter.unsubscribe')->middleware('signed');
+
+Route::view('/diretrizes', 'public.pages.guidelines')->name('pages.guidelines');

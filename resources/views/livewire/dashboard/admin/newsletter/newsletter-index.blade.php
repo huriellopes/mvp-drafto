@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    {{ Breadcrumbs::render('dashboard.newsletter.index') }}
     <div class="mb-8">
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white leading-tight">{{ __('dashboard.admin.newsletter.title') }}</h2>
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('dashboard.admin.newsletter.subtitle') }}</p>
@@ -117,26 +118,38 @@
     />
 
     <x-ui.modal name="manual-newsletter-modal" title="{{ __('dashboard.admin.newsletter.manual_modal.title') }}">
-        <div class="space-y-6">
+        <form wire:submit.prevent="sendManualNewsletter" class="space-y-6">
             <p class="text-sm text-zinc-500">
                 {{ __('dashboard.admin.newsletter.manual_modal.description') }}
             </p>
+
+            <x-ui.select 
+                label="Filtrar por Categoria (Opcional)" 
+                wire:model="manualCategoryId"
+                :error="$errors->first('manualCategoryId')"
+            >
+                <option value="">Enviar para TODOS</option>
+                @foreach($this->categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </x-ui.select>
 
             <x-ui.textarea
                 label="{{ __('dashboard.admin.newsletter.manual_modal.label') }}"
                 wire:model="customMessage"
                 placeholder="{{ __('dashboard.admin.newsletter.manual_modal.placeholder') }}"
                 rows="5"
+                :error="$errors->first('customMessage')"
             />
 
             <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <x-ui.button variant="secondary" x-on:click="show = false" class="!w-auto px-8">
+                <x-ui.button variant="secondary" x-on:click="$dispatch('close-modal', { name: 'manual-newsletter-modal' })" type="button" class="!w-auto px-8">
                     {{ __('dashboard.admin.newsletter.manual_modal.cancel') }}
                 </x-ui.button>
-                <x-ui.button wire:click="sendManualNewsletter" loading="sendManualNewsletter" class="!w-auto px-10">
+                <x-ui.button type="submit" loading="sendManualNewsletter" class="!w-auto px-10">
                     {{ __('dashboard.admin.newsletter.manual_modal.confirm') }}
                 </x-ui.button>
             </div>
-        </div>
+        </form>
     </x-ui.modal>
 </div>
