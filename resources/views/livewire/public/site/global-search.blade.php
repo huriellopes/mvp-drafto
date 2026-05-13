@@ -76,7 +76,7 @@
                             <h3 class="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4">Mestres da Escrita</h3>
                             <div class="space-y-1">
                                 @foreach($authors as $author)
-                                    <a href="{{ route('profile.show', $author->profile->username) }}" class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
+                                    <a href="{{ route('profile.show', $author->profile->username) }}" @click="isOpen = false" wire:navigate class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
                                         <div class="relative">
                                             <img src="{{ $author->profile->avatar_url }}" class="h-12 w-12 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
                                             <div class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 bg-emerald-500"></div>
@@ -98,7 +98,7 @@
                             <h3 class="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4">Resultados da Biblioteca</h3>
                             <div class="space-y-2">
                                 @foreach($posts as $post)
-                                    <a href="{{ route('posts.show', $post->slug) }}" class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
+                                    <a href="{{ route('posts.show', $post->slug) }}" @click="isOpen = false" wire:navigate class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
                                         <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
                                             @if($post->cover_image_url)
                                                 <img src="{{ $post->cover_image_url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">

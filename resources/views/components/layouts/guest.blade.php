@@ -2,8 +2,13 @@
     'themeMode' => 'system',
     'primaryColor' => '#18181b',
     'accentColor' => '#3f3f46',
+    'secondaryColor' => null,
+    'textColor' => null,
+    'backgroundColor' => null,
+    'buttonStyle' => 'rounded-md',
+    'fontFamily' => 'sans',
     'title' => null,
-    'seo' => null // Sênior: garantindo que o SEO possa vir nulo
+    'seo' => null
 ])
     <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
@@ -21,6 +26,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <x-layouts.favicons />
+
     {{-- Lógica de SEO Sênior --}}
     @if($seo)
         {!! seo($seo) !!}
@@ -36,6 +43,22 @@
         :root {
             --profile-primary: {{ $primaryColor }};
             --profile-accent: {{ $accentColor }};
+            --profile-secondary: {{ $secondaryColor ?? $accentColor }};
+            --profile-text: {{ $textColor ?? 'inherit' }};
+            --profile-bg: {{ $backgroundColor ?? 'inherit' }};
+            --profile-button-radius: {{ match($buttonStyle) {
+                'rounded-md' => '0.375rem',
+                'rounded-xl' => '0.75rem',
+                'rounded-full' => '9999px',
+                'square' => '0',
+                default => '0.375rem'
+            } }};
+            --profile-font: {{ match($fontFamily) {
+                'serif' => 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+                'mono' => 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                default => 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif'
+            } }};
+
             @php
                 $hex = str_replace('#', '', $primaryColor);
                 if(strlen($hex) == 3) $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
@@ -51,7 +74,9 @@
 
     <script>
         function getContrastYIQ(hexcolor){
+            if (!hexcolor || hexcolor === 'inherit') return 'black';
             hexcolor = hexcolor.replace('#', '');
+            if (hexcolor.length === 3) hexcolor = hexcolor[0]+hexcolor[0]+hexcolor[1]+hexcolor[1]+hexcolor[2]+hexcolor[2];
             const r = parseInt(hexcolor.substr(0,2),16);
             const g = parseInt(hexcolor.substr(2,2),16);
             const b = parseInt(hexcolor.substr(4,2),16);
@@ -59,9 +84,10 @@
             return (yiq >= 128) ? 'black' : 'white';
         }
         document.documentElement.style.setProperty('--profile-primary-text', getContrastYIQ('{{ $primaryColor }}'));
+        document.documentElement.style.setProperty('--profile-secondary-text', getContrastYIQ('{{ $secondaryColor ?? $accentColor }}'));
     </script>
 </head>
-<body class="bg-zinc-50 dark:bg-zinc-950 font-sans antialiased transition-colors duration-300">
+<body class="bg-zinc-50 dark:bg-zinc-950 antialiased transition-colors duration-300" style="font-family: var(--profile-font)">
 
 <nav class="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

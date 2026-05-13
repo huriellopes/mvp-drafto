@@ -20,6 +20,14 @@ return new class() extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        if (app()->isProduction()) {
+            $plans = config('plans');
+
+            foreach ($plans as $plan) {
+                \App\Models\Plan::query()->create($plan);
+            }
+        }
     }
 
     public function down(): void

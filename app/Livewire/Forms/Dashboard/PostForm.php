@@ -20,7 +20,6 @@ class PostForm extends Form
     #[Validate('required|min:5|max:255')]
     public string $title = '';
 
-    #[Validate('required|exists:post_categories,id')]
     public ?int $category_id = null;
 
     #[Validate('required|string|min:5')]
@@ -47,6 +46,22 @@ class PostForm extends Form
     public ?string $seo_title = null;
 
     public ?string $seo_description = null;
+
+    public function rules(): array
+    {
+        return [
+            'category_id' => [
+                'required',
+                'exists:post_categories,id',
+                function ($attribute, $value, $fail) {
+                    $category = \App\Models\PostCategory::find($value);
+                    if ($category && $category->user_id !== null && $category->user_id !== auth()->id()) {
+                        $fail('A categoria selecionada é inválida.');
+                    }
+                },
+            ],
+        ];
+    }
 
     public function setPost(Post $post)
     {
@@ -84,7 +99,6 @@ class PostForm extends Form
             seo_title: $this->seo_title,
             seo_description: $this->seo_description,
             cover_image_path: $coverImagePath ?? ($this->post?->cover_image_path),
-            reading_time: (int) ceil(str_word_count(strip_tags($this->content)) / 200),
         );
     }
 }

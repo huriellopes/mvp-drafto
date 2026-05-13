@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Actions\Profile;
 
 use App\DTOs\UpdateProfileData;
+use App\Jobs\ProcessProfileMediaJob;
 use App\Models\User;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 final class UpdateProfileAction
 {
@@ -27,13 +28,17 @@ final class UpdateProfileAction
             'is_searchable' => $data->is_searchable,
         ];
 
+        $oldAvatarPath = null;
+
         if ($data->avatar) {
-            $this->cleanupOldFile($user->profile?->avatar_path);
+            $oldAvatarPath = $user->profile?->avatar_path;
             $profileData['avatar_path'] = $data->avatar->store('avatars', 'public');
         }
 
+        $oldCoverPath = null;
+
         if ($data->cover) {
-            $this->cleanupOldFile($user->profile?->cover_path);
+            $oldCoverPath = $user->profile?->cover_path;
             $profileData['cover_path'] = $data->cover->store('covers', 'public');
         }
 
@@ -42,21 +47,44 @@ final class UpdateProfileAction
             $profileData,
         );
 
+        // Sênior: Despacha o processamento de mídia para a fila (Otimização WebP + Redimensionamento)
+        if ($data->avatar || $data->cover) {
+            ProcessProfileMediaJob::dispatch($profile, $oldAvatarPath, $oldCoverPath);
+        }
+
+        // Sênior: Limpa o cache do perfil público
+        Cache::tags(["profile_{$profile->username}"])->flush();
+
+        // Sênior: Atualiza ou cria as configurações de UI do perfil
+        $profile->settings()->updateOrCreate(
+            ['profile_id' => $profile->id],
+            [
+                'button_style' => $data->button_style,
+                'card_style' => $data->card_style,
+                'layout_type' => $data->layout_type,
+                'font_family' => $data->font_family,
+                'secondary_color' => $data->secondary_color,
+                'text_color' => $data->text_color,
+                'background_color' => $data->background_color,
+                'show_badges' => $data->show_badges,
+                'show_subscriber_count' => $data->show_subscriber_count,
+                'show_view_count' => $data->show_view_count,
+            ],
+        );
+
+        // Sênior: Sincroniza o nome na model User para consistência
+        if ($data->name && $user->name !== $data->name) {
+            $user->update(['name' => $data->name]);
+        }
+
         if ($data->seo_title || $data->seo_description) {
             $profile->seo()->updateOrCreate(
                 ['model_id' => $profile->id, 'model_type' => $profile->getMorphClass()],
                 [
                     'title' => $data->seo_title,
                     'description' => $data->seo_description,
-                ]
+                ],
             );
-        }
-    }
-
-    private function cleanupOldFile(?string $path): void
-    {
-        if ($path && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
         }
     }
 }

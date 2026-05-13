@@ -7,6 +7,7 @@ namespace App\Livewire\Forms\Admin;
 use App\Actions\Users\StoreUserAction;
 use App\Actions\Users\UpdateUserAction;
 use App\DTOs\SaveUserData;
+use App\DTOs\UpdateUserData;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
@@ -64,7 +65,7 @@ class UserForm extends Form
             app(UpdateUserAction::class)
                 ->exec(
                     user: $this->user,
-                    data: $this->except('user'),
+                    data: UpdateUserData::from($this->except('user')),
                 );
 
             return;
@@ -75,7 +76,7 @@ class UserForm extends Form
                 data: SaveUserData::from([
                     ...$this->all(),
                     'send_welcome_email' => true,
-                ])
+                ]),
             );
     }
 }

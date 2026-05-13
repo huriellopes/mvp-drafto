@@ -8,22 +8,33 @@ use App\Actions\Public\GetRelatedPostsAction;
 use App\Enums\PostVisibilityEnum;
 use App\Enums\RoleEnum;
 use App\Models\Post;
+use App\Models\User;
 use App\Services\Post\PostSeoGenerator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
+/**
+ * @property-read bool $canReadContent
+ * @property-read Collection $relatedPosts
+ */
 class ShowPost extends Component
 {
     public Post $post;
 
     public function mount(string $slug): void
     {
-        $this->post = Post::query()
-            ->where('slug', $slug)
-            ->published()
-            ->with(['author.profile', 'category', 'tags'])
-            ->firstOrFail();
+        $this->post = Cache::remember(
+            "post_show_{$slug}",
+            now()->addDays(7),
+            fn () => Post::query()
+                ->where('slug', $slug)
+                ->published()
+                ->with(['author.profile', 'category', 'tags'])
+                ->firstOrFail(),
+        );
 
         if ($this->canReadContent && $this->shouldIncrementView()) {
             $this->incrementViews();
@@ -77,12 +88,16 @@ class ShowPost extends Component
             return false;
         }
 
+        /** @var User $user */
         $user = auth()->user();
 
         if ($user->id === $this->post->user_id || $user->hasRole(RoleEnum::SUPER_ADMIN)) {
             return true;
         }
 
-        return $user->isFollowing($this->post->author);
+        /** @var User $author */
+        $author = $this->post->author;
+
+        return $user->isFollowing($author);
     }
 }

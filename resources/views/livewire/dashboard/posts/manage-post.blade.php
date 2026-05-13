@@ -90,6 +90,8 @@
                             @endif
                         </x-ui.select>
 
+                        <x-ui.tags-input label="Tags" wire:model="form.tags" :availableTags="$availableTags" />
+
                         <x-ui.select label="Tipo de conteúdo" wire:model="form.type">
                             @foreach(PostTypeEnum::cases() as $type)
                                 <option value="{{ $type->value }}">{{ $type->label() }}</option>

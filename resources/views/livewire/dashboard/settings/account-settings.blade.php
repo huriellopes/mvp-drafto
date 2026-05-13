@@ -47,51 +47,28 @@
                     placeholder="••••••••"
                 />
             </div>
+
+            <div class="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+                <livewire:dashboard.settings.two-factor-manager />
+            </div>
         </x-ui.section-card>
 
         {{-- Assinatura --}}
         <x-ui.section-card title="Assinatura e Plano" description="Gerencie seu plano atual e informações de faturamento.">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <p class="text-sm font-bold text-zinc-900 dark:text-white">
-                        Plano Atual: 
-                        <span class="text-indigo-600 uppercase tracking-wider ml-1">
-                            {{ auth()->user()->getPlanName() }}
-                        </span>
-                    </p>
-                    <p class="text-xs text-zinc-500 mt-1">
-                        @if(auth()->user()->is_lifetime)
-                            Você possui acesso ilimitado para sempre ao Drafto.
-                        @elseif(auth()->user()->subscribed('plus') || auth()->user()->subscribed('pro'))
-                            Sua assinatura está ativa. Gerencie cobranças no portal do Stripe.
-                        @else
-                            Você está usando a versão gratuita com recursos limitados.
-                        @endif
-                    </p>
-                </div>
+            <div class="flex items-center justify-between gap-6">
+                <p class="text-sm font-bold text-zinc-900 dark:text-white">
+                    Seu plano atual é o <span class="text-indigo-600 uppercase tracking-wider">{{ auth()->user()->getPlanName() }}</span>.
+                </p>
 
-                <div>
-                    @if(auth()->user()->subscribed('plus') || auth()->user()->subscribed('pro'))
-                        <x-ui.button 
-                            type="button"
-                            href="{{ route('dashboard.billing.portal') }}"
-                            variant="outline"
-                            sizes="sm"
-                            class="!rounded-xl"
-                        >
-                            Gerenciar Assinatura
-                        </x-ui.button>
-                    @else
-                        <x-ui.button 
-                            type="button"
-                            href="{{ route('dashboard.billing.plans') }}"
-                            sizes="sm"
-                            class="!rounded-xl"
-                        >
-                            Mudar de Plano
-                        </x-ui.button>
-                    @endif
-                </div>
+                <x-ui.button 
+                    type="button"
+                    href="{{ route('dashboard.billing.index') }}"
+                    variant="secondary"
+                    sizes="sm"
+                    class="!rounded-xl"
+                >
+                    Gerenciar Assinatura
+                </x-ui.button>
             </div>
         </x-ui.section-card>
 

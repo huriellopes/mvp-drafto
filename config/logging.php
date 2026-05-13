@@ -125,6 +125,27 @@ return [
             'handler' => NullHandler::class,
         ],
 
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => 'info',
+            'days' => 30,
+        ],
+
+        'payments' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/payments.log'),
+            'level' => 'info',
+            'days' => 60,
+        ],
+
+        'jobs' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/jobs.log'),
+            'level' => 'info',
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel-' . date('Y-m-d') . '.log'),
         ],

@@ -4,7 +4,7 @@
 <article class="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-zinc-100 bg-white transition-all duration-500 hover:border-indigo-500/50 hover:shadow-[0_20px_50px_-12px_rgba(79,70,229,0.15)] dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-400/50 dark:hover:shadow-[0_20px_50px_-12px_rgba(79,70,229,0.2)]">
     <div class="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
         @if($post->cover_image_url)
-            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
+            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
         @else
             <div class="flex h-full w-full items-center justify-center bg-indigo-500/5">
                 <x-lucide-image class="h-8 w-8 text-indigo-500/20" />
@@ -35,7 +35,7 @@
         </div>
 
         <h3 class="mb-3 text-xl font-black leading-tight text-zinc-900 dark:text-white transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400 tracking-tighter">
-            <a href="{{ route('posts.show', $post->slug) }}" class="after:absolute after:inset-0 focus:outline-none">
+            <a href="{{ route('posts.show', $post->slug) }}" wire:navigate class="after:absolute after:inset-0 focus:outline-none">
                 {{ $post->title }}
             </a>
         </h3>
@@ -46,11 +46,19 @@
 
         <div class="mt-auto flex items-center justify-between border-t border-zinc-50 pt-6 dark:border-zinc-800/50">
             <div class="flex items-center gap-3">
-                <div class="h-8 w-8 rounded-xl overflow-hidden bg-zinc-100 ring-2 ring-zinc-50 dark:ring-zinc-800">
-                    <img src="{{ $post->author->profile->avatar_path ? Storage::url($post->author->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($post->author->name) }}" class="h-full w-full object-cover">
-                </div>
+                <x-ui.avatar 
+                    :src="$post->author->profile->avatar_path ? Storage::url($post->author->profile->avatar_path) : null" 
+                    :name="$post->author->name" 
+                    size="sm" 
+                    class="ring-2 ring-zinc-50 dark:ring-zinc-800"
+                />
                 <div class="flex flex-col">
-                    <span class="text-xs font-bold text-zinc-900 dark:text-white leading-none">{{ $post->author->name }}</span>
+                    <div class="flex items-center gap-1">
+                        <span class="text-xs font-bold text-zinc-900 dark:text-white">{{ format_display_name($post->author->name) }}</span>
+                        @if($post->author->isVerified())
+                            <x-lucide-badge-check class="h-3 w-3 text-blue-500 fill-blue-500/10" />
+                        @endif
+                    </div>
                     <span class="text-[10px] text-zinc-400 font-medium mt-0.5">@ {{$post->author->profile->username}}</span>
                 </div>
             </div>

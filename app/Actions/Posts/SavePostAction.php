@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace App\Actions\Posts;
 
 use App\DTOs\SavePostData;
+use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
+use App\Events\Posts\PostSaved;
+use App\Models\Module;
 use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Mews\Purifier\Facades\Purifier;
 
 final class SavePostAction
 {
@@ -18,67 +24,109 @@ final class SavePostAction
      */
     public function exec(User $user, SavePostData $dto, ?Post $post = null): Post
     {
-        return DB::transaction(function () use ($user, $dto, $post) {
-            // Removemos 'tags' dos dados principais pois trataremos separadamente
-            $data = collect($dto->toArray())->except('tags')->toArray();
+        $oldImagePath = $post?->cover_image_path;
+
+        /** @var Post $savedPost */
+        $savedPost = DB::transaction(function () use ($user, $dto, $post, $oldImagePath) {
+            // Sênior: Trava de Segurança de Limite de Plano
+            // Dispara se estiver publicando um novo post OU transformando um rascunho em publicado.
+            $isPublishing = $dto->status === PostStatusEnum::PUBLISHED && (!$post || $post->status !== PostStatusEnum::PUBLISHED);
+            $isCreatingDraft = $dto->status === PostStatusEnum::DRAFT && !$post;
+
+            if ($isPublishing && $user->hasReachedPostLimit()) {
+                throw new Exception('Você atingiu o limite de publicações mensais do seu plano.');
+            }
+
+            if ($isCreatingDraft && $user->hasReachedDraftLimit()) {
+                throw new Exception('Você atingiu o limite de rascunhos do seu plano.');
+            }
+
+            // Sênior: Validação de Segurança de Categoria (IDOR)
+            $category = \App\Models\PostCategory::find($dto->category_id);
+            if ($category && $category->user_id !== null && $category->user_id !== $user->id) {
+                throw new Exception('A categoria selecionada é inválida ou você não tem permissão para usá-la.');
+            }
+
+            // Sênior: Sanitização de Segurança contra XSS
+            $sanitizedContent = Purifier::clean($dto->content);
+            $sanitizedExcerpt = $dto->excerpt ? Purifier::clean($dto->excerpt) : null;
+
+            // Removemos tags e dados de SEO para processar separadamente/background
+            $data = collect($dto->toArray())->except(['tags', 'seo_title', 'seo_description'])->toArray();
+            $data['content'] = $sanitizedContent;
+            $data['excerpt'] = $sanitizedExcerpt;
 
             if ($post) {
-                $this->handleCoverImageCleanup($post, $dto->cover_image_path);
-                
                 // Se o status estiver mudando para publicado agora, definimos a data
-                if ($dto->status === PostStatusEnum::PUBLISHED && $post->status !== PostStatusEnum::PUBLISHED) {
+                if ($isPublishing) {
                     $data['published_at'] = now();
                 }
 
                 $post->update($data);
             } else {
-                // Sênior: Trava de Segurança de Limite de Plano
-                if ($dto->status === PostStatusEnum::PUBLISHED && $user->hasReachedPostLimit()) {
-                    throw new \Exception('Limite de publicações mensais atingido para o seu plano.');
-                }
-
-                if ($dto->status === PostStatusEnum::DRAFT && $user->hasReachedDraftLimit()) {
-                    throw new \Exception('Limite de rascunhos atingido.');
-                }
-
+                /** @var Post $post */
                 $post = $user->posts()->create(array_merge($data, [
-                    'published_at' => $dto->status === PostStatusEnum::PUBLISHED ? now() : null,
+                    'published_at' => $isPublishing ? now() : null,
                 ]));
             }
 
-            // Sincronização de Tags
-            $post->tags()->sync($dto->tags);
+            // Sincronização de Tags (Sênior: Processa tags existentes e novas)
+            $processedTags = $this->processTags($user, $dto->tags);
+            $post->tags()->sync($processedTags);
 
-            // Atualização de SEO
-            $this->updateSEO($post, $dto);
+            // Sênior: Despacha evento para hooks externos (SEO, Imagem, Notificações)
+            event(new PostSaved($post, [
+                'title' => $dto->seo_title,
+                'description' => $dto->seo_description,
+            ], $oldImagePath));
 
-            return $post->fresh(['category', 'tags']);
+            /** @var Post|null $freshPost */
+            $freshPost = $post->fresh(['category', 'tags']);
+
+            return $freshPost;
         });
+
+        return $savedPost;
     }
 
     /**
-     * Updates SEO metadata for the post.
+     * Sênior: Processa as tags enviadas, criando novas se necessário e respeitando limites do plano.
      */
-    private function updateSEO(Post $post, SavePostData $dto): void
+    private function processTags(User $user, array $rawTags): array
     {
-        if ($dto->seo_title || $dto->seo_description) {
-            $post->seo()->updateOrCreate(
-                ['model_id' => $post->id, 'model_type' => $post->getMorphClass()],
-                [
-                    'title' => $dto->seo_title,
-                    'description' => $dto->seo_description,
-                ]
-            );
-        }
-    }
+        $tagModule = Module::where('slug', ModuleEnum::TAGS)->first();
+        
+        $allowCustom = (bool) ($tagModule?->getSetting('allow_custom_tags.' . $user->getPlanSlug()) ?? false);
+        $maxTags = (int) ($tagModule?->getSetting('max_tags_per_post.' . $user->getPlanSlug()) ?? 5);
 
-    /**
-     * Cleans up the old cover image if a new one is provided or if it's being removed.
-     */
-    private function handleCoverImageCleanup(Post $post, ?string $newPath): void
-    {
-        if ($newPath && $post->cover_image_path && $post->cover_image_path !== $newPath) {
-            Storage::disk('public')->delete($post->cover_image_path);
+        // Limita a quantidade de tags logo no início
+        $rawTags = array_slice($rawTags, 0, $maxTags);
+
+        $tagIds = [];
+
+        foreach ($rawTags as $tag) {
+            // Se for numérico, assume que é um ID de tag existente
+            if (is_numeric($tag)) {
+                $tagIds[] = (int) $tag;
+                continue;
+            }
+
+            // Se for string e o plano permitir tags customizadas, cria ou recupera
+            if (is_string($tag) && $allowCustom) {
+                $slug = Str::slug($tag);
+                
+                $newTag = Tag::query()->firstOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'name' => $tag,
+                        'user_id' => $user->id,
+                    ]
+                );
+
+                $tagIds[] = $newTag->id;
+            }
         }
+
+        return array_unique($tagIds);
     }
 }

@@ -6,6 +6,7 @@ namespace App\Livewire\Public\Profile;
 
 use App\Models\User;
 use App\Services\Profile\ProfileSeoGenerator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -27,21 +28,20 @@ class ShowProfile extends Component
     #[Computed]
     public function user()
     {
-        return User::query()
-            ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
-            ->with(['profile', 'followers', 'following'])
-            ->withCount(['posts' => fn ($q) => $q->published()])
-            ->firstOrFail();
+        return Cache::tags(['profiles', "profile_{$this->username}"])
+            ->remember("profile_view_data_{$this->username}", now()->addMinutes(60), function () {
+                return User::query()
+                    ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
+                    ->with(['profile.settings', 'followers', 'following'])
+                    ->withCount(['posts' => fn ($q) => $q->published()])
+                    ->firstOrFail();
+            });
     }
 
     #[Computed]
     public function isProfileComplete(): bool
     {
-        $profile = $this->user->profile;
-
-        return !empty($profile?->name)
-            && !empty($this->user->email)
-            && !empty($profile?->bio);
+        return $this->user->profile?->isComplete() ?? false;
     }
 
     #[Computed]
@@ -62,12 +62,18 @@ class ShowProfile extends Component
     public function render(): View
     {
         $profile = $this->user->profile;
+        $settings = $profile->settings;
 
         return view('livewire.public.profile.show-profile')
             ->layoutData([
                 'themeMode' => $profile->theme_mode->value ?? 'light',
                 'primaryColor' => $profile->primary_color,
                 'accentColor' => $profile->accent_color,
+                'secondaryColor' => $settings->secondary_color,
+                'textColor' => $settings->text_color,
+                'backgroundColor' => $settings->background_color,
+                'buttonStyle' => $settings->button_style,
+                'fontFamily' => $settings->font_family,
                 'title' => $profile->display_name . ' (@' . $profile->username . ')',
                 'seo' => ProfileSeoGenerator::generate($profile),
             ]);

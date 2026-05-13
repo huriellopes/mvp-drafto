@@ -69,10 +69,14 @@
                     </div>
                 </td>
                 <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400">
-                    @if($subscriber->category)
-                        <span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-                            {{ $subscriber->category->name }}
-                        </span>
+                    @if($subscriber->categories->isNotEmpty())
+                        <div class="flex flex-wrap gap-1">
+                            @foreach($subscriber->categories as $category)
+                                <span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
+                                    {{ $category->name }}
+                                </span>
+                            @endforeach
+                        </div>
                     @else
                         <span class="text-xs text-zinc-400 italic">{{ __('dashboard.admin.newsletter.table.general') }}</span>
                     @endif

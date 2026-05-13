@@ -62,6 +62,7 @@ return [
         'visible' => 'Visível',
         'hidden' => 'Oculto',
         'blocked' => 'Bloqueado',
+        'pending' => 'Pendente',
     ],
 
 ];

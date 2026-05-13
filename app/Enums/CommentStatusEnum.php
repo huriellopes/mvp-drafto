@@ -16,6 +16,7 @@ enum CommentStatusEnum: string
             self::VISIBLE => __('enums.comment_status.visible'),
             self::HIDDEN => __('enums.comment_status.hidden'),
             self::BLOCKED => __('enums.comment_status.blocked'),
+            self::PENDING => __('enums.comment_status.pending'),
         };
     }
 
@@ -23,7 +24,7 @@ enum CommentStatusEnum: string
     {
         return match ($this) {
             self::VISIBLE => 'green',
-            self::HIDDEN => 'yellow',
+            self::HIDDEN, self::PENDING => 'yellow',
             self::BLOCKED => 'red',
         };
     }
@@ -31,4 +32,5 @@ enum CommentStatusEnum: string
     case VISIBLE = 'visible';
     case HIDDEN = 'hidden';
     case BLOCKED = 'blocked';
+    case PENDING = 'penging';
 }

@@ -111,26 +111,57 @@
             </div>
         </x-ui.section-card>
 
-        {{-- Personalização --}}
-        <x-ui.section-card title="{{ __('dashboard.profile.edit.style_section.title') }}" description="{{ __('dashboard.profile.edit.style_section.description') }}">
-            <div class="space-y-8">
-                <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+        {{-- Personalização Avançada --}}
+        <x-ui.section-card title="Identidade Visual" description="Personalize as cores, fontes e estilos dos elementos do seu perfil público.">
+            <div class="space-y-10">
+                {{-- Cores --}}
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div>
-                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('dashboard.profile.edit.style_section.primary_color') }}</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">{{ __('dashboard.profile.edit.style_section.primary_color') }}</label>
                         <div class="flex items-center gap-4">
-                            <input type="color" wire:model.live="form.primary_color" class="h-12 w-20 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1">
-                            <span class="text-sm font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                            <input type="color" wire:model.live="form.primary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
                                 {{ $form->primary_color }}
                             </span>
                         </div>
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('dashboard.profile.edit.style_section.accent_color') }}</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">{{ __('dashboard.profile.edit.style_section.accent_color') }}</label>
                         <div class="flex items-center gap-4">
-                            <input type="color" wire:model.live="form.accent_color" class="h-12 w-20 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1">
-                            <span class="text-sm font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                            <input type="color" wire:model.live="form.accent_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
                                 {{ $form->accent_color }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor Secundária</label>
+                        <div class="flex items-center gap-4">
+                            <input type="color" wire:model.live="form.secondary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                {{ $form->secondary_color ?? 'Nenhuma' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor do Texto</label>
+                        <div class="flex items-center gap-4">
+                            <input type="color" wire:model.live="form.text_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                {{ $form->text_color ?? 'Padrão' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor de Fundo (Página)</label>
+                        <div class="flex items-center gap-4">
+                            <input type="color" wire:model.live="form.background_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                {{ $form->background_color ?? 'Padrão' }}
                             </span>
                         </div>
                     </div>
@@ -142,6 +173,46 @@
                             @endforeach
                         </x-ui.select>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                    <x-ui.select wire:model="form.layout_type" label="Layout do Perfil">
+                        <option value="default">Layout Padrão (Sidebar)</option>
+                        <option value="centered">Centralizado (Foco no Autor)</option>
+                        <option value="grid">Grade (Foco em Posts)</option>
+                    </x-ui.select>
+
+                    <x-ui.select wire:model="form.button_style" label="Estilo dos Botões">
+                        <option value="rounded-md">Arredondado Leve</option>
+                        <option value="rounded-xl">Arredondado Médio</option>
+                        <option value="rounded-full">Pílula (Full)</option>
+                        <option value="square">Quadrado</option>
+                    </x-ui.select>
+
+                    <x-ui.select wire:model="form.card_style" label="Estilo dos Cards">
+                        <option value="bordered">Com Bordas</option>
+                        <option value="shadow">Com Sombra</option>
+                        <option value="flat">Flat (Fundo Cinza)</option>
+                    </x-ui.select>
+
+                    <x-ui.select wire:model="form.font_family" label="Tipografia">
+                        <option value="sans">Sans Serif (Padrão)</option>
+                        <option value="serif">Serifado (Clássico)</option>
+                        <option value="mono">Monospaced (Moderno)</option>
+                    </x-ui.select>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                    <x-ui.checkbox
+                        wire:model="form.show_subscriber_count"
+                        label="Exibir seguidores"
+                        description="Mostra o total de seguidores publicamente."
+                    />
+                    <x-ui.checkbox
+                        wire:model="form.show_view_count"
+                        label="Exibir visualizações"
+                        description="Exibe o contador de visitas do perfil."
+                    />
                 </div>
             </div>
         </x-ui.section-card>

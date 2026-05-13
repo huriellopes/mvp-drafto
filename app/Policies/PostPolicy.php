@@ -53,6 +53,7 @@ class PostPolicy
         if (
             $post->status === PostStatusEnum::PUBLISHED &&
             $post->visibility === PostVisibilityEnum::FOLLOWERS_ONLY &&
+            $post->author instanceof User &&
             $user->isFollowing($post->author)
         ) {
             return true;

@@ -29,7 +29,13 @@ class Login extends Component
      */
     public function login(): void
     {
-        $this->form->authenticate();
+        $result = $this->form->authenticate();
+
+        if ($result === 'two-factor') {
+            $this->redirectRoute('auth.two-factor', navigate: true);
+
+            return;
+        }
 
         Toaster::success(__('auth.status.logged_in'));
 

@@ -46,6 +46,6 @@ class FollowButton extends Component
 
     private function checkStatus(): void
     {
-        $this->isFollowing = auth()->check() && auth()->user()->isFollowing($this->user);
+        $this->isFollowing = $this->user->is_followed_by_auth_user ?? (auth()->check() && auth()->user()->isFollowing($this->user));
     }
 }

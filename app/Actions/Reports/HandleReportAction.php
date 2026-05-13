@@ -10,8 +10,6 @@ use App\Models\Report;
 use App\Models\User;
 use App\Notifications\Admin\UserBlockedNotification;
 use App\Notifications\Reports\ReportFeedbackNotification;
-use App\Notifications\Reports\UserBannedNotification;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -53,7 +51,7 @@ final class HandleReportAction
                     // DISPARO DE E-MAIL (Via Queue)
                     $offender->notify(new UserBlockedNotification(
                         $data->banReason,
-                        $bannedUntil?->format('d/m/Y')
+                        $bannedUntil?->format('d/m/Y'),
                     ));
 
                     Log::info("Usuário {$offender->id} banido pelo Admin {$reviewer->id}. Motivo: {$data->banReason}");

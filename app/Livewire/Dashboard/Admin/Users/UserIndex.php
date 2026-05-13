@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Admin\Users;
 
+use App\Actions\Auth\ImpersonateUserAction;
 use App\Actions\Modules\ToggleUserModuleAction;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUsersAction;
@@ -52,7 +53,31 @@ class UserIndex extends Component
 
     public ?int $userIdBeingDeleted = null;
 
+    public ?User $selectedUserForImpersonation = null;
+
     public ?User $selectedUserForModules = null;
+
+    public function confirmImpersonation(User $user): void
+    {
+        $this->selectedUserForImpersonation = $user;
+        $this->dispatch('open-modal', name: 'confirm-impersonation');
+    }
+
+    public function impersonate(): void
+    {
+        if (!$this->selectedUserForImpersonation) {
+            return;
+        }
+
+        if (app(ImpersonateUserAction::class)->exec($this->selectedUserForImpersonation)) {
+            Toaster::success("Agora você está logado como {$this->selectedUserForImpersonation->name}");
+            $this->redirectRoute('dashboard.index', navigate: true);
+        } else {
+            Toaster::error('Não foi possível realizar a impersonação.');
+        }
+
+        $this->selectedUserForImpersonation = null;
+    }
 
     public function manageModules(User $user): void
     {
@@ -167,6 +192,16 @@ class UserIndex extends Component
 
         $this->clearUserCache();
         Toaster::success($user->is_lifetime ? 'Acesso Vitalício concedido!' : 'Acesso Vitalício removido.');
+    }
+
+    public function toggleVerification(User $user): void
+    {
+        $user->profile->update([
+            'is_verified' => !$user->profile->is_verified,
+        ]);
+
+        $this->clearUserCache();
+        Toaster::success($user->profile->is_verified ? 'Selo de Verificado concedido!' : 'Selo de Verificado removido.');
     }
 
     public function confirmUserDeletion(int $userId): void

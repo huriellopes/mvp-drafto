@@ -36,6 +36,11 @@
                 {{ __('dashboard.sidebar.links.settings') }}
             </x-ui.sidebar-link>
             @endmodule
+
+            <x-ui.sidebar-link href="{{ route('dashboard.support') }}" :active="request()->routeIs('dashboard.support')" wire:navigate.hover>
+                <x-slot:icon><x-lucide-help-circle class="h-5 w-5" /></x-slot:icon>
+                {{ __('Suporte') }}
+            </x-ui.sidebar-link>
         </nav>
     </div>
 
@@ -62,6 +67,13 @@
                     <x-slot:icon><x-lucide-folder-open class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.categories') }}
                 </x-ui.sidebar-link>
+
+                @module(ModuleEnum::TAGS)
+                <x-ui.sidebar-link href="{{ route('dashboard.posts.tags.index') }}" :active="request()->routeIs('dashboard.posts.tags.index')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-tag class="h-5 w-5" /></x-slot:icon>
+                    {{ __('Tags') }}
+                </x-ui.sidebar-link>
+                @endmodule
 
                 @module(ModuleEnum::FOLLOWS)
                 <x-ui.sidebar-link href="{{ route('dashboard.follows') }}" :active="request()->routeIs('dashboard.follows')" wire:navigate.hover>
@@ -98,17 +110,15 @@
         <div>
             <x-ui.sidebar-group-title>{{ __('Assinatura e Planos') }}</x-ui.sidebar-group-title>
             <nav class="space-y-2">
+                <x-ui.sidebar-link href="{{ route('dashboard.billing.index') }}" :active="request()->routeIs('dashboard.billing.index')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-award class="h-5 w-5" /></x-slot:icon>
+                    {{ __('Minha Assinatura') }}
+                </x-ui.sidebar-link>
+
                 <x-ui.sidebar-link href="{{ route('dashboard.billing.plans') }}" :active="request()->routeIs('dashboard.billing.plans')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-credit-card class="h-5 w-5" /></x-slot:icon>
                     {{ $user->subscribed() ? 'Mudar Plano' : 'Seja Pro' }}
                 </x-ui.sidebar-link>
-
-                @if($user->subscribed())
-                    <x-ui.sidebar-link href="{{ route('dashboard.billing.portal') }}" wire:navigate="false">
-                        <x-slot:icon><x-lucide-external-link class="h-5 w-5" /></x-slot:icon>
-                        Gerenciar Pagamento
-                    </x-ui.sidebar-link>
-                @endif
             </nav>
         </div>
     @endmodule
@@ -146,6 +156,11 @@
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.modules.index') }}" :active="request()->routeIs('dashboard.admin.modules.*')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-component class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.modules') }}
+                </x-ui.sidebar-link>
+
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.logs.index') }}" :active="request()->routeIs('dashboard.admin.logs.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-clipboard-list class="h-5 w-5" /></x-slot:icon>
+                    Auditoria
                 </x-ui.sidebar-link>
             </nav>
         </div>

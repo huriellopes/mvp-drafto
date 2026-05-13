@@ -38,6 +38,26 @@ class ProfileForm extends Form
 
     public bool $is_searchable = true;
 
+    public string $button_style = 'rounded-md';
+
+    public string $card_style = 'bordered';
+
+    public string $layout_type = 'default';
+
+    public string $font_family = 'sans';
+
+    public ?string $secondary_color = null;
+
+    public ?string $text_color = null;
+
+    public ?string $background_color = null;
+
+    public bool $show_badges = true;
+
+    public bool $show_subscriber_count = true;
+
+    public bool $show_view_count = false;
+
     public string $seo_title = '';
 
     public string $seo_description = '';
@@ -49,6 +69,11 @@ class ProfileForm extends Form
     public function setUser(User $user): void
     {
         $profile = $user->profile;
+
+        if (!$profile) {
+            return;
+        }
+
         $this->name = $profile->name ?? '';
         $this->username = $profile->username ?? '';
         $this->email = $profile->email ?? '';
@@ -61,6 +86,18 @@ class ProfileForm extends Form
         $this->visibility = $profile->visibility->value ?? ProfileVisibilityEnum::PUBLIC->value;
         $this->show_email_publicly = $profile->show_email_publicly ?? false;
         $this->is_searchable = $profile->is_searchable ?? true;
+
+        $settings = $profile->settings;
+        $this->button_style = $settings->button_style;
+        $this->card_style = $settings->card_style;
+        $this->layout_type = $settings->layout_type;
+        $this->font_family = $settings->font_family;
+        $this->secondary_color = $settings->secondary_color;
+        $this->text_color = $settings->text_color;
+        $this->background_color = $settings->background_color;
+        $this->show_badges = (bool) $settings->show_badges;
+        $this->show_subscriber_count = (bool) $settings->show_subscriber_count;
+        $this->show_view_count = (bool) $settings->show_view_count;
 
         $this->seo_title = $profile->seo?->title ?? '';
         $this->seo_description = $profile->seo?->description ?? '';
@@ -81,6 +118,16 @@ class ProfileForm extends Form
             'visibility' => ['required', Rule::enum(ProfileVisibilityEnum::class)],
             'show_email_publicly' => ['boolean'],
             'is_searchable' => ['boolean'],
+            'button_style' => ['required', 'string'],
+            'card_style' => ['required', 'string'],
+            'layout_type' => ['required', 'string'],
+            'font_family' => ['required', 'string'],
+            'secondary_color' => ['nullable', 'hex_color'],
+            'text_color' => ['nullable', 'hex_color'],
+            'background_color' => ['nullable', 'hex_color'],
+            'show_badges' => ['boolean'],
+            'show_subscriber_count' => ['boolean'],
+            'show_view_count' => ['boolean'],
             'seo_title' => ['nullable', 'string', 'max:60'],
             'seo_description' => ['nullable', 'string', 'max:160'],
             'avatar' => ['nullable', 'image', 'max:1024'],

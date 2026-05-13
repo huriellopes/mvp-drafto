@@ -12,6 +12,7 @@ use App\Jobs\SendNewsletterJob;
 use App\Livewire\Forms\Admin\NewsletterFilterForm;
 use App\Models\NewsletterSubscriber;
 use App\Models\PostCategory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -21,7 +22,6 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\Support\Facades\Cache;
 
 #[Layout('layouts.app', ['heading' => 'Newsletter', 'subheading' => 'Gerencie os inscritos e preferências de conteúdo'])]
 #[Title('Inscritos Newsletter')]
@@ -88,6 +88,7 @@ class NewsletterIndex extends Component
 
         if (!$lock->get()) {
             Toaster::warning('Já existe um disparo em processamento. Aguarde um momento.');
+
             return;
         }
 
@@ -97,7 +98,7 @@ class NewsletterIndex extends Component
         $query = NewsletterSubscriber::query();
 
         if ($categoryId) {
-            $query->where('category_id', $categoryId);
+            $query->whereHas('categories', fn ($q) => $q->where('post_categories.id', $categoryId));
         }
 
         $query->chunk(100, function ($subscribers) use ($message) {

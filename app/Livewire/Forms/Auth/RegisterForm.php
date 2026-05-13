@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Forms\Auth;
 
 use App\Actions\Auth\RegisterUserAction;
+use App\DTOs\RegisterUserData;
 use App\Traits\Auth\WithRateLimiting;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Form;
@@ -44,7 +45,7 @@ class RegisterForm extends Form
 
         $user = app(RegisterUserAction::class)
             ->exec(
-                data: $this->all(),
+                data: RegisterUserData::from($this->all()),
             );
 
         auth()->login($user);

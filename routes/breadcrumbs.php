@@ -26,6 +26,11 @@ Breadcrumbs::for('dashboard.account', function (BreadcrumbTrail $trail) {
     $trail->push('Configurações', route('dashboard.account'));
 });
 
+Breadcrumbs::for('dashboard.support', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Suporte', route('dashboard.support'));
+});
+
 // Escritor: Posts
 Breadcrumbs::for('dashboard.posts.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
@@ -40,6 +45,11 @@ Breadcrumbs::for('dashboard.posts.draft', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('dashboard.categories', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Categorias', route('dashboard.posts.categories.index'));
+});
+
+Breadcrumbs::for('dashboard.tags', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Tags', route('dashboard.posts.tags.index'));
 });
 
 Breadcrumbs::for('dashboard.posts.create', function (BreadcrumbTrail $trail) {
@@ -66,6 +76,16 @@ Breadcrumbs::for('dashboard.comments', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('dashboard.follows', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Comunidade', route('dashboard.follows'));
+});
+
+Breadcrumbs::for('dashboard.billing.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Minha Assinatura', route('dashboard.billing.index'));
+});
+
+Breadcrumbs::for('dashboard.billing.plans', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.billing.index');
+    $trail->push('Planos Disponíveis', route('dashboard.billing.plans'));
 });
 
 // Admin: Master
@@ -97,4 +117,9 @@ Breadcrumbs::for('dashboard.subscriptions.index', function (BreadcrumbTrail $tra
 Breadcrumbs::for('dashboard.posts.views', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Estatísticas de Views', route('dashboard.admin.posts.views'));
+});
+
+Breadcrumbs::for('admin.logs.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Auditoria do Sistema', route('dashboard.admin.logs.index'));
 });

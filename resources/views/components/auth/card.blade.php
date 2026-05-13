@@ -3,8 +3,8 @@
 <div class="w-full max-w-md">
     <div class="mb-8 text-center">
         @if($showLogo)
-            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-200 bg-white shadow-sm">
-                <span class="text-lg font-semibold text-zinc-900">W</span>
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden p-2">
+                <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" class="h-10 w-auto" alt="Drafto Logo">
             </div>
         @endif
 

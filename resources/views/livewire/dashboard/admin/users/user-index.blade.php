@@ -48,6 +48,7 @@
             <x-slot:header>
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.user') }}" column="name" :sort="$sort" :direction="$direction" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.role') }}" column="role" :sort="$sort" :direction="$direction" />
+            <x-ui.table.th label="Verificado" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.access') }}" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.status') }}" column="status" :sort="$sort" :direction="$direction" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.last_login') }}" column="last_login_at" :sort="$sort" :direction="$direction" />
@@ -69,6 +70,28 @@
                 </td>
                 <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400 text-xs italic">
                     {{ $user->role->label() }}
+                </td>
+
+                {{-- Coluna Verificado (Toggle) --}}
+                <td class="px-6 py-4">
+                    <button
+                        wire:click="toggleVerification({{ $user->id }})"
+                        @class([
+                            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2',
+                            'bg-blue-600' => $user->profile?->is_verified,
+                            'bg-zinc-200 dark:bg-zinc-700' => ! $user->profile?->is_verified,
+                        ])
+                    >
+                        <span @class([
+                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                            'translate-x-5' => $user->profile?->is_verified,
+                            'translate-x-0' => ! $user->profile?->is_verified,
+                        ])></span>
+
+                        @if($user->isVerified())
+                            <x-lucide-badge-check class="absolute -right-6 top-1 h-4 w-4 text-blue-500" />
+                        @endif
+                    </button>
                 </td>
 
                 {{-- Coluna Vitalício (Toggle) --}}
@@ -134,6 +157,15 @@
                                 class="p-2 text-zinc-400 hover:text-indigo-600 transition"
                             >
                                 <x-lucide-layout-grid class="h-4 w-4" />
+                            </button>
+                        </x-ui.tooltip>
+
+                        <x-ui.tooltip text="Impersonar (Logar como)">
+                            <button
+                                wire:click="confirmImpersonation({{ $user->id }})"
+                                class="p-2 text-zinc-400 hover:text-amber-600 transition"
+                            >
+                                <x-lucide-user-cog class="h-4 w-4" />
                             </button>
                         </x-ui.tooltip>
                         <x-ui.tooltip text="Editar Usuário">
@@ -235,6 +267,15 @@
             </div>
         </form>
     </x-ui.modal>
+
+    <x-ui.confirm-modal
+        name="confirm-impersonation"
+        title="Confirmar Impersonação"
+        content="Você está prestes a logar como {{ $selectedUserForImpersonation?->name }}. Esta ação será registrada para fins de auditoria. Deseja continuar?"
+        buttonText="Sim, Logar como Usuário"
+        variant="primary"
+        action="impersonate"
+    />
 
     <x-ui.confirm-modal
         name="confirm-user-deletion"

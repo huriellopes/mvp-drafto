@@ -9,12 +9,12 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'previous'   => '&laquo; Anterior',
-    'next'       => 'Próximo &raquo;',
+    'previous' => '&laquo; Anterior',
+    'next' => 'Próximo &raquo;',
     'navigation' => 'Navegação da Paginação',
-    'showing'    => 'Mostrando',
-    'to'         => 'a',
-    'of'         => 'de',
-    'results'    => 'resultados',
-    'goto_page'  => 'Ir para a página :page',
+    'showing' => 'Mostrando',
+    'to' => 'a',
+    'of' => 'de',
+    'results' => 'resultados',
+    'goto_page' => 'Ir para a página :page',
 ];

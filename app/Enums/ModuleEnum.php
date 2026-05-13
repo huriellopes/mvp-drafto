@@ -19,6 +19,8 @@ enum ModuleEnum: string
             self::SAVED_POST => trans('dashboard.modules.items.saved_post'),
             self::COMMENTS => trans('dashboard.modules.items.comments'),
             self::SUBSCRIPTIONS => __('dashboard.modules.items.subscriptions'),
+            self::SUPPORT => __('dashboard.modules.items.support'),
+            self::TAGS => __('dashboard.modules.items.tags'),
         };
     }
     case PROFILE = 'profile';
@@ -31,4 +33,6 @@ enum ModuleEnum: string
     case SAVED_POST = 'saved_post';
     case COMMENTS = 'comments';
     case SUBSCRIPTIONS = 'subscription';
+    case SUPPORT = 'support';
+    case TAGS = 'tags';
 }

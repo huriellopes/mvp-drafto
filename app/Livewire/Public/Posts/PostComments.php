@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire\Public\Posts;
 
 use App\Actions\Comments\StoreCommentAction;
+use App\DTOs\SaveCommentData;
 use App\Enums\ModuleEnum;
 use App\Livewire\Forms\Public\CommentForm;
 use App\Models\Comment;
 use App\Models\Post;
+use Exception;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -54,17 +57,38 @@ class PostComments extends Component
 
         $this->validateOnly('form.content');
 
-        if (str_contains($this->form->content, '<img') && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images')) {
-            $this->addError('form.content', 'Seu plano atual não permite o envio de imagens nos comentários.');
+        // Sênior: Proteção de Rate Limit contra Spam (5 comentários por minuto)
+        try {
+            $executed = RateLimiter::attempt(
+                'send-comment:' . auth()->id(),
+                $maxAttempts = 5,
+                function () {
+                    // Sênior: Detecção robusta de imagens via Regex (Case Insensitive)
+                    $hasImages = preg_match('/<(img|object|embed|iframe)/i', $this->form->content);
+
+                    if ($hasImages && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images')) {
+                        throw new Exception('Seu plano atual não permite o envio de mídia nos comentários.');
+                    }
+
+                    app(StoreCommentAction::class)->exec(
+                        auth()->user(),
+                        $this->post,
+                        SaveCommentData::from($this->form->all()),
+                    );
+                },
+                decaySeconds: 60,
+            );
+
+            if (!$executed) {
+                $this->addError('form.content', 'Muitas tentativas. Aguarde um minuto para comentar novamente.');
+
+                return;
+            }
+        } catch (Exception $e) {
+            $this->addError('form.content', $e->getMessage());
 
             return;
         }
-
-        app(StoreCommentAction::class)->exec(
-            auth()->user(),
-            $this->post,
-            $this->form->all(),
-        );
 
         $this->form->resetForm();
         Toaster::success('Comentário publicado!');
@@ -90,14 +114,28 @@ class PostComments extends Component
             'replyContent' => 'required|string|min:3|max:1000',
         ]);
 
-        app(StoreCommentAction::class)->exec(
-            auth()->user(),
-            $this->post,
-            [
-                'content' => $this->replyContent,
-                'parent_id' => $this->replyingTo,
-            ],
+        // Sênior: Rate Limit para respostas também
+        $executed = RateLimiter::attempt(
+            'send-comment:' . auth()->id(),
+            $maxAttempts = 5,
+            function () {
+                app(StoreCommentAction::class)->exec(
+                    auth()->user(),
+                    $this->post,
+                    SaveCommentData::from([
+                        'content' => $this->replyContent,
+                        'parent_id' => $this->replyingTo,
+                    ]),
+                );
+            },
+            decaySeconds: 60,
         );
+
+        if (!$executed) {
+            Toaster::error('Muitas tentativas. Aguarde um momento.');
+
+            return;
+        }
 
         $this->reset(['replyingTo', 'replyContent']);
         Toaster::success('Resposta enviada!');
@@ -107,8 +145,9 @@ class PostComments extends Component
     public function comments()
     {
         return $this->post->comments()
-            ->whereNull('parent_id')
-            ->with(['user.profile', 'replies.user.profile', 'replies.replies'])
+            ->root()
+            ->visible()
+            ->withRelations()
             ->latest()
             ->get();
     }

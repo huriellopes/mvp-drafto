@@ -6,10 +6,6 @@ namespace App\Enums;
 
 enum PlanEnum: string
 {
-    case FREE = 'free';
-    case PLUS = 'plus';
-    case PRO = 'pro';
-
     public function label(): string
     {
         return match ($this) {
@@ -26,4 +22,7 @@ enum PlanEnum: string
     {
         return array_column(self::cases(), 'value');
     }
+    case FREE = 'free';
+    case PLUS = 'plus';
+    case PRO = 'pro';
 }

@@ -23,8 +23,8 @@ class LikeComment extends Component
 
     public function render()
     {
-        $isLiked = auth()->check() && auth()->user()->likedComments()->where('comment_id', $this->comment->id)->exists();
-        $likesCount = $this->comment->likedByUsers()->count();
+        $isLiked = $this->comment->is_liked ?? (auth()->check() && auth()->user()->likedComments()->where('comment_id', $this->comment->id)->exists());
+        $likesCount = $this->comment->liked_by_users_count ?? $this->comment->likedByUsers()->count();
 
         return view('livewire.actions.like-comment', [
             'isLiked' => $isLiked,

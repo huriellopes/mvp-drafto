@@ -6,6 +6,7 @@ namespace App\Listeners;
 
 use App\Models\Plan;
 use App\Models\User;
+use App\Notifications\Billing\SubscriptionSuccessNotification;
 use Laravel\Cashier\Events\WebhookHandled;
 
 class StripeWebhookListener
@@ -39,8 +40,25 @@ class StripeWebhookListener
 
         $plan = Plan::where('slug', $planSlug)->first();
 
-        if ($plan && $user->plan_id !== $plan->id) {
-            $user->update(['plan_id' => $plan->id]);
+        if ($plan) {
+            $oldPlanId = $user->plan_id;
+            $isPaidPlan = in_array($planSlug, ['pro', 'plus'], true);
+
+            $updateData = ['plan_id' => $plan->id];
+
+            // Sênior: Se o usuário assinou um plano pago (Pro ou Plus), resetamos o trial
+            if ($isPaidPlan && $user->trial_ends_at !== null) {
+                $updateData['trial_ends_at'] = null;
+            }
+
+            if ($user->plan_id !== $plan->id || array_key_exists('trial_ends_at', $updateData)) {
+                $user->update($updateData);
+
+                // Sênior: Se o usuário subiu de nível (não era pro/plus e agora é), enviamos a notificação
+                if ($isPaidPlan && ($oldPlanId === null || $oldPlanId !== $plan->id)) {
+                    $user->notify(new SubscriptionSuccessNotification($plan->name));
+                }
+            }
         }
     }
 }

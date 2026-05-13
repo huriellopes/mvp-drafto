@@ -19,7 +19,7 @@ final class AuthenticateUserAction
     /**
      * @throws AuthenticationException
      */
-    public function exec(AuthenticateData $data): bool
+    public function exec(AuthenticateData $data): bool|string
     {
         $user = User::query()
             ->where('email', $data->email)
@@ -27,6 +27,21 @@ final class AuthenticateUserAction
 
         if ($user && $user->status === UserStatusEnum::BLOCKED) {
             $this->handleBlockedUser($user);
+        }
+
+        // Sênior: Se o usuário tem 2FA, primeiro validamos as credenciais sem logar
+        if ($user && $user->hasTwoFactorEnabled()) {
+            if (!Auth::validate(['email' => $data->email, 'password' => $data->password])) {
+                return false;
+            }
+
+            // Guardamos o ID na sessão temporária para o desafio
+            session([
+                'auth.2fa.id' => $user->id,
+                'auth.2fa.remember' => $data->remember,
+            ]);
+
+            return 'two-factor';
         }
 
         if (!Auth::attempt(['email' => $data->email, 'password' => $data->password], $data->remember)) {

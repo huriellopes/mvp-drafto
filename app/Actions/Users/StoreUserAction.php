@@ -19,8 +19,8 @@ final class StoreUserAction
     public function exec(SaveUserData $data): User
     {
         return DB::transaction(function () use ($data) {
-            $isWriter = ($data->role instanceof RoleEnum) 
-                ? $data->role === RoleEnum::WRITER 
+            $isWriter = ($data->role instanceof RoleEnum)
+                ? $data->role === RoleEnum::WRITER
                 : $data->role === RoleEnum::WRITER->value;
 
             $user = User::create([
@@ -31,7 +31,7 @@ final class StoreUserAction
                 'status' => $data->status,
                 'is_lifetime' => $data->is_lifetime,
                 'plan_id' => $data->plan_id ?? ($isWriter ? 3 : null),
-                'trial_ends_at' => ($isWriter && !$data->plan_id) ? now()->addDays(15) : null,
+                'trial_ends_at' => ($isWriter && !$data->plan_id) ? now()->addDays(30) : null,
             ]);
 
             $user->profile()->create([

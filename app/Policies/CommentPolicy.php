@@ -24,7 +24,7 @@ class CommentPolicy
 
     public function view(?User $user, Comment $comment): bool
     {
-        return $comment->status === CommentStatusEnum::VISIBLE;
+        return $comment->status === CommentStatusEnum::APPROVED;
     }
 
     public function create(User $user): bool
@@ -34,7 +34,9 @@ class CommentPolicy
 
     public function reply(User $user, Comment $parentComment): bool
     {
-        if (!$user->isActive()) return false;
+        if (!$user->isActive()) {
+            return false;
+        }
 
         $postAuthor = $parentComment->post->author;
         $maxDepth = $postAuthor->getModuleSetting(ModuleEnum::COMMENTS, 'max_depth', 3);
@@ -46,7 +48,7 @@ class CommentPolicy
     {
         return $user->isActive()
             && $comment->user_id === $user->id
-            && $comment->status === CommentStatusEnum::VISIBLE;
+            && $comment->status === CommentStatusEnum::APPROVED;
     }
 
     public function delete(User $user, Comment $comment): bool
@@ -71,7 +73,7 @@ class CommentPolicy
     public function like(User $user, Comment $comment): bool
     {
         return $user->isActive()
-            && $comment->status === CommentStatusEnum::VISIBLE;
+            && $comment->status === CommentStatusEnum::APPROVED;
     }
 
     public function moderate(User $user, Comment $comment): bool

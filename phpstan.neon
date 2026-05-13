@@ -1,0 +1,39 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - app/
+
+    # Level 9 is the highest level
+    level: 5
+
+    treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model#'
+        - '#Access to an undefined property App\\Livewire\\#'
+        - '#Call to an undefined method App\\Livewire\\#'
+        - '#Relation .* is not found in .* model#'
+        - '#Call to an undefined method Intervention\\Image\\ImageManager::read#'
+        - '#Using nullsafe property access .* is unnecessary#'
+        - '#Cannot call method .* on string#'
+        - '#Cannot access property .* on string#'
+        - '#Static method RalphJSmit\\Laravel\\SEO\\SchemaCollection.* invoked with 1 parameter, 0 required#'
+        - '#Access to an undefined property App\\Models\\Profile::\$username#'
+        - '#Access to an undefined property App\\Models\\Collection::\$is_public#'
+        - '#Access to an undefined property App\\Models\\Comment::\$depth#'
+        - '#Access to an undefined property Laravel\\Cashier\\Checkout::\$url#'
+        - '#Access to an undefined property App\\Models\\Post::\$cover_image_url#'
+        - '#Call to function is_array\(\) with \*NEVER\* will always evaluate to true#'
+        - '#Offset mixed on \*NEVER\* on left side of \?\? always exists and is not nullable#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Pagination\\LengthAwarePaginator::setCollection\(\)#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Pagination\\LengthAwarePaginator::getCollection\(\)#'
+        - '#Parameter \#1 \$items of static method Illuminate\\Support\\Collection<.*>::make\(\) expects .* given#'
+        - '#Parameter \$published_time of class RalphJSmit\\Laravel\\SEO\\Support\\SEOData constructor expects Carbon\\CarbonInterface\|null, string\|null given#'
+        - '#Using nullsafe property access on non-nullable type Illuminate\\Database\\Eloquent\\Model\. Use -> instead#'
+
+    excludePaths:
+        # - ./*/*/FileToBeExcluded.php

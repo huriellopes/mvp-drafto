@@ -17,7 +17,7 @@ class PostCategoryFactory extends Factory
 
     public function definition(): array
     {
-        $name = fake()->unique()->words(fake()->numberBetween(1, 3), true);
+        $name = fake()->words(fake()->numberBetween(1, 3), true) . ' ' . Str::random(12);
 
         return [
             'name' => Str::title($name),

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\Collection;
 use App\Models\User;
-use App\Enums\RoleEnum;
 
 class CollectionPolicy
 {

@@ -6,13 +6,6 @@ namespace App\Enums;
 
 enum BrazilStateEnum: int
 {
-    case AC = 12; case AL = 27; case AP = 16; case AM = 13; case BA = 29;
-    case CE = 23; case DF = 53; case ES = 32; case GO = 52; case MA = 21;
-    case MT = 51; case MS = 50; case MG = 31; case PA = 15; case PB = 25;
-    case PR = 41; case PE = 26; case PI = 22; case RJ = 33; case RN = 24;
-    case RS = 43; case RO = 11; case RR = 14; case SC = 42; case SP = 35;
-    case SE = 28; case TO = 17;
-
     public function label(): string
     {
         return match ($this) {
@@ -40,4 +33,31 @@ enum BrazilStateEnum: int
             'nome' => $state->label(),
         ])->toArray();
     }
+    case AC = 12;
+    case AL = 27;
+    case AP = 16;
+    case AM = 13;
+    case BA = 29;
+    case CE = 23;
+    case DF = 53;
+    case ES = 32;
+    case GO = 52;
+    case MA = 21;
+    case MT = 51;
+    case MS = 50;
+    case MG = 31;
+    case PA = 15;
+    case PB = 25;
+    case PR = 41;
+    case PE = 26;
+    case PI = 22;
+    case RJ = 33;
+    case RN = 24;
+    case RS = 43;
+    case RO = 11;
+    case RR = 14;
+    case SC = 42;
+    case SP = 35;
+    case SE = 28;
+    case TO = 17;
 }

@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Actions\Posts\SavePostAction;
+use App\DTOs\SavePostData;
+use App\Enums\PostStatusEnum;
+use App\Enums\PostTypeEnum;
+use App\Enums\PostVisibilityEnum;
+use App\Enums\RoleEnum;
+use App\Events\Posts\PostSaved;
+use App\Models\PostCategory;
+use App\Models\User;
+use Illuminate\Support\Facades\Event;
+
+beforeEach(function () {
+    $this->action = new SavePostAction();
+});
+
+it('creates a new draft post and dispatches media processing event', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+
+    $dto = new SavePostData(
+        title: 'Draft Post',
+        slug: 'draft-post',
+        category_id: $category->id,
+        content: 'Draft Content',
+        excerpt: 'Draft excerpt',
+        tags: [],
+        type: PostTypeEnum::POST,
+        visibility: PostVisibilityEnum::PUBLIC,
+        status: PostStatusEnum::DRAFT,
+        comments_enabled: true,
+        seo_enabled: true,
+        seo_title: 'Seo Title',
+        seo_description: 'Seo Desc',
+        cover_image_path: null,
+    );
+
+    $post = $this->action->exec($user, $dto);
+
+    expect($post->title)->toBe('Draft Post')
+        ->and($post->status)->toBe(PostStatusEnum::DRAFT)
+        ->and($post->user_id)->toBe($user->id)
+        ->and($post->published_at)->toBeNull();
+
+    Event::assertDispatched(PostSaved::class, function ($event) use ($post) {
+        return $event->post->id === $post->id && $event->seoData['title'] === 'Seo Title';
+    });
+});
+
+it('sets published_at when creating a new published post', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+
+    $dto = new SavePostData(
+        title: 'Published Post',
+        slug: 'published-post',
+        category_id: $category->id,
+        content: 'Content',
+        excerpt: 'Excerpt',
+        tags: [],
+        type: PostTypeEnum::POST,
+        visibility: PostVisibilityEnum::PUBLIC,
+        status: PostStatusEnum::PUBLISHED,
+        comments_enabled: true,
+        seo_enabled: true,
+        seo_title: null,
+        seo_description: null,
+        cover_image_path: null,
+    );
+
+    $post = $this->action->exec($user, $dto);
+
+    expect($post->status)->toBe(PostStatusEnum::PUBLISHED)
+        ->and($post->published_at)->not->toBeNull();
+
+    Event::assertDispatched(PostSaved::class);
+});

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('app:gemini-consultant-command')]
+#[Signature('app:gemini-consultant-command {question}')]
 #[Description('Command description')]
 class GeminiConsultantCommand extends Command
 {

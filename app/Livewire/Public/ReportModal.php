@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Public;
 
 use App\Actions\Public\StoreReportAction;
+use App\DTOs\StoreReportData;
 use App\Livewire\Forms\Public\ReportForm;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -40,8 +41,7 @@ class ReportModal extends Component
         $this->validate();
 
         app(StoreReportAction::class)->exec(
-            $this->form->getData(),
-            //            array_merge($this->form->all(), ['reporter_id' => auth()->id()]),
+            StoreReportData::from($this->form->getData()),
         );
 
         $this->reset(['show']);

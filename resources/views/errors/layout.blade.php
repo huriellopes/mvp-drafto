@@ -24,7 +24,8 @@
 
     {{-- Header: Logo --}}
     <header class="flex justify-center">
-        <a href="/" class="text-2xl font-black tracking-tighter text-zinc-900 dark:text-white transition hover:opacity-70">
+        <a href="/" class="flex items-center gap-2 text-2xl font-black tracking-tighter text-zinc-900 dark:text-white transition hover:opacity-70">
+            <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" alt="Drafto Logo" class="h-8 w-auto" />
             Drafto<span class="text-profile-primary">.</span>
         </a>
     </header>

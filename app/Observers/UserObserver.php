@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\Models\User;
-use App\Models\Module;
 use App\Enums\PlanEnum;
+use App\Models\Module;
+use App\Models\User;
+use UnitEnum;
 
 class UserObserver
 {
@@ -44,7 +45,7 @@ class UserObserver
         $planSlug = $user->plan?->slug ?? PlanEnum::FREE->value;
 
         foreach ($modules as $module) {
-            $moduleSlugString = $module->slug instanceof \UnitEnum ? $module->slug->value : $module->slug;
+            $moduleSlugString = $module->slug instanceof UnitEnum ? $module->slug->value : $module->slug;
 
             $planConfig = config("plans.{$planSlug}.modules.{$moduleSlugString}", []);
 

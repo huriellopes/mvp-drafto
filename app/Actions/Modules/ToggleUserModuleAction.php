@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Actions\Modules;
 
-use App\Models\User;
 use App\Models\Module;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 

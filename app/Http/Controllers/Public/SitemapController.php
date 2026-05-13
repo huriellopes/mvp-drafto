@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Public;
 
+use App\Enums\PostStatusEnum;
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
-use App\Enums\PostStatusEnum;
-use App\Enums\RoleEnum;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller

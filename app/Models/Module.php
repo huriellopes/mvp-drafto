@@ -8,6 +8,7 @@ use App\Enums\ModuleEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable([
     'name',
@@ -17,13 +18,18 @@ use Illuminate\Support\Facades\Cache;
     'is_enabled',
     'settings',
 ])]
-class Module extends Model
+class Module extends Model implements Auditable
 {
+    use \OwenIt\Auditing\Auditable;
+
     // Helper Sênior: Verifica se um módulo está ativo com Cache para performance
-    public static function isEnabled(ModuleEnum $slug): bool
+    public static function isEnabled(ModuleEnum|string $slug): bool
     {
-        return Cache::remember("module_status_{$slug->value}", now()->addMinutes(30), function () use ($slug) {
-            return self::where('slug', $slug)->where('is_enabled', true)->exists();
+        $value = $slug instanceof ModuleEnum ? $slug->value : $slug;
+
+        // Sênior: Aumentado para 24h pois agora usamos Redis e temos limpeza automática no booted()
+        return (bool) Cache::remember("module_status_{$value}_v3", now()->addDay(), function () use ($value) {
+            return self::where('slug', $value)->where('is_enabled', true)->exists();
         });
     }
 
@@ -34,10 +40,19 @@ class Module extends Model
 
     protected static function booted(): void
     {
-        // Limpa o cache sempre que o módulo for atualizado
-        static::updated(function ($module) {
-            Cache::forget("module_status_{$module->slug->value}");
-        });
+        // Limpa o cache sempre que o módulo for alterado
+        $clearCache = function ($module) {
+            $slug = $module->slug instanceof ModuleEnum ? $module->slug->value : $module->slug;
+            Cache::forget("module_status_{$slug}");
+            Cache::forget("module_status_{$slug}_v2");
+            Cache::forget("module_data_{$slug}");
+            Cache::forget("module_data_{$slug}_v2");
+            Cache::forget("module_data_{$slug}_v3");
+        };
+
+        static::created($clearCache);
+        static::updated($clearCache);
+        static::deleted($clearCache);
     }
 
     protected function casts(): array

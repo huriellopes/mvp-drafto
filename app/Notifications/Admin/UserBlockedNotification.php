@@ -8,14 +8,15 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 
 class UserBlockedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public function __construct(
         public string $reason,
-        public ?string $expiresAt = null
+        public ?string $expiresAt = null,
     ) {}
 
     public function via($notifiable): array
@@ -25,7 +26,7 @@ class UserBlockedNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $message = (new MailMessage)
+        $message = (new MailMessage())
             ->error()
             ->subject('Sua conta no Drafto foi suspensa')
             ->greeting('Olá, ' . $notifiable->display_name)

@@ -46,6 +46,7 @@ return [
             'stats' => 'Estatísticas',
             'modules' => 'Módulos',
             'profile_badge' => 'Crachá do Escritor',
+            'tags' => 'Tags',
         ],
         'current_session' => 'Sessão Atual',
     ],
@@ -307,6 +308,46 @@ return [
             'comments' => 'Sistema de Comentários',
             'subscriptions' => 'Assinatura e Planos',
             'newsletter' => 'Newsletter e Inscrições',
+            'support' => 'Suporte e Ajuda',
+            'tags' => 'Sistema de Tags',
+        ],
+    ],
+
+    'support' => [
+        'title' => 'Suporte',
+        'subtitle' => 'Central de ajuda e contato direto com a equipe.',
+        'page_title' => 'Central de Suporte',
+        'page_subtitle' => 'Como podemos ajudar? Escolha um dos canais abaixo ou envie uma mensagem direta.',
+        'channels' => [
+            'whatsapp' => [
+                'title' => 'WhatsApp',
+                'description' => 'Atendimento rápido por mensagem.',
+                'action' => 'Conversar agora',
+            ],
+            'email' => [
+                'title' => 'E-mail',
+                'description' => 'Envie uma mensagem detalhada.',
+            ],
+        ],
+        'form' => [
+            'title' => 'Envie uma Mensagem',
+            'description' => 'Preencha o formulário abaixo e retornaremos o mais breve possível.',
+            'disabled' => 'O formulário está temporariamente desativado. Use os canais acima.',
+            'labels' => [
+                'name' => 'Seu Nome',
+                'email' => 'E-mail de Contato',
+                'subject' => 'Assunto',
+                'message' => 'Mensagem',
+            ],
+            'placeholders' => [
+                'name' => 'Ex: João Silva',
+                'email' => 'seu@email.com',
+                'subject' => 'Em que podemos ajudar?',
+                'message' => 'Descreva sua solicitação em detalhes...',
+            ],
+            'submit' => 'Enviar Mensagem',
+            'success' => 'Sua mensagem foi enviada com sucesso! Retornaremos em breve.',
+            'error' => 'O formulário de contato está desativado no momento.',
         ],
     ],
 ];

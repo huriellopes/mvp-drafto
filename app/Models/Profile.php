@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+use OwenIt\Auditing\Contracts\Auditable;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 
 #[Fillable([
@@ -31,11 +33,13 @@ use RalphJSmit\Laravel\SEO\Support\HasSEO;
     'accent_color',
     'show_email_publicly',
     'is_searchable',
+    'is_verified',
+    'profile_views',
 ])]
-class Profile extends Model
+class Profile extends Model implements Auditable
 {
     /** @use HasFactory<ProfileFactory> */
-    use HasFactory;
+    use HasFactory, \OwenIt\Auditing\Auditable;
 
     use HasSEO;
 
@@ -44,12 +48,82 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function settings(): HasOne
+    {
+        return $this->hasOne(ProfileSetting::class)->withDefault([
+            'button_style' => 'rounded-md',
+            'card_style' => 'bordered',
+            'layout_type' => 'default',
+            'font_family' => 'sans',
+        ]);
+    }
+
     public function getColors(): object
     {
         return (object) [
             'primary' => $this->primary_color ?? '#18181b',
             'accent' => $this->accent_color ?? '#3f3f46',
         ];
+    }
+
+    /**
+     * Get the completion percentage of the profile.
+     */
+    public function getCompletionPercentage(): int
+    {
+        $fields = [
+            'name',
+            'username',
+            'email',
+            'bio',
+            'avatar_path',
+            'cover_path',
+            'location',
+        ];
+
+        $completed = 0;
+
+        foreach ($fields as $field) {
+            if (!empty($this->{$field})) {
+                $completed++;
+            }
+        }
+
+        return (int) (($completed / count($fields)) * 100);
+    }
+
+    /**
+     * Identify missing critical fields.
+     */
+    public function getMissingFields(): array
+    {
+        $missing = [];
+
+        if (empty($this->name)) {
+            $missing['name'] = 'Nome';
+        }
+
+        if (empty($this->username)) {
+            $missing['username'] = 'Username (@)';
+        }
+
+        if (empty($this->bio)) {
+            $missing['bio'] = 'Biografia';
+        }
+
+        if (empty($this->avatar_path)) {
+            $missing['avatar_path'] = 'Foto de Perfil';
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Check if critical fields are completed.
+     */
+    public function isComplete(): bool
+    {
+        return empty($this->getMissingFields());
     }
 
     protected function handle(): Attribute
@@ -87,6 +161,8 @@ class Profile extends Model
             'visibility' => ProfileVisibilityEnum::class,
             'show_email_publicly' => 'boolean',
             'is_searchable' => 'boolean',
+            'is_verified' => 'boolean',
+            'profile_views' => 'integer',
         ];
     }
 }

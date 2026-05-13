@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Contracts\Services\LoggerInterface;
+use App\Enums\LogCategoryEnum;
 use App\Mail\NewsletterNotification;
 use App\Models\NewsletterSubscriber;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,13 +39,21 @@ class SendNewsletterJob implements ShouldQueue
 
     public function handle(): void
     {
-        Mail::to($this->subscriber->email)->send(
-            new NewsletterNotification(
-                $this->posts,
-                $this->categoryName,
-                $this->subscriber,
-                $this->customMessage,
-            ),
-        );
+        try {
+            Mail::to($this->subscriber->email)->send(
+                new NewsletterNotification(
+                    $this->posts,
+                    $this->categoryName,
+                    $this->subscriber,
+                    $this->customMessage,
+                ),
+            );
+        } catch (Exception $e) {
+            app(LoggerInterface::class)->error("Falha ao enviar newsletter para {$this->subscriber->email}", LogCategoryEnum::QUEUE, [
+                'exception' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 }

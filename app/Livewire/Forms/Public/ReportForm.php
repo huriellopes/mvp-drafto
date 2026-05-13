@@ -49,7 +49,7 @@ class ReportForm extends Form
             'reportable_type' => $this->reportable_type,
             'reportable_id' => $this->reportable_id,
             'reason' => $this->reason,
-            'description' => mb_trim($this->description),
+            'description' => mb_trim((string) $this->description),
             'reporter_id' => auth()->id(),
         ];
     }

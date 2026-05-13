@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Spatie\Health\Http\Controllers\HealthCheckResultsController;
+
 Route::prefix('admin')
     ->middleware(['can:admin'])
     ->name('admin.')
@@ -18,4 +20,9 @@ Route::prefix('admin')
             ->name('modules.index');
         Route::livewire('/views', 'dashboard.admin.post-views.post-view-index')
             ->name('posts.views');
+        Route::livewire('/logs', 'dashboard.admin.audit-log-index')
+            ->name('logs.index');
+
+        Route::get('/health', HealthCheckResultsController::class)
+            ->name('health');
     });
