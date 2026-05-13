@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', '419')
+@section('code', '419')
+@section('message', 'Tinta seca.')
+@section('description', 'Sua sessão de escrita expirou por inatividade. Atualize a página para recarregar o tinteiro e continuar.')

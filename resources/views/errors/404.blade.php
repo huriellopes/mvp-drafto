@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Página não encontrada')
+@section('code', '404')
+@section('message', 'Caminho sem saída.')
+@section('description', 'O conteúdo que você procura sumiu do mapa ou o módulo foi desativado pelo administrador.')
