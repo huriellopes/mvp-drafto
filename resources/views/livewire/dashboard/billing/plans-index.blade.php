@@ -23,7 +23,7 @@
                 <div class="mb-8">
                     <h3 class="text-xl font-black italic">{{ $plan->name }}</h3>
                     <div class="mt-4 flex items-baseline gap-1">
-                        <span class="text-4xl font-black tracking-tighter">R$ {{ number_format($plan->price, 2, ',', '.') }}</span>
+                        <span class="text-4xl font-black tracking-tighter">{{ format_currency($plan->price) }}</span>
                         <span class="text-xs font-bold opacity-50">/mês</span>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 <div class="space-y-6 pb-20">
+    {{ Breadcrumbs::render('dashboard.posts.views') }}
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <x-ui.input
             wire:model.live.debounce.300ms="search"

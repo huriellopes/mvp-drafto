@@ -1,8 +1,13 @@
 @use(App\Enums\PostStatusEnum)
 @use(App\Enums\PostTypeEnum)
+@use(App\Enums\ModuleEnum)
 
 <div class="mx-auto w-full max-w-7xl px-4 pb-20 2xl:max-w-[1550px]">
-    {{ Breadcrumbs::render('dashboard.posts.create') }}
+    @if($post?->exists)
+        {{ Breadcrumbs::render('dashboard.posts.edit', $post) }}
+    @else
+        {{ Breadcrumbs::render('dashboard.posts.create') }}
+    @endif
     <form wire:submit="save" class="space-y-6">
 
         {{-- Header Sticky --}}
@@ -69,7 +74,7 @@
 
                         <x-ui.select label="Categoria" wire:model="form.category_id">
                             <option value="">Escolha uma...</option>
-                            
+
                             <optgroup label="Padrão do Sistema">
                                 @foreach($categories->whereNull('user_id') as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -84,6 +89,8 @@
                                 </optgroup>
                             @endif
                         </x-ui.select>
+
+                        <x-ui.tags-input label="Tags" wire:model="form.tags" :availableTags="$availableTags" />
 
                         <x-ui.select label="Tipo de conteúdo" wire:model="form.type">
                             @foreach(PostTypeEnum::cases() as $type)
@@ -100,20 +107,56 @@
                     </div>
 
                     {{-- SEO --}}
-                    <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-sm font-bold text-zinc-900">Otimização (SEO)</h3>
-                            <input type="checkbox" wire:model.live="form.seo_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
-                        </div>
-
-                        @if($form->seo_enabled)
-                            <div class="space-y-4 pt-2 border-t border-zinc-100">
-                                <x-ui.input label="Título SEO" wire:model="form.seo_title" placeholder="Título para o Google" />
-                                <x-ui.textarea label="Descrição SEO" wire:model="form.seo_description" rows="3" placeholder="Pequeno resumo para atrair cliques" />
-                                <p class="text-[10px] text-zinc-400 italic">Deixe em branco para usar o título e resumo originais.</p>
+                    @if(auth()->user()->getModuleSetting(ModuleEnum::MY_POSTS, 'enable_seo', false))
+                        <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-sm font-bold text-zinc-900 leading-none italic">Otimização (SEO)</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Pro</span>
+                                    <input type="checkbox" wire:model.live="form.seo_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 transition">
+                                </div>
                             </div>
-                        @endif
-                    </div>
+
+                            @if($form->seo_enabled)
+                                <div class="space-y-4 pt-4 border-t border-zinc-100 animate-in fade-in duration-300">
+                                    <x-ui.input
+                                        label="Título SEO Customizado"
+                                        wire:model.blur="form.seo_title"
+                                        placeholder="Título para o Google"
+                                        description="Recomendado: 50-60 caracteres"
+                                    />
+                                    <x-ui.textarea
+                                        label="Descrição SEO (Meta Description)"
+                                        wire:model.blur="form.seo_description"
+                                        rows="3"
+                                        placeholder="Resumo para atrair cliques nos resultados de busca"
+                                        description="Recomendado: 120-160 caracteres"
+                                    />
+                                    <p class="text-[10px] text-zinc-400 italic font-medium leading-relaxed">
+                                        <x-lucide-info class="h-3 w-3 inline mr-0.5" />
+                                        Deixe em branco para usar automaticamente o título e resumo originais do artigo.
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="rounded-3xl border border-dashed border-zinc-200 bg-zinc-50/50 p-6 text-center space-y-4 relative overflow-hidden group">
+                            <div class="absolute -right-10 -top-10 h-32 w-32 bg-indigo-600/5 rounded-full blur-3xl transition-all group-hover:scale-150"></div>
+
+                            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-200 text-zinc-400 mx-auto shadow-sm">
+                                <x-lucide-sparkles class="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black text-zinc-700 uppercase tracking-widest leading-none">Personalização SEO</h4>
+                                <p class="text-[10px] text-zinc-500 mt-2 leading-relaxed">
+                                    Apareça no topo do Google com títulos e descrições customizadas nos planos <b>Plus</b> ou <b>Pro</b>.
+                                </p>
+                            </div>
+                            <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="!rounded-xl !px-6 !text-[9px] !font-black uppercase tracking-widest shadow-sm">
+                                Fazer Upgrade
+                            </x-ui.button>
+                        </div>
+                    @endif
                 </div>
             </aside>
         </div>

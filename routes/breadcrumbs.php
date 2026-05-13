@@ -16,9 +16,19 @@ Breadcrumbs::for('dashboard.profile', function (BreadcrumbTrail $trail) {
     $trail->push('Meu Perfil Público', route('dashboard.profile'));
 });
 
+Breadcrumbs::for('dashboard.profile.badge', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Crachá do Escritor', route('dashboard.profile.badge'));
+});
+
 Breadcrumbs::for('dashboard.account', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Configurações', route('dashboard.account'));
+});
+
+Breadcrumbs::for('dashboard.support', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Suporte', route('dashboard.support'));
 });
 
 // Escritor: Posts
@@ -30,6 +40,16 @@ Breadcrumbs::for('dashboard.posts.index', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('dashboard.posts.draft', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Rascunhos', route('dashboard.posts.draft'));
+});
+
+Breadcrumbs::for('dashboard.categories', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Categorias', route('dashboard.posts.categories.index'));
+});
+
+Breadcrumbs::for('dashboard.tags', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Tags', route('dashboard.posts.tags.index'));
 });
 
 Breadcrumbs::for('dashboard.posts.create', function (BreadcrumbTrail $trail) {
@@ -58,6 +78,16 @@ Breadcrumbs::for('dashboard.follows', function (BreadcrumbTrail $trail) {
     $trail->push('Comunidade', route('dashboard.follows'));
 });
 
+Breadcrumbs::for('dashboard.billing.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Minha Assinatura', route('dashboard.billing.index'));
+});
+
+Breadcrumbs::for('dashboard.billing.plans', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.billing.index');
+    $trail->push('Planos Disponíveis', route('dashboard.billing.plans'));
+});
+
 // Admin: Master
 Breadcrumbs::for('dashboard.modules.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
@@ -79,7 +109,17 @@ Breadcrumbs::for('dashboard.reports.index', function (BreadcrumbTrail $trail) {
     $trail->push('Moderação', route('dashboard.admin.reports.index'));
 });
 
+Breadcrumbs::for('dashboard.subscriptions.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Gestão de Assinaturas', route('dashboard.admin.subscriptions.index'));
+});
+
 Breadcrumbs::for('dashboard.posts.views', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Estatísticas de Views', route('dashboard.admin.posts.views'));
+});
+
+Breadcrumbs::for('admin.logs.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Auditoria do Sistema', route('dashboard.admin.logs.index'));
 });

@@ -23,14 +23,14 @@ class PostFactory extends Factory
 
     public function definition(): array
     {
-        $title = fake()->unique()->sentence(fake()->numberBetween(3, 8));
+        $title = fake()->sentence(fake()->numberBetween(3, 8));
         $content = fake()->paragraphs(fake()->numberBetween(8, 16), true);
 
         return [
             'user_id' => User::factory()->writer(),
             'category_id' => PostCategory::factory(),
             'title' => $title,
-            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
+            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(10)),
             'excerpt' => fake()->optional()->text(180),
             'content' => $content,
             'type' => fake()->randomElement([

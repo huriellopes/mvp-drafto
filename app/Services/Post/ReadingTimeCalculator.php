@@ -10,6 +10,11 @@ final class ReadingTimeCalculator
 {
     private const int WORDS_PER_MINUTE = 200;
 
+    private function __construct()
+    {
+        // Static helper class
+    }
+
     public static function calculate(string $content): int
     {
         $stripContent = strip_tags($content);

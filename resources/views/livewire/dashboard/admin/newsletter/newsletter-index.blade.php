@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    {{ Breadcrumbs::render('dashboard.newsletter.index') }}
     <div class="mb-8">
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white leading-tight">{{ __('dashboard.admin.newsletter.title') }}</h2>
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('dashboard.admin.newsletter.subtitle') }}</p>
@@ -68,10 +69,14 @@
                     </div>
                 </td>
                 <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400">
-                    @if($subscriber->category)
-                        <span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
-                            {{ $subscriber->category->name }}
-                        </span>
+                    @if($subscriber->categories->isNotEmpty())
+                        <div class="flex flex-wrap gap-1">
+                            @foreach($subscriber->categories as $category)
+                                <span class="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
+                                    {{ $category->name }}
+                                </span>
+                            @endforeach
+                        </div>
                     @else
                         <span class="text-xs text-zinc-400 italic">{{ __('dashboard.admin.newsletter.table.general') }}</span>
                     @endif
@@ -117,26 +122,38 @@
     />
 
     <x-ui.modal name="manual-newsletter-modal" title="{{ __('dashboard.admin.newsletter.manual_modal.title') }}">
-        <div class="space-y-6">
+        <form wire:submit.prevent="sendManualNewsletter" class="space-y-6">
             <p class="text-sm text-zinc-500">
                 {{ __('dashboard.admin.newsletter.manual_modal.description') }}
             </p>
+
+            <x-ui.select 
+                label="Filtrar por Categoria (Opcional)" 
+                wire:model="manualCategoryId"
+                :error="$errors->first('manualCategoryId')"
+            >
+                <option value="">Enviar para TODOS</option>
+                @foreach($this->categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </x-ui.select>
 
             <x-ui.textarea
                 label="{{ __('dashboard.admin.newsletter.manual_modal.label') }}"
                 wire:model="customMessage"
                 placeholder="{{ __('dashboard.admin.newsletter.manual_modal.placeholder') }}"
                 rows="5"
+                :error="$errors->first('customMessage')"
             />
 
             <div class="flex justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                <x-ui.button variant="secondary" x-on:click="show = false" class="!w-auto px-8">
+                <x-ui.button variant="secondary" x-on:click="$dispatch('close-modal', { name: 'manual-newsletter-modal' })" type="button" class="!w-auto px-8">
                     {{ __('dashboard.admin.newsletter.manual_modal.cancel') }}
                 </x-ui.button>
-                <x-ui.button wire:click="sendManualNewsletter" loading="sendManualNewsletter" class="!w-auto px-10">
+                <x-ui.button type="submit" loading="sendManualNewsletter" class="!w-auto px-10">
                     {{ __('dashboard.admin.newsletter.manual_modal.confirm') }}
                 </x-ui.button>
             </div>
-        </div>
+        </form>
     </x-ui.modal>
 </div>

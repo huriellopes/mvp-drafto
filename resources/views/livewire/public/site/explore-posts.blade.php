@@ -42,6 +42,7 @@
                         ])>Geral</button>
 
                         @foreach($this->categories as $cat)
+                            @continue(!is_object($cat))
                             <button wire:click="$set('category', '{{ $cat->slug }}')" @class([
                                 'flex items-center justify-between px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-left',
                                 $category === $cat->slug ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900'
@@ -90,7 +91,9 @@
             </div>
 
             {{-- Grid --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12" wire:loading.class="opacity-30 blur-sm grayscale transition-all duration-700">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 min-h-[800px] transition-all duration-500"
+                 wire:loading.class="opacity-40 grayscale pointer-events-none"
+            >
                 @forelse($posts as $post)
                     <x-public.post-card :$post wire:key="post-{{ $post->id }}" />
                 @empty

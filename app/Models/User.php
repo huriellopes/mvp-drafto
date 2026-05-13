@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\PlanEnum;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
@@ -14,8 +15,10 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,15 +26,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Cashier\Billable;
+use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 
 #[Fillable([
     'name',
     'email',
     'password',
     'role',
+    'plan_id',
     'status',
     'is_lifetime',
+    'trial_ends_at',
+    'trial_notification_sent_at',
     'ip_address',
     'last_login_at',
     'email_verified_at',
@@ -41,17 +50,59 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 #[Hidden([
     'password',
     'remember_token',
+    'two_factor_secret',
+    'two_factor_recovery_codes',
 ])]
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitemapable
 {
     use Billable;
 
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasPlanLimits, KeepsDeletedModels, Notifiable;
+    use HasFactory, HasPlanLimits, KeepsDeletedModels, Notifiable, \OwenIt\Auditing\Auditable;
+
+    protected array $auditExclude = [
+        'password',
+        'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'ip_address',
+        'last_login_at',
+    ];
+
+    /**
+     * Cache em tempo de execução para os módulos disponíveis do usuário.
+     */
+    protected ?\Illuminate\Database\Eloquent\Collection $loadedModules = null;
+
+    public function toSitemapTag(): Url|string|array
+    {
+        if (!$this->profile || !$this->isActive()) {
+            return [];
+        }
+
+        return Url::create(route('profile.show', $this->profile->username))
+            ->setLastModificationDate($this->updated_at)
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+            ->setPriority(0.7);
+    }
+
+    /**
+     * Determine if the user has two factor authentication enabled.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !is_null($this->two_factor_secret) &&
+               !is_null($this->two_factor_confirmed_at);
+    }
 
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function plan(): BelongsTo
+    {
+        return $this->belongsTo(Plan::class);
     }
 
     public function posts(): HasMany
@@ -137,6 +188,39 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(PostView::class);
     }
 
+    public function modules(): BelongsToMany
+    {
+        return $this->belongsToMany(Module::class)
+            ->withPivot('is_enabled', 'settings')
+            ->withTimestamps();
+    }
+
+    public function scopeWithFollowStatus(Builder $query): Builder
+    {
+        return $query->when(auth()->check(), function ($q) {
+            $q->withExists(['followers as is_followed_by_auth_user' => function ($q) {
+                $q->where('follower_id', auth()->id());
+            }]);
+        });
+    }
+
+    public function isVerified(): bool
+    {
+        // 1. Super Admin sempre verificado
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // 2. Verificação Manual (campo no profile)
+        if ($this->profile?->is_verified) {
+            return true;
+        }
+
+        // 3. Plano Pro Ativo (Exclui Trial)
+        // Sênior: Usamos o slug do plano carregado para evitar queries extras
+        return ($this->plan?->slug === PlanEnum::PRO->value) && !$this->onTrial();
+    }
+
     public function hasRole(RoleEnum $role): bool
     {
         return $this->role === $role;
@@ -164,11 +248,19 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasPremiumAccess(): bool
     {
-        if ($this->isAdmin() || $this->is_lifetime) {
+        if ($this->hasRole(RoleEnum::SUPER_ADMIN) || $this->isAdmin() || $this->is_lifetime || $this->onTrial()) {
             return true;
         }
 
-        return $this->subscribed('default') || $this->subscribed('pro');
+        return $this->subscribed();
+    }
+
+    /**
+     * Checks if the user is currently on an active free trial.
+     */
+    public function onTrial(): bool
+    {
+        return $this->trial_ends_at && $this->trial_ends_at->isFuture();
     }
 
     public function hasVerificationExpired(): bool
@@ -206,6 +298,26 @@ class User extends Authenticatable implements MustVerifyEmail
         };
     }
 
+    public function isModuleAvailable(string $slug): bool
+    {
+        if ($this->hasRole(RoleEnum::SUPER_ADMIN)) {
+            return true;
+        }
+
+        // Sênior: Usamos cache em memória para evitar re-processamento da relação
+        if ($this->loadedModules === null) {
+            $this->loadedModules = $this->modules;
+        }
+
+        $module = $this->loadedModules->firstWhere('slug', $slug);
+
+        if (!$module) {
+            return false;
+        }
+
+        return $module->is_enabled && (bool) $module->pivot->is_enabled;
+    }
+
     protected function displayName(): Attribute
     {
         return Attribute::get(function () {
@@ -224,10 +336,15 @@ class User extends Authenticatable implements MustVerifyEmail
             'role' => RoleEnum::class,
             'status' => UserStatusEnum::class,
             'is_lifetime' => 'boolean',
+            'trial_ends_at' => 'datetime',
+            'trial_notification_sent_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',
             'banned_until' => 'datetime',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:json',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 }

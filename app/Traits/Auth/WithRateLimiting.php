@@ -15,7 +15,7 @@ trait WithRateLimiting
     /**
      * Verifica se as tentativas excederam o limite e bloqueia se necessário.
      */
-    protected function checkRateLimit(string $key, int $maxAttempts = 5, int $decaySeconds = 60): void
+    protected function checkRateLimit(string $key, int $maxAttempts = 5, int $decaySeconds = 60, string $field = 'form.email'): void
     {
         if (RateLimiter::tooManyAttempts($this->throttleKey($key), $maxAttempts)) {
             $this->handleAccountLockdown($key);
@@ -23,7 +23,7 @@ trait WithRateLimiting
             $seconds = RateLimiter::availableIn($this->throttleKey($key));
 
             throw ValidationException::withMessages([
-                'form.email' => trans('auth.throttle', [
+                $field => trans('auth.throttle', [
                     'seconds' => $seconds,
                     'minutes' => ceil($seconds / 60),
                 ]),
@@ -56,7 +56,9 @@ trait WithRateLimiting
 
         // Se houver 10 tentativas falhas, buscamos o usuário e bloqueamos
         if ($attempts >= 10) {
-            $user = User::where('email', $key)->first();
+            $user = User::query()
+                ->where('email', $key)
+                ->first();
 
             if ($user && $user->status !== UserStatusEnum::BLOCKED) {
                 $user->update(['status' => UserStatusEnum::BLOCKED]);

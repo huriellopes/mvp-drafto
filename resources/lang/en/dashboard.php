@@ -46,6 +46,7 @@ return [
             'stats' => 'Statistics',
             'modules' => 'Modules',
             'profile_badge' => 'Writer Badge',
+            'tags' => 'Tags',
         ],
         'current_session' => 'Current Session',
     ],
@@ -194,6 +195,7 @@ return [
             'search_placeholder' => 'Search user...',
             'all_roles' => 'All roles',
             'new_button' => 'New User',
+            'export_button' => 'Export Excel',
             'table' => [
                 'user' => 'User',
                 'role' => 'Role',
@@ -303,6 +305,46 @@ return [
             'saved_post' => 'Saved Items',
             'comments' => 'Comment System',
             'newsletter' => 'Newsletter & Subscriptions',
+            'support' => 'Support & Help',
+            'tags' => 'Tag System',
+        ],
+    ],
+
+    'support' => [
+        'title' => 'Support',
+        'subtitle' => 'Help center and direct contact with the team.',
+        'page_title' => 'Support Center',
+        'page_subtitle' => 'How can we help? Choose one of the channels below or send a direct message.',
+        'channels' => [
+            'whatsapp' => [
+                'title' => 'WhatsApp',
+                'description' => 'Fast support via messaging.',
+                'action' => 'Chat now',
+            ],
+            'email' => [
+                'title' => 'Email',
+                'description' => 'Send a detailed message.',
+            ],
+        ],
+        'form' => [
+            'title' => 'Send a Message',
+            'description' => 'Fill out the form below and we will get back to you as soon as possible.',
+            'disabled' => 'The contact form is temporarily disabled. Please use the channels above.',
+            'labels' => [
+                'name' => 'Your Name',
+                'email' => 'Contact Email',
+                'subject' => 'Subject',
+                'message' => 'Message',
+            ],
+            'placeholders' => [
+                'name' => 'Ex: John Doe',
+                'email' => 'your@email.com',
+                'subject' => 'How can we help?',
+                'message' => 'Describe your request in detail...',
+            ],
+            'submit' => 'Send Message',
+            'success' => 'Your message has been sent successfully! We will get back to you soon.',
+            'error' => 'The contact form is currently disabled.',
         ],
     ],
 ];

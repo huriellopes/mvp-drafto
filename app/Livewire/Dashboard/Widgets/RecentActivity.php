@@ -6,38 +6,64 @@ namespace App\Livewire\Dashboard\Widgets;
 
 use App\Enums\RoleEnum;
 use App\Models\Post;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class RecentActivity extends Component
 {
+    /**
+     * Sênior: Retorna os itens de atividade recente.
+     * Utilizamos cache apenas para a lista de IDs para evitar erros de serialização
+     * e garantir que os modelos sejam sempre carregados de forma íntegra.
+     */
     #[Computed]
     public function items()
     {
         $user = auth()->user();
 
-        if ($user->isAdmin()) {
-            // Admin vê os últimos posts de todos e novas denúncias
-            return Post::with(['user', 'category'])->latest()->take(5)->get();
+        if (!$user) {
+            return collect();
         }
 
-        if ($user->hasRole(RoleEnum::WRITER)) {
-            // Escritor vê seus últimos posts (rascunhos ou publicados)
-            return $user->posts()->with('category')->latest()->take(5)->get();
+        // 1. Cacheamos apenas a lista de IDs de posts (Discovery logic)
+        $postIds = Cache::remember(
+            'recent_activity_ids_v1_' . $user->id,
+            now()->addMinutes(15),
+            function () use ($user) {
+                if ($user->isAdmin()) {
+                    return Post::latest()->take(5)->pluck('id')->toArray();
+                }
+
+                if ($user->hasRole(RoleEnum::WRITER)) {
+                    return $user->posts()->latest()->take(5)->pluck('id')->toArray();
+                }
+
+                return Post::query()
+                    ->where(function ($query) use ($user) {
+                        $query->whereHas('comments', fn ($q) => $q->where('user_id', $user->id))
+                            ->orWhereHas('likedByUsers', fn ($q) => $q->where('user_id', $user->id))
+                            ->orWhereHas('savedByUsers', fn ($q) => $q->where('user_id', $user->id));
+                    })
+                    ->latest()
+                    ->take(6)
+                    ->pluck('id')
+                    ->toArray();
+            },
+        );
+
+        if (empty($postIds)) {
+            return collect();
         }
 
-        // Leitor vê os posts que ele interagiu (curtiu ou comentou)
+        // 2. Buscamos os modelos reais com os relacionamentos necessários
         return Post::query()
-            ->where(function ($query) use ($user) {
-                $query->whereHas('comments', fn ($q) => $q->where('user_id', $user->id))
-                    ->orWhereHas('likedByUsers', fn ($q) => $q->where('user_id', $user->id))
-                    ->orWhereHas('savedByUsers', fn ($q) => $q->where('user_id', $user->id));
-            })
-            ->with(['author.profile', 'category'])
-            ->latest()
-            ->take(6)
-            ->get();
+            ->with(['author.profile', 'category', 'likedByUsers', 'savedByUsers'])
+            ->whereIn('id', $postIds)
+            ->get()
+            ->sortBy(fn ($post) => array_search($post->id, $postIds, true))
+            ->values();
     }
 
     public function placeholder(): string

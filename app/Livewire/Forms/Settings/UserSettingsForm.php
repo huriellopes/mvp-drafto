@@ -45,7 +45,7 @@ class UserSettingsForm extends Form
 
         app(UpdateUserSettingsAction::class)->exec(
             user: auth()->user(),
-            data: UpdateUserSettingsData::fromArray($this->all()),
+            data: UpdateUserSettingsData::from($this->all()),
         );
 
         $this->reset(['password', 'password_confirmation']);

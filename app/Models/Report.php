@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable([
     'reporter_id',
@@ -24,10 +25,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
     'reviewed_by',
     'reviewed_at',
 ])]
-class Report extends Model
+class Report extends Model implements Auditable
 {
     /** @use HasFactory<ReportFactory> */
-    use HasFactory;
+    use HasFactory, \OwenIt\Auditing\Auditable;
 
     public function reportable(): MorphTo
     {

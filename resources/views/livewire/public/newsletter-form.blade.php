@@ -5,7 +5,8 @@
 
     <div class="relative p-10 space-y-8 text-center">
         {{-- Header --}}
-        <div class="space-y-2">
+        <div class="space-y-4">
+            <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" class="h-10 w-auto mx-auto mb-6" alt="Drafto Logo">
             <h4 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Radar <span class="text-indigo-600 dark:text-indigo-400">Drafto.</span></h4>
             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 leading-relaxed italic">
                 O melhor desta categoria no seu e-mail.

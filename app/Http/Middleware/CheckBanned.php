@@ -14,11 +14,14 @@ final class CheckBanned
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && auth()->user()->banned_until && now()->lessThan(auth()->user()->banned_until)) {
-            $banned_days = Carbon::now()->diffInDays(auth()->user()->banned_until);
+            $user = auth()->user();
+            $banned_days = Carbon::now()->diffInDays($user->banned_until);
+            $reason = $user->ban_reason;
+
             auth()->logout();
 
             return redirect()->route('login')->withErrors([
-                'email' => "Sua conta está suspensa por mais {$banned_days} dias. Motivo: " . auth()->user()->ban_reason,
+                'email' => "Sua conta está suspensa por mais {$banned_days} dias. Motivo: {$reason}",
             ]);
         }
 

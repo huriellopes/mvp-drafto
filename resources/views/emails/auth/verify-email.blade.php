@@ -22,7 +22,7 @@
     <table class="main" cellpadding="0" cellspacing="0">
         <tr>
             <td class="header">
-                <div class="logo">W</div>
+                <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="44" height="44" alt="Drafto Logo" style="border-radius: 12px; border: 1px solid #e4e4e7;">
                 <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #18181b;">Drafto</div>
             </td>
         </tr>

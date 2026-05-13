@@ -9,13 +9,17 @@ use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Traits\Livewire\HasStandardResponses;
+use Exception;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Masmerise\Toaster\Toaster;
 
 class ManagePost extends Component
 {
+    use HasStandardResponses;
+
     public PostForm $form;
 
     public ?Post $post = null;
@@ -29,6 +33,17 @@ class ManagePost extends Component
             $this->authorize('update', $post);
             $this->post = $post;
             $this->form->setPost($post);
+
+            // Sênior: Alerta proativo se for um rascunho e o limite foi atingido
+            if ($post->status === PostStatusEnum::DRAFT && auth()->user()->hasReachedPostLimit()) {
+                $this->notifyWarning('Você atingiu seu limite de publicações. Você poderá salvar este rascunho, mas não poderá publicá-lo.');
+            }
+        }
+
+        if (!$post && auth()->check() && auth()->user()->hasReachedPostLimit()) {
+            $this->notifyError('Você atingiu o limite de posts do seu plano. Faça upgrade para publicar mais.');
+
+            return $this->redirect(route('dashboard.billing.plans'));
         }
     }
 
@@ -42,31 +57,73 @@ class ManagePost extends Component
     {
         $this->validate();
 
-        $dto = $this->form->toDTO($this->updatedCoverPath);
+        try {
+            // Sênior: Proteção de Rate Limit para salvamento
+            $executed = RateLimiter::attempt(
+                'save-post:' . auth()->id(),
+                $maxAttempts = 10, // Permite 10 saves por minuto (autosave e etc)
+                function () {
+                    $status = $this->post?->status ?? PostStatusEnum::DRAFT;
+                    $dto = $this->form->toDTO($this->updatedCoverPath, $status);
 
-        $this->post = app(SavePostAction::class)->exec(
-            auth()->user(),
-            $dto,
-            $this->post,
-        );
+                    $this->post = app(SavePostAction::class)->exec(
+                        auth()->user(),
+                        $dto,
+                        $this->post,
+                    );
+                },
+                decaySeconds: 60,
+            );
 
-        Toaster::success('Seu progresso foi salvo com sucesso!');
+            if (!$executed) {
+                $this->notifyWarning('Você está salvando muito rápido. Aguarde alguns segundos.');
 
-        if (request()->routeIs('dashboard.posts.create')) {
-            return $this->redirect(route('dashboard.posts.edit', $this->post), navigate: true);
+                return;
+            }
+
+            $this->notifySuccess('Seu progresso foi salvo com sucesso!');
+
+            if (request()->routeIs('dashboard.posts.create')) {
+                return $this->redirect(route('dashboard.posts.edit', $this->post), navigate: true);
+            }
+        } catch (Exception $e) {
+            $this->notifyError($e->getMessage());
         }
     }
 
     public function publish()
     {
-        $this->save();
+        $this->validate();
 
-        $this->post->update([
-            'status' => PostStatusEnum::PUBLISHED,
-            'published_at' => now(),
-        ]);
+        try {
+            // Sênior: Proteção de Rate Limit para publicação (Mais restrito)
+            $executed = RateLimiter::attempt(
+                'publish-post:' . auth()->id(),
+                $maxAttempts = 3,
+                function () {
+                    $dto = $this->form->toDTO($this->updatedCoverPath, PostStatusEnum::PUBLISHED);
 
-        Toaster::success('Publicação realizada com sucesso!');
+                    $this->post = app(SavePostAction::class)->exec(
+                        auth()->user(),
+                        $dto,
+                        $this->post,
+                    );
+                },
+                decaySeconds: 60,
+            );
+
+            if (!$executed) {
+                $this->notifyError('Muitas tentativas de publicação. Aguarde um momento.');
+
+                return;
+            }
+
+            $this->notifySuccess('Publicação realizada com sucesso!');
+
+            return $this->redirect(route('dashboard.posts.index'), navigate: true);
+        } catch (Exception $e) {
+            $this->notifyError($e->getMessage());
+        }
     }
 
     public function render(): View
@@ -77,8 +134,15 @@ class ManagePost extends Component
             ->orderBy('name', 'asc')
             ->get();
 
+        $tags = \App\Models\Tag::query()
+            ->whereNull('user_id')
+            ->orWhere('user_id', auth()->id())
+            ->orderBy('name', 'asc')
+            ->get();
+
         return view('livewire.dashboard.posts.manage-post', [
             'categories' => $categories,
+            'availableTags' => $tags,
         ])->layout('layouts.app', [
             'heading' => $this->post ? 'Editando: ' . $this->post->title : 'Nova Publicação',
         ]);

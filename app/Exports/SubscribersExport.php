@@ -23,19 +23,19 @@ class SubscribersExport implements FromQuery, WithHeadings, WithMapping
     public function query()
     {
         return NewsletterSubscriber::query()
-            ->with('category')
+            ->with('categories')
             ->when($this->filters->search, function (Builder $query, string $search) {
                 $query->where('email', 'like', "%{$search}%");
             })
             ->when($this->filters->category_id, function (Builder $query, int $categoryId) {
-                $query->where('category_id', $categoryId);
+                $query->whereHas('categories', fn ($q) => $q->where('post_categories.id', $categoryId));
             })
             ->orderBy($this->filters->sort, $this->filters->direction);
     }
 
     public function headings(): array
     {
-        return ['ID', 'E-mail', 'Categoria de Interesse', 'Data de Inscrição'];
+        return ['ID', 'E-mail', 'Categorias de Interesse', 'Data de Inscrição'];
     }
 
     public function map($subscriber): array
@@ -43,7 +43,7 @@ class SubscribersExport implements FromQuery, WithHeadings, WithMapping
         return [
             $subscriber->id,
             $subscriber->email,
-            $subscriber->category?->name ?? 'Geral',
+            $subscriber->categories->pluck('name')->join(', ') ?: 'Geral',
             $subscriber->created_at->translatedFormat('d/m/Y H:i'),
         ];
     }

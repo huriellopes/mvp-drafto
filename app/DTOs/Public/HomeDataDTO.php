@@ -6,8 +6,9 @@ namespace App\DTOs\Public;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Spatie\LaravelData\Data;
 
-readonly class HomeDataDTO
+class HomeDataDTO extends Data
 {
     public function __construct(
         public int $totalPosts,

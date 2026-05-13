@@ -11,6 +11,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', [
     'heading' => 'Dashboard',
@@ -19,6 +20,13 @@ use Livewire\Component;
 #[Title('Dashboard')]
 class Index extends Component
 {
+    public function mount()
+    {
+        if (request()->query('checkout') === 'success') {
+            Toaster::success('Parabéns! Sua assinatura foi confirmada com sucesso. Aproveite todos os recursos do seu novo plano.');
+        }
+    }
+
     #[Computed]
     public function user(): User
     {

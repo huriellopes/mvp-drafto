@@ -79,7 +79,7 @@
                 </div>
                 <h2 class="text-5xl md:text-6xl font-black text-zinc-900 dark:text-zinc-100 tracking-tighter italic">Destaques <span class="text-indigo-600 dark:text-indigo-400">Recentes.</span></h2>
             </div>
-            <a href="{{ route('posts.explore') }}" class="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+            <a href="{{ route('posts.explore') }}" wire:navigate class="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
                 Ver todo o acervo
                 <div class="h-10 w-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 group-hover:border-zinc-900 dark:group-hover:border-white transition-colors">
                     <x-lucide-arrow-right class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -107,6 +107,7 @@
             <div class="flex flex-wrap justify-center gap-4">
                 @foreach($data->categories as $category)
                     <a href="{{ route('posts.explore', ['category' => $category->slug]) }}"
+                       wire:navigate
                        class="group relative flex items-center gap-4 px-10 py-5 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1.5">
                         <div class="h-2.5 w-2.5 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="flex flex-col">

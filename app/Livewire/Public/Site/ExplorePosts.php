@@ -9,6 +9,9 @@ use App\DTOs\Public\PostFilterData;
 use App\Models\PostCategory;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Lazy;
@@ -61,21 +64,44 @@ class ExplorePosts extends Component
     #[Computed]
     public function categories()
     {
-        return PostCategory::withCount('posts')
-            ->orderBy('posts_count', 'desc') // Sênior: Mostra as mais relevantes primeiro
-            ->take(10)
-            ->get();
+        $cacheKey = 'explore_categories_' . Carbon::now()->timestamp;
+        $categories = Cache::remember($cacheKey, now()->addHours(1), function () {
+            return PostCategory::withCount('posts')
+                ->orderBy('posts_count', 'desc')
+                ->take(10)
+                ->get();
+        });
+
+        if (!($categories instanceof Collection)) {
+            Cache::forget($cacheKey);
+
+            return $this->categories();
+        }
+
+        return $categories;
     }
 
     #[Computed]
     public function tags()
     {
-        return Tag::query()
-            ->whereHas('posts')
-            ->withCount('posts')
-            ->orderByDesc('posts_count')
-            ->take(15)
-            ->get();
+        $cacheKey = 'explore_tags_' . Carbon::now()->timestamp;
+        $tags = Cache::remember($cacheKey, now()->addHours(1), function () {
+            return Tag::query()
+                ->whereHas('posts')
+                ->withCount('posts')
+                ->orderByDesc('posts_count')
+                ->take(15)
+                ->get();
+        });
+
+        if (!($tags instanceof Collection)) {
+            Cache::forget($cacheKey);
+
+            return $this->tags();
+        }
+
+        return $tags;
+
     }
 
     public function resetFilters(): void

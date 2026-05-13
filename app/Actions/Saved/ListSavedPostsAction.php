@@ -12,18 +12,28 @@ use Illuminate\Database\Eloquent\Builder;
 
 final class ListSavedPostsAction
 {
+    /**
+     * Sênior: Lista itens salvos com tratamento rigoroso de ambiguidades e performance.
+     */
     public function exec(User $user, SavedPostsFilterData $filters, int $perPage = 12): LengthAwarePaginator
     {
-        if ($user->isAdmin()) {
-            $query = Post::query()
-                ->select('posts.*', 'saved_posts.created_at as saved_at')
-                ->join('saved_posts', 'posts.id', '=', 'saved_posts.post_id');
+        $query = Post::query();
 
-            $sortColumn = $filters->sort === 'created_at' ? 'saved_posts.created_at' : "posts.{$filters->sort}";
+        if ($user->isAdmin()) {
+            // No modo Admin/Auditoria, vemos todos os salvos de todos os usuários
+            $query->select('posts.*', 'saved_posts.created_at as saved_at', 'saved_posts.collection_id')
+                ->join('saved_posts', 'posts.id', '=', 'saved_posts.post_id');
         } else {
-            $query = $user->savedPosts();
-            $sortColumn = $filters->sort === 'created_at' ? 'saved_posts.created_at' : $filters->sort;
+            // Usuário comum vê apenas os seus
+            $query->select('posts.*', 'saved_posts.created_at as saved_at', 'saved_posts.collection_id')
+                ->join('saved_posts', function ($join) use ($user) {
+                    $join->on('posts.id', '=', 'saved_posts.post_id')
+                        ->where('saved_posts.user_id', '=', $user->id);
+                });
         }
+
+        // Definimos a coluna de ordenação para evitar ambiguidade (posts.created_at vs saved_posts.created_at)
+        $sortColumn = $filters->sort === 'created_at' ? 'saved_posts.created_at' : "posts.{$filters->sort}";
 
         return $query->with(['author.profile', 'category'])
             ->published()

@@ -28,7 +28,7 @@ trait EnumOptions
                 'label' => $case->label(),
                 'color' => $case->color(),
             ],
-            self::cases(),
+            static::cases(),
         );
     }
 
@@ -37,7 +37,7 @@ trait EnumOptions
      */
     public static function values(): array
     {
-        return array_column(self::options(), 'value');
+        return array_column(static::options(), 'value');
     }
 
     /**
@@ -47,7 +47,7 @@ trait EnumOptions
     {
         $labels = [];
 
-        foreach (self::cases() as $case) {
+        foreach (static::cases() as $case) {
             $labels[$case->value] = $case->label();
         }
 

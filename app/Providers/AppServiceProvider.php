@@ -4,26 +4,40 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Enums\ModuleEnum;
+use App\Contracts\Services\LoggerInterface;
 use App\Enums\RoleEnum;
+use App\Events\Posts\PostSaved;
+use App\Listeners\Posts\HandlePostMediaAndSeo;
+use App\Listeners\SendTrialNotification;
+use App\Listeners\StripeWebhookListener;
+use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Follower;
-use App\Models\Module;
 use App\Models\Post;
+use App\Models\PostCategory;
 use App\Models\PostView;
 use App\Models\Profile;
 use App\Models\Report;
 use App\Models\User;
+use App\Observers\PostObserver;
+use App\Observers\UserObserver;
+use App\Policies\CollectionPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\FollowerPolicy;
+use App\Policies\PostCategoryPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\PostViewPolicy;
 use App\Policies\ProfilePolicy;
 use App\Policies\ReportPolicy;
+use App\Services\SystemLogger;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
+use Laravel\Cashier\Events\WebhookHandled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,7 +46,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoggerInterface::class, SystemLogger::class);
     }
 
     /**
@@ -40,24 +54,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(WebhookHandled::class, StripeWebhookListener::class);
+        Event::listen(Registered::class, SendTrialNotification::class);
+        Event::listen(PostSaved::class, HandlePostMediaAndSeo::class);
+
         Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(Follower::class, FollowerPolicy::class);
         Gate::policy(PostView::class, PostViewPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
         Gate::policy(Profile::class, ProfilePolicy::class);
         Gate::policy(Report::class, ReportPolicy::class);
+        Gate::policy(Collection::class, CollectionPolicy::class);
+        Gate::policy(PostCategory::class, PostCategoryPolicy::class);
+
+        User::observe(UserObserver::class);
+        Post::observe(PostObserver::class);
 
         Blade::if('module', function (mixed $slug) {
-
-            if (auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)) {
-                return true;
+            if (!function_exists('is_module_enabled')) {
+                return false;
             }
 
-            $module = $slug instanceof ModuleEnum
-                ? $slug
-                : ModuleEnum::tryFrom((string) $slug);
-
-            return $module && Module::isEnabled($module);
+            return is_module_enabled($slug);
         });
 
         Gate::define('admin', function (User $user) {
@@ -65,5 +83,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Cashier::useCustomerModel(User::class);
+
+        Relation::morphMap([
+            'user' => User::class,
+            'post' => Post::class,
+            'comment' => Comment::class,
+        ]);
     }
 }

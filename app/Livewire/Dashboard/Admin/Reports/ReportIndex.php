@@ -8,7 +8,6 @@ use App\Actions\Reports\HandleReportAction;
 use App\DTOs\HandleReportData;
 use App\DTOs\ReportFilterData;
 use App\Enums\ReportReasonEnum;
-use App\Enums\ReportStatusEnum;
 use App\Livewire\Forms\Admin\ReportFilterForm;
 use App\Models\Report;
 use Illuminate\View\View;
@@ -57,15 +56,17 @@ class ReportIndex extends Component
 
     public function openResponseModal(int $reportId): void
     {
-        $this->activeReport = Report::with('reportable')->find($reportId);
+        $this->activeReport = Report::query()
+            ->with('reportable')
+            ->find($reportId);
 
         // Sênior: Sincroniza o estado para o modal não abrir "vazio"
         $this->adminFeedback = $this->activeReport->admin_feedback ?? '';
         $this->selectedStatus = $this->activeReport->status->value;
 
-        // Verifica se o usuário reportado já está banido ou se há ação pendente
-        $this->shouldBanUser = $this->activeReport->status === ReportStatusEnum::ACTION_TAKEN;
-        $this->banReason = $this->activeReport->admin_feedback ?? '';
+        if (in_array($this->activeReport->reason, [ReportReasonEnum::PRAISE, ReportReasonEnum::SUGGESTION], true)) {
+            $this->shouldBanUser = false;
+        }
 
         $this->dispatch('open-modal', name: 'report-response-modal');
     }

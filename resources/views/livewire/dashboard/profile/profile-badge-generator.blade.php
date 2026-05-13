@@ -44,12 +44,20 @@
         }
     }
 }">
+    {{ Breadcrumbs::render('dashboard.profile.badge') }}
     <header class="space-y-2">
         <h2 class="text-4xl font-black tracking-tighter text-zinc-900 dark:text-white italic">
             {{ explode('.', __('dashboard.badge.title'))[0] }} <span class="text-indigo-600 dark:text-indigo-400">{{ explode('.', __('dashboard.badge.title'))[1] ?? '' }}</span>
         </h2>
         <p class="text-zinc-500 dark:text-zinc-400 font-medium">{{ __('dashboard.badge.subtitle') }}</p>
     </header>
+
+@php
+    $isAdmin = $this->user->isAdmin();
+    $isLifetime = (bool) $this->user->is_lifetime;
+    $isPrivileged = $isAdmin || $isLifetime;
+    $planSlug = $this->user->plan?->slug;
+@endphp
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
         {{-- Coluna de Configuração --}}
@@ -59,7 +67,7 @@
                     <x-ui.select :label="__('dashboard.badge.theme_label')" wire:model.live="form.theme">
                         <option value="dark">{{ __('dashboard.badge.themes.dark') }}</option>
                         <option value="light">{{ __('dashboard.badge.themes.light') }}</option>
-                        <option value="brand">{{ __('dashboard.badge.themes.brand') }}</option>
+                        <option value="brand">Identidade Visual (Sua Marca)</option>
                     </x-ui.select>
 
                     <div class="grid grid-cols-1 gap-4">
@@ -69,15 +77,61 @@
                 </div>
             </x-ui.section-card>
 
+            {{-- Plan Status --}}
+            <div @class([
+                "rounded-[2.5rem] p-8 border-2 transition-all duration-500",
+                "bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20" => $isPrivileged,
+                "bg-indigo-50 border-indigo-100 dark:bg-indigo-500/5 dark:border-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
+                "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800" => !$isPrivileged && $planSlug !== 'pro'
+            ])>
+                <div class="flex items-center gap-4 mb-4">
+                    <div @class([
+                        "h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg",
+                        "bg-emerald-600 shadow-emerald-500/20" => $isPrivileged,
+                        "bg-indigo-600 shadow-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
+                        "bg-zinc-400" => !$isPrivileged && $planSlug !== 'pro'
+                    ])>
+                        <x-lucide-award class="h-6 w-6" />
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Status do Crachá</h4>
+                        <p class="text-xs text-zinc-500 font-medium">
+                            @if($isPrivileged)
+                                Acesso Irrestrito (Super-HD + Verificado)
+                            @elseif($planSlug === 'pro' && !$this->user->onTrial())
+                                Ultra-HD (Impressão) + Verificado
+                            @elseif($planSlug === 'plus' && !$this->user->onTrial())
+                                High-Definition (Web)
+                            @else
+                                Qualidade Standard com Marca d'água
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                @if(!$isPrivileged && ($planSlug !== 'pro' || $this->user->onTrial()))
+                    <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="w-full !rounded-xl">
+                        {{ $this->user->onTrial() ? 'Efetivar Assinatura' : 'Fazer Upgrade para Pro' }}
+                    </x-ui.button>
+                @endif
+            </div>
+
             {{-- Embed Code --}}
-            <div class="rounded-[2.5rem] bg-zinc-900 border border-white/5 p-8 space-y-4 shadow-2xl">
+            <div class="rounded-[2.5rem] bg-zinc-900 border border-white/5 p-8 space-y-4 shadow-2xl" x-data="{ copied: false }">
                 <div class="flex items-center justify-between">
                     <h4 class="text-xs font-black uppercase tracking-widest text-indigo-400">{{ __('dashboard.badge.embed_title') }}</h4>
-                    <button @click="copyEmbed" type="button" class="text-[10px] font-black text-white/50 hover:text-white transition uppercase tracking-widest">{{ __('dashboard.badge.copy_code') }}</button>
+                    <button @click="
+                        const code = $refs.embedCode.innerText.trim();
+                        window.navigator.clipboard.writeText(code);
+                        copied = true;
+                        setTimeout(() => copied = false, 2000);
+                        $dispatch('notify', { message: '{{ __('dashboard.badge.messages.copy_success') }}' });
+                    " type="button" class="text-[10px] font-black transition-all uppercase tracking-widest" :class="copied ? 'text-emerald-400 scale-105' : 'text-white/50 hover:text-white'">
+                        <span x-text="copied ? 'Copiado!' : '{{ __('dashboard.badge.copy_code') }}'"></span>
+                    </button>
                 </div>
                 <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
                     <code x-ref="embedCode" class="text-[10px] text-zinc-400 font-mono block break-all leading-relaxed">
-                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}" width="400" height="250" frameborder="0"&gt;&lt;/iframe&gt;
+                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}&showStats={{ $form->showStats ? 'true' : 'false' }}&showBio={{ $form->showBio ? 'true' : 'false' }}&embed=true" width="450" height="280" frameborder="0"&gt;&lt;/iframe&gt;
                     </code>
                 </div>
             </div>

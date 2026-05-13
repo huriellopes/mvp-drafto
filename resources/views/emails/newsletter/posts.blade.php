@@ -32,8 +32,8 @@
     <table class="main" cellpadding="0" cellspacing="0">
         <tr>
             <td class="header">
-                <div class="logo">W</div>
-                <div style="margin-top: 16px; font-weight: 700; font-size: 18px; letter-spacing: -0.02em;">Drafto</div>
+                <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="52" height="52" alt="Drafto Logo" style="border-radius: 16px;">
+                <div style="margin-top: 12px; font-weight: 800; font-size: 16px; color: #ffffff; letter-spacing: -0.025em;">Drafto</div>
             </td>
         </tr>
         <tr>

@@ -2,6 +2,7 @@
 @use(App\Enums\ReportReasonEnum)
 
 <div class="space-y-6">
+    {{ Breadcrumbs::render('dashboard.reports.index') }}
     <div class="mb-8">
         <h2 class="text-2xl font-bold text-zinc-900 dark:text-white leading-tight">{{ __('dashboard.admin.reports.title') }}</h2>
         <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('dashboard.admin.reports.subtitle') }}</p>

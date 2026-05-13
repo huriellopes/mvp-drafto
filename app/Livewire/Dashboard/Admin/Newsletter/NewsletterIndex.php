@@ -12,6 +12,7 @@ use App\Jobs\SendNewsletterJob;
 use App\Livewire\Forms\Admin\NewsletterFilterForm;
 use App\Models\NewsletterSubscriber;
 use App\Models\PostCategory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -34,6 +35,8 @@ class NewsletterIndex extends Component
     public ?int $subscriberIdBeingDeleted = null;
 
     public string $customMessage = '';
+
+    public ?int $manualCategoryId = null;
 
     public function sortBy(string $column): void
     {
@@ -75,11 +78,30 @@ class NewsletterIndex extends Component
 
     public function sendManualNewsletter(): void
     {
-        $this->validate(['customMessage' => 'required|min:10']);
+        $this->validate([
+            'customMessage' => 'required|min:10',
+            'manualCategoryId' => 'nullable|exists:post_categories,id',
+        ]);
+
+        // Sênior: Lock de 60 segundos para evitar disparos duplicados acidentais
+        $lock = Cache::lock('manual-newsletter-dispatch', 60);
+
+        if (!$lock->get()) {
+            Toaster::warning('Já existe um disparo em processamento. Aguarde um momento.');
+
+            return;
+        }
 
         $message = $this->customMessage;
+        $categoryId = $this->manualCategoryId;
 
-        NewsletterSubscriber::chunk(100, function ($subscribers) use ($message) {
+        $query = NewsletterSubscriber::query();
+
+        if ($categoryId) {
+            $query->whereHas('categories', fn ($q) => $q->where('post_categories.id', $categoryId));
+        }
+
+        $query->chunk(100, function ($subscribers) use ($message) {
             foreach ($subscribers as $subscriber) {
                 SendNewsletterJob::dispatch(
                     subscriber: $subscriber,
@@ -90,7 +112,7 @@ class NewsletterIndex extends Component
             }
         });
 
-        $this->reset('customMessage');
+        $this->reset(['customMessage', 'manualCategoryId']);
         $this->dispatch('close-modal', name: 'manual-newsletter-modal');
         Toaster::success('Disparo manual iniciado em segundo plano!');
     }

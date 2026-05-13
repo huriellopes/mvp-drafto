@@ -13,10 +13,13 @@ final class CreateCollectionAction
 {
     public function exec(User $user, CollectionData $data): Collection
     {
-        return $user->collections()->create([
+        /** @var Collection $collection */
+        $collection = $user->collections()->create([
             'name' => $data->name,
             'slug' => $data->slug ?? Str::slug($data->name),
             'description' => $data->description,
         ]);
+
+        return $collection;
     }
 }

@@ -12,7 +12,9 @@ final class ProfileBadgeController extends Controller
 {
     public function show(string $username, Request $request)
     {
-        $profile = Profile::where('username', $username)->with('user')->firstOrFail();
+        $profile = Profile::where('username', $username)
+            ->with(['user'])
+            ->firstOrFail();
 
         return view('public.profile.badge-frame', [
             'profile' => $profile,

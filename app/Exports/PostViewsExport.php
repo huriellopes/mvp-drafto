@@ -6,13 +6,15 @@ namespace App\Exports;
 
 use App\DTOs\PostViewFilterData;
 use App\Models\PostView;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class PostViewsExport implements FromQuery, WithHeadings, WithMapping
+class PostViewsExport implements FromQuery, ShouldQueue, WithChunkReading, WithHeadings, WithMapping
 {
     use Exportable;
 
@@ -23,7 +25,11 @@ class PostViewsExport implements FromQuery, WithHeadings, WithMapping
     public function query()
     {
         return PostView::query()
-            ->with(['post:id,title', 'user:id,name']) // Eager loading seletivo
+            ->select('id', 'post_id', 'user_id', 'viewed_at', 'ip_hash', 'user_agent')
+            ->with([
+                'post:id,title',
+                'user:id,name',
+            ])
             ->when($this->filters->search, function (Builder $query, string $search) {
                 $query->where(function (Builder $q) use ($search) {
                     $q->whereHas('post', fn ($p) => $p->where('title', 'like', "%{$search}%"))
@@ -32,6 +38,11 @@ class PostViewsExport implements FromQuery, WithHeadings, WithMapping
                 });
             })
             ->orderBy($this->filters->sort, $this->filters->direction);
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 
     public function headings(): array

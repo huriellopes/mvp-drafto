@@ -24,14 +24,14 @@ class ProfileFactory extends Factory
         return [
             'user_id' => User::factory(),
             'username' => Str::of($username)->lower()->replace('.', '_')->value(),
-            'bio' => fake()->optional()->paragraph(),
+            'bio' => fake()->sentence(),
             'avatar_path' => null,
             'cover_path' => null,
-            'website_url' => fake()->optional()->url(),
-            'location' => fake()->optional()->city(),
-            'theme_mode' => fake()->randomElement(ThemePlatformEnum::cases()),
-            'primary_color' => fake()->optional()->hexColor(),
-            'accent_color' => fake()->optional()->hexColor(),
+            'website_url' => fake()->url(),
+            'location' => fake()->city(),
+            'theme_mode' => ThemePlatformEnum::SYSTEM,
+            'primary_color' => '#18181b',
+            'accent_color' => '#3f3f46',
             'show_email_publicly' => false,
         ];
     }

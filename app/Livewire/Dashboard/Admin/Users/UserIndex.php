@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Admin\Users;
 
+use App\Actions\Auth\ImpersonateUserAction;
+use App\Actions\Modules\ToggleUserModuleAction;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUsersAction;
 use App\Actions\Users\ToggleUserStatusAction;
 use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
+use App\Exports\UsersExport;
 use App\Livewire\Forms\Admin\UserForm;
+use App\Models\Module;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -21,6 +25,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 #[Layout('layouts.app', ['heading' => 'Gestão de Usuários', 'subheading' => 'Administre as contas da plataforma'])]
@@ -48,6 +53,57 @@ class UserIndex extends Component
 
     public ?int $userIdBeingDeleted = null;
 
+    public ?User $selectedUserForImpersonation = null;
+
+    public ?User $selectedUserForModules = null;
+
+    public function confirmImpersonation(User $user): void
+    {
+        $this->selectedUserForImpersonation = $user;
+        $this->dispatch('open-modal', name: 'confirm-impersonation');
+    }
+
+    public function impersonate(): void
+    {
+        if (!$this->selectedUserForImpersonation) {
+            return;
+        }
+
+        if (app(ImpersonateUserAction::class)->exec($this->selectedUserForImpersonation)) {
+            Toaster::success("Agora você está logado como {$this->selectedUserForImpersonation->name}");
+            $this->redirectRoute('dashboard.index', navigate: true);
+        } else {
+            Toaster::error('Não foi possível realizar a impersonação.');
+        }
+
+        $this->selectedUserForImpersonation = null;
+    }
+
+    public function manageModules(User $user): void
+    {
+        $this->selectedUserForModules = $user;
+        $this->dispatch('open-modal', name: 'user-modules-modal');
+    }
+
+    public function toggleUserModule(int $moduleId): void
+    {
+        if (!$this->selectedUserForModules) {
+            return;
+        }
+
+        $module = Module::find($moduleId);
+
+        if (!$module) {
+            return;
+        }
+
+        $action = new ToggleUserModuleAction();
+        $action->exec($this->selectedUserForModules, $module);
+
+        $this->selectedUserForModules->load('modules');
+        Toaster::success("Permissão do módulo {$module->name} alterada.");
+    }
+
     public function sortBy(string $column): void
     {
         if ($this->sort === $column) {
@@ -57,6 +113,12 @@ class UserIndex extends Component
             $this->direction = 'asc';
         }
         $this->resetPage();
+    }
+
+    #[Computed]
+    public function allModules()
+    {
+        return Module::all();
     }
 
     #[Computed]
@@ -132,6 +194,16 @@ class UserIndex extends Component
         Toaster::success($user->is_lifetime ? 'Acesso Vitalício concedido!' : 'Acesso Vitalício removido.');
     }
 
+    public function toggleVerification(User $user): void
+    {
+        $user->profile->update([
+            'is_verified' => !$user->profile->is_verified,
+        ]);
+
+        $this->clearUserCache();
+        Toaster::success($user->profile->is_verified ? 'Selo de Verificado concedido!' : 'Selo de Verificado removido.');
+    }
+
     public function confirmUserDeletion(int $userId): void
     {
         $this->userIdBeingDeleted = $userId;
@@ -164,6 +236,19 @@ class UserIndex extends Component
         $this->clearUserCache();
         $this->dispatch('close-modal', name: 'user-form-modal');
         $this->form->reset();
+    }
+
+    public function export(): BinaryFileResponse
+    {
+        $filters = UserFilterData::from([
+            'search' => $this->search,
+            'role' => $this->role,
+            'sort' => $this->sort,
+            'direction' => $this->direction,
+        ]);
+
+        return (new UsersExport($filters))
+            ->download('usuarios-drafto-' . now()->format('Y-m-d') . '.xlsx');
     }
 
     public function render(): View
