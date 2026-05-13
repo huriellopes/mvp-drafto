@@ -47,14 +47,14 @@
                 </div>
 
                 {{-- List --}}
-                <div class="flex-1 overflow-y-auto p-4 space-y-3">
-                    @forelse($notifications as $notification)
+                <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                    @forelse($this->notifications as $notification)
                         <div
                             wire:key="{{ $notification->id }}"
                             @class([
                                 'group relative flex gap-4 p-4 rounded-2xl transition border overflow-hidden',
-                                'bg-profile-primary/5 border-profile-primary/10' => !$notification->read_at,
-                                'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800' => $notification->read_at,
+                                'bg-profile-primary/5 border-profile-primary/10 shadow-sm' => !$notification->read_at,
+                                'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 opacity-80' => $notification->read_at,
                             ])
                         >
                             {{-- Clique na área principal redireciona --}}
@@ -62,7 +62,28 @@
                                 class="flex flex-1 gap-4 cursor-pointer"
                                 wire:click="readAndRedirect('{{ $notification->id }}')"
                             >
-                                <img src="{{ Storage::url($notification->data['causer_avatar']) }}" class="h-10 w-10 rounded-xl object-cover shrink-0 bg-zinc-100 border border-zinc-200/50">
+                                <div class="relative shrink-0">
+                                    <img 
+                                        src="{{ $notification->data['causer_avatar'] ? Storage::url($notification->data['causer_avatar']) : 'https://ui-avatars.com/api/?name=' . urlencode($notification->data['causer_name']) }}" 
+                                        class="h-10 w-10 rounded-xl object-cover bg-zinc-100 border border-zinc-200/50"
+                                    >
+                                    {{-- Icon Overlay --}}
+                                    <div @class([
+                                        'absolute -bottom-1 -right-1 h-5 w-5 rounded-lg border-2 border-white dark:border-zinc-900 flex items-center justify-center text-white',
+                                        'bg-pink-500' => in_array($notification->data['type'] ?? '', ['like_post', 'like_comment']),
+                                        'bg-blue-500' => ($notification->data['type'] ?? '') === 'mention',
+                                        'bg-indigo-500' => ($notification->data['type'] ?? '') === 'follow',
+                                        'bg-zinc-500' => !in_array($notification->data['type'] ?? '', ['like_post', 'like_comment', 'mention', 'follow']),
+                                    ])>
+                                        @switch($notification->data['type'] ?? '')
+                                            @case('like_post') @case('like_comment') <x-lucide-heart class="h-3 w-3 fill-current" /> @break
+                                            @case('mention') <x-lucide-at-sign class="h-3 w-3" /> @break
+                                            @case('follow') <x-lucide-user-plus class="h-3 w-3" /> @break
+                                            @default <x-lucide-bell class="h-3 w-3" />
+                                        @endswitch
+                                    </div>
+                                </div>
+
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm text-zinc-900 dark:text-white leading-snug">
                                         <span class="font-bold">{{ $notification->data['causer_name'] }}</span>
@@ -79,7 +100,7 @@
                                 @if(!$notification->read_at)
                                     <button
                                         wire:click="markAsRead('{{ $notification->id }}')"
-                                        class="p-1.5 text-zinc-400 hover:text-profile-primary bg-zinc-50 dark:bg-zinc-800 rounded-lg shadow-sm"
+                                        class="p-1.5 text-zinc-400 hover:text-profile-primary bg-zinc-50 dark:bg-zinc-800 rounded-lg shadow-sm transition"
                                         title="Marcar como lida"
                                     >
                                         <x-lucide-check class="h-3.5 w-3.5" />
@@ -87,7 +108,7 @@
                                 @endif
                                 <button
                                     wire:click="delete('{{ $notification->id }}')"
-                                    class="p-1.5 text-zinc-400 hover:text-red-500 bg-zinc-50 dark:bg-zinc-800 rounded-lg shadow-sm"
+                                    class="p-1.5 text-zinc-400 hover:text-red-500 bg-zinc-50 dark:bg-zinc-800 rounded-lg shadow-sm transition"
                                     title="Excluir notificação"
                                 >
                                     <x-lucide-trash-2 class="h-3.5 w-3.5" />
@@ -102,6 +123,17 @@
                             <p class="text-zinc-500 font-medium italic">Silêncio total por aqui...</p>
                         </div>
                     @endforelse
+
+                    @if($this->notifications->count() >= $amount)
+                        <button 
+                            wire:click="loadMore"
+                            wire:loading.attr="disabled"
+                            class="w-full py-4 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
+                        >
+                            <span wire:loading.remove>Carregar mais notificações</span>
+                            <span wire:loading><x-lucide-loader-2 class="h-4 w-4 animate-spin mx-auto" /></span>
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>

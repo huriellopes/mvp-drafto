@@ -33,27 +33,15 @@ class ProfileStatus extends Component
      */
     public function getMissingFieldsProperty(): array
     {
-        $user = Auth::user();
-        $profile = $user->profile;
-        $missing = [];
+        return Auth::user()->profile?->getMissingFields() ?? [];
+    }
 
-        if (empty(mb_trim($profile?->name ?? ''))) {
-            $missing[] = 'Nome';
-        }
-
-        if (empty(mb_trim($profile?->email ?? ''))) {
-            $missing[] = 'E-mail';
-        }
-
-        if (empty(mb_trim($profile?->username ?? ''))) {
-            $missing[] = 'Username (@)';
-        }
-
-        if (empty(mb_trim($profile?->bio ?? ''))) {
-            $missing[] = 'Biografia';
-        }
-
-        return $missing;
+    /**
+     * Get completion percentage.
+     */
+    public function getCompletionPercentageProperty(): int
+    {
+        return Auth::user()->profile?->getCompletionPercentage() ?? 0;
     }
 
     /**
@@ -61,7 +49,7 @@ class ProfileStatus extends Component
      */
     public function getIsCompleteProperty(): bool
     {
-        return empty($this->missingFields);
+        return Auth::user()->profile?->isComplete() ?? false;
     }
 
     public function render()

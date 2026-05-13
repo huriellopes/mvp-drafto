@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\BrazilStateEnum;
 use App\Enums\ModuleEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\ReportReasonEnum;
@@ -22,6 +23,8 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Http;
+use Laravel\Cashier\Subscription;
 
 class DatabaseSeeder extends Seeder
 {
@@ -65,6 +68,21 @@ class DatabaseSeeder extends Seeder
         $this->command?->info('Iniciando seed completo da plataforma...');
         $this->command?->info('==========================================');
 
+        $this->command?->info('Fazendo a busca de estado e municipios fakes...');
+
+        Http::fake([
+            'servicodados.ibge.gov.br/api/v1/localidades/estados*' => Http::response(
+                BrazilStateEnum::forIbgeMock(), 200,
+            ),
+            'servicodados.ibge.gov.br/api/v1/localidades/estados/*/municipios*' => Http::response([
+                ['id' => 1, 'nome' => 'Cidade Exemplo 1'],
+                ['id' => 2, 'nome' => 'Cidade Exemplo 2'],
+            ], 200),
+        ]);
+
+        $this->seedPlans();
+        $this->seedModules();
+
         $admin = $this->seedAdmin();
         $writers = $this->seedWriters();
         $readers = $this->seedReaders();
@@ -82,8 +100,7 @@ class DatabaseSeeder extends Seeder
         $this->seedCommentLikes($readers, $comments);
         $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
-        $this->seedModules();
-        $this->seedPlans();
+        $this->assignRandomPlans($writers);
 
         $this->command?->info('==========================================');
         $this->command?->info('Seed concluído com sucesso.');
@@ -101,12 +118,17 @@ class DatabaseSeeder extends Seeder
     {
         $this->command?->warn('Criando admin...');
 
-        $admin = User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'admin@example.test',
-            'role' => RoleEnum::SUPER_ADMIN,
-            'status' => UserStatusEnum::ACTIVE,
-        ]);
+        $admin = User::query()->updateOrCreate(
+            ['email' => 'admin@example.test'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+                'role' => RoleEnum::SUPER_ADMIN,
+                'status' => UserStatusEnum::ACTIVE,
+                'is_lifetime' => true,
+                'email_verified_at' => now(),
+            ],
+        );
 
         if (!$admin->profile()->exists()) {
             $admin->profile()->create(
@@ -553,148 +575,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->command?->warn('Semeando módulos com limites de planos (Free/Plus/Pro)...');
 
-        $modules = [
-            [
-                'slug' => ModuleEnum::PROFILE,
-                'name' => 'Perfil Público',
-                'description' => 'Visualização pública do autor, biografia e seus artigos publicados.',
-                'icon' => 'user-circle',
-                'settings' => [
-                    'max_bio_length' => [
-                        'free' => 160,
-                        'plus' => 500,
-                        'pro' => 1000,
-                    ],
-                    'allow_custom_colors' => [
-                        'free' => false,
-                        'plus' => true,
-                        'pro' => true,
-                    ],
-                    'show_metrics' => true,
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::PROFILE_BADGE,
-                'name' => 'Crachá do Escritor',
-                'description' => 'Gerador de cards de identidade portáteis para compartilhamento.',
-                'icon' => 'badge-check',
-                'settings' => [
-                    'render_quality_ratio' => [
-                        'free' => 2,
-                        'plus' => 3,
-                        'pro' => 4,
-                    ],
-                    'allow_iframe_embed' => [
-                        'free' => false,
-                        'plus' => true,
-                        'pro' => true,
-                    ],
-                    'themes_available' => [
-                        'free' => ['light', 'dark'],
-                        'plus' => ['light', 'dark', 'brand'],
-                        'pro' => ['all'],
-                    ],
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::MY_POSTS,
-                'name' => 'Meus Artigos',
-                'description' => 'Central de gerenciamento de conteúdos publicados e agendados.',
-                'icon' => 'library',
-                'settings' => [
-                    'max_monthly_posts' => [
-                        'free' => 5,
-                        'plus' => 20,
-                        'pro' => -1, // Ilimitado
-                    ],
-                    'enable_stats_per_post' => [
-                        'free' => false,
-                        'plus' => true,
-                        'pro' => true,
-                    ],
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::DRAFT,
-                'name' => 'Rascunhos',
-                'description' => 'Ambiente de escrita com salvamento automático.',
-                'icon' => 'file-text',
-                'settings' => [
-                    'max_drafts' => [
-                        'free' => 3,
-                        'plus' => 15,
-                        'pro' => -1,
-                    ],
-                    'autosave_interval' => 30,
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::SAVED_POST,
-                'name' => 'Itens Salvos',
-                'description' => 'Biblioteca pessoal para organizar conteúdos.',
-                'icon' => 'bookmark',
-                'settings' => [
-                    'max_saved_items' => [
-                        'free' => 20,
-                        'plus' => 100,
-                        'pro' => -1,
-                    ],
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::COMMENTS,
-                'name' => 'Comentários',
-                'description' => 'Habilita a seção de discussões e feedback nos posts.',
-                'icon' => 'message-square',
-                'settings' => [
-                    'allow_images' => [
-                        'free' => false,
-                        'plus' => false,
-                        'pro' => true,
-                    ],
-                    'moderation_tools' => [
-                        'free' => false,
-                        'plus' => true,
-                        'pro' => true,
-                    ],
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::CATEGORIES,
-                'name' => 'Categorias',
-                'description' => 'Ambiente de categorias próprias.',
-                'icon' => 'folder-open',
-                'settings' => [
-                    'max_categories' => [
-                        'free' => 3,
-                        'plus' => 10,
-                        'pro' => -1,
-                    ],
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::FOLLOWS,
-                'name' => 'Rede de Seguidores',
-                'description' => 'Sistema de conexões sociais.',
-                'icon' => 'users-round',
-                'settings' => [
-                    'notify_on_new_follower' => true,
-                ],
-            ],
-            [
-                'slug' => ModuleEnum::ACCOUNT,
-                'name' => 'Configurações de Conta',
-                'description' => 'Gestão de segurança e preferências.',
-                'icon' => 'settings',
-                'settings' => [
-                    'two_factor_available' => [
-                        'free' => false,
-                        'plus' => true,
-                        'pro' => true,
-                    ],
-                ],
-            ],
-        ];
+        $modules = config('modules');
 
         foreach ($modules as $module) {
             Module::query()->updateOrCreate(
@@ -732,5 +613,54 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->command?->info('✔ Planos sincronizados.');
+    }
+
+    private function assignRandomPlans(Collection $writers): void
+    {
+        $this->command?->warn('Sincronizando assinaturas locais para Writers (Ambiente Dev)...');
+
+        $plans = Plan::where('price', '>', 0)->get();
+
+        if ($plans->isEmpty()) {
+            $this->command?->error('✘ Nenhum plano pago encontrado. Pulando atribuição.');
+
+            return;
+        }
+
+        foreach ($writers as $writer) {
+            // Sênior: Para testes, 80% dos writers terão assinatura ativa
+            if (fake()->boolean(80)) {
+                $plan = $plans->random();
+                $fakePriceId = $plan->stripe_id ?? 'price_' . fake()->lexify('??????????????');
+
+                // 1. Garantir que o usuário tenha um Stripe ID fake
+                $writer->update(['stripe_id' => 'cus_' . fake()->lexify('??????????????')]);
+
+                // 2. Criar a assinatura no banco (Lógica do Cashier)
+                $subscription = Subscription::create([
+                    'user_id' => $writer->id,
+                    'type' => $plan->slug, // plus ou pro
+                    'stripe_id' => 'sub_' . fake()->lexify('??????????????'),
+                    'stripe_status' => 'active',
+                    'stripe_price' => $fakePriceId,
+                    'quantity' => 1,
+                    'trial_ends_at' => null,
+                    'ends_at' => null,
+                ]);
+
+                // 3. Vincular os itens da assinatura
+                $subscription->items()->create([
+                    'stripe_id' => 'si_' . fake()->lexify('??????????????'),
+                    'stripe_product' => 'prod_' . fake()->lexify('??????????????'),
+                    'stripe_price' => $fakePriceId,
+                    'quantity' => 1,
+                ]);
+
+                // 4. Atualizar o plan_id no user para sincronizar os módulos via Observer
+                $writer->update(['plan_id' => $plan->id]);
+            }
+        }
+
+        $this->command?->info('✔ Assinaturas e permissões sincronizadas para ambiente de desenvolvimento.');
     }
 }

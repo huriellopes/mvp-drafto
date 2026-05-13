@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       class="scroll-smooth"
-      x-data="{
-        darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      }"
-      x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))"
-      :class="{ 'dark': darkMode }">
+>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <x-layouts.favicons />
 
     @if(isset($seo))
         {!! seo($seo) !!}
@@ -29,7 +35,6 @@
     @livewireStyles
 
     @php
-        // Solução Sênior: Função anônima para converter Hex para RGB e evitar o erro "undefined function"
         $hex = $primaryColor ?? '#18181b';
         $hex = str_replace('#', '', $hex);
         $r = hexdec(substr($hex, 0, 2));

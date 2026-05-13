@@ -19,8 +19,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use OwenIt\Auditing\Contracts\Auditable;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
+use Spatie\Sitemap\Contracts\Sitemapable;
+use Spatie\Sitemap\Tags\Url;
 
 #[Fillable([
     'user_id',
@@ -42,12 +45,26 @@ use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
     'likes_count',
     'comments_count',
 ])]
-class Post extends Model
+class Post extends Model implements Auditable, Sitemapable
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, KeepsDeletedModels;
+    use HasFactory, KeepsDeletedModels, \OwenIt\Auditing\Auditable;
 
     use HasSEO, HasSlug;
+
+    protected array $auditExclude = [
+        'views_count',
+        'likes_count',
+        'comments_count',
+    ];
+
+    public function toSitemapTag(): Url|string|array
+    {
+        return Url::create(route('posts.show', $this->slug))
+            ->setLastModificationDate($this->updated_at)
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
+            ->setPriority(0.8);
+    }
 
     public function author(): BelongsTo
     {

@@ -51,27 +51,34 @@
     {{-- Alerta de Perfil Incompleto --}}
     @if(!$this->isComplete)
         <div class="rounded-3xl border border-orange-100 dark:border-orange-500/20 bg-orange-50/50 dark:bg-orange-500/5 p-6 shadow-sm ring-1 ring-orange-200/50 dark:ring-orange-500/10 animate-in fade-in slide-in-from-top-4 duration-500">
-            <div class="flex items-start gap-4">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400">
-                    <x-lucide-alert-triangle class="h-5 w-5" />
+            <div class="flex flex-col gap-6 md:flex-row md:items-center">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400">
+                    <x-lucide-award class="h-6 w-6" />
                 </div>
                 
-                <div class="flex-1 space-y-3">
+                <div class="flex-1 space-y-4">
                     <div class="space-y-1">
-                        <h4 class="text-sm font-bold text-orange-900 dark:text-orange-200">{{ __('dashboard.profile_status.incomplete_title') }}</h4>
-                        <p class="text-xs leading-relaxed text-orange-700/80 dark:text-orange-400/80">
-                            {{ __('dashboard.profile_status.incomplete_subtitle') }} 
-                            <span class="font-bold underline decoration-orange-300 dark:decoration-orange-500/40">{{ implode(', ', $this->missingFields) }}</span>.
-                        </p>
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-black uppercase tracking-tighter text-orange-900 dark:text-orange-200">{{ __('dashboard.profile_status.incomplete_title') }}</h4>
+                            <span class="text-xs font-black text-orange-600 dark:text-orange-400">{{ $this->completionPercentage }}%</span>
+                        </div>
+                        
+                        {{-- Progress Bar --}}
+                        <div class="h-1.5 w-full bg-orange-200/50 dark:bg-orange-500/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-orange-500 transition-all duration-1000 ease-out" style="width: {{ $this->completionPercentage }}%"></div>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <a href="{{ route('dashboard.profile') }}" class="inline-flex h-9 items-center justify-center rounded-xl bg-orange-600 px-4 text-xs font-bold text-white shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition active:scale-95">
-                            {{ __('dashboard.profile_status.complete_now') }}
-                        </a>
-                        <button class="text-[10px] font-bold uppercase tracking-widest text-orange-400 hover:text-orange-600 transition" @click="$el.closest('.rounded-3xl').remove()">
-                            {{ __('dashboard.profile_status.remind_later') }}
-                        </button>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-orange-700/80 dark:text-orange-400/80">
+                            Faltam: <span class="text-orange-900 dark:text-orange-200">{{ implode(', ', $this->missingFields) }}</span>
+                        </p>
+
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('dashboard.profile') }}" class="inline-flex h-9 items-center justify-center rounded-xl bg-orange-600 px-5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition active:scale-95">
+                                {{ __('dashboard.profile_status.complete_now') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

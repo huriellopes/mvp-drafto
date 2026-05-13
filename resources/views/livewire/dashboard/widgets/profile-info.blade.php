@@ -5,7 +5,7 @@
     <div class="space-y-4">
         <x-ui.info-card
             title="Perfil público"
-            :value="$this->user->profile->username ? '@' . $this->user->profile->username : 'Não configurado'"
+            :value="$this->user?->profile?->username ? '@' . $this->user?->profile?->username : 'Não configurado'"
         />
 
         <x-ui.info-card

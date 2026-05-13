@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Profile;
 
+use App\Enums\ModuleEnum;
 use App\Livewire\Forms\Dashboard\BadgeForm;
 use App\Models\User;
 use Illuminate\View\View;
@@ -20,7 +21,14 @@ class ProfileBadgeGenerator extends Component
 
     public function mount(): void
     {
-        $this->form->theme = 'dark';
+        $canUseBrand = auth()->user()->getModuleSetting(
+            ModuleEnum::PROFILE_BADGE,
+            'themes_available',
+        );
+
+        $this->form->theme = (is_array($canUseBrand) && in_array('brand', $canUseBrand, true))
+            ? 'brand'
+            : 'dark';
     }
 
     #[Computed]

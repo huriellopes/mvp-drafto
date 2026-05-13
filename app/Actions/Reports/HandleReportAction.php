@@ -8,10 +8,10 @@ use App\DTOs\HandleReportData;
 use App\Enums\UserStatusEnum;
 use App\Models\Report;
 use App\Models\User;
+use App\Notifications\Admin\UserBlockedNotification;
 use App\Notifications\Reports\ReportFeedbackNotification;
-use App\Notifications\Reports\UserBannedNotification;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 final class HandleReportAction
@@ -37,18 +37,24 @@ final class HandleReportAction
 
             // 3. Processar Banimento
             if ($data->shouldBanUser) {
-                $reportedUser = $this->resolveReportedUser($report);
+                $offender = $this->resolveReportedUser($report);
 
-                if ($reportedUser) {
-                    $bannedUntil = Carbon::now()->addDays($data->banDays);
+                if ($offender) {
+                    $bannedUntil = $data->banDays > 0 ? now()->addDays($data->banDays) : null;
 
-                    $reportedUser->update([
+                    $offender->update([
                         'status' => UserStatusEnum::BANNED,
                         'banned_until' => $bannedUntil,
-                        'ban_reason' => $data->banReason ?? 'Violação das diretrizes da comunidade.',
+                        'ban_reason' => $data->banReason,
                     ]);
 
-                    $reportedUser->notify(new UserBannedNotification($bannedUntil, $reportedUser->ban_reason));
+                    // DISPARO DE E-MAIL (Via Queue)
+                    $offender->notify(new UserBlockedNotification(
+                        $data->banReason,
+                        $bannedUntil?->format('d/m/Y'),
+                    ));
+
+                    Log::info("Usuário {$offender->id} banido pelo Admin {$reviewer->id}. Motivo: {$data->banReason}");
                 }
             }
         });

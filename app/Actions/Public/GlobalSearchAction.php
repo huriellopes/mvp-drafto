@@ -7,8 +7,6 @@ namespace App\Actions\Public;
 use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 
 final class GlobalSearchAction
 {
@@ -21,30 +19,29 @@ final class GlobalSearchAction
             return ['posts' => [], 'authors' => []];
         }
 
+        $supportsFullText = config('database.default') !== 'sqlite';
+
         return [
             'posts' => Post::query()
                 ->published()
                 ->public()
-                ->with(['category', 'author'])
-                ->where(function (Builder $query) use ($term) {
-                    $query->where('title', 'like', "%{$term}%")
-                        ->orWhere('slug', 'like', Str::lower("%{$term}%"))
-                        ->orWhereHas('category', function (Builder $queryCategory) use ($term) {
-                            $queryCategory->where('name', 'like', "%{$term}%");
-                        })
-                        ->orWhereHas('tags', function (Builder $queryTag) use ($term) {
-                            $queryTag->where('name', 'like', "%{$term}%");
-                        });
-                })
-                ->latest('published_at')
-                ->limit(6)
+                ->with(['category', 'author.profile', 'tags'])
+                ->when(mb_strlen($term) <= 3 || !$supportsFullText, 
+                    fn($q) => $q->where('title', 'like', "%{$term}%"),
+                    fn($q) => $q->whereFullText(['title', 'excerpt', 'content'], $term)
+                )
+                ->take(6)
                 ->get(),
 
             'authors' => User::query()
                 ->where('role', RoleEnum::WRITER)
-                ->where('name', 'like', "%{$term}%")
                 ->with('profile')
-                ->limit(3)
+                ->when(mb_strlen($term) <= 3 || !$supportsFullText,
+                    fn($q) => $q->where('name', 'like', "%{$term}%"),
+                    fn($q) => $q->whereFullText(['name', 'email'], $term)
+                        ->orWhereHas('profile', fn($p) => $p->whereFullText(['username', 'name', 'bio'], $term))
+                )
+                ->take(3)
                 ->get(),
         ];
     }

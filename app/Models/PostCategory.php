@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable([
     'user_id',
@@ -18,10 +19,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'slug',
     'description',
 ])]
-class PostCategory extends Model
+class PostCategory extends Model implements Auditable
 {
     /** @use HasFactory<PostCategoryFactory> */
-    use HasFactory, HasSlug;
+    use HasFactory, HasSlug, \OwenIt\Auditing\Auditable;
 
     public function user(): BelongsTo
     {

@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
+use App\Enums\ModuleEnum;
 use App\Models\Profile;
+use Illuminate\Support\Facades\Storage;
+use RalphJSmit\Laravel\SEO\Schema\CustomSchema;
+use RalphJSmit\Laravel\SEO\SchemaCollection;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
-use Storage;
 
 final class ProfileSeoGenerator
 {
+    private function __construct()
+    {
+        // Static helper class
+    }
+
     public static function generate(Profile $profile): SEOData
     {
         $displayName = $profile->name ?? $profile->username;
@@ -18,7 +26,7 @@ final class ProfileSeoGenerator
             $profile->user?->isActive() &&
             !$profile->user?->banned_until;
 
-        return new SEOData(
+        $seoData = new SEOData(
             title: "{$displayName} (@{$profile->username}) | Drafto",
             description: $profile->bio ?? "Explore as publicações e o perfil de {$displayName} na Drafto.",
             author: $profile->name,
@@ -27,5 +35,21 @@ final class ProfileSeoGenerator
             robots: $canIndex ? 'index, follow' : 'noindex, nofollow',
             canonical_url: route('profile.show', $profile->username),
         );
+
+        // Sênior: Se o plano permitir SEO E o usuário permitir indexação, adicionamos Dados Estruturados (Schema.org)
+        if ($canIndex && $profile->user->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', false)) {
+            $seoData->schema = SchemaCollection::initialize([
+                new CustomSchema([
+                    '@context' => 'https://schema.org',
+                    '@type' => 'Person',
+                    'name' => $displayName,
+                    'description' => $profile->bio,
+                    'url' => route('profile.show', $profile->username),
+                    'image' => $profile->avatar_path ? Storage::url($profile->avatar_path) : null,
+                ]),
+            ]);
+        }
+
+        return $seoData;
     }
 }

@@ -95,6 +95,7 @@ class CommentIndex extends Component
         $comment->delete();
 
         $this->commentIdBeingDeleted = null;
+        $this->resetPage();
         Toaster::success('Comentário removido com sucesso.');
     }
 

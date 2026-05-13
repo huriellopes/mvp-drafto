@@ -5,12 +5,11 @@
 
 <a
     href="{{ $href }}"
+    {{ $attributes->merge([
+        'class' => 'group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold transition-all duration-300 ' .
+                   ($active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:bg-indigo-500 dark:shadow-indigo-500/10' : 'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white')
+    ]) }}
     title="{{ $slot }}"
-    @class([
-        'group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold transition-all duration-300',
-        'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 dark:bg-indigo-500 dark:shadow-indigo-500/10' => $active,
-        'text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white' => ! $active,
-    ])
 >
     <span @class([
         'flex h-6 w-6 shrink-0 items-center justify-center transition-transform duration-300',

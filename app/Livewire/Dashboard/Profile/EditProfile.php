@@ -55,6 +55,12 @@ class EditProfile extends Component
 
     public function save(): void
     {
+        if ($this->selectedUf && $this->form->location) {
+            if (!str_contains($this->form->location, ',')) {
+                $this->form->location = "{$this->form->location}, {$this->selectedUf}";
+            }
+        }
+
         $this->form->update();
         Toaster::success('Perfil atualizado com sucesso!');
     }

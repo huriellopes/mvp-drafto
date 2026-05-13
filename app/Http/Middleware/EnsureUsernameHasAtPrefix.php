@@ -11,6 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EnsureUsernameHasAtPrefix
 {
+    /**
+     * Cache para evitar múltiplas queries no mesmo request.
+     */
+    protected static array $profileExistsCache = [];
+
     public function handle(Request $request, Closure $next): Response
     {
         $path = $request->path();
@@ -22,9 +27,11 @@ final class EnsureUsernameHasAtPrefix
         $username = $request->segment(1);
 
         if ($username) {
-            $exists = Profile::where('username', $username)->exists();
+            if (!isset(self::$profileExistsCache[$username])) {
+                self::$profileExistsCache[$username] = Profile::where('username', $username)->exists();
+            }
 
-            if ($exists) {
+            if (self::$profileExistsCache[$username]) {
                 return redirect()->to('/@' . $username, 301);
             }
         }

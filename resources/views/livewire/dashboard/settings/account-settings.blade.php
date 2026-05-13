@@ -47,6 +47,29 @@
                     placeholder="••••••••"
                 />
             </div>
+
+            <div class="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+                <livewire:dashboard.settings.two-factor-manager />
+            </div>
+        </x-ui.section-card>
+
+        {{-- Assinatura --}}
+        <x-ui.section-card title="Assinatura e Plano" description="Gerencie seu plano atual e informações de faturamento.">
+            <div class="flex items-center justify-between gap-6">
+                <p class="text-sm font-bold text-zinc-900 dark:text-white">
+                    Seu plano atual é o <span class="text-indigo-600 uppercase tracking-wider">{{ auth()->user()->getPlanName() }}</span>.
+                </p>
+
+                <x-ui.button 
+                    type="button"
+                    href="{{ route('dashboard.billing.index') }}"
+                    variant="secondary"
+                    sizes="sm"
+                    class="!rounded-xl"
+                >
+                    Gerenciar Assinatura
+                </x-ui.button>
+            </div>
         </x-ui.section-card>
 
         <div class="flex justify-end gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-8">

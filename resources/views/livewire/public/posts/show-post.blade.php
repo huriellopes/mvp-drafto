@@ -18,11 +18,12 @@
     {{-- Header Section --}}
     <header class="mb-16 space-y-10 text-left">
         <nav class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-            <a href="{{ route('home') }}" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">Início</a>
+            <a href="{{ route('home') }}" wire:navigate class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">Início</a>
             <x-lucide-chevron-right class="h-3 w-3"/>
-            <a href="{{ route('posts.explore', ['category' => $this->post->category->slug]) }}"
+            <a href="{{ route('posts.explore', ['category' => $this->post?->category?->slug]) }}"
+               wire:navigate
                class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
-                {{ $this->post->category->name }}
+                {{ $this->post?->category?->name }}
             </a>
         </nav>
 
@@ -34,7 +35,7 @@
             <div class="flex flex-wrap items-center gap-5 md:gap-10">
                 {{-- Autor Info --}}
                 <div class="flex items-center gap-5">
-                    <a href="{{ route('profile.show', $this->post->author->profile->username) }}" class="group relative">
+                    <a href="{{ route('profile.show', $this->post->author->profile->username) }}" wire:navigate class="group relative">
                         <div class="absolute -inset-1 bg-indigo-500/10 rounded-2xl blur opacity-0 group-hover:opacity-100 transition"></div>
                         <img src="{{ $this->post->author->profile->avatar_path ? Storage::url($this->post->author->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$this->post->author->display_name }}"
                              class="relative h-14 w-14 rounded-2xl object-cover ring-4 ring-white dark:ring-zinc-900 shadow-2xl transition-transform group-hover:scale-105"
@@ -81,6 +82,7 @@
             @if($this->post->cover_image_path)
                 <div class="relative mb-20 overflow-hidden rounded-[3.5rem] shadow-2xl border border-zinc-100 dark:border-zinc-800">
                     <img src="{{ $this->post->cover_image_url }}"
+                         loading="lazy" decoding="async"
                          class="w-full object-cover max-h-[600px] hover:scale-[1.02] transition-transform duration-1000">
                 </div>
             @endif
@@ -107,6 +109,7 @@
                             @foreach($this->relatedPosts as $related)
                                 <div class="group flex flex-col gap-4">
                                     <a href="{{ route('posts.show', $related->slug) }}"
+                                       wire:navigate
                                        class="relative aspect-video overflow-hidden rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
                                         @if($related->cover_image_url)
                                             <img src="{{ $related->cover_image_url }}"
@@ -117,12 +120,12 @@
 
                                     <div class="space-y-2">
                                         <div class="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                                            <span class="text-indigo-600 dark:text-indigo-400">{{ $related->category->name }}</span>
+                                            <span class="text-indigo-600 dark:text-indigo-400">{{ $related?->category?->name }}</span>
                                             <span>•</span>
                                             <span>{{ $related->published_at->diffForHumans() }}</span>
                                         </div>
                                         <h4 class="font-bold text-zinc-900 dark:text-white leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight">
-                                            <a href="{{ route('posts.show', $related->slug) }}">{{ $related->title }}</a>
+                                            <a href="{{ route('posts.show', $related->slug) }}" wire:navigate>{{ $related->title }}</a>
                                         </h4>
                                     </div>
                                 </div>
@@ -165,7 +168,7 @@
                 <div class="group relative overflow-hidden rounded-[3.5rem] border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-10 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl">
                     <div class="text-center space-y-6">
                         <div class="relative inline-block">
-                            <a href="{{ route('profile.show', $this->post->author->profile->username) }}" class="group relative">
+                            <a href="{{ route('profile.show', $this->post->author->profile->username) }}" wire:navigate class="group relative">
                                 <div class="absolute inset-0 bg-indigo-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
                                 <img src="{{ $this->post->author->profile->avatar_path ? Storage::url($this->post->author->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$this->post->author->display_name }}"
                                      class="relative mx-auto h-32 w-32 rounded-[2.5rem] object-cover shadow-2xl ring-4 ring-white dark:ring-zinc-800 transition-transform duration-500 group-hover:scale-105"

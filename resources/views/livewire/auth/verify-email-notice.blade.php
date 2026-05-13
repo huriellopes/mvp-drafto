@@ -15,7 +15,7 @@
         <livewire:auth.resend-verification />
 
         <div class="mt-8 border-t border-zinc-100 pt-6">
-            <livewire:auth.logout-button />
+            <livewire:auth.logout />
         </div>
     </div>
 </div>

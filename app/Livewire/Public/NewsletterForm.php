@@ -6,14 +6,17 @@ namespace App\Livewire\Public;
 
 use App\Actions\Public\SubscribeNewsletterAction;
 use App\DTOs\Public\NewsletterData;
+use App\Traits\Livewire\HasStandardResponses;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\RateLimiter;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Masmerise\Toaster\Toaster;
 
 class NewsletterForm extends Component
 {
-    #[Validate('required|email')]
+    use HasStandardResponses;
+
+    #[Validate('required|email|unique:newsletter_subscribers,email')]
     public string $email = '';
 
     public ?int $categoryId = null;
@@ -22,12 +25,26 @@ class NewsletterForm extends Component
     {
         $this->validate();
 
-        app(SubscribeNewsletterAction::class)->exec(
-            new NewsletterData(email: $this->email, categoryId: $this->categoryId),
+        // Sênior: Proteção contra Spam (Máximo 3 tentativas por minuto por IP)
+        $executed = RateLimiter::attempt(
+            'subscribe-newsletter:' . request()->ip(),
+            $maxAttempts = 3,
+            function () {
+                app(SubscribeNewsletterAction::class)->exec(
+                    new NewsletterData(email: $this->email, categoryId: $this->categoryId),
+                );
+            },
+            decaySeconds: 60,
         );
 
+        if (!$executed) {
+            $this->notifyError('Muitas tentativas. Por favor, aguarde um momento.');
+
+            return;
+        }
+
         $this->reset('email');
-        Toaster::success('Bem-vindo ao Radar Drafto!');
+        $this->notifySuccess('Bem-vindo ao Radar Drafto!');
     }
 
     public function render(): View

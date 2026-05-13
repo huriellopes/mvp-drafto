@@ -8,6 +8,7 @@
             <div class="relative h-full w-full overflow-hidden rounded-[2rem] bg-zinc-100 ring-4 ring-white dark:ring-zinc-900 shadow-sm">
                 <img
                     src="{{ $writer->profile->avatar_path ? Storage::url($writer->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$writer->display_name }}"
+                    loading="lazy" decoding="async"
                     class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt="{{ $writer->display_name }}">
             </div>
@@ -15,8 +16,11 @@
 
         {{-- Info --}}
         <div class="text-center space-y-1">
-            <h3 class="font-black text-zinc-900 dark:text-white truncate text-lg tracking-tight">
+            <h3 class="font-black text-zinc-900 dark:text-white truncate text-lg tracking-tight flex items-center justify-center gap-1.5">
                 {{ $writer->display_name }}
+                @if($writer->isVerified())
+                    <x-lucide-badge-check class="h-4 w-4 text-blue-500 fill-blue-500/10" />
+                @endif
             </h3>
             <p class="text-profile-primary text-xs font-bold italic tracking-wide">
                 {{ "@".$writer->profile->username }}
@@ -50,6 +54,6 @@
             {{ $actions }}
         </div>
     @else
-        <a href="{{ route('profile.show', $writer->profile->username) }}" class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
+        <a href="{{ route('profile.show', $writer->profile->username) }}" wire:navigate class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
     @endif
 </div>

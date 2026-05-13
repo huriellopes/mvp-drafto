@@ -42,7 +42,7 @@ class LoginForm extends Form
     /**
      * @throws AuthenticationException
      */
-    public function authenticate(): void
+    public function authenticate(): bool|string
     {
         $this->checkRateLimit($this->email);
         $this->validate();
@@ -53,17 +53,19 @@ class LoginForm extends Form
             'remember' => (bool) $this->remember,
         ]);
 
-        $success = app(AuthenticateUserAction::class)
+        $result = app(AuthenticateUserAction::class)
             ->exec($dto);
 
-        if ($success) {
-            $this->clearAttempts($this->email);
-        } else {
+        if ($result === false) {
             $this->incrementAttempts($this->email);
 
             throw ValidationException::withMessages([
                 'form.email' => __('auth.failed'),
             ]);
         }
+
+        $this->clearAttempts($this->email);
+
+        return $result;
     }
 }

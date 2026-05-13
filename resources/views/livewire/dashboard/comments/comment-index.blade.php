@@ -1,4 +1,5 @@
 <div class="space-y-6 pb-20">
+    {{ Breadcrumbs::render('dashboard.comments') }}
     {{-- Filtros e Sorting --}}
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div class="flex flex-1 items-center gap-3">

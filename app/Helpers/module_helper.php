@@ -13,18 +13,30 @@ if (!function_exists('is_module_enabled')) {
      */
     function is_module_enabled(ModuleEnum|string $slug): bool
     {
-        if (auth()->check() && auth()->user()->hasRole(RoleEnum::SUPER_ADMIN)) {
+        $user = auth()->user();
+
+        // Admin bypass
+        if ($user && $user->hasRole(RoleEnum::SUPER_ADMIN)) {
             return true;
         }
 
-        $module = $slug instanceof ModuleEnum
-            ? $slug
-            : ModuleEnum::tryFrom($slug);
+        $moduleSlug = $slug instanceof ModuleEnum ? $slug->value : $slug;
+        $moduleEnum = $slug instanceof ModuleEnum ? $slug : ModuleEnum::tryFrom((string) $slug);
 
-        if (!$module) {
+        if (!$moduleEnum) {
             return false;
         }
 
-        return Module::isEnabled($module);
+        // 1. Verifica se o módulo existe e está ativo GLOBALMENTE
+        if (!Module::isEnabled($moduleEnum)) {
+            return false;
+        }
+
+        // 2. Se houver usuário logado, verifica a permissão específica (pivot)
+        if ($user) {
+            return $user->isModuleAvailable($moduleSlug);
+        }
+
+        return true;
     }
 }

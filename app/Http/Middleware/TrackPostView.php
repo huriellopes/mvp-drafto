@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Jobs\ProcessPostViewJob;
 use App\Models\Post;
 use Closure;
 use Illuminate\Http\Request;
@@ -11,42 +12,38 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class TrackPostView
 {
+    /**
+     * Handle an incoming request.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-        $response = $next($request);
-
-        if ($request->routeIs('posts.show') && $response->getStatusCode() === 200) {
-            $post = $request->route('slug');
-
-            if ($post instanceof Post || $post = Post::where('slug', $post)->first()) {
-                $this->logView($post, $request);
-            }
-        }
-
-        return $response;
+        return $next($request);
     }
 
-    private function logView(Post $post, Request $request): void
+    /**
+     * Handle tasks after the response has been sent to the browser.
+     * Sênior: Performance - Processamento pesado fora do ciclo de vida da request.
+     */
+    public function terminate(Request $request, Response $response): void
     {
-        $sessionId = session()->getId();
+        if (!$request->routeIs('posts.show') || $response->getStatusCode() !== 200) {
+            return;
+        }
 
-        $exists = $post->views()
-            ->where(function ($q) use ($sessionId, $request) {
-                $q->where('session_id', $sessionId)->orWhere('ip_hash', $request->ip());
-            })
-            ->where('viewed_at', '>', now()->subHour())
-            ->exists();
+        $post = $request->route('slug');
 
-        if (!$exists) {
-            $post->views()->create([
-                'user_id' => auth()->id(),
-                'session_id' => $sessionId,
-                'ip_hash' => $request->ip(),
-                'user_agent' => mb_substr($request->userAgent(), 0, 255),
-                'viewed_at' => now(),
-            ]);
+        if (!($post instanceof Post)) {
+            $post = Post::where('slug', $post)->first();
+        }
 
-            $post->increment('views_count');
+        if ($post) {
+            ProcessPostViewJob::dispatch(
+                $post->id,
+                auth()->id(),
+                session()->getId(),
+                md5($request->ip() ?? 'unknown'),
+                $request->userAgent() ?? 'unknown',
+            );
         }
     }
 }

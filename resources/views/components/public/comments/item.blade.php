@@ -4,6 +4,7 @@
     <div class="flex gap-4">
         <a href="{{ route('profile.show', $comment->user->profile->username) }}" class="shrink-0">
             <img src="{{ $comment->user->profile->avatar_path ? Storage::url($comment->user->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($comment->user->name) }}"
+                 loading="lazy" decoding="async"
                  class="h-10 w-10 rounded-xl object-cover shadow-sm ring-2 ring-white dark:ring-zinc-900 transition-transform hover:scale-105">
         </a>
 
@@ -14,7 +15,7 @@
                     <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
                 </div>
                 <div class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 break-words font-medium">
-                    {!! preg_replace('/@([\w\.]+)/u', '<a href="/@$1" class="text-indigo-600 dark:text-indigo-400 font-black hover:underline">@$1</a>', e($comment->content)) !!}
+                    {!! preg_replace('/@([\w\.]+)/u', '<a href="/@$1" class="text-indigo-600 dark:text-indigo-400 font-black hover:underline">@$1</a>', nl2br(e(strip_tags($comment->content)))) !!}
                 </div>
             </div>
 
