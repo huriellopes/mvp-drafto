@@ -4,6 +4,7 @@ import '../../vendor/masmerise/livewire-toaster/resources/js';
 const applyTheme = () => {
     if (!document.documentElement.hasAttribute('data-site-theme')) {
         document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark'); // Extra safety
         return;
     }
 
@@ -17,3 +18,8 @@ const applyTheme = () => {
 
 document.addEventListener('livewire:navigated', applyTheme);
 applyTheme();
+
+// Immediate cleanup for dashboard if any leak occurs
+if (!document.documentElement.hasAttribute('data-site-theme')) {
+    document.documentElement.classList.remove('dark');
+}

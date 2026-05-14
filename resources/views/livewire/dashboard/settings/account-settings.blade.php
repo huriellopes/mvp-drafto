@@ -1,18 +1,22 @@
 @use(App\Enums\RoleEnum)
 <div class="max-w-4xl space-y-10 pb-20">
-    <div class="flex items-center justify-between gap-4">
-        {{ Breadcrumbs::render('dashboard.account') }}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="min-w-0">
+            {{ Breadcrumbs::render('dashboard.account') }}
+        </div>
 
         @if(auth()->user()->role === RoleEnum::READER)
-            <x-ui.button 
-                wire:click="openBecomeWriterModal"
-                variant="primary"
-                sizes="sm"
-                class="!rounded-xl shadow-sm"
-            >
-                <x-lucide-pen-tool class="mr-2 h-4 w-4" />
-                Quero ser Escritor
-            </x-ui.button>
+            <div class="shrink-0">
+                <x-ui.button 
+                    wire:click="openBecomeWriterModal"
+                    variant="primary"
+                    sizes="sm"
+                    class="!rounded-xl shadow-sm w-full sm:w-auto"
+                >
+                    <x-lucide-pen-tool class="mr-2 h-4 w-4" />
+                    Quero ser Escritor
+                </x-ui.button>
+            </div>
         @endif
     </div>
 
