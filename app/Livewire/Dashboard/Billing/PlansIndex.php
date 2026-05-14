@@ -29,18 +29,20 @@ class PlansIndex extends Component
 
         $user = auth()->user();
 
-        // Sênior: Se o usuário já possui assinatura, redirecionamos para o Portal para upgrade/downgrade
         if ($user->subscribed('plus') || $user->subscribed('pro')) {
             return redirect()->route('dashboard.billing.portal');
         }
 
-        // Sênior: Iniciando o Checkout do Stripe
-        // Corrigimos o TypeError obtendo a URL via __get e redirecionando via Livewire
         $checkout = $user
             ->newSubscription($slug, $plan->stripe_id)
             ->checkout([
                 'success_url' => route('dashboard.index', ['checkout' => 'success']),
                 'cancel_url' => route('dashboard.billing.plans'),
+                'payment_method_types' => ['card', 'pix', 'boleto'],
+                'billing_address_collection' => 'required',
+                'tax_id_collection' => [
+                    'enabled' => true,
+                ],
             ]);
 
         return redirect($checkout->url);
