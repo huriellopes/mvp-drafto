@@ -38,7 +38,7 @@ class PlansIndex extends Component
             ->checkout([
                 'success_url' => route('dashboard.index', ['checkout' => 'success']),
                 'cancel_url' => route('dashboard.billing.plans'),
-//                'payment_method_types' => ['card', 'pix', 'boleto'],
+                'payment_method_types' => ['card', 'boleto'],
                 'billing_address_collection' => 'required',
                 'tax_id_collection' => [
                     'enabled' => true,
