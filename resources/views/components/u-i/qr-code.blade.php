@@ -7,10 +7,8 @@
         width: 100%;
         height: 100%;
     }
-    .qrcode-wrapper svg path {
-        fill: {{ $color }} !important;
-    }
+    .qrcode-wrapper svg path,
     .qrcode-wrapper svg rect {
-        fill: {{ $bgcolor }} !important;
+        fill: {{ $color }} !important;
     }
 </style>
