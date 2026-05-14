@@ -24,7 +24,7 @@
             'logo' => 'text-zinc-900'
         ],
         'brand' => [
-            'bg' => '', 
+            'bg' => '',
             'text' => 'text-white',
             'muted' => 'text-white/70',
             'accent' => '#ffffff',
@@ -64,14 +64,14 @@
     </style>
 </head>
 <body class="bg-transparent antialiased h-full flex items-center justify-center">
-    <div id="badge-container" 
+    <div id="badge-container"
          @class([
             "relative w-[480px] overflow-hidden rounded-[3rem] p-10 transition-all duration-700 border",
             $colors['bg'], $colors['text'], $colors['border'], $colors['card'],
             'brand-gradient' => $theme === 'brand'
          ])
          @if($theme === 'brand') style="background: linear-gradient(135deg, {{ $profile->primary_color }}, {{ $profile->accent_color }})" @endif>
-        
+
         {{-- Grainy Noise Overlay --}}
         <div class="absolute inset-0 noise-bg opacity-[0.03] pointer-events-none"></div>
 
@@ -81,7 +81,7 @@
                 <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" alt="Drafto" @class(['h-7 w-auto', 'logo-bright' => $theme !== 'light']) />
                 <span class="text-sm font-black uppercase tracking-[0.2em] italic opacity-90">Drafto</span>
             </div>
-            
+
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-current/5 border border-current/10 glass-effect">
                 <div @class([
                     'h-1.5 w-1.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]',
@@ -160,11 +160,11 @@
             @endif
 
             <div class="p-2 rounded-2xl bg-white shadow-sm shrink-0 hover:scale-110 transition-transform duration-500">
-                <x-u-i.qr-code 
-                    :data="route('profile.show', $profile->username)" 
-                    :size="56" 
-                    color="#000000" 
-                    bgcolor="#ffffff" 
+                <x-u-i.qr-code
+                    :data="route('profile.show', $profile->username)"
+                    :size="56"
+                    color="#000000"
+                    bgcolor="#ffffff"
                 />
             </div>
         </div>

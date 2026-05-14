@@ -60,8 +60,9 @@ trait WithRateLimiting
                 ->where('email', $key)
                 ->first();
 
-            if ($user && $user->status !== UserStatusEnum::BLOCKED) {
-                $user->update(['status' => UserStatusEnum::BLOCKED]);
+            if ($user && $user->status !== UserStatusEnum::SUSPENDED) {
+                $user->update(['status' => UserStatusEnum::SUSPENDED]);
+
                 // Aqui poderíamos disparar um Evento para notificar o usuário por e-mail
             }
         }

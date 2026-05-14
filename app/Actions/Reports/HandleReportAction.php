@@ -8,7 +8,6 @@ use App\DTOs\HandleReportData;
 use App\Enums\UserStatusEnum;
 use App\Models\Report;
 use App\Models\User;
-use App\Notifications\Admin\UserBlockedNotification;
 use App\Notifications\Reports\ReportFeedbackNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -47,12 +46,6 @@ final class HandleReportAction
                         'banned_until' => $bannedUntil,
                         'ban_reason' => $data->banReason,
                     ]);
-
-                    // DISPARO DE E-MAIL (Via Queue)
-                    $offender->notify(new UserBlockedNotification(
-                        $data->banReason,
-                        $bannedUntil?->format('d/m/Y'),
-                    ));
 
                     Log::info("Usuário {$offender->id} banido pelo Admin {$reviewer->id}. Motivo: {$data->banReason}");
                 }
