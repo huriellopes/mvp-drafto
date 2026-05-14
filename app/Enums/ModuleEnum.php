@@ -32,7 +32,8 @@ enum ModuleEnum: string
     case FOLLOWS = 'follows';
     case SAVED_POST = 'saved_post';
     case COMMENTS = 'comments';
-    case SUBSCRIPTIONS = 'subscription';
+    case SUBSCRIPTIONS = 'subscriptions';
+
     case SUPPORT = 'support';
     case TAGS = 'tags';
 }
