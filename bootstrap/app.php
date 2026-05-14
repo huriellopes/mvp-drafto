@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'module' => CheckModuleStatus::class,
             'can' => Authorize::class,
             'module.access' => CheckModuleAccess::class,
+            'allow.iframe' => \App\Http\Middleware\AllowIframeMiddleware::class,
         ]);
 
         $middleware->web(append: [
