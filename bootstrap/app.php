@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+        ]);
+
         $middleware->alias([
             'check.verification.interval' => CheckEmailVerificationInterval::class,
             'check.banned' => CheckBanned::class,
