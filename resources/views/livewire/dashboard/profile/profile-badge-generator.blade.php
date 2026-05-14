@@ -54,9 +54,6 @@
 
 @php
     $isAdmin = $this->user->isAdmin();
-    $isLifetime = (bool) $this->user->is_lifetime;
-    $isPrivileged = $isAdmin || $isLifetime;
-    $planSlug = $this->user->plan?->slug;
 @endphp
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -78,41 +75,18 @@
             </x-ui.section-card>
 
             {{-- Plan Status --}}
-            <div @class([
-                "rounded-[2.5rem] p-8 border-2 transition-all duration-500",
-                "bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20" => $isPrivileged,
-                "bg-indigo-50 border-indigo-100 dark:bg-indigo-500/5 dark:border-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
-                "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800" => !$isPrivileged && $planSlug !== 'pro'
-            ])>
-                <div class="flex items-center gap-4 mb-4">
-                    <div @class([
-                        "h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg",
-                        "bg-emerald-600 shadow-emerald-500/20" => $isPrivileged,
-                        "bg-indigo-600 shadow-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
-                        "bg-zinc-400" => !$isPrivileged && $planSlug !== 'pro'
-                    ])>
+            <div class="rounded-[2.5rem] p-8 border-2 transition-all duration-500 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-emerald-600 shadow-emerald-500/20">
                         <x-lucide-award class="h-6 w-6" />
                     </div>
                     <div>
                         <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Status do Crachá</h4>
                         <p class="text-xs text-zinc-500 font-medium">
-                            @if($isPrivileged)
-                                Acesso Irrestrito (Super-HD + Verificado)
-                            @elseif($planSlug === 'pro' && !$this->user->onTrial())
-                                Ultra-HD (Impressão) + Verificado
-                            @elseif($planSlug === 'plus' && !$this->user->onTrial())
-                                High-Definition (Web)
-                            @else
-                                Qualidade Standard com Marca d'água
-                            @endif
+                            Acesso Vitalício Liberado (Ultra-HD + Verificado)
                         </p>
                     </div>
                 </div>
-                @if(!$isPrivileged && ($planSlug !== 'pro' || $this->user->onTrial()))
-                    <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="w-full !rounded-xl">
-                        {{ $this->user->onTrial() ? 'Efetivar Assinatura' : 'Fazer Upgrade para Pro' }}
-                    </x-ui.button>
-                @endif
             </div>
 
             {{-- Embed Code --}}

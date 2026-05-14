@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Lang;
 
 class SupportMessageReceivedNotification extends Notification implements ShouldQueue
 {
@@ -26,14 +27,17 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("[Support] {$this->data->subject}")
-            ->greeting("Hello, Team Drafto!")
-            ->line("You have received a new support message from {$this->data->name} ({$this->data->email}).")
-            ->line("Subject: {$this->data->subject}")
-            ->line("Message:")
+            ->subject(Lang::get('notifications.support.subject', ['subject' => $this->data->subject]))
+            ->greeting(Lang::get('notifications.support.greeting'))
+            ->line(Lang::get('notifications.support.received', [
+                'name' => $this->data->name,
+                'email' => $this->data->email
+            ]))
+            ->line(Lang::get('notifications.support.subject_line', ['subject' => $this->data->subject]))
+            ->line(Lang::get('notifications.support.message_line'))
             ->line($this->data->message)
-            ->line("Please respond to the user as soon as possible.")
-            ->action('View Support Dashboard', url('/dashboard/admin/reports')) // Or a specific support view if exists
-            ->line('Thank you for using our platform!');
+            ->line(Lang::get('notifications.support.respond'))
+            ->action(Lang::get('notifications.support.action'), url('/dashboard/admin/reports'))
+            ->line(Lang::get('notifications.support.thanks'));
     }
 }

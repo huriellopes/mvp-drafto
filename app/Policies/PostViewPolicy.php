@@ -23,12 +23,11 @@ class PostViewPolicy
     }
 
     /**
-     * A writer can view stats of their own posts if they have a PRO subscription or Lifetime access.
+     * A writer can view stats of their own posts.
      */
     public function viewStats(User $user, Post $post): bool
     {
-        // Escritor deve ser dono do post e ter acesso premium
-        return $post->user_id === $user->id && $user->hasPremiumAccess();
+        return $post->user_id === $user->id;
     }
 
     public function delete(User $user): bool

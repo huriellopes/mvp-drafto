@@ -317,3 +317,21 @@ trix-editor [data-trix-mutable="true"] {
         line-height: 1.85;
     }
 }
+
+.no-transitions,
+.no-transitions * {
+    transition: none !important;
+}
+
+/* Initial state for expanded sidebar to prevent jumps */
+:root.is-sidebar-expanded aside {
+    @media (min-width: 1024px) {
+        width: 18rem !important; /* lg:w-72 */
+    }
+}
+
+:root.is-sidebar-expanded .main-content-wrapper {
+    @media (min-width: 1024px) {
+        padding-left: 18rem !important; /* lg:pl-72 */
+    }
+}

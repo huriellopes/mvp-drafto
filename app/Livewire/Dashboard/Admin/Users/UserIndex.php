@@ -178,22 +178,6 @@ class UserIndex extends Component
         Toaster::success('Status atualizado com sucesso.');
     }
 
-    public function toggleLifetime(User $user): void
-    {
-        if ($user->id === auth()->id()) {
-            Toaster::warning('Você não pode alterar seu próprio status vitalício.');
-
-            return;
-        }
-
-        $user->update([
-            'is_lifetime' => !$user->is_lifetime,
-        ]);
-
-        $this->clearUserCache();
-        Toaster::success($user->is_lifetime ? 'Acesso Vitalício concedido!' : 'Acesso Vitalício removido.');
-    }
-
     public function toggleVerification(User $user): void
     {
         $user->profile->update([

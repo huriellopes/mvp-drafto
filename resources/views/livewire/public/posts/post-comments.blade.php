@@ -9,7 +9,7 @@
     </div>
 
     {{-- Formulário Principal --}}
-    @auth
+    @if(auth()->check() || $post->comments_enabled)
         <form wire:submit.prevent="save" class="mb-12 space-y-4">
             <x-ui.textarea
                 wire:model="form.content"
@@ -31,18 +31,20 @@
             </div>
         </form>
     @else
-        {{-- Empty State / Login Prompt --}}
-        <div class="mb-12 relative overflow-hidden rounded-[2.5rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-10 text-center transition-all hover:border-indigo-500/30">
-            <div class="relative z-10 space-y-4">
-                <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 shadow-sm">
-                    <x-lucide-message-square class="h-8 w-8 text-zinc-300 dark:text-zinc-700" />
+        {{-- Empty State / Login Prompt (Apenas se comentários estiverem totalmente desativados e usuário deslogado) --}}
+        @guest
+            <div class="mb-12 relative overflow-hidden rounded-[2.5rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-10 text-center transition-all hover:border-indigo-500/30">
+                <div class="relative z-10 space-y-4">
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 shadow-sm">
+                        <x-lucide-message-square-off class="h-8 w-8 text-zinc-300 dark:text-zinc-700" />
+                    </div>
+                    <p class="text-zinc-600 dark:text-zinc-400 font-medium">
+                        Os comentários foram desativados pelo autor para este conteúdo.
+                    </p>
                 </div>
-                <p class="text-zinc-600 dark:text-zinc-400 font-medium">
-                    Faça <a href="{{ route('login') }}" wire:navigate class="text-indigo-600 dark:text-indigo-400 font-black hover:underline underline-offset-4 transition">login</a> para participar da conversa e conectar-se com o autor.
-                </p>
             </div>
-        </div>
-    @endauth
+        @endguest
+    @endif
 
     {{-- Lista de Comentários --}}
     <div class="space-y-10">

@@ -48,7 +48,7 @@ Route::get('/email/verify', function () {
 | Rotas Protegidas (Dashboard Comum)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', 'check.verification.interval'])
+Route::middleware(['auth'])
     ->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
@@ -72,9 +72,6 @@ Route::middleware(['auth', 'verified', 'check.verification.interval'])
     // Módulos Administrativos
     Route::group([], base_path('routes/parts/admin-routes.php'));
 
-    // Faturamento
-    Route::group([], base_path('routes/parts/billing.php'));
-
     // Área do Escritor e Leitor
     Route::name('')->group(function () {
         require base_path('routes/parts/writer.php');
@@ -88,7 +85,7 @@ Route::middleware(['auth', 'verified', 'check.verification.interval'])
 |--------------------------------------------------------------------------
 */
 Route::post('/trix/attachments', [TrixAttachmentController::class, 'store'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('trix.attachments.store');
 
 Route::get('/health-check', HealthCheckJsonResultsController::class);

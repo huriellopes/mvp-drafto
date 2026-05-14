@@ -33,17 +33,6 @@ class ManagePost extends Component
             $this->authorize('update', $post);
             $this->post = $post;
             $this->form->setPost($post);
-
-            // Sênior: Alerta proativo se for um rascunho e o limite foi atingido
-            if ($post->status === PostStatusEnum::DRAFT && auth()->user()->hasReachedPostLimit()) {
-                $this->notifyWarning('Você atingiu seu limite de publicações. Você poderá salvar este rascunho, mas não poderá publicá-lo.');
-            }
-        }
-
-        if (!$post && auth()->check() && auth()->user()->hasReachedPostLimit()) {
-            $this->notifyError('Você atingiu o limite de posts do seu plano. Faça upgrade para publicar mais.');
-
-            return $this->redirect(route('dashboard.billing.plans'));
         }
     }
 

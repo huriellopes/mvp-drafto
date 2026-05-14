@@ -14,26 +14,20 @@ enum ModuleEnum: string
             self::ACCOUNT => trans('dashboard.modules.items.account'),
             self::MY_POSTS => trans('dashboard.modules.items.my_posts'),
             self::DRAFT => trans('dashboard.modules.items.draft'),
-            self::CATEGORIES => __('dashboard.modules.items.categories'),
             self::FOLLOWS => trans('dashboard.modules.items.follows'),
             self::SAVED_POST => trans('dashboard.modules.items.saved_post'),
             self::COMMENTS => trans('dashboard.modules.items.comments'),
-            self::SUBSCRIPTIONS => __('dashboard.modules.items.subscriptions'),
             self::SUPPORT => __('dashboard.modules.items.support'),
-            self::TAGS => __('dashboard.modules.items.tags'),
         };
     }
+
     case PROFILE = 'profile';
     case PROFILE_BADGE = 'profile_badge';
     case ACCOUNT = 'account';
     case MY_POSTS = 'my_posts';
     case DRAFT = 'draft';
-    case CATEGORIES = 'categories';
     case FOLLOWS = 'follows';
     case SAVED_POST = 'saved_post';
     case COMMENTS = 'comments';
-    case SUBSCRIPTIONS = 'subscriptions';
-
     case SUPPORT = 'support';
-    case TAGS = 'tags';
 }

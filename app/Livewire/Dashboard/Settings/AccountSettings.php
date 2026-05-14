@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Settings;
 
+use App\Enums\RoleEnum;
 use App\Livewire\Forms\Settings\UserSettingsForm;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
@@ -20,6 +21,30 @@ class AccountSettings extends Component
     public function mount(): void
     {
         $this->form->setUser(auth()->user());
+    }
+
+    public function openBecomeWriterModal(): void
+    {
+        $this->dispatch('open-modal', name: 'confirm-become-writer');
+    }
+
+    public function becomeWriter(): void
+    {
+        $user = auth()->user();
+
+        if ($user->role !== RoleEnum::READER) {
+            return;
+        }
+
+        $user->update([
+            'role' => RoleEnum::WRITER,
+        ]);
+
+        $this->dispatch('close-modal', name: 'confirm-become-writer');
+
+        Toaster::success('Parabéns! Agora você é um Escritor no Drafto.');
+        
+        $this->redirect(route('dashboard.account'), navigate: true);
     }
 
     public function save(): void

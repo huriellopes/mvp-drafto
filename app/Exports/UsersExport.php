@@ -26,7 +26,7 @@ class UsersExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMappin
     public function query()
     {
         return User::query()
-            ->with(['plan', 'profile'])
+            ->with(['profile'])
             ->when($this->filters->search, function (Builder $query, string $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -46,8 +46,6 @@ class UsersExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMappin
             'E-mail',
             'Papel (Role)',
             'Status',
-            'Plano Atual',
-            'Acesso Vitalício',
             'Membro Desde',
             'Último Login',
         ];
@@ -64,8 +62,6 @@ class UsersExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMappin
             $user->email,
             $user->role->label(),
             $user->status->label(),
-            $user->getPlanName(),
-            $user->is_lifetime ? 'Sim' : 'Não',
             $user->created_at->format('d/m/Y'),
             $user->last_login_at?->format('d/m/Y H:i') ?? 'Nunca',
         ];

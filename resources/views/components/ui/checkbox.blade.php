@@ -16,8 +16,11 @@
     </div>
     <div class="text-sm leading-6">
         @if($label)
-            <label for="{{ $id }}" class="font-bold text-zinc-900 dark:text-white cursor-pointer select-none">
+            <label for="{{ $id }}" class="flex items-center gap-1 font-bold text-zinc-900 dark:text-white cursor-pointer select-none">
                 {{ $label }}
+                @if(isset($label_extra))
+                    {{ $label_extra }}
+                @endif
             </label>
         @endif
 

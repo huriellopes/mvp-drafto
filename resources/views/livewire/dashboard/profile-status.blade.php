@@ -70,13 +70,22 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-orange-700/80 dark:text-orange-400/80">
-                            Faltam: <span class="text-orange-900 dark:text-orange-200">{{ implode(', ', $this->missingFields) }}</span>
-                        </p>
+                        <div class="space-y-1">
+                            @if(count(auth()->user()->profile->getMissingFields()) > 0)
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-orange-700/80 dark:text-orange-400/80">
+                                    Campos Obrigatórios: <span class="text-orange-900 dark:text-orange-200">{{ implode(', ', auth()->user()->profile->getMissingFields()) }}</span>
+                                </p>
+                            @else
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-700/80 dark:text-emerald-400/80">
+                                    <span class="flex items-center gap-1"><x-lucide-check-circle-2 class="h-3 w-3" /> Essencial completo!</span>
+                                    <span class="text-zinc-500 font-medium lowercase tracking-normal">Recomendamos preencher: {{ implode(', ', array_diff($this->missingFields, auth()->user()->profile->getMissingFields())) }}</span>
+                                </p>
+                            @endif
+                        </div>
 
                         <div class="flex items-center gap-3">
                             <a href="{{ route('dashboard.profile') }}" class="inline-flex h-9 items-center justify-center rounded-xl bg-orange-600 px-5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition active:scale-95">
-                                {{ __('dashboard.profile_status.complete_now') }}
+                                {{ count(auth()->user()->profile->getMissingFields()) > 0 ? 'Resolver agora' : 'Melhorar Perfil' }}
                             </a>
                         </div>
                     </div>

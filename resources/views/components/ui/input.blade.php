@@ -6,8 +6,11 @@
 
 <div class="w-full">
     @if($label)
-        <label for="{{ $id }}" class="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label for="{{ $id }}" class="mb-2 flex items-center gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             {{ $label }}
+            @if(isset($label_extra))
+                {{ $label_extra }}
+            @endif
         </label>
     @endif
 

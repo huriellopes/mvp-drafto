@@ -6,6 +6,7 @@ namespace App\Livewire\Actions;
 
 use App\Actions\Comments\ToggleCommentLikeAction;
 use App\Models\Comment;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class LikeComment extends Component
@@ -14,17 +15,18 @@ class LikeComment extends Component
 
     public function toggle()
     {
-        if (auth()->guest()) {
-            return $this->redirect(route('login'), navigate: true);
-        }
-
-        app(ToggleCommentLikeAction::class)->exec(auth()->user(), $this->comment);
+        app(ToggleCommentLikeAction::class)->exec(auth()->user(), $this->comment, request()->ip());
     }
 
     public function render()
     {
-        $isLiked = $this->comment->is_liked ?? (auth()->check() && auth()->user()->likedComments()->where('comment_id', $this->comment->id)->exists());
-        $likesCount = $this->comment->liked_by_users_count ?? $this->comment->likedByUsers()->count();
+        $ip = request()->ip();
+        
+        $isLiked = auth()->check()
+            ? DB::table('comment_likes')->where('comment_id', $this->comment->id)->where('user_id', auth()->id())->exists()
+            : DB::table('comment_likes')->where('comment_id', $this->comment->id)->whereNull('user_id')->where('ip_address', $ip)->exists();
+            
+        $likesCount = DB::table('comment_likes')->where('comment_id', $this->comment->id)->count();
 
         return view('livewire.actions.like-comment', [
             'isLiked' => $isLiked,
