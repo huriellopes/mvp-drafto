@@ -43,6 +43,10 @@ class PlansIndex extends Component
                 'tax_id_collection' => [
                     'enabled' => true,
                 ],
+                'customer_update' => [
+                    'address' => 'auto',
+                    'name' => 'auto',
+                ],
             ]);
 
         return redirect($checkout->url);
