@@ -7,14 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
-
     <x-layouts.favicons />
 
     @if(isset($seo))
@@ -50,7 +42,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 selection:bg-profile-primary/30 transition-colors duration-300">
+<body class="font-sans antialiased bg-white text-zinc-900 selection:bg-profile-primary/30">
 
 <x-toaster-hub />
 <livewire:public.report-modal />

@@ -8,7 +8,6 @@ return [
         'active' => 'Active',
         'suspended' => 'Suspended',
         'pending' => 'Pending',
-        'blocked' => 'Blocked',
         'inactive' => 'Inactive',
         'banned' => 'Banned',
     ],
@@ -61,7 +60,6 @@ return [
     'comment_status' => [
         'visible' => 'Visible',
         'hidden' => 'Hidden',
-        'blocked' => 'Blocked',
         'pending' => 'Pending',
     ],
 

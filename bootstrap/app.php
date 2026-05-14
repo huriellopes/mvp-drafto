@@ -35,7 +35,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             LogContextMiddleware::class,
-            \App\Http\Middleware\BlockIpMiddleware::class,
             CheckEmailVerificationInterval::class,
             CheckBanned::class,
         ]);

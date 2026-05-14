@@ -37,15 +37,8 @@ class CommentFactory extends Factory
 
     public function hidden(): static
     {
-        return $this->state(fn (): array => [
+        return $this->state(fn (array $attributes) => [
             'status' => CommentStatusEnum::HIDDEN,
-        ]);
-    }
-
-    public function blocked(): static
-    {
-        return $this->state(fn (): array => [
-            'status' => CommentStatusEnum::BLOCKED,
         ]);
     }
 

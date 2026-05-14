@@ -57,13 +57,6 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function blocked(): static
-    {
-        return $this->state(fn (): array => [
-            'status' => UserStatusEnum::BLOCKED,
-        ]);
-    }
-
     public function active(): static
     {
         return $this->state(fn (): array => [

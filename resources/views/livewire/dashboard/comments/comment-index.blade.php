@@ -47,8 +47,7 @@
                             <div @class([
                                 'mt-1 h-3 w-3 shrink-0 rounded-full ring-4 ring-offset-2',
                                 'bg-emerald-500 ring-emerald-50' => $comment->status === App\Enums\CommentStatusEnum::VISIBLE,
-                                'bg-amber-500 ring-amber-50' => $comment->status === App\Enums\CommentStatusEnum::HIDDEN,
-                                'bg-red-500 ring-red-50' => $comment->status === App\Enums\CommentStatusEnum::BLOCKED,
+                                'bg-amber-500 ring-amber-50' => $comment->status === App\Enums\CommentStatusEnum::HIDDEN || $comment->status === App\Enums\CommentStatusEnum::PENDING,
                             ]) title="{{ $comment->status->label() }}"></div>
 
                             <div class="space-y-2">

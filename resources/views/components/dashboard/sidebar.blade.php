@@ -125,7 +125,7 @@
 
     {{-- Gestão Master (Admin Only) --}}
     @can('admin')
-        <div class="pt-4 border-t border-zinc-100 dark:border-zinc-800">
+        <div class="pt-4 border-t border-zinc-100">
             <x-ui.sidebar-group-title>{{ __('dashboard.sidebar.groups.master') }}</x-ui.sidebar-group-title>
             <nav class="space-y-1">
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.users.index') }}" :active="request()->routeIs('dashboard.admin.users.*')" wire:navigate.hover>
@@ -185,7 +185,7 @@
 
     {{-- Footer --}}
     <div x-show="!sidebarCollapsed" x-transition class="pt-6">
-        <div class="rounded-2xl bg-zinc-50 dark:bg-zinc-900 p-4 border border-zinc-100 dark:border-zinc-800 transition-colors">
+        <div class="rounded-2xl bg-zinc-50 p-4 border border-zinc-100 transition-colors">
             <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('dashboard.sidebar.current_session') }}</p>
             <div class="flex items-center gap-3">
                 <div @class([
@@ -193,7 +193,7 @@
                     'bg-emerald-500 shadow-emerald-500/40' => $isAdmin,
                     'bg-yellow-100 shadow-yellow-100/60' => !$isAdmin
                 ])></div>
-                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+                <span class="text-xs font-bold text-zinc-700">
                     {{ $user->role->label() }}
                 </span>
             </div>
