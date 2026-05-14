@@ -16,7 +16,6 @@ enum UserStatusEnum: string
             self::ACTIVE => __('enums.user_status.active'),
             self::SUSPENDED => __('enums.user_status.suspended'),
             self::PENDING => __('enums.user_status.pending'),
-            self::BLOCKED => __('enums.user_status.blocked'),
             self::INACTIVE => __('enums.user_status.inactive'),
             self::BANNED => __('enums.user_status.banned'),
         };
@@ -28,14 +27,13 @@ enum UserStatusEnum: string
             self::ACTIVE => 'green',
             self::SUSPENDED => 'yellow',
             self::PENDING => 'orange',
-            self::BLOCKED, self::INACTIVE, self::BANNED => 'red',
+            self::INACTIVE, self::BANNED => 'red',
         };
     }
 
     case ACTIVE = 'active';
     case SUSPENDED = 'suspended';
     case PENDING = 'pending';
-    case BLOCKED = 'blocked';
     case INACTIVE = 'inactive';
     case BANNED = 'banned';
 }

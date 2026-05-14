@@ -7,7 +7,6 @@ namespace App\Actions\Auth;
 use App\DTOs\AuthenticateData;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
-use App\Notifications\Auth\AccountBlockedNotification;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -24,10 +23,6 @@ final class AuthenticateUserAction
         $user = User::query()
             ->where('email', $data->email)
             ->first();
-
-        if ($user && $user->status === UserStatusEnum::BLOCKED) {
-            $this->handleBlockedUser($user);
-        }
 
         // Sênior: Se o usuário tem 2FA, primeiro validamos as credenciais sem logar
         if ($user && $user->hasTwoFactorEnabled()) {
@@ -76,16 +71,5 @@ final class AuthenticateUserAction
         ]);
 
         return true;
-    }
-
-    private function handleBlockedUser(User $user): void
-    {
-        $user->notify(new AccountBlockedNotification());
-
-        Toaster::error('Conta bloqueada pelo administrador da plataforma ou por excesso de tentativas.');
-
-        throw ValidationException::withMessages([
-            'email' => 'Esta conta foi bloqueada por segurança. Verifique seu e-mail para instruções.',
-        ]);
     }
 }

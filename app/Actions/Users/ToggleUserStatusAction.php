@@ -11,12 +11,13 @@ final class ToggleUserStatusAction
 {
     public function exec(User $user, ?UserStatusEnum $targetStatus = null): bool
     {
-        $newStatus = $targetStatus ?? (
+        $status = $targetStatus ?: (
             $user->status === UserStatusEnum::ACTIVE
-            ? UserStatusEnum::BLOCKED
-            : UserStatusEnum::ACTIVE
+                ? UserStatusEnum::SUSPENDED
+                : UserStatusEnum::ACTIVE
         );
 
-        return $user->forceFill(['status' => $newStatus])->save();
+
+        return $user->forceFill(['status' => $status])->save();
     }
 }
