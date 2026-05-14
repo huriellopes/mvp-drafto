@@ -32,8 +32,8 @@
                         @elseif(auth()->user()->profile?->avatar_path)
                             <img src="{{ Storage::url(auth()->user()->profile->avatar_path) }}" class="h-full w-full object-cover">
                         @else
-                            <div class="flex h-full items-center justify-center text-2xl font-bold text-zinc-300">
-                                {{ substr(auth()->user()->name, 0, 1) }}
+                            <div class="flex h-full items-center justify-center text-2xl font-black uppercase tracking-widest text-zinc-400">
+                                {{ get_initials(auth()->user()->name) }}
                             </div>
                         @endif
                     </div>

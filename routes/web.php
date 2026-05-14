@@ -100,7 +100,8 @@ Route::livewire('/posts/{slug}', 'public.posts.show-post')
     ->name('posts.show');
 
 Route::get('/badge/@{username}', [ProfileBadgeController::class, 'show'])
-    ->name('public.profile.badge');
+    ->name('public.profile.badge')
+    ->middleware('allow.iframe');
 
 Route::get('/newsletter/verify', VerifySubscriberController::class)
     ->name('newsletter.verify');
