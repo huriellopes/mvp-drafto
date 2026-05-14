@@ -1,12 +1,15 @@
+@use(App\Enums\RoleEnum)
 <x-ui.section-card
     title="Seu espaço"
     description="Resumo da sua conta."
 >
     <div class="space-y-4">
-        <x-ui.info-card
-            title="Perfil público"
-            :value="$this->user?->profile?->username ? '@' . $this->user?->profile?->username : 'Não configurado'"
-        />
+        @if (auth()->user()->hasRole(RoleEnum::WRITER) || auth()->user()->hasRole(RoleEnum::SUPER_ADMIN))
+            <x-ui.info-card
+                title="Perfil público"
+                :value="$this->user?->profile?->username ? '@' . $this->user?->profile?->username : 'Não configurado'"
+            />
+        @endif
 
         <x-ui.info-card
             title="E-mail"

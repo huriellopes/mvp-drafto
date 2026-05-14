@@ -11,20 +11,43 @@ use Illuminate\Support\Facades\DB;
 
 final class ToggleLikeAction
 {
-    public function exec(User $user, Post $post): bool
+    public function exec(?User $user, Post $post, ?string $ipAddress = null): bool
     {
-        return DB::transaction(function () use ($user, $post) {
-            $result = $user->likedPosts()->toggle($post->id);
-            $isAttached = count($result['attached']) > 0;
+        return DB::transaction(function () use ($user, $post, $ipAddress) {
+            $query = DB::table('post_likes')
+                ->where('post_id', $post->id);
+
+            if ($user) {
+                $query->where('user_id', $user->id);
+            } else {
+                $query->whereNull('user_id')->where('ip_address', $ipAddress);
+            }
+
+            $existing = $query->first();
+
+            if ($existing) {
+                $query->delete();
+                $post->timestamps = false;
+                $post->decrement('likes_count');
+                return false;
+            }
+
+            DB::table('post_likes')->insert([
+                'post_id' => $post->id,
+                'user_id' => $user?->id,
+                'ip_address' => $user ? null : $ipAddress,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             $post->timestamps = false;
-            $isAttached ? $post->increment('likes_count') : $post->decrement('likes_count');
+            $post->increment('likes_count');
 
-            if ($isAttached && $post->user_id !== $user->id) {
+            if ($user && $post->user_id !== $user->id) {
                 $post->author->notify(new SocialInteractionNotification('like_post', $post, $user));
             }
 
-            return $isAttached;
+            return true;
         });
     }
 }

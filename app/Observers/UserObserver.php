@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\Enums\PlanEnum;
 use App\Models\Module;
 use App\Models\User;
-use UnitEnum;
 
 class UserObserver
 {
@@ -21,18 +19,18 @@ class UserObserver
 
     /**
      * Executado sempre que o usuário for atualizado.
-     * Útil para quando o plano muda (upgrade/downgrade).
      */
     public function updated(User $user): void
     {
-        // Só re-sincroniza se a coluna 'plan_id' ou 'role' mudou
-        if ($user->isDirty(['plan_id', 'role'])) {
+        // Só re-sincroniza se a coluna 'role' mudou
+        if ($user->isDirty(['role'])) {
             $this->syncModules($user);
         }
     }
 
     /**
      * Lógica centralizada de provisionamento de módulos.
+     * Como a plataforma é gratuita, todos os módulos habilitados globalmente são ativados para o usuário.
      */
     private function syncModules(User $user): void
     {
@@ -42,21 +40,14 @@ class UserObserver
 
         $syncData = [];
 
-        $planSlug = $user->plan?->slug ?? PlanEnum::FREE->value;
-
         foreach ($modules as $module) {
-            $moduleSlugString = $module->slug instanceof UnitEnum ? $module->slug->value : $module->slug;
-
-            $planConfig = config("plans.{$planSlug}.modules.{$moduleSlugString}", []);
-
             $globalSettings = $module->settings ?? [];
 
-            $userSettings = array_map(function ($values) use ($planSlug) {
-                return is_array($values) ? ($values[$planSlug] ?? $values) : $values;
-            }, $globalSettings);
+            // Usamos as configurações globais do módulo como padrão
+            $userSettings = $globalSettings;
 
             $syncData[$module->id] = [
-                'is_enabled' => $planConfig['enabled'] ?? true,
+                'is_enabled' => true,
                 'settings' => json_encode($userSettings),
             ];
         }

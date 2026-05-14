@@ -14,12 +14,12 @@ use Mews\Purifier\Facades\Purifier;
 
 final class StoreCommentAction
 {
-    public function exec(User $user, Post $post, SaveCommentData $data): Comment
+    public function exec(?User $user, Post $post, SaveCommentData $data): Comment
     {
         return DB::transaction(function () use ($user, $post, $data) {
             $comment = Comment::create([
                 'post_id' => $post->id,
-                'user_id' => $user->id,
+                'user_id' => $user?->id,
                 'parent_id' => $data->parent_id,
                 'content' => Purifier::clean($data->content),
                 'status' => CommentStatusEnum::VISIBLE,

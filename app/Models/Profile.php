@@ -71,29 +71,15 @@ class Profile extends Model implements Auditable
      */
     public function getCompletionPercentage(): int
     {
-        $fields = [
-            'name',
-            'username',
-            'email',
-            'bio',
-            'avatar_path',
-            'cover_path',
-            'location',
-        ];
+        $totalFields = 7;
+        $missingCount = count($this->getRecommendedMissingFields());
+        $completedCount = $totalFields - $missingCount;
 
-        $completed = 0;
-
-        foreach ($fields as $field) {
-            if (!empty($this->{$field})) {
-                $completed++;
-            }
-        }
-
-        return (int) (($completed / count($fields)) * 100);
+        return (int) (($completedCount / $totalFields) * 100);
     }
 
     /**
-     * Identify missing critical fields.
+     * Identify missing critical fields (Mandatory for release).
      */
     public function getMissingFields(): array
     {
@@ -107,12 +93,34 @@ class Profile extends Model implements Auditable
             $missing['username'] = 'Username (@)';
         }
 
+        if (empty($this->email)) {
+            $missing['email'] = 'E-mail';
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Get all missing fields including recommended ones.
+     */
+    public function getRecommendedMissingFields(): array
+    {
+        $missing = $this->getMissingFields();
+
         if (empty($this->bio)) {
             $missing['bio'] = 'Biografia';
         }
 
         if (empty($this->avatar_path)) {
             $missing['avatar_path'] = 'Foto de Perfil';
+        }
+
+        if (empty($this->cover_path)) {
+            $missing['cover_path'] = 'Capa';
+        }
+
+        if (empty($this->location)) {
+            $missing['location'] = 'Localização';
         }
 
         return $missing;

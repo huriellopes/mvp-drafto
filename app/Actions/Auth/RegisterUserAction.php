@@ -33,13 +33,13 @@ final class RegisterUserAction
                 'status' => UserStatusEnum::ACTIVE,
                 'ip_address' => request()->ip(),
                 'last_login_at' => Carbon::now(),
-                'plan_id' => $isWriter ? 3 : null, // Sênior: Apenas Escritores iniciam no Pro (ID 3)
-                'trial_ends_at' => $isWriter ? now()->addDays(30) : null,
             ]);
 
-            $user->profile()->create([
-                'username' => $this->generateUniqueUsername($data->name),
-            ]);
+            if ($isWriter) {
+                $user->profile()->create([
+                    'username' => $this->generateUniqueUsername($data->name),
+                ]);
+            }
 
             event(new Registered($user));
 

@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\PlanEnum;
+use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
-use App\Models\Concerns\HasPlanLimits;
 use App\Notifications\Auth\ResetPasswordNotification;
 use App\Notifications\Auth\VerifyEmailNotification;
 use Database\Factories\UserFactory;
@@ -18,14 +17,12 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Laravel\Cashier\Billable;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 use Spatie\Sitemap\Contracts\Sitemapable;
@@ -36,11 +33,7 @@ use Spatie\Sitemap\Tags\Url;
     'email',
     'password',
     'role',
-    'plan_id',
     'status',
-    'is_lifetime',
-    'trial_ends_at',
-    'trial_notification_sent_at',
     'ip_address',
     'last_login_at',
     'email_verified_at',
@@ -55,10 +48,8 @@ use Spatie\Sitemap\Tags\Url;
 ])]
 class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitemapable
 {
-    use Billable;
-
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasPlanLimits, KeepsDeletedModels, Notifiable, \OwenIt\Auditing\Auditable;
+    use HasFactory, KeepsDeletedModels, Notifiable, \OwenIt\Auditing\Auditable;
 
     protected array $auditExclude = [
         'password',
@@ -98,11 +89,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
-    }
-
-    public function plan(): BelongsTo
-    {
-        return $this->belongsTo(Plan::class);
     }
 
     public function posts(): HasMany
@@ -212,13 +198,7 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         }
 
         // 2. Verificação Manual (campo no profile)
-        if ($this->profile?->is_verified) {
-            return true;
-        }
-
-        // 3. Plano Pro Ativo (Exclui Trial)
-        // Sênior: Usamos o slug do plano carregado para evitar queries extras
-        return ($this->plan?->slug === PlanEnum::PRO->value) && !$this->onTrial();
+        return (bool) $this->profile?->is_verified;
     }
 
     public function hasRole(RoleEnum $role): bool
@@ -243,38 +223,18 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
             ->exists();
     }
 
-    /**
-     * Checks if the user has an active subscription or is a lifetime member.
-     */
-    public function hasPremiumAccess(): bool
-    {
-        if ($this->hasRole(RoleEnum::SUPER_ADMIN) || $this->isAdmin() || $this->is_lifetime || $this->onTrial()) {
-            return true;
-        }
-
-        return $this->subscribed();
-    }
-
-    /**
-     * Checks if the user is currently on an active free trial.
-     */
-    public function onTrial(): bool
-    {
-        return $this->trial_ends_at && $this->trial_ends_at->isFuture();
-    }
-
     public function hasVerificationExpired(): bool
     {
         if ($this->hasVerifiedEmail()) {
             return false;
         }
 
-        return $this->created_at->addDays(7)->isPast();
+        return $this->created_at->addDays(15)->isPast();
     }
 
     public function daysLeftToVerify(): int
     {
-        return (int) max(0, now()->diffInDays($this->created_at->addDays(7), false));
+        return (int) max(0, now()->diffInDays($this->created_at->addDays(15), false));
     }
 
     public function sendEmailVerificationNotification(): void
@@ -318,6 +278,48 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $module->is_enabled && (bool) $module->pivot->is_enabled;
     }
 
+    /**
+     * Sênior: Retorna uma configuração específica de um módulo para o usuário.
+     */
+    public function getModuleSetting(string|ModuleEnum $module, string $key, mixed $default = null): mixed
+    {
+        if ($module instanceof ModuleEnum) {
+            $module = $module->value;
+        }
+
+        if ($this->loadedModules === null) {
+            $this->loadedModules = $this->modules;
+        }
+
+        $userModule = $this->loadedModules->firstWhere('slug', $module);
+
+        if (!$userModule) {
+            return $default;
+        }
+
+        $settings = is_string($userModule->pivot->settings)
+            ? json_decode($userModule->pivot->settings, true)
+            : $userModule->pivot->settings;
+
+        return $settings[$key] ?? $default;
+    }
+
+    /**
+     * Sênior: Como a plataforma é gratuita, o slug do plano é sempre 'free'.
+     */
+    public function getPlanSlug(): string
+    {
+        return 'free';
+    }
+
+    /**
+     * Sênior: Nome amigável do plano (sempre Gratuito agora).
+     */
+    public function getPlanName(): string
+    {
+        return 'Gratuito';
+    }
+
     protected function displayName(): Attribute
     {
         return Attribute::get(function () {
@@ -335,9 +337,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return [
             'role' => RoleEnum::class,
             'status' => UserStatusEnum::class,
-            'is_lifetime' => 'boolean',
-            'trial_ends_at' => 'datetime',
-            'trial_notification_sent_at' => 'datetime',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_login_at' => 'datetime',

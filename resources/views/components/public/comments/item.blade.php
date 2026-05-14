@@ -2,16 +2,26 @@
 
 <div class="group animate-in fade-in duration-500">
     <div class="flex gap-4">
-        <a href="{{ route('profile.show', $comment->user->profile->username) }}" class="shrink-0">
-            <img src="{{ $comment->user->profile->avatar_path ? Storage::url($comment->user->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($comment->user->name) }}"
-                 loading="lazy" decoding="async"
-                 class="h-10 w-10 rounded-xl object-cover shadow-sm ring-2 ring-white dark:ring-zinc-900 transition-transform hover:scale-105">
-        </a>
+        @if($comment->user && $comment->user->profile)
+            <a href="{{ route('profile.show', $comment->user->profile->username) }}" class="shrink-0">
+                <img src="{{ $comment->user->profile->avatar_path ? Storage::url($comment->user->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($comment->user->name) }}"
+                     loading="lazy" decoding="async"
+                     class="h-10 w-10 rounded-xl object-cover shadow-sm ring-2 ring-white dark:ring-zinc-900 transition-transform hover:scale-105">
+            </a>
+        @else
+            <div class="shrink-0">
+                <div class="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                    <x-lucide-user class="h-5 w-5 text-zinc-400" />
+                </div>
+            </div>
+        @endif
 
         <div class="flex-1 min-w-0">
             <div class="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-4 rounded-2xl rounded-tl-none shadow-sm transition-all group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="font-black text-sm text-zinc-900 dark:text-white truncate tracking-tight">{{ $comment->user->display_name }}</span>
+                    <span class="font-black text-sm text-zinc-900 dark:text-white truncate tracking-tight">
+                        {{ $comment->user?->display_name ?? __('Anonymous') }}
+                    </span>
                     <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
                 </div>
                 <div class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 break-words font-medium">

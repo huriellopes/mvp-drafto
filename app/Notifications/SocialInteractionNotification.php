@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Lang;
 
 class SocialInteractionNotification extends Notification implements ShouldQueue
 {
@@ -42,20 +43,20 @@ class SocialInteractionNotification extends Notification implements ShouldQueue
         $causerName = $this->causer?->name ?? 'Alguém';
 
         return (new MailMessage())
-            ->subject('Nova interação na Drafto: ' . $causerName)
+            ->subject(Lang::get('notifications.social.subject', ['name' => $causerName]))
             ->line($this->getMessage())
-            ->action('Ver no Site', url($this->getLink()))
-            ->line('Obrigado por fazer parte da nossa comunidade!');
+            ->action(Lang::get('notifications.social.action'), url($this->getLink()))
+            ->line(Lang::get('notifications.social.thanks'));
     }
 
     protected function getMessage(): string
     {
         return match ($this->type) {
-            'like_post' => 'curtiu seu post: ' . ($this->model?->title ?? 'Obra'),
-            'like_comment' => 'curtiu seu comentário',
-            'mention' => 'mencionou você em um comentário',
-            'follow' => 'começou a seguir você',
-            default => 'interagiu com você',
+            'like_post' => Lang::get('notifications.social.messages.like_post', ['title' => ($this->model?->title ?? 'Obra')]),
+            'like_comment' => Lang::get('notifications.social.messages.like_comment'),
+            'mention' => Lang::get('notifications.social.messages.mention'),
+            'follow' => Lang::get('notifications.social.messages.follow'),
+            default => Lang::get('notifications.social.messages.default'),
         };
     }
 

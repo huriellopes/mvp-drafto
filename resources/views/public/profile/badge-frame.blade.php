@@ -1,15 +1,9 @@
 @php
-    $plan = $user->plan?->slug ?? 'free';
-    $isLifetime = (bool) $user->is_lifetime;
     $isAdmin = $user->isAdmin();
-    $onTrial = $user->onTrial();
 
-    $isPrivileged = $isAdmin || $isLifetime;
-    $isPro = $isPrivileged || ($plan === 'pro' && !$onTrial);
-    $isPlus = $plan === 'plus' && !$onTrial;
-
-    // A marca d'água de "Powered by" some para Premium, mas o LOGO da plataforma deve ficar.
-    $showPoweredBy = !$isPrivileged && ($plan === 'free' || $onTrial);
+    // A marca d'água de "Powered by" pode ficar para todos agora, ou removida se for "totalmente grátis" sem distinção.
+    // O usuário pediu "totalmente gratuito", geralmente isso implica remover restrições.
+    $showPoweredBy = false;
 
     $colors = match($theme) {
         'light' => [
@@ -83,13 +77,9 @@
             </div>
 
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-current/5 border border-current/10 glass-effect">
-                <div @class([
-                    'h-1.5 w-1.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]',
-                    'bg-green-500 animate-pulse' => !$onTrial,
-                    'bg-amber-500' => $onTrial
-                ])></div>
+                <div class="h-1.5 w-1.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)] bg-green-500 animate-pulse"></div>
                 <span class="text-[8px] font-black uppercase tracking-widest opacity-80">
-                    {{ $isPrivileged ? 'Verified Member' : ($onTrial ? 'Trial Access' : 'Escritor ' . ($plan === 'free' ? 'Ativo' : $user->plan->name)) }}
+                    Escritor Ativo
                 </span>
             </div>
         </div>

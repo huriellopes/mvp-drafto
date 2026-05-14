@@ -21,18 +21,18 @@
 </head>
 <body style="font-family: sans-serif; color: #374151; line-height: 1.6;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #111827;">Olá!</h2>
-        <p>Obrigado por se interessar pelo <strong>Radar Drafto</strong>. Estamos quase lá!</p>
-        <p>Para confirmar sua inscrição e começar a receber as melhores histórias e novidades da plataforma, por favor clique no botão abaixo:</p>
+        <h2 style="color: #111827;">{{ __('notifications.newsletter.verification.greeting') }}</h2>
+        <p>{!! __('notifications.newsletter.verification.body1') !!}</p>
+        <p>{{ __('notifications.newsletter.verification.body2') }}</p>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $verificationUrl }}" class="button" style="color: #ffffff;">Confirmar Inscrição</a>
+            <a href="{{ $verificationUrl }}" class="button" style="color: #ffffff;">{{ __('notifications.newsletter.verification.action') }}</a>
         </div>
         
-        <p style="font-size: 14px; color: #6B7280;">Se você não solicitou esta inscrição, pode ignorar este e-mail com segurança.</p>
+        <p style="font-size: 14px; color: #6B7280;">{{ __('notifications.newsletter.verification.ignore') }}</p>
         
         <hr style="border: 0; border-top: 1px solid #E5E7EB; margin: 30px 0;">
-        <p style="font-size: 12px; color: #9CA3AF; text-align: center;">Drafto - A sua estante digital de grandes histórias.</p>
+        <p style="font-size: 12px; color: #9CA3AF; text-align: center;">{{ __('notifications.newsletter.verification.footer') }}</p>
     </div>
 </body>
 </html>

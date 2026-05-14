@@ -23,32 +23,31 @@
         <tr>
             <td class="header">
                 <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="44" height="44" alt="Drafto Logo" style="border-radius: 12px; border: 1px solid #e4e4e7;">
-                <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #18181b;">Drafto</div>
+                <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #18181b;">{{ config('app.name') }}</div>
             </td>
         </tr>
         <tr>
             <td class="content">
-                <h1 class="title">Verifique seu e-mail</h1>
+                <h1 class="title">{{ __('notifications.auth.verify_email.title') }}</h1>
                 <p class="text">
-                    Olá, <strong>{{ $user->name }}</strong>!<br>
-                    Para começar a escrever e publicar na Drafto, confirme que este e-mail pertence a você clicando no botão abaixo.
+                    {!! __('notifications.auth.verify_email.greeting', ['name' => $user->name]) !!}<br>
+                    {{ __('notifications.auth.verify_email.body') }}
                 </p>
 
-                <a href="{{ $url }}" class="button">Confirmar e-mail</a>
+                <a href="{{ $url }}" class="button">{{ __('notifications.auth.verify_email.action') }}</a>
 
                 <div class="divider"></div>
 
                 <p style="font-size: 12px; color: #71717a; line-height: 18px;">
-                    Se você não criou uma conta na Drafto, ignore este e-mail.<br>
-                    Este link expira em 60 minutos.
+                    {!! __('notifications.auth.verify_email.ignore') !!}
                 </p>
             </td>
         </tr>
     </table>
 
     <div class="footer">
-        &copy; {{ date('Y') }} Drafto. Plataforma para escritores.<br>
-        Escreva com clareza. Publique com identidade.
+        {!! __('notifications.common.platform_footer', ['year' => date('Y')]) !!}<br>
+        {{ __('notifications.auth.verify_email.footer') }}
     </div>
 </div>
 </body>

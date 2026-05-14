@@ -6,6 +6,7 @@ namespace App\Livewire\Actions;
 
 use App\Actions\Posts\ToggleLikeAction;
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -15,18 +16,18 @@ class LikeButton extends Component
 
     public function toggle()
     {
-        if (auth()->guest()) {
-            return $this->redirect(route('login'), navigate: true);
-        }
-
         app(ToggleLikeAction::class)
-            ->exec(auth()->user(), $this->post);
+            ->exec(auth()->user(), $this->post, request()->ip());
+        
         $this->post->refresh();
     }
 
     public function render(): View
     {
-        $isLiked = auth()->check() && auth()->user()->likedPosts()->where('post_id', $this->post->id)->exists();
+        $ip = request()->ip();
+        $isLiked = auth()->check() 
+            ? DB::table('post_likes')->where('post_id', $this->post->id)->where('user_id', auth()->id())->exists()
+            : DB::table('post_likes')->where('post_id', $this->post->id)->whereNull('user_id')->where('ip_address', $ip)->exists();
 
         return view('livewire.actions.like-button', ['isLiked' => $isLiked]);
     }
