@@ -18,18 +18,18 @@ final class CheckModuleAccess
     {
         $user = $request->user();
 
-        // Sênior: Se o usuário não estiver logado ou o módulo não estiver disponível no plano
+        // Sênior: Se o usuário não estiver logado ou o módulo não estiver disponível
         if (!$user || !$user->isModuleAvailable($moduleSlug)) {
 
             if ($request->expectsJson()) {
                 return response()->json([
-                    'message' => 'Este recurso não está disponível no seu plano atual.',
+                    'message' => 'Este recurso não está disponível para sua conta.',
                 ], 403);
             }
 
-            Toaster::warning('Este recurso não está disponível no seu plano atual.');
+            Toaster::warning('Este recurso não está disponível para sua conta.');
 
-            return redirect()->route('dashboard.billing.plans');
+            return redirect()->route('dashboard.index');
         }
 
         return $next($request);

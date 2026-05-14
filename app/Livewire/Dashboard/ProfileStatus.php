@@ -29,11 +29,11 @@ class ProfileStatus extends Component
     }
 
     /**
-     * Identify missing fields in the public profile.
+     * Identify missing fields in the public profile (Recommended for full status).
      */
     public function getMissingFieldsProperty(): array
     {
-        return Auth::user()->profile?->getMissingFields() ?? [];
+        return Auth::user()->profile?->getRecommendedMissingFields() ?? [];
     }
 
     /**

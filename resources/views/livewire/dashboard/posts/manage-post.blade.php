@@ -72,25 +72,22 @@
                     <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
                         <x-ui.input label="Slug da URL" wire:model="form.slug" placeholder="link-do-artigo" />
 
-                        <x-ui.select label="Categoria" wire:model="form.category_id">
-                            <option value="">Escolha uma...</option>
+                        <x-ui.suggestion-input 
+                            label="Categoria" 
+                            wire:model="form.category_id" 
+                            :available="$categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toArray()"
+                            placeholder="Pesquisar ou criar categoria..."
+                            createMessage="Sugestão de nova categoria:"
+                        />
 
-                            <optgroup label="Padrão do Sistema">
-                                @foreach($categories->whereNull('user_id') as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </optgroup>
-
-                            @if($categories->whereNotNull('user_id')->count() > 0)
-                                <optgroup label="Minhas Categorias">
-                                    @foreach($categories->whereNotNull('user_id') as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                        </x-ui.select>
-
-                        <x-ui.tags-input label="Tags" wire:model="form.tags" :availableTags="$availableTags" />
+                        <x-ui.suggestion-input 
+                            label="Tags" 
+                            wire:model="form.tags" 
+                            :available="$availableTags->map(fn($t) => ['id' => $t->id, 'name' => $t->name])->values()->toArray()"
+                            placeholder="Adicionar tag..."
+                            multiple="true"
+                            createMessage="Sugestão de nova tag:"
+                        />
 
                         <x-ui.select label="Tipo de conteúdo" wire:model="form.type">
                             @foreach(PostTypeEnum::cases() as $type)
@@ -107,12 +104,11 @@
                     </div>
 
                     {{-- SEO --}}
-                    @if(auth()->user()->getModuleSetting(ModuleEnum::MY_POSTS, 'enable_seo', false))
+                    @if(auth()->user()->getModuleSetting(ModuleEnum::MY_POSTS, 'enable_seo', true))
                         <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-bold text-zinc-900 leading-none italic">Otimização (SEO)</h3>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Pro</span>
                                     <input type="checkbox" wire:model.live="form.seo_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 transition">
                                 </div>
                             </div>
@@ -138,23 +134,6 @@
                                     </p>
                                 </div>
                             @endif
-                        </div>
-                    @else
-                        <div class="rounded-3xl border border-dashed border-zinc-200 bg-zinc-50/50 p-6 text-center space-y-4 relative overflow-hidden group">
-                            <div class="absolute -right-10 -top-10 h-32 w-32 bg-indigo-600/5 rounded-full blur-3xl transition-all group-hover:scale-150"></div>
-
-                            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-200 text-zinc-400 mx-auto shadow-sm">
-                                <x-lucide-sparkles class="h-5 w-5" />
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-black text-zinc-700 uppercase tracking-widest leading-none">Personalização SEO</h4>
-                                <p class="text-[10px] text-zinc-500 mt-2 leading-relaxed">
-                                    Apareça no topo do Google com títulos e descrições customizadas nos planos <b>Plus</b> ou <b>Pro</b>.
-                                </p>
-                            </div>
-                            <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="!rounded-xl !px-6 !text-[9px] !font-black uppercase tracking-widest shadow-sm">
-                                Fazer Upgrade
-                            </x-ui.button>
                         </div>
                     @endif
                 </div>

@@ -33,45 +33,43 @@
         <tr>
             <td class="header">
                 <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="52" height="52" alt="Drafto Logo" style="border-radius: 16px;">
-                <div style="margin-top: 12px; font-weight: 800; font-size: 16px; color: #ffffff; letter-spacing: -0.025em;">Drafto</div>
+                <div style="margin-top: 12px; font-weight: 800; font-size: 16px; color: #ffffff; letter-spacing: -0.025em;">{{ config('app.name') }}</div>
             </td>
         </tr>
         <tr>
             <td class="content">
                 @if($customMessage)
-                    <h1 class="title">Comunicado Importante</h1>
+                    <h1 class="title">{{ __('notifications.newsletter.important_title') }}</h1>
                     <div class="text">
                         {!! nl2br(e($customMessage)) !!}
                     </div>
                 @elseif(count($posts) > 0)
-                    <h1 class="title">Novidades para você</h1>
+                    <h1 class="title">{{ __('notifications.newsletter.news_title') }}</h1>
                     <p style="font-size: 13px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 32px;">
-                        CATEGORIA: {{ $categoryName }}
+                        {{ __('notifications.newsletter.category_label', ['category' => $categoryName]) }}
                     </p>
 
                     @foreach($posts as $post)
                         <div class="post-item">
                             <a href="{{ route('posts.show', $post['slug']) }}" class="post-title">{{ $post['title'] }}</a>
                             <p class="post-excerpt">{{ Str::limit($post['excerpt'] ?? '', 120) }}</p>
-                            <a href="{{ route('posts.show', $post['slug']) }}" class="post-link">Ler mais</a>
+                            <a href="{{ route('posts.show', $post['slug']) }}" class="post-link">{{ __('notifications.newsletter.read_more') }}</a>
                         </div>
                     @endforeach
                 @else
-                    <h1 class="title">Olá, Leitor!</h1>
-                    <p class="text">Temos novidades importantes esperando por você na plataforma. Passe por lá para conferir os conteúdos exclusivos da semana!</p>
+                    <h1 class="title">{{ __('notifications.newsletter.greeting_reader') }}</h1>
+                    <p class="text">{{ __('notifications.newsletter.default_body') }}</p>
                 @endif
 
                 <div class="button-container">
-                    <a href="{{ config('app.url') }}" class="button">Acessar Drafto</a>
+                    <a href="{{ config('app.url') }}" class="button">{{ __('notifications.newsletter.action') }}</a>
                 </div>
             </td>
         </tr>
         <tr>
             <td class="footer-area">
                 <p class="footer-text">
-                    Você recebeu este e-mail porque está inscrito na nossa newsletter.<br>
-                    <a href="{{ $unsubscribeUrl }}" class="link">Cancelar inscrição</a> •
-                    © {{ date('Y') }} Drafto
+                    {!! __('notifications.newsletter.unsubscribe', ['url' => $unsubscribeUrl, 'year' => date('Y')]) !!}
                 </p>
             </td>
         </tr>

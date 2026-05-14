@@ -13,14 +13,13 @@
     {{-- Banner de Verificação --}}
     <x-dashboard.verification-banner />
 
-    {{-- Banner de Trial --}}
-    <x-dashboard.trial-banner />
-
     {{-- Banner de Boas-vindas (Reutilizável) --}}
     <x-dashboard.welcome-banner :user="$this->user" />
 
-    {{-- Status do Perfil --}}
-    <livewire:dashboard.profile-status />
+    @if (auth()->user()->hasRole(RoleEnum::WRITER) || auth()->user()->hasRole(RoleEnum::SUPER_ADMIN))
+        {{-- Status do Perfil --}}
+        <livewire:dashboard.profile-status />
+    @endif
 
     {{-- Widgets de Estatísticas --}}
     <livewire:dashboard.widgets.stats-overview lazy />

@@ -21,9 +21,7 @@ class FollowerPolicy
 
     public function canHaveFollowers(User $target): bool
     {
-        // Criterioso: Talvez você queira que apenas usuários com plano Plus/Pro
-        // apareçam como "seguíveis" para criar exclusividade.
-        // Por enquanto, validamos se o módulo de seguidores está ativo no sistema.
+        // Validamos se o módulo de seguidores está ativo no sistema.
         return true;
     }
 

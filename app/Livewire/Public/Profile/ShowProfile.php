@@ -45,6 +45,12 @@ class ShowProfile extends Component
     }
 
     #[Computed]
+    public function isProfileEssentialComplete(): bool
+    {
+        return empty($this->user->profile?->getMissingFields());
+    }
+
+    #[Computed]
     public function isOwner(): bool
     {
         return auth()->check() && auth()->id() === $this->user->id;

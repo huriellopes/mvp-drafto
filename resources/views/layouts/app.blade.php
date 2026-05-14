@@ -8,6 +8,15 @@
 
     <x-layouts.favicons />
 
+    <script>
+        (function() {
+            document.documentElement.classList.remove('dark');
+            if (localStorage.getItem('sidebar-collapsed') === 'false') {
+                document.documentElement.classList.add('is-sidebar-expanded');
+            }
+        })();
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
     <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
 
@@ -63,12 +72,17 @@
 <body
     x-data="{
         sidebarOpen: false,
-        sidebarCollapsed: false,
+        sidebarCollapsed: localStorage.getItem('sidebar-collapsed') === 'false' ? false : true,
         loading: false
     }"
     x-on:livewire:navigating.window="loading = true"
     x-on:livewire:navigated.window="loading = false"
-    class="min-h-full bg-zinc-50 text-zinc-900 antialiased"
+    x-init="
+        setTimeout(() => $el.classList.remove('no-transitions'), 100);
+        document.documentElement.classList.remove('is-sidebar-expanded');
+        $watch('sidebarCollapsed', value => localStorage.setItem('sidebar-collapsed', value));
+    "
+    class="min-h-full bg-zinc-50 text-zinc-900 antialiased no-transitions"
 >
 <livewire:dashboard.impersonation-banner />
 <div class="livewire-progressive-bar" :style="loading ? 'width: 100%; opacity: 1;' : 'width: 0%; opacity: 0; transition: none;'"></div>
@@ -78,12 +92,12 @@
             x-cloak
             x-show="sidebarOpen"
             x-transition.opacity
-            class="fixed inset-0 z-40 bg-zinc-900/40 lg:hidden"
+            class="fixed inset-0 z-50 bg-zinc-900/40 lg:hidden"
             @click="sidebarOpen = false"
         ></div>
 
         <aside
-            class="fixed inset-y-0 left-0 z-50 flex w-72 -translate-x-full flex-col border-r border-zinc-200 bg-white transition-all duration-300 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-[60] flex w-72 lg:w-24 -translate-x-full flex-col border-r border-zinc-200 bg-white transition-[width,transform] duration-300 lg:translate-x-0 lg:z-40"
             :class="{
                 'translate-x-0': sidebarOpen,
                 'lg:w-24': sidebarCollapsed,
@@ -91,8 +105,11 @@
             }"
         >
             <div class="flex h-20 items-center justify-between border-b border-zinc-200 px-4">
-                <div class="flex min-w-0 items-center gap-3">
-                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 overflow-hidden">
+                <div 
+                    class="flex min-w-0 items-center gap-3 cursor-pointer group"
+                    @click="sidebarCollapsed = false"
+                >
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 overflow-hidden transition-transform group-hover:scale-105 active:scale-95">
                         <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" alt="Drafto Logo" class="w-8 h-auto" />
                     </div>
 
@@ -106,6 +123,18 @@
                     </div>
                 </div>
 
+                {{-- Desktop Toggle --}}
+                <button
+                    x-show="!sidebarCollapsed"
+                    x-transition
+                    type="button"
+                    class="hidden h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 lg:flex active:scale-90"
+                    @click.stop="sidebarCollapsed = !sidebarCollapsed"
+                >
+                    <x-lucide-panel-left-close class="h-4 w-4" />
+                </button>
+
+                {{-- Mobile Close --}}
                 <button
                     type="button"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900 lg:hidden"
@@ -125,13 +154,13 @@
         </aside>
 
         <div
-            class="flex min-w-0 flex-1 flex-col transition-all duration-300"
+            class="main-content-wrapper flex min-w-0 flex-1 flex-col lg:pl-24 transition-[padding] duration-300 ease-in-out will-change-[padding]"
             :class="{
                 'lg:pl-24': sidebarCollapsed,
                 'lg:pl-72': !sidebarCollapsed
             }"
         >
-            <header class="sticky top-0 z-30 border-b border-zinc-200/80 bg-white/90 backdrop-blur">
+            <header class="sticky top-0 z-40 border-b border-zinc-200/80 bg-white/90 backdrop-blur lg:z-50">
                 <div class="flex h-20 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                     <div class="flex min-w-0 items-center gap-3">
                         <button
@@ -140,22 +169,6 @@
                             @click="sidebarOpen = true"
                         >
                             <x-lucide-menu class="h-5 w-5" />
-                        </button>
-
-                        <button
-                            type="button"
-                            class="hidden h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 transition hover:bg-zinc-50 hover:text-zinc-900 lg:inline-flex"
-                            @click="sidebarCollapsed = !sidebarCollapsed"
-                        >
-                            <x-lucide-panel-left-close
-                                x-show="!sidebarCollapsed"
-                                class="h-5 w-5"
-                            />
-
-                            <x-lucide-panel-left-open
-                                x-show="sidebarCollapsed"
-                                class="h-5 w-5"
-                            />
                         </button>
 
                         <div class="min-w-0">
@@ -173,6 +186,18 @@
 
                     <div class="flex items-center gap-3">
                         {{ $headerActions ?? '' }}
+
+                        <a 
+                            href="{{ route('home') }}" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex h-10 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 text-[10px] font-bold uppercase tracking-widest text-zinc-600 transition hover:bg-zinc-50 shadow-sm active:scale-95"
+                            title="Ver Site"
+                        >
+                            <x-lucide-external-link class="h-4 w-4 text-zinc-400" />
+                            <span class="hidden sm:inline">Ir para o site</span>
+                        </a>
+
                         <livewire:dashboard.notification-bell />
                     </div>
                 </div>

@@ -16,8 +16,6 @@ class SaveUserData extends Data
         public ?string $password,
         public string|RoleEnum $role,
         public string|UserStatusEnum $status = UserStatusEnum::ACTIVE,
-        public bool $is_lifetime = false,
-        public ?int $plan_id = null,
         public bool $send_welcome_email = true,
     ) {}
 }

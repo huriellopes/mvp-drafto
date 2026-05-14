@@ -80,7 +80,6 @@ class DatabaseSeeder extends Seeder
             ], 200),
         ]);
 
-        $this->seedPlans();
         $this->seedModules();
 
         $admin = $this->seedAdmin();
@@ -100,7 +99,6 @@ class DatabaseSeeder extends Seeder
         $this->seedCommentLikes($readers, $comments);
         $this->seedNewsletter($categories);
         $this->seedReports($posts, $comments, $readers, $admin);
-        $this->assignRandomPlans($writers);
 
         $this->command?->info('==========================================');
         $this->command?->info('Seed concluído com sucesso.');
@@ -125,7 +123,6 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'role' => RoleEnum::SUPER_ADMIN,
                 'status' => UserStatusEnum::ACTIVE,
-                'is_lifetime' => true,
                 'email_verified_at' => now(),
             ],
         );
@@ -573,7 +570,7 @@ class DatabaseSeeder extends Seeder
 
     private function seedModules(): void
     {
-        $this->command?->warn('Semeando módulos com limites de planos (Free/Plus/Pro)...');
+        $this->command?->warn('Semeando módulos...');
 
         $modules = config('modules');
 
@@ -590,77 +587,6 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        $this->command?->info('✔ ' . count($modules) . ' módulos semeados com lógica de planos.');
-    }
-
-    private function seedPlans(): void
-    {
-        $this->command?->warn('Sincronizando planos com config/plans.php...');
-
-        $plans = config('plans');
-
-        foreach ($plans as $slug => $data) {
-            Plan::updateOrCreate(
-                ['slug' => $slug],
-                [
-                    'name' => $data['name'],
-                    'stripe_id' => $data['stripe_id'],
-                    'price' => $data['price'],
-                    'features' => $data['features'],
-                    'is_active' => true,
-                ],
-            );
-        }
-
-        $this->command?->info('✔ Planos sincronizados.');
-    }
-
-    private function assignRandomPlans(Collection $writers): void
-    {
-        $this->command?->warn('Sincronizando assinaturas locais para Writers (Ambiente Dev)...');
-
-        $plans = Plan::where('price', '>', 0)->get();
-
-        if ($plans->isEmpty()) {
-            $this->command?->error('✘ Nenhum plano pago encontrado. Pulando atribuição.');
-
-            return;
-        }
-
-        foreach ($writers as $writer) {
-            // Sênior: Para testes, 80% dos writers terão assinatura ativa
-            if (fake()->boolean(80)) {
-                $plan = $plans->random();
-                $fakePriceId = $plan->stripe_id ?? 'price_' . fake()->lexify('??????????????');
-
-                // 1. Garantir que o usuário tenha um Stripe ID fake
-                $writer->update(['stripe_id' => 'cus_' . fake()->lexify('??????????????')]);
-
-                // 2. Criar a assinatura no banco (Lógica do Cashier)
-                $subscription = Subscription::create([
-                    'user_id' => $writer->id,
-                    'type' => $plan->slug, // plus ou pro
-                    'stripe_id' => 'sub_' . fake()->lexify('??????????????'),
-                    'stripe_status' => 'active',
-                    'stripe_price' => $fakePriceId,
-                    'quantity' => 1,
-                    'trial_ends_at' => null,
-                    'ends_at' => null,
-                ]);
-
-                // 3. Vincular os itens da assinatura
-                $subscription->items()->create([
-                    'stripe_id' => 'si_' . fake()->lexify('??????????????'),
-                    'stripe_product' => 'prod_' . fake()->lexify('??????????????'),
-                    'stripe_price' => $fakePriceId,
-                    'quantity' => 1,
-                ]);
-
-                // 4. Atualizar o plan_id no user para sincronizar os módulos via Observer
-                $writer->update(['plan_id' => $plan->id]);
-            }
-        }
-
-        $this->command?->info('✔ Assinaturas e permissões sincronizadas para ambiente de desenvolvimento.');
+        $this->command?->info('✔ ' . count($modules) . ' módulos semeados.');
     }
 }

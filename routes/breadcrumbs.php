@@ -78,16 +78,6 @@ Breadcrumbs::for('dashboard.follows', function (BreadcrumbTrail $trail) {
     $trail->push('Comunidade', route('dashboard.follows'));
 });
 
-Breadcrumbs::for('dashboard.billing.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('dashboard.index');
-    $trail->push('Minha Assinatura', route('dashboard.billing.index'));
-});
-
-Breadcrumbs::for('dashboard.billing.plans', function (BreadcrumbTrail $trail) {
-    $trail->parent('dashboard.billing.index');
-    $trail->push('Planos Disponíveis', route('dashboard.billing.plans'));
-});
-
 // Admin: Master
 Breadcrumbs::for('dashboard.modules.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
@@ -107,11 +97,6 @@ Breadcrumbs::for('dashboard.newsletter.index', function (BreadcrumbTrail $trail)
 Breadcrumbs::for('dashboard.reports.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Moderação', route('dashboard.admin.reports.index'));
-});
-
-Breadcrumbs::for('dashboard.subscriptions.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('dashboard.index');
-    $trail->push('Gestão de Assinaturas', route('dashboard.admin.subscriptions.index'));
 });
 
 Breadcrumbs::for('dashboard.posts.views', function (BreadcrumbTrail $trail) {
