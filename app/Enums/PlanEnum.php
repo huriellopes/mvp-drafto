@@ -12,6 +12,7 @@ enum PlanEnum: string
             self::FREE => 'Plano Gratuito',
             self::PLUS => 'Plano Plus',
             self::PRO => 'Plano Pro',
+            default => 'Plano Inexistente',
         };
     }
 
