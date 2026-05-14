@@ -8,7 +8,7 @@ use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Illuminate\View\Component;
 
-class QrCode extends Component
+class QrCodeProfile extends Component
 {
     public string $qrCodeData;
 
