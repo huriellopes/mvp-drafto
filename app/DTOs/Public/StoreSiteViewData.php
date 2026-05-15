@@ -6,7 +6,7 @@ namespace App\DTOs\Public;
 
 use Spatie\LaravelData\Data;
 
-final readonly class StoreSiteViewData extends Data
+final class StoreSiteViewData extends Data
 {
     public function __construct(
         public ?int $userId,
