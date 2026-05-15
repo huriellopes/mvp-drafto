@@ -43,7 +43,7 @@ class AccountSettings extends Component
         $this->dispatch('close-modal', name: 'confirm-become-writer');
 
         Toaster::success('Parabéns! Agora você é um Escritor no Drafto.');
-        
+
         $this->redirect(route('dashboard.account'), navigate: true);
     }
 

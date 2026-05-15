@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class() extends Migration
 {
     /**
      * Run the migrations.
@@ -17,7 +17,7 @@ return new class extends Migration
             if (Schema::hasColumn('users', 'plan_id')) {
                 try {
                     $table->dropForeign(['plan_id']);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // FK pode não existir ou já ter sido removida em tentativas falhas anteriores
                 }
             }
@@ -31,7 +31,8 @@ return new class extends Migration
             if (Schema::hasColumn('users', 'stripe_id')) {
                 try {
                     $table->dropIndex(['stripe_id']);
-                } catch (\Exception $e) {}
+                } catch (Exception $e) {
+                }
             }
 
             $table->dropColumn([
@@ -41,7 +42,7 @@ return new class extends Migration
                 'trial_ends_at',
                 'trial_notification_sent_at',
                 'is_lifetime',
-                'plan_id'
+                'plan_id',
             ]);
         });
     }

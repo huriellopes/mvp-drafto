@@ -27,6 +27,7 @@ final class ToggleCommentLikeAction
 
             if ($existing) {
                 $query->delete();
+
                 return false;
             }
 

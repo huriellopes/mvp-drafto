@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Plan;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -25,7 +26,7 @@ return new class() extends Migration
             $plans = config('plans');
 
             foreach ($plans as $plan) {
-                \App\Models\Plan::query()->create($plan);
+                Plan::query()->create($plan);
             }
         }
     }

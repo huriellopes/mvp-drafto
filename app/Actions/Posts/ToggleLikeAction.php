@@ -29,6 +29,7 @@ final class ToggleLikeAction
                 $query->delete();
                 $post->timestamps = false;
                 $post->decrement('likes_count');
+
                 return false;
             }
 

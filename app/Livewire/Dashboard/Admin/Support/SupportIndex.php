@@ -6,7 +6,6 @@ namespace App\Livewire\Dashboard\Admin\Support;
 
 use App\Actions\Support\UpdateSupportAction;
 use App\DTOs\SupportData;
-use App\Enums\SupportStatusEnum;
 use App\Models\Support;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
@@ -22,10 +21,13 @@ final class SupportIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $status = '';
 
     public ?int $selectedSupportId = null;
+
     public string $adminResponse = '';
+
     public string $newStatus = '';
 
     protected $queryString = ['search', 'status'];
@@ -42,7 +44,9 @@ final class SupportIndex extends Component
 
     public function saveResponse(): void
     {
-        if (!$this->selectedSupportId) return;
+        if (!$this->selectedSupportId) {
+            return;
+        }
 
         $support = Support::findOrFail($this->selectedSupportId);
 
@@ -54,7 +58,7 @@ final class SupportIndex extends Component
                 'message' => $support->message,
                 'admin_response' => $this->adminResponse,
                 'status' => $this->newStatus,
-            ])
+            ]),
         );
 
         Toaster::success('Resposta enviada e status atualizado!');
@@ -70,14 +74,14 @@ final class SupportIndex extends Component
 
         $supports = Support::query()
             ->with('user')
-            ->when($this->search, fn($q) => $q->where('subject', 'like', "%{$this->search}%")
-                ->orWhereHas('user', fn($qu) => $qu->where('name', 'like', "%{$this->search}%")))
-            ->when($this->status, fn($q) => $q->where('status', $this->status))
+            ->when($this->search, fn ($q) => $q->where('subject', 'like', "%{$this->search}%")
+                ->orWhereHas('user', fn ($qu) => $qu->where('name', 'like', "%{$this->search}%")))
+            ->when($this->status, fn ($q) => $q->where('status', $this->status))
             ->latest()
             ->paginate(15);
 
         return view('livewire.dashboard.admin.support.support-index', [
-            'supports' => $supports
+            'supports' => $supports,
         ]);
     }
 }

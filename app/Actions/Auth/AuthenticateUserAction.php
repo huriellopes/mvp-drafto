@@ -11,7 +11,6 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use Masmerise\Toaster\Toaster;
 
 final class AuthenticateUserAction
 {

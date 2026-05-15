@@ -23,14 +23,6 @@ final class Support extends Model
         'responded_by',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'status' => SupportStatusEnum::class,
-            'responded_at' => 'datetime',
-        ];
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -39,5 +31,13 @@ final class Support extends Model
     public function responder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'responded_by');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => SupportStatusEnum::class,
+            'responded_at' => 'datetime',
+        ];
     }
 }

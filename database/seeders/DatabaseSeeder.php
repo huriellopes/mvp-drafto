@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\BrazilStateEnum;
-use App\Enums\ModuleEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\ReportReasonEnum;
 use App\Enums\RoleEnum;
@@ -13,7 +12,6 @@ use App\Enums\UserStatusEnum;
 use App\Models\Comment;
 use App\Models\Module;
 use App\Models\NewsletterSubscriber;
-use App\Models\Plan;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostView;
@@ -24,7 +22,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
-use Laravel\Cashier\Subscription;
 
 class DatabaseSeeder extends Seeder
 {

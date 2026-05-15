@@ -21,11 +21,11 @@ class LikeComment extends Component
     public function render()
     {
         $ip = request()->ip();
-        
+
         $isLiked = auth()->check()
             ? DB::table('comment_likes')->where('comment_id', $this->comment->id)->where('user_id', auth()->id())->exists()
             : DB::table('comment_likes')->where('comment_id', $this->comment->id)->whereNull('user_id')->where('ip_address', $ip)->exists();
-            
+
         $likesCount = DB::table('comment_likes')->where('comment_id', $this->comment->id)->count();
 
         return view('livewire.actions.like-comment', [

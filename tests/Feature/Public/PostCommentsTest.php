@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Public;
 
+use App\Livewire\Actions\LikeButton;
+use App\Livewire\Actions\LikeComment;
 use App\Livewire\Public\Posts\PostComments;
 use App\Models\Comment;
 use App\Models\Post;
@@ -23,7 +25,7 @@ it('allows logged in users to comment', function () {
     $user = User::factory()->active()->withProfile()->create();
     $post = Post::factory()->published()->create([
         'user_id' => $this->author->id,
-        'comments_enabled' => true
+        'comments_enabled' => true,
     ]);
 
     Livewire::actingAs($user)
@@ -39,7 +41,7 @@ it('allows logged in users to comment', function () {
 it('allows guests to comment if comments are enabled', function () {
     $post = Post::factory()->published()->create([
         'user_id' => $this->author->id,
-        'comments_enabled' => true
+        'comments_enabled' => true,
     ]);
 
     Livewire::test(PostComments::class, ['post' => $post])
@@ -54,7 +56,7 @@ it('allows guests to comment if comments are enabled', function () {
 it('does not allow guests to comment if comments are disabled', function () {
     $post = Post::factory()->published()->create([
         'user_id' => $this->author->id,
-        'comments_enabled' => false
+        'comments_enabled' => false,
     ]);
 
     Livewire::test(PostComments::class, ['post' => $post])
@@ -68,7 +70,7 @@ it('does not allow guests to comment if comments are disabled', function () {
 it('allows replying as a guest', function () {
     $post = Post::factory()->published()->create([
         'user_id' => $this->author->id,
-        'comments_enabled' => true
+        'comments_enabled' => true,
     ]);
     $comment = Comment::factory()->forPost($post)->create();
 
@@ -86,7 +88,7 @@ it('allows replying as a guest', function () {
 it('displays anonymous for guest comments', function () {
     $post = Post::factory()->published()->create([
         'user_id' => $this->author->id,
-        'comments_enabled' => true
+        'comments_enabled' => true,
     ]);
     Comment::factory()->forPost($post)->create(['user_id' => null, 'content' => 'Hello world']);
 
@@ -100,7 +102,7 @@ it('allows guests to like a post', function () {
     $post = Post::factory()->published()->create(['likes_count' => 0]);
 
     Livewire::withQueryParams(['ip' => '1.2.3.4'])
-        ->test(\App\Livewire\Actions\LikeButton::class, ['post' => $post])
+        ->test(LikeButton::class, ['post' => $post])
         ->call('toggle');
 
     expect($post->fresh()->likes_count)->toBe(1);
@@ -108,7 +110,7 @@ it('allows guests to like a post', function () {
 
     // Unlike
     Livewire::withQueryParams(['ip' => '1.2.3.4'])
-        ->test(\App\Livewire\Actions\LikeButton::class, ['post' => $post])
+        ->test(LikeButton::class, ['post' => $post])
         ->call('toggle');
 
     expect($post->fresh()->likes_count)->toBe(0);
@@ -119,14 +121,14 @@ it('allows guests to like a comment', function () {
     $comment = Comment::factory()->forPost($post)->create();
 
     Livewire::withQueryParams(['ip' => '1.2.3.4'])
-        ->test(\App\Livewire\Actions\LikeComment::class, ['comment' => $comment])
+        ->test(LikeComment::class, ['comment' => $comment])
         ->call('toggle');
 
     expect(DB::table('comment_likes')->where('comment_id', $comment->id)->whereNull('user_id')->count())->toBe(1);
 
     // Unlike
     Livewire::withQueryParams(['ip' => '1.2.3.4'])
-        ->test(\App\Livewire\Actions\LikeComment::class, ['comment' => $comment])
+        ->test(LikeComment::class, ['comment' => $comment])
         ->call('toggle');
 
     expect(DB::table('comment_likes')->where('comment_id', $comment->id)->whereNull('user_id')->count())->toBe(0);
