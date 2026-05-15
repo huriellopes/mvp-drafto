@@ -1,8 +1,8 @@
 <div class="max-w-7xl mx-auto px-4 py-12 lg:py-20 space-y-16">
     {{-- Header --}}
     <div class="text-center space-y-6 max-w-2xl mx-auto">
-        <h1 class="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white tracking-tighter italic">
-            Descubra novos <span class="text-profile-primary not-italic">Escritores.</span>
+        <h1 class="text-5xl md:text-7xl font-black text-zinc-900 dark:text-white italic tracking-tighter mb-8 leading-[0.85] animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            Descubra novos <span class="relative inline-block italic text-indigo-600 dark:text-indigo-400">Escritores.</span>
         </h1>
         <p class="text-zinc-500 font-medium">Conecte-se com as mentes que estão moldando o futuro da escrita.</p>
 

@@ -8,8 +8,6 @@ use App\Contracts\Services\LoggerInterface;
 use App\Enums\RoleEnum;
 use App\Events\Posts\PostSaved;
 use App\Listeners\Posts\HandlePostMediaAndSeo;
-use App\Listeners\SendTrialNotification;
-use App\Listeners\StripeWebhookListener;
 use App\Models\Collection;
 use App\Models\Comment;
 use App\Models\Follower;
@@ -30,14 +28,11 @@ use App\Policies\PostViewPolicy;
 use App\Policies\ProfilePolicy;
 use App\Policies\ReportPolicy;
 use App\Services\SystemLogger;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Cashier\Cashier;
-use Laravel\Cashier\Events\WebhookHandled;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,8 +49,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(WebhookHandled::class, StripeWebhookListener::class);
-        Event::listen(Registered::class, SendTrialNotification::class);
         Event::listen(PostSaved::class, HandlePostMediaAndSeo::class);
 
         Gate::policy(Post::class, PostPolicy::class);
@@ -81,8 +74,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', function (User $user) {
             return $user->hasRole(RoleEnum::SUPER_ADMIN);
         });
-
-        Cashier::useCustomerModel(User::class);
 
         Relation::morphMap([
             'user' => User::class,

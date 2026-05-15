@@ -29,9 +29,6 @@ final class StoreUserAction
                 'password' => $data->password,
                 'role' => $data->role,
                 'status' => $data->status,
-                'is_lifetime' => $data->is_lifetime,
-                'plan_id' => $data->plan_id ?? ($isWriter ? 3 : null),
-                'trial_ends_at' => ($isWriter && !$data->plan_id) ? now()->addDays(30) : null,
             ]);
 
             $user->profile()->create([

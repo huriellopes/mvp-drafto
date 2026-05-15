@@ -11,6 +11,7 @@ use App\Livewire\Forms\Public\CommentForm;
 use App\Models\Comment;
 use App\Models\Post;
 use Exception;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -28,7 +29,7 @@ class PostComments extends Component
 
     public function setReply(int $commentId): void
     {
-        if (auth()->guest()) {
+        if (auth()->guest() && !$this->post->comments_enabled) {
             $this->redirect(route('login'), navigate: true);
 
             return;
@@ -46,10 +47,18 @@ class PostComments extends Component
 
     public function save(): void
     {
-        $this->authorize('create', Comment::class);
+        if (!$this->post->comments_enabled) {
+            Toaster::error('Os comentários estão desativados para este post.');
 
-        if (auth()->guest()) {
-            $this->redirect(route('login'), navigate: true);
+            return;
+        }
+
+        if (!Gate::allows('create', Comment::class)) {
+            if (auth()->guest()) {
+                $this->redirect(route('login'), navigate: true);
+            } else {
+                Toaster::error('Você não tem permissão para comentar.');
+            }
 
             return;
         }
@@ -60,8 +69,12 @@ class PostComments extends Component
             // Sênior: Detecção robusta de imagens via Regex (Case Insensitive)
             $hasImages = preg_match('/<(img|object|embed|iframe)/i', $this->form->content);
 
-            if ($hasImages && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images')) {
-                throw new Exception('Seu plano atual não permite o envio de mídia nos comentários.');
+            if ($hasImages && auth()->check() && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images', true)) {
+                throw new Exception('Sua conta não tem permissão para o envio de mídia nos comentários.');
+            }
+
+            if ($hasImages && auth()->guest()) {
+                throw new Exception('Visitantes não podem enviar mídia nos comentários.');
             }
 
             app(StoreCommentAction::class)->exec(
@@ -81,16 +94,16 @@ class PostComments extends Component
 
     public function saveReply(): void
     {
-        if (auth()->guest()) {
-            $this->redirect(route('login'), navigate: true);
+        if (!$this->post->comments_enabled) {
+            Toaster::error('Os comentários estão desativados para este post.');
 
             return;
         }
 
         $parent = Comment::findOrFail($this->replyingTo);
 
-        if (!$this->user()->can('reply', $parent)) {
-            Toaster::error('Esta conversa atingiu o limite de respostas para este plano.');
+        if (!Gate::allows('reply', $parent)) {
+            Toaster::error('Você não tem permissão para responder ou esta conversa atingiu o limite.');
 
             return;
         }

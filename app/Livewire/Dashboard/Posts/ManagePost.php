@@ -9,6 +9,7 @@ use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\Tag;
 use App\Traits\Livewire\HasStandardResponses;
 use Exception;
 use Illuminate\Support\Facades\RateLimiter;
@@ -33,17 +34,6 @@ class ManagePost extends Component
             $this->authorize('update', $post);
             $this->post = $post;
             $this->form->setPost($post);
-
-            // Sênior: Alerta proativo se for um rascunho e o limite foi atingido
-            if ($post->status === PostStatusEnum::DRAFT && auth()->user()->hasReachedPostLimit()) {
-                $this->notifyWarning('Você atingiu seu limite de publicações. Você poderá salvar este rascunho, mas não poderá publicá-lo.');
-            }
-        }
-
-        if (!$post && auth()->check() && auth()->user()->hasReachedPostLimit()) {
-            $this->notifyError('Você atingiu o limite de posts do seu plano. Faça upgrade para publicar mais.');
-
-            return $this->redirect(route('dashboard.billing.plans'));
         }
     }
 
@@ -134,7 +124,7 @@ class ManagePost extends Component
             ->orderBy('name', 'asc')
             ->get();
 
-        $tags = \App\Models\Tag::query()
+        $tags = Tag::query()
             ->whereNull('user_id')
             ->orWhere('user_id', auth()->id())
             ->orderBy('name', 'asc')

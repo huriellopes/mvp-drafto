@@ -106,9 +106,9 @@ class ProfileForm extends Form
     public function rules(): array
     {
         return [
-            'name' => ['nullable', 'string', 'min:5'],
+            'name' => ['required', 'string', 'min:3', 'max:100'],
             'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_.]+$/', Rule::unique('profiles', 'username')->ignore(auth()->user()->profile?->id)],
-            'email' => ['nullable', 'string', 'email', Rule::unique('profiles', 'email')->ignore(auth()->user()->profile?->id)],
+            'email' => ['required', 'string', 'email', Rule::unique('profiles', 'email')->ignore(auth()->user()->profile?->id)],
             'bio' => ['nullable', 'string'],
             'website_url' => ['nullable', 'url'],
             'location' => ['nullable', 'string'],

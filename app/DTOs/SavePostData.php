@@ -14,7 +14,7 @@ class SavePostData extends Data
     public function __construct(
         public string $title,
         public string $slug,
-        public int $category_id,
+        public int|string $category_id,
         public string $content,
         public ?string $excerpt = null,
         public array $tags = [],

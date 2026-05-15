@@ -38,7 +38,7 @@ class ProfilePolicy
             return false;
         }
 
-        // Criterioso: Validar se ele está tentando mudar cores sem ter o plano Plus/Pro
+        // Criterioso: Validar se ele está tentando mudar cores se permitido pelo módulo
         // Isso impede injeção de dados via request
         if (request()->has('primary_color') || request()->has('accent_color')) {
             return $user->getModuleSetting(ModuleEnum::PROFILE, 'allow_custom_colors', false);

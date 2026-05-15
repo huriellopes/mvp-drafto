@@ -8,6 +8,7 @@ use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Post\TrixAttachmentController;
 use App\Http\Controllers\Public\ProfileBadgeController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
+use App\Livewire\Dashboard\Support\SupportPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
@@ -48,39 +49,36 @@ Route::get('/email/verify', function () {
 | Rotas Protegidas (Dashboard Comum)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', 'check.verification.interval'])
+Route::middleware(['auth'])
     ->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
 
-    Route::livewire('/', 'dashboard.index')->name('index');
+        Route::livewire('/', 'dashboard.index')->name('index');
 
-    // Perfil e Conta (Base para todos)
-    Route::livewire('/perfil/editar', 'dashboard.profile.edit-profile')
-        ->middleware(['module:profile', 'module.access:profile'])
-        ->name('profile');
-    Route::livewire('/perfil/cracha', 'dashboard.profile.profile-badge-generator')
-        ->name('profile.badge');
-    Route::livewire('/conta', 'dashboard.settings.account-settings')
-        ->middleware('module:account')
-        ->name('account');
+        // Perfil e Conta (Base para todos)
+        Route::livewire('/perfil/editar', 'dashboard.profile.edit-profile')
+            ->middleware(['module:profile', 'module.access:profile'])
+            ->name('profile');
+        Route::livewire('/perfil/cracha', 'dashboard.profile.profile-badge-generator')
+            ->name('profile.badge');
+        Route::livewire('/conta', 'dashboard.settings.account-settings')
+            ->middleware('module:account')
+            ->name('account');
 
-    Route::livewire('/suporte', \App\Livewire\Dashboard\Support\SupportPage::class)
-        ->middleware(['module:support'])
-        ->name('support');
+        Route::livewire('/suporte', SupportPage::class)
+            ->middleware(['module:support'])
+            ->name('support');
 
-    // Módulos Administrativos
-    Route::group([], base_path('routes/parts/admin-routes.php'));
+        // Módulos Administrativos
+        Route::group([], base_path('routes/parts/admin-routes.php'));
 
-    // Faturamento
-    Route::group([], base_path('routes/parts/billing.php'));
-
-    // Área do Escritor e Leitor
-    Route::name('')->group(function () {
-        require base_path('routes/parts/writer.php');
-        require base_path('routes/parts/reader.php');
+        // Área do Escritor e Leitor
+        Route::name('')->group(function () {
+            require base_path('routes/parts/writer.php');
+            require base_path('routes/parts/reader.php');
+        });
     });
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +86,7 @@ Route::middleware(['auth', 'verified', 'check.verification.interval'])
 |--------------------------------------------------------------------------
 */
 Route::post('/trix/attachments', [TrixAttachmentController::class, 'store'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('trix.attachments.store');
 
 Route::get('/health-check', HealthCheckJsonResultsController::class);
@@ -103,7 +101,8 @@ Route::livewire('/posts/{slug}', 'public.posts.show-post')
     ->name('posts.show');
 
 Route::get('/badge/@{username}', [ProfileBadgeController::class, 'show'])
-    ->name('public.profile.badge');
+    ->name('public.profile.badge')
+    ->middleware('allow.iframe');
 
 Route::get('/newsletter/verify', VerifySubscriberController::class)
     ->name('newsletter.verify');

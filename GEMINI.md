@@ -13,7 +13,7 @@
 - **Infrastructure:** Docker (Laravel Sail)
 - **Database:** MySQL 8.0+ (Optimized with indexes and JSON support)
 - **Cache/Queue:** Redis
-- **Payment Integration:** Laravel Cashier (Stripe)
+- **Pricing:** 100% Free Platform (No subscriptions or payment wall)
 
 ---
 
@@ -69,6 +69,5 @@
 - `app/DTOs/`: Data Transfer Objects.
 - `app/Enums/`: Domain enumerations.
 - `app/Livewire/Forms/`: Livewire form logic isolation.
-- `app/Models/Concerns/`: Traits for models (e.g., `HasPlanLimits`).
 - `database/migrations/`: Database schema definitions.
 - `resources/views/`: Blade and Livewire components.

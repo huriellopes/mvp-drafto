@@ -42,20 +42,20 @@ class SocialInteractionNotification extends Notification implements ShouldQueue
         $causerName = $this->causer?->name ?? 'Alguém';
 
         return (new MailMessage())
-            ->subject('Nova interação na Drafto: ' . $causerName)
+            ->subject(__('notifications.social.subject', ['name' => $causerName]))
             ->line($this->getMessage())
-            ->action('Ver no Site', url($this->getLink()))
-            ->line('Obrigado por fazer parte da nossa comunidade!');
+            ->action(__('notifications.social.action'), url($this->getLink()))
+            ->line(__('notifications.social.thanks'));
     }
 
     protected function getMessage(): string
     {
         return match ($this->type) {
-            'like_post' => 'curtiu seu post: ' . ($this->model?->title ?? 'Obra'),
-            'like_comment' => 'curtiu seu comentário',
-            'mention' => 'mencionou você em um comentário',
-            'follow' => 'começou a seguir você',
-            default => 'interagiu com você',
+            'like_post' => __('notifications.social.messages.like_post', ['title' => ($this->model?->title ?? 'Obra')]),
+            'like_comment' => __('notifications.social.messages.like_comment'),
+            'mention' => __('notifications.social.messages.mention'),
+            'follow' => __('notifications.social.messages.follow'),
+            default => __('notifications.social.messages.default'),
         };
     }
 

@@ -32,7 +32,11 @@ class NewsletterNotification extends Mailable implements ShouldQueue
 
     public function build()
     {
-        return $this->subject($this->customMessage ? 'Informativo: ' . config('app.name') : "Novidades na Drafto: {$this->categoryName}")
+        $subject = $this->customMessage
+            ? __('notifications.newsletter.subject_important', ['app' => config('app.name')])
+            : __('notifications.newsletter.subject', ['category' => $this->categoryName]);
+
+        return $this->subject($subject)
             ->view('emails.newsletter.posts', [
                 'unsubscribeUrl' => $this->unsubscribeUrl,
             ]);

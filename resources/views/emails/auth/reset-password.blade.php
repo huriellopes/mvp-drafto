@@ -24,32 +24,30 @@
         <tr>
             <td class="header">
                 <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="44" height="44" alt="Drafto Logo" style="border-radius: 12px; border: 1px solid #e4e4e7;">
-                <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #18181b;">Drafto</div>
+                <div style="margin-top: 12px; font-weight: 600; font-size: 14px; color: #18181b;">{{ config('app.name') }}</div>
             </td>
         </tr>
         <tr>
             <td class="content">
-                <h1 class="title">Recuperação de senha</h1>
+                <h1 class="title">{{ __('mail.auth.reset_password.title') }}</h1>
                 <p class="text">
-                    Recebemos uma solicitação para redefinir a senha da sua conta.<br>
-                    Se foi você, clique no botão abaixo para escolher uma nova senha.
+                    {!! __('mail.auth.reset_password.body') !!}
                 </p>
 
-                <a href="{{ $url }}" class="button">Redefinir senha</a>
+                <a href="{{ $url }}" class="button">{{ __('mail.auth.reset_password.action') }}</a>
 
                 <div class="divider"></div>
 
                 <p class="help-text">
-                    Este link de redefinição de senha expirará em {{ config('auth.passwords.'.config('auth.defaults.passwords').'.expire') }} minutos.<br>
-                    Se você não solicitou isso, nenhuma ação adicional é necessária.
+                    {!! __('mail.auth.reset_password.expire', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')]) !!}
                 </p>
             </td>
         </tr>
     </table>
 
     <div class="footer">
-        &copy; {{ date('Y') }} Drafto. Plataforma para escritores.<br>
-        Proteja sua conta. Não compartilhe este link com ninguém.
+        {!! __('mail.common.platform_footer', ['year' => date('Y')]) !!}<br>
+        {{ __('mail.auth.reset_password.footer') }}
     </div>
 </div>
 </body>

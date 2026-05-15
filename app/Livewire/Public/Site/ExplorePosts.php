@@ -62,7 +62,7 @@ class ExplorePosts extends Component
     }
 
     #[Computed]
-    public function categories()
+    public function categories(): Collection
     {
         $cacheKey = 'explore_categories_' . Carbon::now()->timestamp;
         $categories = Cache::remember($cacheKey, now()->addHours(1), function () {
@@ -82,7 +82,7 @@ class ExplorePosts extends Component
     }
 
     #[Computed]
-    public function tags()
+    public function tags(): Collection
     {
         $cacheKey = 'explore_tags_' . Carbon::now()->timestamp;
         $tags = Cache::remember($cacheKey, now()->addHours(1), function () {

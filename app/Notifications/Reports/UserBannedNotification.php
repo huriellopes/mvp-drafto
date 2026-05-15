@@ -29,12 +29,14 @@ final class UserBannedNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage())
             ->error()
-            ->subject('Sua conta foi suspensa - ' . config('app.name'))
-            ->greeting("Olá, {$notifiable->name}.")
-            ->line('Lamentamos informar que sua conta foi suspensa temporariamente devido à violação das nossas diretrizes.')
-            ->line('**Motivo da suspensão:** ' . $this->reason)
-            ->line('Sua conta permanecerá bloqueada até: **' . $this->bannedUntil->translatedFormat('d \d\e F \d\e Y \à\s H:i') . '**')
-            ->line('Se você acredita que isso foi um erro, entre em contato com o suporte.')
-            ->action('Revisar Termos de Uso', url('/termos'));
+            ->subject(__('notifications.report.banned.subject', ['app' => config('app.name')]))
+            ->greeting(__('notifications.report.banned.greeting', ['name' => $notifiable->name]))
+            ->line(__('notifications.report.banned.body'))
+            ->line(__('notifications.report.banned.reason', ['reason' => $this->reason]))
+            ->line(__('notifications.report.banned.until', [
+                'date' => $this->bannedUntil->translatedFormat('d \d\e F \d\e Y \à\s H:i'),
+            ]))
+            ->line(__('notifications.report.banned.error_contact'))
+            ->action(__('notifications.report.banned.action'), url('/termos'));
     }
 }

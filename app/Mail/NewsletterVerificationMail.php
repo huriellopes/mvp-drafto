@@ -22,7 +22,7 @@ class NewsletterVerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirme sua inscrição no Radar Drafto',
+            subject: __('notifications.newsletter.verification.subject'),
         );
     }
 

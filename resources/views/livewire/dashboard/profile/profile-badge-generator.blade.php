@@ -54,9 +54,6 @@
 
 @php
     $isAdmin = $this->user->isAdmin();
-    $isLifetime = (bool) $this->user->is_lifetime;
-    $isPrivileged = $isAdmin || $isLifetime;
-    $planSlug = $this->user->plan?->slug;
 @endphp
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -73,46 +70,24 @@
                     <div class="grid grid-cols-1 gap-4">
                         <x-ui.checkbox wire:model.live="form.showStats" :label="__('dashboard.badge.show_stats')" />
                         <x-ui.checkbox wire:model.live="form.showBio" :label="__('dashboard.badge.show_bio')" />
+                        <x-ui.checkbox wire:model.live="form.showLocation" label="Mostrar Localização" />
                     </div>
                 </div>
             </x-ui.section-card>
 
             {{-- Plan Status --}}
-            <div @class([
-                "rounded-[2.5rem] p-8 border-2 transition-all duration-500",
-                "bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20" => $isPrivileged,
-                "bg-indigo-50 border-indigo-100 dark:bg-indigo-500/5 dark:border-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
-                "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800" => !$isPrivileged && $planSlug !== 'pro'
-            ])>
-                <div class="flex items-center gap-4 mb-4">
-                    <div @class([
-                        "h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg",
-                        "bg-emerald-600 shadow-emerald-500/20" => $isPrivileged,
-                        "bg-indigo-600 shadow-indigo-500/20" => !$isPrivileged && $planSlug === 'pro',
-                        "bg-zinc-400" => !$isPrivileged && $planSlug !== 'pro'
-                    ])>
+            <div class="rounded-[2.5rem] p-8 border-2 transition-all duration-500 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20">
+                <div class="flex items-center gap-4">
+                    <div class="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-emerald-600 shadow-emerald-500/20">
                         <x-lucide-award class="h-6 w-6" />
                     </div>
                     <div>
                         <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Status do Crachá</h4>
                         <p class="text-xs text-zinc-500 font-medium">
-                            @if($isPrivileged)
-                                Acesso Irrestrito (Super-HD + Verificado)
-                            @elseif($planSlug === 'pro' && !$this->user->onTrial())
-                                Ultra-HD (Impressão) + Verificado
-                            @elseif($planSlug === 'plus' && !$this->user->onTrial())
-                                High-Definition (Web)
-                            @else
-                                Qualidade Standard com Marca d'água
-                            @endif
+                            Acesso Vitalício Liberado (Ultra-HD + Verificado)
                         </p>
                     </div>
                 </div>
-                @if(!$isPrivileged && ($planSlug !== 'pro' || $this->user->onTrial()))
-                    <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="w-full !rounded-xl">
-                        {{ $this->user->onTrial() ? 'Efetivar Assinatura' : 'Fazer Upgrade para Pro' }}
-                    </x-ui.button>
-                @endif
             </div>
 
             {{-- Embed Code --}}
@@ -131,7 +106,7 @@
                 </div>
                 <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
                     <code x-ref="embedCode" class="text-[10px] text-zinc-400 font-mono block break-all leading-relaxed">
-                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}&showStats={{ $form->showStats ? 'true' : 'false' }}&showBio={{ $form->showBio ? 'true' : 'false' }}&embed=true" width="450" height="280" frameborder="0"&gt;&lt;/iframe&gt;
+                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}&showStats={{ $form->showStats ? 'true' : 'false' }}&showBio={{ $form->showBio ? 'true' : 'false' }}&showLocation={{ $form->showLocation ? 'true' : 'false' }}&embed=true" width="450" height="280" frameborder="0"&gt;&lt;/iframe&gt;
                     </code>
                 </div>
             </div>
@@ -141,70 +116,17 @@
         <main class="lg:col-span-7 flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-900/50 rounded-[4rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 p-12 transition-colors duration-500">
             <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-12 italic">{{ __('dashboard.badge.preview_title') }}</h4>
 
-            {{-- O CARD REFINADO --}}
-            <div id="badge-preview"
-                 class="w-full max-w-md p-12 transition-all duration-500 shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden rounded-[3.5rem]"
-                 style="
-                    @if($form->theme === 'dark') background-color: #09090b; color: #ffffff; @endif
-                    @if($form->theme === 'light') background-color: #ffffff; color: #09090b; border: 1px solid #f4f4f5; @endif
-                    @if($form->theme === 'brand') background-color: {{ $this->user->profile->primary_color }}; color: #ffffff; @endif
-                ">
-
-                {{-- Watermark Decorativo --}}
-                <div class="absolute -top-10 -right-10 opacity-[0.03] rotate-12 pointer-events-none">
-                    <x-application-logo class="h-64 w-auto fill-current" />
-                </div>
-
-                <div class="absolute top-10 right-10 opacity-30">
-                    <x-application-logo class="h-6 w-auto fill-current" />
-                </div>
-
-                {{-- Top Section --}}
-                <div class="relative flex items-center gap-8">
-                    <div class="relative shrink-0">
-                        <div class="absolute -inset-2 bg-current opacity-10 blur-xl rounded-full"></div>
-                        <img
-                            src="{{ $this->user->profile->avatar_path ? Storage::url($this->user->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$this->user->display_name }}"
-                            class="relative h-28 w-28 rounded-[2.5rem] object-cover ring-4 ring-current/5 shadow-2xl"
-                            alt="Foto {{ $this->user->display_name }}"
-                            crossorigin="anonymous"
-                        />
-                    </div>
-
-                    <div class="space-y-1">
-                        <h3 class="text-3xl font-black tracking-tighter italic leading-none">{{ $this->user->display_name }}</h3>
-                        <p class="text-sm font-bold opacity-50 tracking-tight">@<span></span>{{ $this->user->profile->username }}</p>
-                    </div>
-                </div>
-
-                {{-- Bio Section --}}
-                @if($form->showBio && $this->user->profile->bio)
-                    <div class="relative mt-10">
-                        <p class="text-base line-clamp-2 opacity-80 leading-relaxed italic font-medium tracking-tight">
-                            "{{ $this->user->profile->bio }}"
-                        </p>
-                    </div>
-                @endif
-
-                {{-- Bottom Section --}}
-                <div class="mt-12 pt-8 border-t border-current/10 flex items-center justify-between">
-                    @if($form->showStats)
-                        <div class="flex gap-10">
-                            <div class="space-y-1">
-                                <p class="text-3xl font-black leading-none tracking-tighter">{{ number_format($this->user->followers()->count()) }}</p>
-                                <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">{{ __('dashboard.badge.stats.followers') }}</p>
-                            </div>
-                            <div class="space-y-1">
-                                <p class="text-3xl font-black leading-none tracking-tighter">{{ number_format($this->user->posts()->published()->count()) }}</p>
-                                <p class="text-[9px] font-black uppercase tracking-[0.2em] opacity-40">{{ __('dashboard.badge.stats.posts') }}</p>
-                            </div>
-                        </div>
-                    @endif
-
-                    <div class="flex items-center gap-2 px-6 py-4 bg-current/5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-current/5 shadow-inner">
-                        {{ __('dashboard.badge.action_read') }} <x-lucide-arrow-right class="h-3 w-3" />
-                    </div>
-                </div>
+            {{-- O NOVO CARD UNIFICADO --}}
+            <div class="w-full max-w-md">
+                <x-public.author-badge 
+                    :user="$this->user" 
+                    mode="embed" 
+                    :theme="$form->theme" 
+                    :showStats="$form->showStats" 
+                    :showBio="$form->showBio" 
+                    :showLocation="$form->showLocation"
+                    class="shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)]"
+                />
             </div>
 
             {{-- Action Button --}}

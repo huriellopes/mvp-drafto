@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\Tag;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Tag;
 
 return new class() extends Migration
 {
@@ -30,7 +30,7 @@ return new class() extends Migration
             ];
 
             foreach ($tags as $tag) {
-                Tag::query()->create($tag) ;
+                Tag::query()->create($tag);
             }
         }
     }

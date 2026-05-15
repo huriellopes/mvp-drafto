@@ -49,7 +49,6 @@
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.user') }}" column="name" :sort="$sort" :direction="$direction" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.role') }}" column="role" :sort="$sort" :direction="$direction" />
             <x-ui.table.th label="Verificado" />
-            <x-ui.table.th label="{{ __('dashboard.admin.users.table.access') }}" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.status') }}" column="status" :sort="$sort" :direction="$direction" />
             <x-ui.table.th label="{{ __('dashboard.admin.users.table.last_login') }}" column="last_login_at" :sort="$sort" :direction="$direction" />
             <th class="px-6 py-4 text-right">{{ __('dashboard.admin.users.table.actions') }}</th>
@@ -90,28 +89,6 @@
 
                         @if($user->isVerified())
                             <x-lucide-badge-check class="absolute -right-6 top-1 h-4 w-4 text-blue-500" />
-                        @endif
-                    </button>
-                </td>
-
-                {{-- Coluna Vitalício (Toggle) --}}
-                <td class="px-6 py-4">
-                    <button
-                        wire:click="toggleLifetime({{ $user->id }})"
-                        @class([
-                            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2',
-                            'bg-indigo-600' => $user->is_lifetime,
-                            'bg-zinc-200 dark:bg-zinc-700' => ! $user->is_lifetime,
-                        ])
-                    >
-                        <span @class([
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                            'translate-x-5' => $user->is_lifetime,
-                            'translate-x-0' => ! $user->is_lifetime,
-                        ])></span>
-
-                        @if($user->is_lifetime)
-                            <x-lucide-infinity class="absolute -right-6 top-1 h-4 w-4 text-indigo-500 animate-pulse" />
                         @endif
                     </button>
                 </td>
@@ -221,36 +198,6 @@
                         <option value="{{ $status['value'] }}">{{ $status['label'] }}</option>
                     @endforeach
                 </x-ui.select>
-            </div>
-
-            <div class="p-4 bg-indigo-50 dark:bg-indigo-500/5 rounded-2xl border border-indigo-100 dark:border-indigo-500/10">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
-                            <x-lucide-infinity class="h-4 w-4" />
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-zinc-900 dark:text-white">Acesso Vitalício</h4>
-                            <p class="text-[10px] text-zinc-500 leading-none">Ignora limites e assinaturas do Stripe</p>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        wire:click="$set('form.is_lifetime', {{ $form->is_lifetime ? 'false' : 'true' }})"
-                        @class([
-                            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-                            'bg-indigo-600' => $form->is_lifetime,
-                            'bg-zinc-200 dark:bg-zinc-700' => ! $form->is_lifetime,
-                        ])
-                    >
-                        <span @class([
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                            'translate-x-5' => $form->is_lifetime,
-                            'translate-x-0' => ! $form->is_lifetime,
-                        ])></span>
-                    </button>
-                </div>
             </div>
 
             <x-ui.input wire:model="form.password" label="Senha" type="password" placeholder="{{ $form->user ? __('dashboard.admin.users.modal.password_placeholder') : '••••••••' }}" :error="$errors->first('form.password')" />

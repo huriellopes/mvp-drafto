@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Dashboard\Tags\TagsIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('posts')->name('posts.')->group(function () {
@@ -25,7 +26,7 @@ Route::prefix('posts')->name('posts.')->group(function () {
         ->middleware('module:categories')
         ->name('categories.index');
 
-    Route::livewire('/tags', \App\Livewire\Dashboard\Tags\TagsIndex::class)
+    Route::livewire('/tags', TagsIndex::class)
         ->middleware('module:tags')
         ->name('tags.index');
 });

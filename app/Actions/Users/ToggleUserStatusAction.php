@@ -17,7 +17,6 @@ final class ToggleUserStatusAction
                 : UserStatusEnum::ACTIVE
         );
 
-
         return $user->forceFill(['status' => $status])->save();
     }
 }

@@ -15,25 +15,38 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
     use Queueable;
 
     public function __construct(
-        public SupportContactData $data
+        public SupportContactData $data,
     ) {}
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->subject("[Support] {$this->data->subject}")
-            ->greeting("Hello, Team Drafto!")
-            ->line("You have received a new support message from {$this->data->name} ({$this->data->email}).")
-            ->line("Subject: {$this->data->subject}")
-            ->line("Message:")
+        return (new MailMessage())
+            ->subject(__('notifications.support.subject', ['subject' => $this->data->subject]))
+            ->greeting(__('notifications.support.greeting'))
+            ->line(__('notifications.support.received', [
+                'name' => $this->data->name,
+                'email' => $this->data->email,
+            ]))
+            ->line(__('notifications.support.subject_line', ['subject' => $this->data->subject]))
+            ->line(__('notifications.support.message_line'))
             ->line($this->data->message)
-            ->line("Please respond to the user as soon as possible.")
-            ->action('View Support Dashboard', url('/dashboard/admin/reports')) // Or a specific support view if exists
-            ->line('Thank you for using our platform!');
+            ->line(__('notifications.support.respond'))
+            ->action(__('notifications.support.action'), url('/dashboard/admin/suporte'))
+            ->line(__('notifications.support.thanks'));
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'type' => 'support_received',
+            'causer_name' => $this->data->name,
+            'message' => 'notifications.support.database_admin_message',
+            'link' => '/dashboard/admin/suporte',
+        ];
     }
 }

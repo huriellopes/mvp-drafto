@@ -32,8 +32,8 @@
                         @elseif(auth()->user()->profile?->avatar_path)
                             <img src="{{ Storage::url(auth()->user()->profile->avatar_path) }}" class="h-full w-full object-cover">
                         @else
-                            <div class="flex h-full items-center justify-center text-2xl font-bold text-zinc-300">
-                                {{ substr(auth()->user()->name, 0, 1) }}
+                            <div class="flex h-full items-center justify-center text-2xl font-black uppercase tracking-widest text-zinc-400">
+                                {{ get_initials(auth()->user()->name) }}
                             </div>
                         @endif
                     </div>
@@ -50,13 +50,22 @@
                         label="{{ __('dashboard.profile.edit.visual_section.name_label') }}"
                         placeholder="John Doe"
                         :error="$errors->first('form.name')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.input>
+
                     <x-ui.input
                         wire:model.live="form.email"
                         label="{{ __('dashboard.profile.edit.visual_section.email_label') }}"
                         placeholder="johndoe@example.com"
                         :error="$errors->first('form.email')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.input>
                 </div>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -66,18 +75,27 @@
                         prefix="@"
                         placeholder="exemplo"
                         :error="$errors->first('form.username')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.input>
+
                     <x-ui.input
                         wire:model.blur="form.website_url"
                         label="{{ __('dashboard.profile.edit.visual_section.website_label') }}"
                         placeholder="https://exemplo.com"
                         :error="$errors->first('form.website_url')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.input>
                 </div>
             </div>
         </section>
 
-        {{-- Seção de Informações (Bio/Localização) --}}
+        {{-- Seção de Informações (Bio) --}}
         <x-ui.section-card title="{{ __('dashboard.profile.edit.about_section.title') }}" description="{{ __('dashboard.profile.edit.about_section.description') }}">
             <div class="space-y-6">
                 <div>
@@ -85,27 +103,44 @@
                         label="{{ __('dashboard.profile.edit.about_section.bio_label') }}"
                         wire:model.blur="form.bio"
                         :error="$errors->first('form.bio')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.textarea>
                 </div>
+            </div>
+        </x-ui.section-card>
 
-                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <x-ui.select wire:model.live="selectedUf" label="{{ __('dashboard.profile.edit.about_section.state_label') }}">
-                        <option value="">{{ __('dashboard.profile.edit.about_section.select_state') }}</option>
-                        @foreach($ufs as $uf)
-                            <option value="{{ $uf['sigla'] }}">{{ $uf['nome'] }}</option>
+        {{-- Sua Localização --}}
+        <x-ui.section-card title="Sua Localização" description="Informe de onde você escreve (Opcional).">
+            <x-slot:title_extra>
+                <x-ui.badge label="Opcional" color="zinc" class="ml-2" />
+            </x-slot:title_extra>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <x-ui.select wire:model.live="selectedUf" label="{{ __('dashboard.profile.edit.about_section.state_label') }}">
+                    <x-slot:label_extra>
+                        <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                    </x-slot:label_extra>
+                    <option value="">{{ __('dashboard.profile.edit.about_section.select_state') }}</option>
+                    @foreach($ufs as $uf)
+                        <option value="{{ $uf['sigla'] }}">{{ $uf['nome'] }}</option>
+                    @endforeach
+                </x-ui.select>
+
+                <div class="relative">
+                    <x-ui.select wire:model="form.location" label="{{ __('dashboard.profile.edit.about_section.city_label') }}" wire:loading.attr="disabled" wire:target="selectedUf" :error="$errors->first('form.location')">
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                        <option value="">{{ $selectedUf ? __('dashboard.profile.edit.about_section.select_city') : __('dashboard.profile.edit.about_section.select_state_first') }}</option>
+                        @foreach($this->municipios as $municipio)
+                            <option value="{{ $municipio['nome'] }}, {{ $selectedUf }}">{{ $municipio['nome'] }}</option>
                         @endforeach
                     </x-ui.select>
-
-                    <div class="relative">
-                        <x-ui.select wire:model="form.location" label="{{ __('dashboard.profile.edit.about_section.city_label') }}" wire:loading.attr="disabled" wire:target="selectedUf" :error="$errors->first('form.location')">
-                            <option value="">{{ $selectedUf ? __('dashboard.profile.edit.about_section.select_city') : __('dashboard.profile.edit.about_section.select_state_first') }}</option>
-                            @foreach($this->municipios as $municipio)
-                                <option value="{{ $municipio['nome'] }}, {{ $selectedUf }}">{{ $municipio['nome'] }}</option>
-                            @endforeach
-                        </x-ui.select>
-                        <div wire:loading wire:target="selectedUf" class="absolute right-10 top-[42px]">
-                            <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
-                        </div>
+                    <div wire:loading wire:target="selectedUf" class="absolute right-10 top-[42px]">
+                        <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
                     </div>
                 </div>
             </div>
@@ -117,7 +152,10 @@
                 {{-- Cores --}}
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div>
-                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">{{ __('dashboard.profile.edit.style_section.primary_color') }}</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                            {{ __('dashboard.profile.edit.style_section.primary_color') }}
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.primary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -127,7 +165,10 @@
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">{{ __('dashboard.profile.edit.style_section.accent_color') }}</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                            {{ __('dashboard.profile.edit.style_section.accent_color') }}
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.accent_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -137,7 +178,10 @@
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor Secundária</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                            Cor Secundária
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.secondary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -147,7 +191,10 @@
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor do Texto</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                            Cor do Texto
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.text_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -157,7 +204,10 @@
                     </div>
 
                     <div>
-                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">Cor de Fundo (Página)</label>
+                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                            Cor de Fundo (Página)
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.background_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
@@ -168,6 +218,9 @@
 
                     <div>
                         <x-ui.select wire:model="form.theme_mode" label="{{ __('dashboard.profile.edit.style_section.theme_mode') }}">
+                            <x-slot:label_extra>
+                                <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            </x-slot:label_extra>
                             @foreach(ThemePlatformEnum::options() as $option)
                                 <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
                             @endforeach
@@ -177,12 +230,18 @@
 
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
                     <x-ui.select wire:model="form.layout_type" label="Layout do Perfil">
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
                         <option value="default">Layout Padrão (Sidebar)</option>
                         <option value="centered">Centralizado (Foco no Autor)</option>
                         <option value="grid">Grade (Foco em Posts)</option>
                     </x-ui.select>
 
                     <x-ui.select wire:model="form.button_style" label="Estilo dos Botões">
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
                         <option value="rounded-md">Arredondado Leve</option>
                         <option value="rounded-xl">Arredondado Médio</option>
                         <option value="rounded-full">Pílula (Full)</option>
@@ -190,12 +249,18 @@
                     </x-ui.select>
 
                     <x-ui.select wire:model="form.card_style" label="Estilo dos Cards">
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
                         <option value="bordered">Com Bordas</option>
                         <option value="shadow">Com Sombra</option>
                         <option value="flat">Flat (Fundo Cinza)</option>
                     </x-ui.select>
 
                     <x-ui.select wire:model="form.font_family" label="Tipografia">
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                        </x-slot:label_extra>
                         <option value="sans">Sans Serif (Padrão)</option>
                         <option value="serif">Serifado (Clássico)</option>
                         <option value="mono">Monospaced (Moderno)</option>
@@ -207,12 +272,20 @@
                         wire:model="form.show_subscriber_count"
                         label="Exibir seguidores"
                         description="Mostra o total de seguidores publicamente."
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.checkbox>
                     <x-ui.checkbox
                         wire:model="form.show_view_count"
                         label="Exibir visualizações"
                         description="Exibe o contador de visitas do perfil."
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.checkbox>
                 </div>
             </div>
         </x-ui.section-card>
@@ -227,7 +300,11 @@
                             label="{{ __('dashboard.profile.edit.privacy_section.show_email') }}"
                             description="{{ __('dashboard.profile.edit.privacy_section.show_email_desc', ['email' => $form->email]) }}"
                             :error="$errors->first('form.show_email_publicly')"
-                        />
+                        >
+                            <x-slot:label_extra>
+                                <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            </x-slot:label_extra>
+                        </x-ui.checkbox>
                     </div>
 
                     <div class="flex flex-col justify-center rounded-2xl border border-zinc-100 bg-zinc-50/50 p-5 transition-colors hover:border-zinc-200">
@@ -238,6 +315,9 @@
                             :error="$errors->first('form.visibility')"
                             class="w-full"
                         >
+                            <x-slot:label_extra>
+                                <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            </x-slot:label_extra>
                             @foreach(ProfileVisibilityEnum::options() as $visibility)
                                 <option value="{{ $visibility['value'] }}">{{ $visibility['label'] }}</option>
                             @endforeach
@@ -271,7 +351,11 @@
                         label="{{ __('dashboard.profile.edit.seo_section.indexable') }}"
                         description="{{ __('dashboard.profile.edit.seo_section.indexable_desc') }}"
                         :error="$errors->first('form.is_searchable')"
-                    />
+                    >
+                        <x-slot:label_extra>
+                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        </x-slot:label_extra>
+                    </x-ui.checkbox>
 
                     <div class="mt-4 flex items-start gap-3 px-1 text-[10px] font-medium leading-relaxed text-zinc-500">
                         <x-lucide-info class="h-3.5 w-3.5 mt-0.5 shrink-0" />
@@ -284,7 +368,7 @@
                 </div>
 
                 @if($form->is_searchable)
-                    @if(auth()->user()->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', false))
+                    @if(auth()->user()->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', true))
                         <div class="grid grid-cols-1 gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 animate-in fade-in duration-500">
                             <x-ui.input
                                 wire:model.blur="form.seo_title"
@@ -293,7 +377,11 @@
                                 placeholder="{{ $form->name }}"
                                 maxlength="60"
                                 :error="$errors->first('form.seo_title')"
-                            />
+                            >
+                                <x-slot:label_extra>
+                                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                                </x-slot:label_extra>
+                            </x-ui.input>
 
                             <x-ui.textarea
                                 wire:model.blur="form.seo_description"
@@ -303,22 +391,11 @@
                                 maxlength="160"
                                 rows="3"
                                 :error="$errors->first('form.seo_description')"
-                            />
-                        </div>
-                    @else
-                        <div class="rounded-[2.5rem] bg-zinc-50 dark:bg-zinc-800/50 p-8 border border-zinc-100 dark:border-zinc-700/50 text-center space-y-4 animate-in fade-in duration-500">
-                            <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white mx-auto shadow-lg shadow-indigo-500/20">
-                                <x-lucide-sparkles class="h-6 w-6" />
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-zinc-900 dark:text-white uppercase tracking-widest italic">Personalização SEO</h4>
-                                <p class="text-xs text-zinc-500 mt-1 max-w-xs mx-auto">
-                                    Desbloqueie o controle total de como você aparece no Google com os planos <b>Plus</b> ou <b>Pro</b>.
-                                </p>
-                            </div>
-                            <x-ui.button href="{{ route('dashboard.billing.plans') }}" variant="outline" sizes="sm" class="!rounded-xl !px-8">
-                                Ver Planos
-                            </x-ui.button>
+                            >
+                                <x-slot:label_extra>
+                                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                                </x-slot:label_extra>
+                            </x-ui.textarea>
                         </div>
                     @endif
                 @endif

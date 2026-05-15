@@ -1,5 +1,24 @@
+@use(App\Enums\RoleEnum)
 <div class="max-w-4xl space-y-10 pb-20">
-    {{ Breadcrumbs::render('dashboard.account') }}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="min-w-0">
+            {{ Breadcrumbs::render('dashboard.account') }}
+        </div>
+
+        @if(auth()->user()->role === RoleEnum::READER)
+            <div class="shrink-0">
+                <x-ui.button 
+                    wire:click="openBecomeWriterModal"
+                    variant="primary"
+                    sizes="sm"
+                    class="!rounded-xl shadow-sm w-full sm:w-auto"
+                >
+                    <x-lucide-pen-tool class="mr-2 h-4 w-4" />
+                    Quero ser Escritor
+                </x-ui.button>
+            </div>
+        @endif
+    </div>
 
     <form wire:submit="save" class="space-y-10">
         {{-- Dados Pessoais --}}
@@ -53,25 +72,6 @@
             </div>
         </x-ui.section-card>
 
-        {{-- Assinatura --}}
-        <x-ui.section-card title="Assinatura e Plano" description="Gerencie seu plano atual e informações de faturamento.">
-            <div class="flex items-center justify-between gap-6">
-                <p class="text-sm font-bold text-zinc-900 dark:text-white">
-                    Seu plano atual é o <span class="text-indigo-600 uppercase tracking-wider">{{ auth()->user()->getPlanName() }}</span>.
-                </p>
-
-                <x-ui.button 
-                    type="button"
-                    href="{{ route('dashboard.billing.index') }}"
-                    variant="secondary"
-                    sizes="sm"
-                    class="!rounded-xl"
-                >
-                    Gerenciar Assinatura
-                </x-ui.button>
-            </div>
-        </x-ui.section-card>
-
         <div class="flex justify-end gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-8">
             <x-ui.button
                 type="submit"
@@ -83,4 +83,13 @@
             </x-ui.button>
         </div>
     </form>
+
+    <x-ui.confirm-modal
+        name="confirm-become-writer"
+        title="Tornar-se Escritor"
+        content="Você tem certeza que deseja se tornar um Escritor? Ao confirmar, você terá acesso a ferramentas de criação, rascunhos e gestão de artigos."
+        buttonText="Sim, quero ser Escritor"
+        variant="primary"
+        action="becomeWriter"
+    />
 </div>

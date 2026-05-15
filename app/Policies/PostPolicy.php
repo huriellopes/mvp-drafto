@@ -45,7 +45,7 @@ class PostPolicy
 
         if (
             $post->status === PostStatusEnum::PUBLISHED &&
-            in_array($post->visibility, [PostVisibilityEnum::UNLISTED, PostVisibilityEnum::PREMIUM], true)
+            in_array($post->visibility, [PostVisibilityEnum::UNLISTED, PostVisibilityEnum::REGISTERED], true)
         ) {
             return true;
         }
@@ -64,25 +64,10 @@ class PostPolicy
 
     /**
      * Determine if the user can view the actual content of the post.
-     * Handles Paywall and Lifetime logic.
      */
     public function viewContent(?User $user, Post $post): bool
     {
-        if ($post->visibility !== PostVisibilityEnum::PREMIUM) {
-            return $this->view($user, $post);
-        }
-
-        if (!$user) {
-            return false;
-        }
-
-        // Autor vê seu próprio conteúdo
-        if ($post->user_id === $user->id) {
-            return true;
-        }
-
-        // Abstração centralizada no Model User
-        return $user->hasPremiumAccess();
+        return $this->view($user, $post);
     }
 
     public function create(User $user): bool

@@ -66,7 +66,7 @@
             <a href="/" wire:navigate class="mt-8 px-8 py-3 rounded-2xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl">Voltar ao Início</a>
         </div>
 
-    @elseif(!$this->isProfileComplete && !$this->isOwner)
+    @elseif(!$this->isProfileEssentialComplete && !$this->isOwner)
         <div class="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center" wire:key="construction-state">
             <div class="relative mb-8">
                 <div class="absolute -inset-4 rounded-full bg-profile-primary/10 blur-2xl animate-pulse"></div>

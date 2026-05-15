@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\AllowIframeMiddleware;
 use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\CheckEmailVerificationInterval;
 use App\Http\Middleware\CheckModuleAccess;
@@ -35,11 +36,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'module' => CheckModuleStatus::class,
             'can' => Authorize::class,
             'module.access' => CheckModuleAccess::class,
+            'allow.iframe' => AllowIframeMiddleware::class,
         ]);
 
         $middleware->web(append: [
             LogContextMiddleware::class,
-            CheckEmailVerificationInterval::class,
             CheckBanned::class,
         ]);
     })

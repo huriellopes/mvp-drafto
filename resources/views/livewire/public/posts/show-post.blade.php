@@ -165,32 +165,7 @@
         <aside class="lg:col-span-4">
             <div class="sticky top-32 space-y-8">
                 {{-- Autor Card --}}
-                <div class="group relative overflow-hidden rounded-[3.5rem] border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 p-10 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl">
-                    <div class="text-center space-y-6">
-                        <div class="relative inline-block">
-                            <a href="{{ route('profile.show', $this->post->author->profile->username) }}" wire:navigate class="group relative">
-                                <div class="absolute inset-0 bg-indigo-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                                <img src="{{ $this->post->author->profile->avatar_path ? Storage::url($this->post->author->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$this->post->author->display_name }}"
-                                     class="relative mx-auto h-32 w-32 rounded-[2.5rem] object-cover shadow-2xl ring-4 ring-white dark:ring-zinc-800 transition-transform duration-500 group-hover:scale-105"
-                                     alt="{{ $this->post->author->display_name }}"
-                                />
-                            </a>
-                        </div>
-
-                        <div class="space-y-1">
-                            <h4 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter">{{ $this->post->author->display_name }}</h4>
-                            <p class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest italic">@<span></span>{{$this->post->author->profile->username}}</p>
-                        </div>
-
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium italic">
-                            "{{ $this->post->author->profile->bio }}"
-                        </p>
-
-                        <div class="pt-4">
-                            <livewire:actions.follow-button :user="$this->post->author" :key="'sidebar-'.$this->post->author->id"/>
-                        </div>
-                    </div>
-                </div>
+                <x-public.author-badge :user="$this->post->author" />
 
                 {{-- Newsletter Component --}}
                 <livewire:public.newsletter-form :categoryId="$this->post->category_id"/>

@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'Regards' => 'Atenciosamente',
+    'Hello!' => 'Olá!',
+    'Whoops!' => 'Ops!',
+    'If you\'re having trouble clicking the ":actionText" button, copy and paste the URL below\ninto your web browser:' => 'Se você estiver tendo problemas para clicar no botão ":actionText", copie e cole a URL abaixo em seu navegador:',
+
+    'social' => [
+        'subject' => 'Nova interação na Drafto: :name',
+        'action' => 'Ver no Site',
+        'thanks' => 'Obrigado por fazer parte da nossa comunidade!',
+        'messages' => [
+            'like_post' => 'curtiu sua publicação: **:title**',
+            'like_comment' => 'curtiu um comentário seu',
+            'mention' => 'mencionou você em uma conversa',
+            'follow' => 'começou a acompanhar suas publicações',
+            'default' => 'interagiu com você',
+        ],
+    ],
+    'support' => [
+        'subject' => '[Suporte] :subject',
+        'greeting' => 'Olá, Equipe Drafto!',
+        'received' => 'Você recebeu uma nova mensagem de suporte de :name (:email).',
+        'subject_line' => 'Assunto: :subject',
+        'message_line' => 'Mensagem:',
+        'respond' => 'Por favor, responda ao usuário o mais breve possível.',
+        'action' => 'Ver Dashboard de Suporte',
+        'thanks' => 'Obrigado por usar nossa plataforma!',
+        'database_admin_message' => 'Novo ticket de suporte recebido de :causer_name.',
+        'response' => [
+            'subject' => 'Sua solicitação de suporte recebeu uma resposta: :subject',
+            'greeting' => 'Olá, :name!',
+            'body' => 'Nossa equipe de atendimento acabou de responder ao seu ticket de suporte.',
+            'status' => 'Status atual: **:status**',
+            'admin_response' => 'Resposta da nossa equipe: ":response"',
+            'action' => 'Ver Detalhes do Ticket',
+            'thanks' => 'Estamos à disposição para qualquer outra dúvida!',
+            'database_message' => 'Sua solicitação de suporte recebeu uma nova resposta da nossa equipe.',
+        ],
+    ],
+    'report' => [
+        'feedback' => [
+            'subject' => 'Atualização sobre sua denúncia - :app',
+            'greeting' => 'Olá, :name!',
+            'body' => 'A denúncia que você enviou sobre um conteúdo de :type foi analisada por nossa moderação.',
+            'status' => 'O desfecho da sua solicitação é: **:status**',
+            'admin_feedback' => 'Parecer da moderação: ":feedback"',
+            'thanks' => 'Agradecemos por nos ajudar a manter a Drafto um ambiente seguro para todos.',
+            'action' => 'Ver Diretrizes da Comunidade',
+            'database_message' => 'Sua denúncia foi analisada pela nossa moderação. Confira o desfecho.',
+        ],
+        'banned' => [
+            'subject' => 'Comunicado Importante: Sua conta foi suspensa - :app',
+            'greeting' => 'Olá, :name.',
+            'body' => 'Informamos que sua conta foi temporariamente suspensa devido a violações recorrentes ou graves das nossas diretrizes de uso.',
+            'reason' => '**Motivo da suspensão:** :reason',
+            'until' => 'Sua conta permanecerá bloqueada até: **:date**',
+            'error_contact' => 'Caso acredite que houve um equívoco, sinta-se à vontade para entrar em contato com nosso suporte.',
+            'action' => 'Revisar Termos de Uso',
+        ],
+    ],
+    'auth' => [
+        'reset_password' => [
+            'subject' => 'Recuperação de Senha - Drafto',
+            'title' => 'Esqueceu sua senha?',
+            'body' => 'Recebemos uma solicitação para redefinir a senha da sua conta.<br>Se você realizou esse pedido, clique no botão abaixo para criar uma nova credencial.',
+            'action' => 'Redefinir minha senha',
+            'expire' => 'Este link é temporário e expirará em :count minutos.<br>Se você não solicitou a troca, pode ignorar este e-mail com segurança.',
+            'footer' => 'Por segurança, nunca compartilhe links de acesso ou senhas com terceiros.',
+        ],
+        'verify_email' => [
+            'subject' => 'Bem-vindo! Confirme seu e-mail na Drafto',
+            'title' => 'Verifique seu e-mail',
+            'greeting' => 'Olá, **:name**!',
+            'body' => 'Estamos felizes por você estar aqui. Para começar a publicar suas histórias, confirme que este e-mail pertence a você.',
+            'action' => 'Confirmar meu e-mail',
+            'ignore' => 'Se você não criou uma conta conosco, basta ignorar esta mensagem.<br>Este link expira em 60 minutos.',
+            'footer' => 'Escreva com clareza. Publique com identidade.',
+        ],
+    ],
+    'newsletter' => [
+        'subject' => 'Novidades na Drafto: :category',
+        'subject_important' => 'Informativo Oficial: :app',
+        'important_title' => 'Comunicado da Plataforma',
+        'news_title' => 'As histórias que você não pode perder',
+        'category_label' => 'FILTRADO POR: :category',
+        'read_more' => 'Continuar lendo',
+        'greeting_reader' => 'Olá, Leitor!',
+        'default_body' => 'Temos conteúdos exclusivos e novidades importantes esperando por você nesta semana. Passe pela plataforma para conferir!',
+        'action' => 'Explorar a Drafto',
+        'unsubscribe' => 'Você recebeu este e-mail porque assinou nosso radar de novidades.<br><a href=":url" class="link">Gerenciar inscrições</a> • © :year Drafto',
+        'verification' => [
+            'subject' => 'Radar Drafto: Confirme sua inscrição',
+            'greeting' => 'Olá!',
+            'body1' => 'Estamos quase lá! Você solicitou a assinatura do <strong>Radar Drafto</strong>.',
+            'body2' => 'Para confirmar e começar a receber as melhores curadorias de histórias e novidades, clique no botão abaixo:',
+            'action' => 'Confirmar Inscrição no Radar',
+            'ignore' => 'Se não foi você quem solicitou, pode descartar este e-mail com tranquilidade.',
+            'footer' => 'Drafto - Sua estante digital de grandes histórias.',
+        ],
+    ],
+    'common' => [
+        'platform_footer' => '© :year Drafto. A plataforma definitiva para escritores e leitores.',
+    ],
+];

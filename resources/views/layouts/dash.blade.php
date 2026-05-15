@@ -7,6 +7,10 @@
 
     <x-layouts.favicons />
 
+    <script>
+        document.documentElement.classList.remove('dark');
+    </script>
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
