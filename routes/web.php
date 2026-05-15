@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Actions\Auth\VerifyEmailAction;
 use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
-use App\Http\Controllers\Post\TrixAttachmentController;
+use App\Http\Controllers\TrixAttachmentController;
 use App\Http\Controllers\Public\ProfileBadgeController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Livewire\Dashboard\Support\SupportPage;
@@ -88,6 +88,9 @@ Route::middleware(['auth'])
 Route::post('/trix/attachments', [TrixAttachmentController::class, 'store'])
     ->middleware(['auth'])
     ->name('trix.attachments.store');
+
+Route::post('/analytics/duration', [\App\Http\Controllers\Public\AnalyticsController::class, 'updateDuration'])
+    ->name('analytics.duration');
 
 Route::get('/health-check', HealthCheckJsonResultsController::class);
 

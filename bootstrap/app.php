@@ -42,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             LogContextMiddleware::class,
             CheckBanned::class,
+            \App\Http\Middleware\TrackSiteView::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

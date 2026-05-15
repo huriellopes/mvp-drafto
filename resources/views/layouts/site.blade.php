@@ -55,7 +55,7 @@
     </style>
 </head>
 <body 
-    x-data 
+    x-data="analyticsTracking" 
     x-init="
         if (!Alpine.store('theme')) {
             Alpine.store('theme', {
