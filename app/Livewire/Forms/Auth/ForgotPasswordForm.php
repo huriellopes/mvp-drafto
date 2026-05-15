@@ -24,8 +24,8 @@ class ForgotPasswordForm extends Form
     public function messages(): array
     {
         return [
-            'email.required' => 'O endereço de e-mail é obrigatório para o acesso.',
-            'email.email' => 'Por favor, insira um formato de e-mail válido.',
+            'enotifications.required' => 'O endereço de e-mail é obrigatório para o acesso.',
+            'enotifications.email' => 'Por favor, insira um formato de e-mail válido.',
         ];
     }
 

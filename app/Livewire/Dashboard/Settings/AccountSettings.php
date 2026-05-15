@@ -54,7 +54,7 @@ class AccountSettings extends Component
         Toaster::success('Configurações atualizadas com sucesso!');
 
         if (auth()->user()->email_verified_at === null) {
-            Toaster::info('Um novo link de verificação foi enviado para seu e-mail.');
+            Toaster::info('Um novo link de verificação foi enviado para seu e-notifications.');
         }
     }
 

@@ -14,8 +14,9 @@ Route::prefix('admin')
             ->name('reports.index');
         Route::livewire('/users', 'dashboard.admin.users.user-index')
             ->name('users.index');
-        Route::livewire('/modules', 'dashboard.admin.modules.module-index')
-            ->name('modules.index');
+        Route::livewire('/modulos', 'dashboard.admin.modules.module-index')->name('modules.index');
+        Route::livewire('/suporte', 'dashboard.admin.support.support-index')->name('support.index');
+
         Route::livewire('/views', 'dashboard.admin.post-views.post-view-index')
             ->name('posts.views');
         Route::livewire('/logs', 'dashboard.admin.audit-log-index')

@@ -21,7 +21,7 @@ class ResendVerification extends Component
         }
 
         if (RateLimiter::tooManyAttempts('resend-email:' . $user->id, 1)) {
-            $this->addError('resend', 'Aguarde um pouco antes de solicitar outro e-mail.');
+            $this->addError('resend', 'Aguarde um pouco antes de solicitar outro e-notifications.');
 
             return;
         }
