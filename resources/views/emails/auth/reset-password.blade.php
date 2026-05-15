@@ -29,25 +29,25 @@
         </tr>
         <tr>
             <td class="content">
-                <h1 class="title">{{ __('notifications.auth.reset_password.title') }}</h1>
+                <h1 class="title">{{ __('mail.auth.reset_password.title') }}</h1>
                 <p class="text">
-                    {!! __('notifications.auth.reset_password.body') !!}
+                    {!! __('mail.auth.reset_password.body') !!}
                 </p>
 
-                <a href="{{ $url }}" class="button">{{ __('notifications.auth.reset_password.action') }}</a>
+                <a href="{{ $url }}" class="button">{{ __('mail.auth.reset_password.action') }}</a>
 
                 <div class="divider"></div>
 
                 <p class="help-text">
-                    {!! __('notifications.auth.reset_password.expire', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')]) !!}
+                    {!! __('mail.auth.reset_password.expire', ['count' => config('auth.passwords.'.config('auth.defaults.passwords').'.expire')]) !!}
                 </p>
             </td>
         </tr>
     </table>
 
     <div class="footer">
-        {!! __('notifications.common.platform_footer', ['year' => date('Y')]) !!}<br>
-        {{ __('notifications.auth.reset_password.footer') }}
+        {!! __('mail.common.platform_footer', ['year' => date('Y')]) !!}<br>
+        {{ __('mail.auth.reset_password.footer') }}
     </div>
 </div>
 </body>

@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Lang;
 
 class SupportMessageReceivedNotification extends Notification implements ShouldQueue
 {
@@ -21,23 +20,33 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject(Lang::get('notifications.support.subject', ['subject' => $this->data->subject]))
-            ->greeting(Lang::get('notifications.support.greeting'))
-            ->line(Lang::get('notifications.support.received', [
+            ->subject(__('notifications.support.subject', ['subject' => $this->data->subject]))
+            ->greeting(__('notifications.support.greeting'))
+            ->line(__('notifications.support.received', [
                 'name' => $this->data->name,
                 'email' => $this->data->email
             ]))
-            ->line(Lang::get('notifications.support.subject_line', ['subject' => $this->data->subject]))
-            ->line(Lang::get('notifications.support.message_line'))
+            ->line(__('notifications.support.subject_line', ['subject' => $this->data->subject]))
+            ->line(__('notifications.support.message_line'))
             ->line($this->data->message)
-            ->line(Lang::get('notifications.support.respond'))
-            ->action(Lang::get('notifications.support.action'), url('/dashboard/admin/reports'))
-            ->line(Lang::get('notifications.support.thanks'));
+            ->line(__('notifications.support.respond'))
+            ->action(__('notifications.support.action'), url('/dashboard/admin/suporte'))
+            ->line(__('notifications.support.thanks'));
+    }
+
+    public function toArray(object $notifiable): array
+    {
+        return [
+            'type' => 'support_received',
+            'causer_name' => $this->data->name,
+            'message' => 'notifications.support.database_admin_message',
+            'link' => '/dashboard/admin/suporte',
+        ];
     }
 }

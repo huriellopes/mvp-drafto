@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Lang;
 
 class SocialInteractionNotification extends Notification implements ShouldQueue
 {
@@ -43,20 +42,20 @@ class SocialInteractionNotification extends Notification implements ShouldQueue
         $causerName = $this->causer?->name ?? 'Alguém';
 
         return (new MailMessage())
-            ->subject(Lang::get('notifications.social.subject', ['name' => $causerName]))
+            ->subject(__('notifications.social.subject', ['name' => $causerName]))
             ->line($this->getMessage())
-            ->action(Lang::get('notifications.social.action'), url($this->getLink()))
-            ->line(Lang::get('notifications.social.thanks'));
+            ->action(__('notifications.social.action'), url($this->getLink()))
+            ->line(__('notifications.social.thanks'));
     }
 
     protected function getMessage(): string
     {
         return match ($this->type) {
-            'like_post' => Lang::get('notifications.social.messages.like_post', ['title' => ($this->model?->title ?? 'Obra')]),
-            'like_comment' => Lang::get('notifications.social.messages.like_comment'),
-            'mention' => Lang::get('notifications.social.messages.mention'),
-            'follow' => Lang::get('notifications.social.messages.follow'),
-            default => Lang::get('notifications.social.messages.default'),
+            'like_post' => __('notifications.social.messages.like_post', ['title' => ($this->model?->title ?? 'Obra')]),
+            'like_comment' => __('notifications.social.messages.like_comment'),
+            'mention' => __('notifications.social.messages.mention'),
+            'follow' => __('notifications.social.messages.follow'),
+            default => __('notifications.social.messages.default'),
         };
     }
 

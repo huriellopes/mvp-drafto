@@ -10,7 +10,6 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Lang;
 
 class NewsletterVerificationMail extends Mailable
 {
@@ -23,7 +22,7 @@ class NewsletterVerificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: Lang::get('notifications.newsletter.verification.subject'),
+            subject: __('notifications.newsletter.verification.subject'),
         );
     }
 
