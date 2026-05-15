@@ -51,8 +51,8 @@
         {{-- Canais Diretos --}}
         <aside class="lg:col-span-5 space-y-6">
             <h3 class="text-xs font-black uppercase tracking-widest text-zinc-400 px-2 mb-4">Canais Diretos</h3>
-            
-            <a href="https://wa.me/5500000000000" target="_blank" class="group block p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-emerald-500 hover:shadow-xl">
+
+            <a href="https://wa.me/{{ config('support.whatsapp.number') }}?text={{ urlencode(config('support.whatsapp.message')) }}" target="_blank" class="group block p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-emerald-500 hover:shadow-xl">
                 <div class="flex items-center gap-4">
                     <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
                         <x-lucide-message-circle class="h-6 w-6" />
@@ -64,14 +64,14 @@
                 </div>
             </a>
 
-            <a href="mailto:suporte@drafto.com" class="group block p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-indigo-500 hover:shadow-xl">
+            <a href="mailto:{{ config('support.email') }}" class="group block p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 transition-all hover:border-indigo-500 hover:shadow-xl">
                 <div class="flex items-center gap-4">
                     <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600">
                         <x-lucide-mail class="h-6 w-6" />
                     </div>
                     <div>
                         <h3 class="font-black text-zinc-900 dark:text-white">E-mail</h3>
-                        <p class="text-xs text-zinc-500">suporte@drafto.com</p>
+                        <p class="text-xs text-zinc-500">{{ config('support.email') }}</p>
                     </div>
                 </div>
             </a>
@@ -82,7 +82,7 @@
     @if($tickets->isNotEmpty())
         <section class="space-y-6 mt-12">
             <h3 class="text-xs font-black uppercase tracking-widest text-zinc-400 px-2">Meus Tickets Recentes</h3>
-            
+
             <div class="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-100 dark:border-zinc-800 overflow-hidden shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -117,7 +117,7 @@
                     </table>
                 </div>
             </div>
-            
+
             <div class="mt-6">
                 {{ $tickets->links() }}
             </div>
