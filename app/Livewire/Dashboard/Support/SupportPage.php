@@ -8,11 +8,12 @@ use App\Livewire\Forms\Support\SupportForm;
 use App\Models\Support;
 use Illuminate\View\View;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 final class SupportPage extends Component
 {
-    use \Livewire\WithPagination;
+    use WithPagination;
 
     public SupportForm $form;
 
@@ -38,7 +39,7 @@ final class SupportPage extends Component
             ->paginate(10);
 
         return view('livewire.dashboard.support.support-page', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
         ]);
     }
 }

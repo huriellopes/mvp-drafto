@@ -18,7 +18,7 @@ class ProcessSupportMessageJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public SupportContactData $data
+        public SupportContactData $data,
     ) {}
 
     public function handle(): void

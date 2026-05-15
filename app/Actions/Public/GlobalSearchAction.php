@@ -26,9 +26,9 @@ final class GlobalSearchAction
                 ->published()
                 ->public()
                 ->with(['category', 'author.profile', 'tags'])
-                ->when(mb_strlen($term) <= 3 || !$supportsFullText, 
-                    fn($q) => $q->where('title', 'like', "%{$term}%"),
-                    fn($q) => $q->whereFullText(['title', 'excerpt', 'content'], $term)
+                ->when(mb_strlen($term) <= 3 || !$supportsFullText,
+                    fn ($q) => $q->where('title', 'like', "%{$term}%"),
+                    fn ($q) => $q->whereFullText(['title', 'excerpt', 'content'], $term),
                 )
                 ->take(6)
                 ->get(),
@@ -37,9 +37,9 @@ final class GlobalSearchAction
                 ->where('role', RoleEnum::WRITER)
                 ->with('profile')
                 ->when(mb_strlen($term) <= 3 || !$supportsFullText,
-                    fn($q) => $q->where('name', 'like', "%{$term}%"),
-                    fn($q) => $q->whereFullText(['name', 'email'], $term)
-                        ->orWhereHas('profile', fn($p) => $p->whereFullText(['username', 'name', 'bio'], $term))
+                    fn ($q) => $q->where('name', 'like', "%{$term}%"),
+                    fn ($q) => $q->whereFullText(['name', 'email'], $term)
+                        ->orWhereHas('profile', fn ($p) => $p->whereFullText(['username', 'name', 'bio'], $term)),
                 )
                 ->take(3)
                 ->get(),

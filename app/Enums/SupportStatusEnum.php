@@ -6,11 +6,6 @@ namespace App\Enums;
 
 enum SupportStatusEnum: string
 {
-    case PENDING = 'pending';
-    case IN_PROGRESS = 'in_progress';
-    case BLOCKED = 'blocked';
-    case RESOLVED = 'resolved';
-
     public function label(): string
     {
         return match ($this) {
@@ -30,4 +25,8 @@ enum SupportStatusEnum: string
             self::RESOLVED => 'green',
         };
     }
+    case PENDING = 'pending';
+    case IN_PROGRESS = 'in_progress';
+    case BLOCKED = 'blocked';
+    case RESOLVED = 'resolved';
 }

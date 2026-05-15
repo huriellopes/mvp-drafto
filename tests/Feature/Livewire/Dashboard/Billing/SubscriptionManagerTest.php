@@ -19,7 +19,7 @@ beforeEach(function () {
 });
 
 it('shows pro plan benefits for super admin and lifetime users', function () {
-    $admin = User::factory()->create(['role' => \App\Enums\RoleEnum::SUPER_ADMIN]);
+    $admin = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
     $proPlan = Plan::factory()->create([
         'slug' => 'pro',
         'features' => ['Amazing Feature 1', 'Amazing Feature 2'],
@@ -37,7 +37,6 @@ it('shows pro plan benefits for super admin and lifetime users', function () {
         ->assertSet('proPlan.id', $proPlan->id)
         ->assertSee('Amazing Feature 1');
 });
-
 
 it('returns empty invoices if user has no stripe id', function () {
     $user = User::factory()->create(); // No stripe_id by default

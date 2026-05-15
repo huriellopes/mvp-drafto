@@ -13,7 +13,7 @@ final class AllowIframeMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,7 +22,7 @@ final class AllowIframeMiddleware
         $response->headers->remove('X-Frame-Options');
 
         $response->headers
-            ->set('Content-Security-Policy', "frame-ancestors *", false);
+            ->set('Content-Security-Policy', 'frame-ancestors *', false);
 
         return $response;
     }

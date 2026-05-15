@@ -9,6 +9,7 @@ use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\Tag;
 use App\Traits\Livewire\HasStandardResponses;
 use Exception;
 use Illuminate\Support\Facades\RateLimiter;
@@ -123,7 +124,7 @@ class ManagePost extends Component
             ->orderBy('name', 'asc')
             ->get();
 
-        $tags = \App\Models\Tag::query()
+        $tags = Tag::query()
             ->whereNull('user_id')
             ->orWhere('user_id', auth()->id())
             ->orderBy('name', 'asc')
