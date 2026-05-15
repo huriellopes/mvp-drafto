@@ -1,0 +1,108 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'Regards' => 'Regards',
+    'Hello!' => 'Hello!',
+    'Whoops!' => 'Whoops!',
+    'If you\'re having trouble clicking the ":actionText" button, copy and paste the URL below\ninto your web browser:' => 'If you\'re having trouble clicking the ":actionText" button, copy and paste the URL below\ninto your web browser:',
+
+    'social' => [
+        'subject' => 'New interaction on Drafto: :name',
+        'action' => 'View on Site',
+        'thanks' => 'Thank you for being part of our community!',
+        'messages' => [
+            'like_post' => 'liked your publication: **:title**',
+            'like_comment' => 'liked one of your comments',
+            'mention' => 'mentioned you in a conversation',
+            'follow' => 'started following your publications',
+            'default' => 'interacted with you',
+        ],
+    ],
+    'support' => [
+        'subject' => '[Support] :subject',
+        'greeting' => 'Hello, Team Drafto!',
+        'received' => 'You have received a new support message from :name (:email).',
+        'subject_line' => 'Subject: :subject',
+        'message_line' => 'Message:',
+        'respond' => 'Please respond to the user as soon as possible.',
+        'action' => 'View Support Dashboard',
+        'thanks' => 'Thank you for using our platform!',
+        'database_admin_message' => 'New support ticket received from :name.',
+        'response' => [
+            'subject' => 'Your support request has received a response: :subject',
+            'greeting' => 'Hello, :name!',
+            'body' => 'Our support team has just responded to your support ticket.',
+            'status' => 'Current status: **:status**',
+            'admin_response' => 'Response from our team: ":response"',
+            'action' => 'View Ticket Details',
+            'thanks' => 'We are available for any other questions!',
+            'database_message' => 'Your support request has received a new response from our team.',
+        ],
+    ],
+    'report' => [
+        'feedback' => [
+            'subject' => 'Update on your report - :app',
+            'greeting' => 'Hello, :name!',
+            'body' => 'The report you submitted regarding :type content has been reviewed by our moderation team.',
+            'status' => 'The outcome of your request is: **:status**',
+            'admin_feedback' => 'Moderation feedback: ":feedback"',
+            'thanks' => 'Thank you for helping us keep Drafto a safe environment for everyone.',
+            'action' => 'View Community Guidelines',
+            'database_message' => 'Your report has been reviewed by our moderation team. Check the outcome.',
+        ],
+        'banned' => [
+            'subject' => 'Important Notice: Your account has been suspended - :app',
+            'greeting' => 'Hello, :name.',
+            'body' => 'We inform you that your account has been temporarily suspended due to recurring or serious violations of our usage guidelines.',
+            'reason' => '**Suspension reason:** :reason',
+            'until' => 'Your account will remain blocked until: **:date**',
+            'error_contact' => 'If you believe there was a mistake, feel free to contact our support.',
+            'action' => 'Review Terms of Use',
+        ],
+    ],
+    'auth' => [
+        'reset_password' => [
+            'subject' => 'Password Recovery - Drafto',
+            'title' => 'Forgot your password?',
+            'body' => 'We received a request to reset the password for your account.<br>If you made this request, click the button below to create a new credential.',
+            'action' => 'Reset my password',
+            'expire' => 'This link is temporary and will expire in :count minutes.<br>If you did not request the change, you can safely ignore this email.',
+            'footer' => 'For security, never share access links or passwords with third parties.',
+        ],
+        'verify_email' => [
+            'subject' => 'Welcome! Confirm your email on Drafto',
+            'title' => 'Verify your email',
+            'greeting' => 'Hello, **:name**!',
+            'body' => 'We are happy to have you here. To start publishing your stories, please confirm that this email belongs to you.',
+            'action' => 'Confirm my email',
+            'ignore' => 'If you did not create an account with us, just ignore this message.<br>This link expires in 60 minutes.',
+            'footer' => 'Write with clarity. Publish with identity.',
+        ],
+    ],
+    'newsletter' => [
+        'subject' => 'News on Drafto: :category',
+        'subject_important' => 'Official Notice: :app',
+        'important_title' => 'Platform Notice',
+        'news_title' => 'The stories you can\'t miss',
+        'category_label' => 'FILTERED BY: :category',
+        'read_more' => 'Continue reading',
+        'greeting_reader' => 'Hello, Reader!',
+        'default_body' => 'We have exclusive content and important news waiting for you this week. Stop by the platform to check it out!',
+        'action' => 'Explore Drafto',
+        'unsubscribe' => 'You received this email because you subscribed to our news radar.<br><a href=":url" class="link">Manage subscriptions</a> • © :year Drafto',
+        'verification' => [
+            'subject' => 'Radar Drafto: Confirm your subscription',
+            'greeting' => 'Hello!',
+            'body1' => 'We\'re almost there! You requested to subscribe to <strong>Radar Drafto</strong>.',
+            'body2' => 'To confirm and start receiving the best story curations and news, click the button below:',
+            'action' => 'Confirm Radar Subscription',
+            'ignore' => 'If you did not request this, you can safely discard this email.',
+            'footer' => 'Drafto - Your digital bookshelf of great stories.',
+        ],
+    ],
+    'common' => [
+        'platform_footer' => '© :year Drafto. The definitive platform for writers and readers.',
+    ],
+];

@@ -31,6 +31,11 @@ Breadcrumbs::for('dashboard.support', function (BreadcrumbTrail $trail) {
     $trail->push('Suporte', route('dashboard.support'));
 });
 
+Breadcrumbs::for('dashboard.admin.support', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Gestão de Suporte', route('dashboard.admin.support.index'));
+});
+
 // Escritor: Posts
 Breadcrumbs::for('dashboard.posts.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');

@@ -28,26 +28,26 @@
         </tr>
         <tr>
             <td class="content">
-                <h1 class="title">{{ __('notifications.auth.verify_email.title') }}</h1>
+                <h1 class="title">{{ __('mail.auth.verify_email.title') }}</h1>
                 <p class="text">
-                    {!! __('notifications.auth.verify_email.greeting', ['name' => $user->name]) !!}<br>
-                    {{ __('notifications.auth.verify_email.body') }}
+                    {!! __('mail.auth.verify_email.greeting', ['name' => $user->name]) !!}<br>
+                    {{ __('mail.auth.verify_email.body') }}
                 </p>
 
-                <a href="{{ $url }}" class="button">{{ __('notifications.auth.verify_email.action') }}</a>
+                <a href="{{ $url }}" class="button">{{ __('mail.auth.verify_email.action') }}</a>
 
                 <div class="divider"></div>
 
                 <p style="font-size: 12px; color: #71717a; line-height: 18px;">
-                    {!! __('notifications.auth.verify_email.ignore') !!}
+                    {!! __('mail.auth.verify_email.ignore') !!}
                 </p>
             </td>
         </tr>
     </table>
 
     <div class="footer">
-        {!! __('notifications.common.platform_footer', ['year' => date('Y')]) !!}<br>
-        {{ __('notifications.auth.verify_email.footer') }}
+        {!! __('mail.common.platform_footer', ['year' => date('Y')]) !!}<br>
+        {{ __('mail.auth.verify_email.footer') }}
     </div>
 </div>
 </body>

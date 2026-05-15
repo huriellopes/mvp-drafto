@@ -42,7 +42,7 @@
             @endmodule
 
             <x-ui.sidebar-link href="{{ route('dashboard.support') }}" :active="request()->routeIs('dashboard.support')" wire:navigate.hover>
-                <x-slot:icon><x-lucide-help-circle class="h-5 w-5" /></x-slot:icon>
+                <x-slot:icon><x-lucide-life-buoy class="h-5 w-5" /></x-slot:icon>
                 {{ __('Suporte') }}
             </x-ui.sidebar-link>
         </nav>
@@ -105,6 +105,12 @@
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.users.index') }}" :active="request()->routeIs('dashboard.admin.users.*')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-users class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.users') }}
+                </x-ui.sidebar-link>
+
+                {{-- Suporte --}}
+                <x-ui.sidebar-link :href="route('dashboard.admin.support.index')" :active="request()->routeIs('dashboard.admin.support.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-life-buoy class="h-5 w-5" /></x-slot:icon>
+                    Suporte
                 </x-ui.sidebar-link>
 
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.newsletter.index') }}" :active="request()->routeIs('dashboard.admin.newsletter.*')" wire:navigate.hover>

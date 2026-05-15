@@ -72,6 +72,12 @@ class NotificationsSidebar extends Component
         $this->dispatch('notification-updated');
     }
 
+    public function deleteAll()
+    {
+        auth()->user()->notifications()->delete();
+        $this->dispatch('notification-updated');
+    }
+
     public function render()
     {
         return view('livewire.dashboard.notifications-sidebar');

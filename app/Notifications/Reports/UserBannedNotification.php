@@ -10,7 +10,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Lang;
 
 final class UserBannedNotification extends Notification implements ShouldQueue
 {
@@ -30,14 +29,14 @@ final class UserBannedNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage())
             ->error()
-            ->subject(Lang::get('notifications.report.banned.subject', ['app' => config('app.name')]))
-            ->greeting(Lang::get('notifications.report.banned.greeting', ['name' => $notifiable->name]))
-            ->line(Lang::get('notifications.report.banned.body'))
-            ->line(Lang::get('notifications.report.banned.reason', ['reason' => $this->reason]))
-            ->line(Lang::get('notifications.report.banned.until', [
+            ->subject(__('notifications.report.banned.subject', ['app' => config('app.name')]))
+            ->greeting(__('notifications.report.banned.greeting', ['name' => $notifiable->name]))
+            ->line(__('notifications.report.banned.body'))
+            ->line(__('notifications.report.banned.reason', ['reason' => $this->reason]))
+            ->line(__('notifications.report.banned.until', [
                 'date' => $this->bannedUntil->translatedFormat('d \d\e F \d\e Y \à\s H:i')
             ]))
-            ->line(Lang::get('notifications.report.banned.error_contact'))
-            ->action(Lang::get('notifications.report.banned.action'), url('/termos'));
+            ->line(__('notifications.report.banned.error_contact'))
+            ->action(__('notifications.report.banned.action'), url('/termos'));
     }
 }

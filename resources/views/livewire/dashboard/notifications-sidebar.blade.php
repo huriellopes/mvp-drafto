@@ -36,15 +36,33 @@
                         <h2 class="text-lg font-bold text-zinc-900 dark:text-white">Notificações</h2>
                         <p class="text-xs text-zinc-500">Acompanhe suas interações</p>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <button wire:click="markAllAsRead" class="text-xs font-bold text-profile-primary hover:underline transition">
+                    <div class="flex items-center gap-3">
+                        <button wire:click="markAllAsRead" class="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700 transition" title="Marcar todas como lidas">
                             Ler todas
                         </button>
-                        <button @click="open = false" class="text-zinc-400 hover:text-zinc-600 transition">
+                        <span class="text-zinc-200 dark:text-zinc-800">|</span>
+                        <button 
+                            @click="$dispatch('open-modal', { name: 'confirm-delete-all-notifications' })"
+                            class="text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-700 transition" 
+                            title="Excluir todas as notificações"
+                        >
+                            Excluir todas
+                        </button>
+                        <button @click="open = false" class="ml-2 text-zinc-400 hover:text-zinc-600 transition">
                             <x-lucide-x class="h-5 w-5" />
                         </button>
                     </div>
                 </div>
+
+                {{-- Confirm Deletion Modal --}}
+                <x-ui.confirm-modal 
+                    name="confirm-delete-all-notifications" 
+                    title="Excluir Notificações" 
+                    content="Deseja realmente excluir permanentemente todas as suas notificações? Esta ação não poderá ser desfeita."
+                    buttonText="Sim, excluir tudo"
+                    variant="danger"
+                    action="deleteAll"
+                />
 
                 {{-- List --}}
                 <div class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
@@ -63,19 +81,24 @@
                                 wire:click="readAndRedirect('{{ $notification->id }}')"
                             >
                                 <div class="relative shrink-0">
+                                    @php
+                                        $causerAvatar = $notification->data['causer_avatar'] ?? null;
+                                        $causerName = $notification->data['causer_name'] ?? 'Sistema';
+                                        $type = $notification->data['type'] ?? 'default';
+                                    @endphp
                                     <img 
-                                        src="{{ $notification->data['causer_avatar'] ? Storage::url($notification->data['causer_avatar']) : 'https://ui-avatars.com/api/?name=' . urlencode($notification->data['causer_name']) }}" 
+                                        src="{{ $causerAvatar ? Storage::url($causerAvatar) : 'https://ui-avatars.com/api/?name=' . urlencode($causerName) }}" 
                                         class="h-10 w-10 rounded-xl object-cover bg-zinc-100 border border-zinc-200/50"
                                     >
                                     {{-- Icon Overlay --}}
                                     <div @class([
                                         'absolute -bottom-1 -right-1 h-5 w-5 rounded-lg border-2 border-white dark:border-zinc-900 flex items-center justify-center text-white',
-                                        'bg-pink-500' => in_array($notification->data['type'] ?? '', ['like_post', 'like_comment']),
-                                        'bg-blue-500' => ($notification->data['type'] ?? '') === 'mention',
-                                        'bg-indigo-500' => ($notification->data['type'] ?? '') === 'follow',
-                                        'bg-zinc-500' => !in_array($notification->data['type'] ?? '', ['like_post', 'like_comment', 'mention', 'follow']),
+                                        'bg-pink-500' => in_array($type, ['like_post', 'like_comment']),
+                                        'bg-blue-500' => $type === 'mention',
+                                        'bg-indigo-500' => $type === 'follow',
+                                        'bg-zinc-500' => !in_array($type, ['like_post', 'like_comment', 'mention', 'follow']),
                                     ])>
-                                        @switch($notification->data['type'] ?? '')
+                                        @switch($type)
                                             @case('like_post') @case('like_comment') <x-lucide-heart class="h-3 w-3 fill-current" /> @break
                                             @case('mention') <x-lucide-at-sign class="h-3 w-3" /> @break
                                             @case('follow') <x-lucide-user-plus class="h-3 w-3" /> @break
@@ -86,8 +109,8 @@
 
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm text-zinc-900 dark:text-white leading-snug">
-                                        <span class="font-bold">{{ $notification->data['causer_name'] }}</span>
-                                        {{ $notification->data['message'] }}
+                                        <span class="font-bold">{{ $causerName }}</span>
+                                        {{ str_contains($notification->data['message'] ?? '', '.') ? __($notification->data['message'], $notification->data) : ($notification->data['message'] ?? '') }}
                                     </p>
                                     <p class="mt-1 text-[10px] text-zinc-400 uppercase tracking-widest font-medium">
                                         {{ $notification->created_at->diffForHumans() }}

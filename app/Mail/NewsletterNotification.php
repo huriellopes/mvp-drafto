@@ -9,7 +9,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\URL;
 
 class NewsletterNotification extends Mailable implements ShouldQueue
@@ -34,8 +33,8 @@ class NewsletterNotification extends Mailable implements ShouldQueue
     public function build()
     {
         $subject = $this->customMessage 
-            ? Lang::get('notifications.newsletter.subject_important', ['app' => config('app.name')])
-            : Lang::get('notifications.newsletter.subject', ['category' => $this->categoryName]);
+            ? __('notifications.newsletter.subject_important', ['app' => config('app.name')])
+            : __('notifications.newsletter.subject', ['category' => $this->categoryName]);
 
         return $this->subject($subject)
             ->view('emails.newsletter.posts', [
