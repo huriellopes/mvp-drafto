@@ -124,8 +124,13 @@
                 </x-ui.sidebar-link>
 
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.posts.views') }}" :active="request()->routeIs('dashboard.admin.posts.views')" wire:navigate.hover>
-                    <x-slot:icon><x-lucide-bar-chart-3 class="h-5 w-5" /></x-slot:icon>
+                    <x-slot:icon><x-lucide-eye class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.stats') }}
+                </x-ui.sidebar-link>
+
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.analytics.index') }}" :active="request()->routeIs('dashboard.admin.analytics.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-bar-chart-3 class="h-5 w-5" /></x-slot:icon>
+                    {{ __('dashboard.sidebar.links.analytics') }}
                 </x-ui.sidebar-link>
 
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.modules.index') }}" :active="request()->routeIs('dashboard.admin.modules.*')" wire:navigate.hover>
