@@ -38,6 +38,7 @@ final class RegisterUserAction
             if ($isWriter) {
                 $user->profile()->create([
                     'username' => $this->generateUniqueUsername($data->name),
+                    'is_verified' => true,
                 ]);
             }
 
