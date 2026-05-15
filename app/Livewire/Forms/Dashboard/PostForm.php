@@ -9,6 +9,7 @@ use App\Enums\PostStatusEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\PostVisibilityEnum;
 use App\Models\Post;
+use App\Models\PostCategory;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -54,11 +55,12 @@ class PostForm extends Form
                 'required',
                 function ($attribute, $value, $fail) {
                     if (is_numeric($value)) {
-                        $category = \App\Models\PostCategory::find($value);
+                        $category = PostCategory::find($value);
+
                         if (!$category || ($category->user_id !== null && $category->user_id !== auth()->id())) {
                             $fail('A categoria selecionada é inválida.');
                         }
-                    } elseif (!is_string($value) || empty(trim($value))) {
+                    } elseif (!is_string($value) || empty(mb_trim($value))) {
                         $fail('A categoria é obrigatória.');
                     }
                 },

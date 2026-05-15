@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Support;
 
+use App\DTOs\SupportContactData;
 use App\DTOs\SupportData;
+use App\Enums\RoleEnum;
 use App\Enums\SupportStatusEnum;
 use App\Models\Support;
 use App\Models\User;
 use App\Notifications\SupportMessageReceivedNotification;
-use App\DTOs\SupportContactData;
 use Illuminate\Support\Facades\Notification;
 
 final class StoreSupportAction
@@ -24,17 +25,17 @@ final class StoreSupportAction
         ]);
 
         // Notifica Admins (Email/Database)
-        $admins = User::where('role', \App\Enums\RoleEnum::SUPER_ADMIN)->get();
+        $admins = User::where('role', RoleEnum::SUPER_ADMIN)->get();
 
         // Reutiliza a notificação existente ou cria uma nova específica para o model Support
         // Vamos usar a SupportMessageReceivedNotification adaptada
-        Notification::send($admins, new \App\Notifications\SupportMessageReceivedNotification(
+        Notification::send($admins, new SupportMessageReceivedNotification(
             new SupportContactData(
                 name: $user->name,
                 email: $user->email,
-                subject: "Novo Ticket: " . $support->subject,
-                message: $support->message
-            )
+                subject: 'Novo Ticket: ' . $support->subject,
+                message: $support->message,
+            ),
         ));
 
         return $support;

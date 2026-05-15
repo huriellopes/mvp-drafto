@@ -18,14 +18,14 @@ class LikeButton extends Component
     {
         app(ToggleLikeAction::class)
             ->exec(auth()->user(), $this->post, request()->ip());
-        
+
         $this->post->refresh();
     }
 
     public function render(): View
     {
         $ip = request()->ip();
-        $isLiked = auth()->check() 
+        $isLiked = auth()->check()
             ? DB::table('post_likes')->where('post_id', $this->post->id)->where('user_id', auth()->id())->exists()
             : DB::table('post_likes')->where('post_id', $this->post->id)->whereNull('user_id')->where('ip_address', $ip)->exists();
 

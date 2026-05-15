@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Actions\Posts;
 
 use App\DTOs\SavePostData;
-use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Events\Posts\PostSaved;
-use App\Models\Module;
 use App\Models\Post;
+use App\Models\PostCategory;
 use App\Models\Tag;
 use App\Models\User;
 use Exception;
@@ -82,7 +81,8 @@ final class SavePostAction
     private function processCategory(User $user, int|string $category): int
     {
         if (is_numeric($category)) {
-            $existing = \App\Models\PostCategory::find($category);
+            $existing = PostCategory::find($category);
+
             if ($existing && $existing->user_id !== null && $existing->user_id !== $user->id) {
                 throw new Exception('A categoria selecionada é inválida.');
             }
@@ -93,12 +93,12 @@ final class SavePostAction
         if (is_string($category)) {
             $slug = Str::slug($category);
 
-            $newCategory = \App\Models\PostCategory::query()->firstOrCreate(
+            $newCategory = PostCategory::query()->firstOrCreate(
                 ['slug' => $slug],
                 [
                     'name' => $category,
                     'user_id' => $user->id,
-                ]
+                ],
             );
 
             return $newCategory->id;
@@ -130,13 +130,13 @@ final class SavePostAction
             // Se for string e o módulo permitir tags customizadas, cria ou recupera
             if (is_string($tag) && $allowCustom) {
                 $slug = Str::slug($tag);
-                
+
                 $newTag = Tag::query()->firstOrCreate(
                     ['slug' => $slug],
                     [
                         'name' => $tag,
                         'user_id' => $user->id,
-                    ]
+                    ],
                 );
 
                 $tagIds[] = $newTag->id;

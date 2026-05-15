@@ -23,7 +23,7 @@ final class SupportForm extends Form
 
         app(StoreSupportAction::class)->exec(
             auth()->user(),
-            SupportData::from($this->all())
+            SupportData::from($this->all()),
         );
 
         $this->reset(['subject', 'message']);

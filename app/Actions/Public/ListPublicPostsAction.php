@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Public;
 
 use App\DTOs\Public\PostFilterData;
-use App\Enums\PostStatusEnum;
 use App\Enums\PostVisibilityEnum;
 use App\Models\Post;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -46,10 +45,11 @@ final class ListPublicPostsAction
         // Busca Performática (Full-text)
         if ($filters->search) {
             $term = $filters->search;
+
             // Se o termo for curto (ex: < 3 chars), fulltext pode não funcionar dependendo do ft_min_word_len
             if (mb_strlen($term) <= 3) {
-                $query->where(fn($q) => $q->where('title', 'like', "%{$term}%")
-                    ->orWhere('excerpt', 'like', "%{$term}%")
+                $query->where(fn ($q) => $q->where('title', 'like', "%{$term}%")
+                    ->orWhere('excerpt', 'like', "%{$term}%"),
                 );
             } else {
                 $query->whereFullText(['title', 'excerpt', 'content'], $term);

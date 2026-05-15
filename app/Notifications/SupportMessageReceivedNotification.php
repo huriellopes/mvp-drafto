@@ -15,7 +15,7 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
     use Queueable;
 
     public function __construct(
-        public SupportContactData $data
+        public SupportContactData $data,
     ) {}
 
     public function via(object $notifiable): array
@@ -25,12 +25,12 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject(__('notifications.support.subject', ['subject' => $this->data->subject]))
             ->greeting(__('notifications.support.greeting'))
             ->line(__('notifications.support.received', [
                 'name' => $this->data->name,
-                'email' => $this->data->email
+                'email' => $this->data->email,
             ]))
             ->line(__('notifications.support.subject_line', ['subject' => $this->data->subject]))
             ->line(__('notifications.support.message_line'))

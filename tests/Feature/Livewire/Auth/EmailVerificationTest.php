@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire\Auth;
 
-use App\Livewire\Auth\VerifyEmailNotice;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
 

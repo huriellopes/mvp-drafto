@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use BackedEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use ReflectionEnum;
 
 class SeedFromEnumCommand extends Command
 {
@@ -41,6 +41,7 @@ class SeedFromEnumCommand extends Command
 
         if (!enum_exists($enumClass)) {
             $this->error("Enum [{$enumClass}] does not exist.");
+
             return self::FAILURE;
         }
 
@@ -50,8 +51,8 @@ class SeedFromEnumCommand extends Command
         $count = 0;
 
         foreach ($cases as $case) {
-            $value = $case instanceof \BackedEnum ? $case->value : $case->name;
-            
+            $value = $case instanceof BackedEnum ? $case->value : $case->name;
+
             // Tenta obter um label amigável se o método label() existir (padrão do projeto Drafto)
             $label = method_exists($case, 'label') ? $case->label() : Str::headline((string) $value);
 
@@ -65,7 +66,7 @@ class SeedFromEnumCommand extends Command
             // Sênior: Uso de updateOrInsert para evitar duplicados e permitir atualizações de labels
             DB::table($table)->updateOrInsert(
                 [$column => $value],
-                $data
+                $data,
             );
 
             $count++;

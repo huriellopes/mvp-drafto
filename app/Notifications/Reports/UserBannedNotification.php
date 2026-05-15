@@ -34,7 +34,7 @@ final class UserBannedNotification extends Notification implements ShouldQueue
             ->line(__('notifications.report.banned.body'))
             ->line(__('notifications.report.banned.reason', ['reason' => $this->reason]))
             ->line(__('notifications.report.banned.until', [
-                'date' => $this->bannedUntil->translatedFormat('d \d\e F \d\e Y \à\s H:i')
+                'date' => $this->bannedUntil->translatedFormat('d \d\e F \d\e Y \à\s H:i'),
             ]))
             ->line(__('notifications.report.banned.error_contact'))
             ->action(__('notifications.report.banned.action'), url('/termos'));
