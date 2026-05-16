@@ -75,8 +75,7 @@
                 </x-ui.button>
 
                 <x-ui.button 
-                    wire:confirm="Tem certeza que deseja desativar o 2FA? Sua conta ficará menos protegida."
-                    wire:click="disable" 
+                    x-on:click="$dispatch('open-modal', { name: 'confirm-disable-2fa' })"
                     variant="danger" 
                     class="!rounded-2xl text-[10px]"
                 >
@@ -84,13 +83,79 @@
                 </x-ui.button>
             </div>
 
+            <x-ui.confirm-modal 
+                name="confirm-disable-2fa"
+                title="Desativar Autenticação de Dois Fatores"
+                content="Tem certeza que deseja desativar o 2FA? Sua conta ficará menos protegida contra acessos não autorizados."
+                buttonText="Sim, Desativar"
+                variant="danger"
+                action="disable"
+            />
+
             @if ($showingRecoveryCodes)
                 <div class="space-y-4 animate-in slide-in-from-top-4 duration-300">
-                    <div class="rounded-2xl bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 p-4">
-                        <p class="text-[10px] font-bold text-amber-700 dark:text-amber-400 leading-tight">
-                            ⚠️ Guarde estes códigos em um local seguro. Eles são a única forma de acessar sua conta caso você perca o acesso ao seu dispositivo 2FA.
-                        </p>
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="rounded-2xl bg-amber-50 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-500/20 p-4 flex-1">
+                            <p class="text-[10px] font-bold text-amber-700 dark:text-amber-400 leading-tight">
+                                ⚠️ Guarde estes códigos em um local seguro. Eles são a única forma de acessar sua conta caso você perca o acesso ao seu dispositivo 2FA.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <x-ui.button 
+                                wire:click="downloadRecoveryCodes('txt')" 
+                                variant="secondary" 
+                                class="!rounded-xl !p-2 h-9 w-9"
+                                title="Baixar como TXT"
+                            >
+                                <x-lucide-file-text class="h-4 w-4" />
+                            </x-ui.button>
+                            
+                            <x-ui.button 
+                                wire:click="downloadRecoveryCodes('png')" 
+                                variant="secondary" 
+                                class="!rounded-xl !p-2 h-9 w-9"
+                                title="Baixar como PNG"
+                            >
+                                <x-lucide-image class="h-4 w-4" />
+                            </x-ui.button>
+                        </div>
                     </div>
+
+                    @if ($this->isFileReady)
+                        <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-500/20 p-4 flex items-center justify-between animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div class="flex items-center gap-3">
+                                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600">
+                                    <x-lucide-check-circle class="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400">Arquivo Pronto!</p>
+                                    <p class="text-[9px] font-medium text-emerald-600/80 dark:text-emerald-400/60">Seu backup em .{{ $generatingFormat }} foi gerado.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a 
+                                    href="{{ route('dashboard.recovery-codes.download', ['path' => $generatedPath]) }}" 
+                                    wire:click="clearGeneratedFile"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white transition-colors hover:bg-emerald-700 shadow-sm"
+                                >
+                                    <x-lucide-download class="h-3 w-3" />
+                                    Baixar Agora
+                                </a>
+                                <button 
+                                    wire:click="clearGeneratedFile"
+                                    class="p-1.5 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                >
+                                    <x-lucide-x class="h-3 w-3" />
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($generatedPath)
+                        <div wire:poll.1s class="rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-4 flex items-center gap-3 animate-pulse">
+                            <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
+                            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Processando Backup...</p>
+                        </div>
+                    @endif
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         @foreach ($user->two_factor_recovery_codes as $recoveryCode)
