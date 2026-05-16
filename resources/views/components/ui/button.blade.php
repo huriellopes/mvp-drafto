@@ -27,7 +27,7 @@
         'lg' => 'px-8 py-4 text-base',
     ];
 
-    $classes = "inline-flex items-center justify-center gap-2 font-black rounded-2xl transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 " .
+    $classes = "inline-flex items-center justify-center gap-2 font-black rounded-2xl transition-all active:scale-95 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 " .
                ($variants[$variant] ?? $variants['primary']) . " " .
                ($sizes[$size] ?? $sizes['md']);
 

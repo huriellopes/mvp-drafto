@@ -29,11 +29,32 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <x-ui.button wire:click="export" wire:loading.attr="disabled" class="sm:w-auto px-6" variant="secondary">
-                <x-lucide-download wire:loading.remove wire:target="export" class="mr-2 h-4 w-4" />
-                <x-lucide-loader-2 wire:loading wire:target="export" class="mr-2 h-4 w-4 animate-spin" />
-                {{ __('dashboard.admin.users.export_button') ?? 'Exportar Excel' }}
-            </x-ui.button>
+            @if($this->isFileReady)
+                <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-4 py-2 rounded-2xl animate-in fade-in slide-in-from-right-2">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600">Pronto!</span>
+                    <a 
+                        href="{{ route('dashboard.temporary-file.download', ['path' => $generatedPath]) }}" 
+                        wire:click="clearGeneratedFile"
+                        class="flex h-8 items-center gap-2 rounded-xl bg-emerald-600 px-3 text-[10px] font-bold text-white transition hover:bg-emerald-700 shadow-sm"
+                    >
+                        <x-lucide-download class="h-3 w-3" />
+                        Baixar
+                    </a>
+                    <button wire:click="clearGeneratedFile" class="text-emerald-400 hover:text-emerald-600">
+                        <x-lucide-x class="h-4 w-4" />
+                    </button>
+                </div>
+            @elseif($generatedPath)
+                <div wire:poll.1s class="flex items-center gap-3 px-4 py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 animate-pulse">
+                    <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
+                    <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Gerando...</span>
+                </div>
+            @else
+                <x-ui.button wire:click="export" class="sm:w-auto px-6" variant="secondary">
+                    <x-lucide-download class="mr-2 h-4 w-4" />
+                    {{ __('dashboard.admin.users.export_button') ?? 'Exportar Excel' }}
+                </x-ui.button>
+            @endif
 
             <x-ui.button wire:click="openCreateModal" class="sm:w-auto">
                 <x-lucide-user-plus class="mr-2 h-4 w-4" />

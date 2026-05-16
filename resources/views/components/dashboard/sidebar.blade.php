@@ -147,7 +147,7 @@
     @endcan
 
     {{-- Footer --}}
-    <div x-show="!sidebarCollapsed" x-transition class="pt-6">
+    <div x-show="!sidebarCollapsed || sidebarOpen" x-transition class="pt-6">
         <div class="rounded-2xl bg-zinc-50 p-4 border border-zinc-100 transition-colors">
             <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">{{ __('dashboard.sidebar.current_session') }}</p>
             <div class="flex items-center gap-3">

@@ -6,7 +6,6 @@ namespace App\Exports;
 
 use App\DTOs\PostViewFilterData;
 use App\Models\PostView;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -14,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class PostViewsExport implements FromQuery, ShouldQueue, WithChunkReading, WithHeadings, WithMapping
+class PostViewsExport implements FromQuery, WithChunkReading, WithHeadings, WithMapping
 {
     use Exportable;
 

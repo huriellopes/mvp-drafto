@@ -13,13 +13,14 @@ final class UploadCoverImageAction
 {
     /**
      * Executes the cover image upload, crop, and resize.
-     * Ensures consistent 16:9 aspect ratio and high quality.
+     * Ensures consistent 3:1 aspect ratio for profile covers.
      */
-    public function exec(UploadedFile $file, array $cropData): string
+    public function exec(UploadedFile $file, array $cropData, int $targetWidth = 1200, int $targetHeight = 400): string
     {
-        $fileName = hexdec(uniqid()) . '.' . $file->getClientOriginalExtension();
+        $fileName = hexdec(uniqid()) . '.webp';
         $path = 'covers/' . $fileName;
 
+        // Sênior: A versão instalada utiliza decodePath e encodeUsingFileExtension
         $manager = ImageManager::usingDriver(new Driver());
         $image = $manager->decodePath($file->getRealPath());
 
@@ -31,12 +32,11 @@ final class UploadCoverImageAction
             y: (int) $cropData['y'],
         );
 
-        // Opcional: Redimensionar para um tamanho padrão 16:9 (ex: 1200px de largura)
-        // Isso garante que todas as capas tenham o mesmo peso e proporção no card.
-        $image->resize(1200, 675);
+        // Redimensionar para o tamanho alvo
+        $image->resize($targetWidth, $targetHeight);
 
-        // Salvando no storage public com qualidade 90 (opcional na v4)
-        Storage::disk('public')->put($path, (string) $image->encode());
+        // Salvando no storage public como WebP
+        Storage::disk('public')->put($path, (string) $image->encodeUsingFileExtension('webp', 90));
 
         return $path;
     }

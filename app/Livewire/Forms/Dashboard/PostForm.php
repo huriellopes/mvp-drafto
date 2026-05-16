@@ -68,6 +68,29 @@ class PostForm extends Form
         ];
     }
 
+    public function validationAttributes(): array
+    {
+        return [
+            'title' => 'título',
+            'category_id' => 'categoria',
+            'content' => 'conteúdo',
+            'excerpt' => 'resumo',
+            'type' => 'tipo de conteúdo',
+            'visibility' => 'visibilidade',
+        ];
+    }
+
+    /**
+     * Validação simplificada para rascunhos.
+     * Permite salvar apenas com o título preenchido.
+     */
+    public function validateForDraft(): void
+    {
+        $this->validate([
+            'title' => ['required', 'string', 'min:3', 'max:255'],
+        ]);
+    }
+
     public function setPost(Post $post)
     {
         $this->post = $post;
@@ -92,8 +115,8 @@ class PostForm extends Form
         return new SavePostData(
             title: $this->title,
             slug: $this->slug ?: Str::slug($this->title),
-            category_id: (int) $this->category_id,
-            content: $this->content,
+            category_id: $this->category_id ?: null,
+            content: $this->content ?: '',
             excerpt: $this->excerpt,
             tags: $this->tags,
             type: PostTypeEnum::from($this->type),

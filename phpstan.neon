@@ -17,7 +17,6 @@ parameters:
         - '#Access to an undefined property App\\Livewire\\#'
         - '#Call to an undefined method App\\Livewire\\#'
         - '#Relation .* is not found in .* model#'
-        - '#Call to an undefined method Intervention\\Image\\ImageManager::read#'
         - '#Using nullsafe property access .* is unnecessary#'
         - '#Cannot call method .* on string#'
         - '#Cannot access property .* on string#'

@@ -13,6 +13,7 @@ use App\Models\Tag;
 use App\Traits\Livewire\HasStandardResponses;
 use Exception;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -28,6 +29,10 @@ class ManagePost extends Component
     // Caminho da imagem de capa atualizada via componente CoverUpload
     public ?string $updatedCoverPath = null;
 
+    public bool $isSaving = false;
+
+    public ?string $lastSavedAt = null;
+
     public function mount(?Post $post = null)
     {
         if ($post && $post->exists) {
@@ -41,18 +46,36 @@ class ManagePost extends Component
     public function setCover(string $coverPath)
     {
         $this->updatedCoverPath = $coverPath;
+        $this->save(isAutosave: true);
     }
 
-    public function save()
+    public function updated($property): void
     {
-        $this->validate();
+        // Só faz autosave se o post já existir e for um campo do formulário
+        if ($this->post && str_starts_with($property, 'form.')) {
+            $this->save(isAutosave: true);
+        }
+    }
+
+    public function save(bool $isAutosave = false)
+    {
+        if ($isAutosave) {
+            $this->isSaving = true;
+        }
 
         try {
+            // Se for rascunho, valida apenas o título para permitir progresso parcial
+            if (!$this->post || $this->post->status === PostStatusEnum::DRAFT) {
+                $this->form->validateForDraft();
+            } else {
+                $this->validate();
+            }
+
             // Sênior: Proteção de Rate Limit para salvamento
             $executed = RateLimiter::attempt(
                 'save-post:' . auth()->id(),
-                $maxAttempts = 10, // Permite 10 saves por minuto (autosave e etc)
-                function () {
+                $maxAttempts = 30, // Mais folga para autosave
+                function () use ($isAutosave) {
                     $status = $this->post?->status ?? PostStatusEnum::DRAFT;
                     $dto = $this->form->toDTO($this->updatedCoverPath, $status);
 
@@ -61,31 +84,44 @@ class ManagePost extends Component
                         $dto,
                         $this->post,
                     );
+
+                    $this->lastSavedAt = now()->format('H:i:s');
+
+                    if (!$isAutosave) {
+                        $this->notifySuccess('Seu progresso foi salvo com sucesso!');
+                    }
                 },
                 decaySeconds: 60,
             );
 
-            if (!$executed) {
+            if (!$executed && !$isAutosave) {
                 $this->notifyWarning('Você está salvando muito rápido. Aguarde alguns segundos.');
-
-                return;
             }
 
-            $this->notifySuccess('Seu progresso foi salvo com sucesso!');
-
-            if (request()->routeIs('dashboard.posts.create')) {
+            if (request()->routeIs('dashboard.posts.create') && $this->post) {
                 return $this->redirect(route('dashboard.posts.edit', $this->post), navigate: true);
             }
+        } catch (ValidationException $e) {
+            if (!$isAutosave) {
+                $this->notifyError('Verifique os campos obrigatórios para salvar.');
+
+                throw $e;
+            }
         } catch (Exception $e) {
-            $this->notifyError($e->getMessage());
+            if (!$isAutosave) {
+                $this->notifyError($e->getMessage());
+            }
+        } finally {
+            $this->isSaving = false;
         }
     }
 
     public function publish()
     {
-        $this->validate();
-
         try {
+            // Publicação exige validação completa sempre
+            $this->validate();
+
             // Sênior: Proteção de Rate Limit para publicação (Mais restrito)
             $executed = RateLimiter::attempt(
                 'publish-post:' . auth()->id(),
@@ -111,6 +147,10 @@ class ManagePost extends Component
             $this->notifySuccess('Publicação realizada com sucesso!');
 
             return $this->redirect(route('dashboard.posts.index'), navigate: true);
+        } catch (ValidationException $e) {
+            $this->notifyError('Preencha todos os campos obrigatórios antes de publicar.');
+
+            throw $e;
         } catch (Exception $e) {
             $this->notifyError($e->getMessage());
         }

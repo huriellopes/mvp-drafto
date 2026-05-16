@@ -6,26 +6,16 @@ namespace App\Console\Commands;
 
 use App\Models\PostView;
 use Exception;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+#[Signature('app:archive-post-views {--days=30 : The number of days to keep raw data}')]
+#[Description('Archive and purge old granular post view records')]
 final class ArchivePostViewsCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:archive-post-views {--days=30 : The number of days to keep raw data}';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Archive and purge old granular post view records';
-
     /**
      * Execute the console command.
      */
@@ -38,11 +28,10 @@ final class ArchivePostViewsCommand extends Command
 
         try {
             DB::transaction(function () use ($cutoffDate) {
-                // Here we could aggregate data into a 'post_views_daily' table if needed for analytics.
-                // For this MVP, we simply purge old granular data to keep the table lean.
-                // The total counts are already persisted in the 'posts' table via 'views_count'.
 
-                $deletedCount = PostView::where('viewed_at', '<', $cutoffDate)->delete();
+                $deletedCount = PostView::query()
+                    ->where('viewed_at', '<', $cutoffDate)
+                    ->delete();
 
                 $this->info("Successfully purged {$deletedCount} old post view records.");
 

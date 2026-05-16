@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Settings;
 
+use App\Actions\Users\UpgradeToWriterAction;
 use App\Enums\RoleEnum;
 use App\Livewire\Forms\Settings\UserSettingsForm;
 use Illuminate\View\View;
@@ -36,9 +37,10 @@ class AccountSettings extends Component
             return;
         }
 
-        $user->update([
-            'role' => RoleEnum::WRITER,
-        ]);
+        app(UpgradeToWriterAction::class)
+            ->exec(
+                user: $user,
+            );
 
         $this->dispatch('close-modal', name: 'confirm-become-writer');
 

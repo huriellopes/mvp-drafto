@@ -7,19 +7,20 @@ namespace App\Livewire\Dashboard\Admin;
 use App\Actions\Admin\GetAuditsAction;
 use App\DTOs\AuditFilterData;
 use App\Exports\AuditsExport;
+use App\Jobs\ExportDataJob;
+use App\Livewire\Traits\WithBackgroundExport;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app')]
 class AuditLogIndex extends Component
 {
-    use WithPagination;
+    use WithBackgroundExport, WithPagination;
 
     #[Url]
     public ?int $userId = null;
@@ -47,12 +48,18 @@ class AuditLogIndex extends Component
     /**
      * Export audits to Excel using DTO and Action.
      */
-    public function export(): BinaryFileResponse
+    public function export(): void
     {
-        return Excel::download(
-            new AuditsExport($this->filters),
-            'auditoria-' . now()->format('Y-m-d-His') . '.xlsx',
+        $fileName = 'auditoria-' . now()->format('Y-m-d-His') . '.xlsx';
+        $this->generatedPath = 'temp/' . $fileName;
+
+        ExportDataJob::dispatch(
+            AuditsExport::class,
+            ['filters' => $this->filters],
+            $fileName,
         );
+
+        Toaster::info('O relatório de auditoria está sendo gerado...');
     }
 
     /**
