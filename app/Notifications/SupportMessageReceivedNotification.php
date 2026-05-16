@@ -19,7 +19,7 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
         public SupportContactData $data,
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         // Se estivermos enviando para uma rota (email direto), usamos apenas mail
         if ($notifiable instanceof AnonymousNotifiable) {
@@ -31,7 +31,7 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
         return ['database'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())
             ->mailer('support')
@@ -49,7 +49,7 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
             ->line(__('notifications.support.thanks'));
     }
 
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable): array
     {
         return [
             'type' => 'support_received',

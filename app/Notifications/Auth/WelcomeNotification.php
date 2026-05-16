@@ -17,7 +17,7 @@ final class WelcomeNotification extends VerifyEmail implements ShouldQueue
         public string $password,
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['mail'];
     }

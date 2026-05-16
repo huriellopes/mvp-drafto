@@ -19,12 +19,12 @@ final class ReportFeedbackNotification extends Notification implements ShouldQue
         public Report $report,
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())
             ->mailer('support')
@@ -43,7 +43,7 @@ final class ReportFeedbackNotification extends Notification implements ShouldQue
             ->action(__('notifications.report.feedback.action'), url('/diretrizes'));
     }
 
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable): array
     {
         return [
             'report_id' => $this->report->id,

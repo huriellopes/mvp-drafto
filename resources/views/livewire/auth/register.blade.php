@@ -17,6 +17,7 @@
         <x-ui.input wire:model.blur="form.name" :label="__('auth.register.name_label')" placeholder="Seu nome" :error="$errors->first('form.name')" />
         <x-ui.input wire:model.blur="form.email" :label="__('auth.register.email_label')" placeholder="voce@exemplo.com" :error="$errors->first('form.email')" />
         <x-ui.input wire:model.blur="form.password" :label="__('auth.register.password_label')" type="password" placeholder="••••••••" :error="$errors->first('form.password')" />
+        <x-ui.input wire:model.blur="form.password_confirmation" :label="__('auth.register.password_confirmation_label')" type="password" placeholder="••••••••" :error="$errors->first('form.password_confirmation')" />
 
         <x-ui.button
             type="submit"

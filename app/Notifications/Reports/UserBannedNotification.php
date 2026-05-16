@@ -20,12 +20,12 @@ final class UserBannedNotification extends Notification implements ShouldQueue
         public string $reason,
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())
             ->mailer('support')
