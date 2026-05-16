@@ -24,11 +24,21 @@ final class StoreSupportAction
             'status' => SupportStatusEnum::PENDING,
         ]);
 
-        // Notifica Admins (Email/Database)
-        $admins = User::where('role', RoleEnum::SUPER_ADMIN)->get();
+        // Notifica o Suporte via Email
+        $supportEmail = config('support.email', 'support@drafto.pro');
 
-        // Reutiliza a notificação existente ou cria uma nova específica para o model Support
-        // Vamos usar a SupportMessageReceivedNotification adaptada
+        Notification::route('mail', $supportEmail)
+            ->notify(new SupportMessageReceivedNotification(
+                new SupportContactData(
+                    name: $user->name,
+                    email: $user->email,
+                    subject: 'Novo Ticket: ' . $support->subject,
+                    message: $support->message,
+                ),
+            ));
+
+        // Mantém a notificação interna para os Admins (opcional, mas comum para dashboard)
+        $admins = User::where('role', RoleEnum::SUPER_ADMIN)->get();
         Notification::send($admins, new SupportMessageReceivedNotification(
             new SupportContactData(
                 name: $user->name,
