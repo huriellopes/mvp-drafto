@@ -82,3 +82,29 @@ it('sets published_at when creating a new published post', function () {
 
     Event::assertDispatched(PostSaved::class);
 });
+
+it('automatically generates an excerpt when publishing if none is provided', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+
+    $content = 'This is a long content that should be used to generate an excerpt automatically when the user decides to publish the post without providing one themselves. It should be clean and limited.';
+
+    $dto = new SavePostData(
+        title: 'Post without Excerpt',
+        slug: 'post-without-excerpt',
+        category_id: $category->id,
+        content: $content,
+        excerpt: '', // Empty excerpt
+        tags: [],
+        type: PostTypeEnum::POST,
+        visibility: PostVisibilityEnum::PUBLIC,
+        status: PostStatusEnum::PUBLISHED,
+    );
+
+    $post = $this->action->exec($user, $dto);
+
+    expect($post->excerpt)->not->toBeEmpty()
+        ->and($post->excerpt)->toBe(Str::limit(strip_tags($content), 160));
+});

@@ -85,6 +85,12 @@
                          loading="lazy" decoding="async"
                          class="w-full object-cover max-h-[600px] hover:scale-[1.02] transition-transform duration-1000">
                 </div>
+            @else
+                <div class="relative mb-20 overflow-hidden rounded-[3.5rem] shadow-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 aspect-[21/9] flex items-center justify-center select-none">
+                     <span class="text-9xl font-black text-indigo-500/10 tracking-tighter uppercase">
+                         {{ get_initials($this->post->title) }}
+                     </span>
+                </div>
             @endif
 
             @if($this->canReadContent)
@@ -110,10 +116,14 @@
                                 <div class="group flex flex-col gap-4">
                                     <a href="{{ route('posts.show', $related->slug) }}"
                                        wire:navigate
-                                       class="relative aspect-video overflow-hidden rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
+                                       class="relative aspect-video overflow-hidden rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
                                         @if($related->cover_image_url)
                                             <img src="{{ $related->cover_image_url }}"
                                                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                                        @else
+                                            <span class="text-4xl font-black text-indigo-500/10 tracking-tighter uppercase select-none">
+                                                {{ get_initials($related->title) }}
+                                            </span>
                                         @endif
                                         <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                                     </a>
