@@ -1,3 +1,4 @@
+@use(App\Enums\CommentStatusEnum)
 <div class="space-y-6 pb-20">
     {{ Breadcrumbs::render('dashboard.comments') }}
     {{-- Filtros e Sorting --}}
@@ -13,7 +14,7 @@
 
             <x-ui.select wire:model.live="status" class="w-44">
                 <option value="">Todos os Status</option>
-                @foreach(App\Enums\CommentStatusEnum::options() as $opt)
+                @foreach(CommentStatusEnum::options() as $opt)
                     <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
                 @endforeach
             </x-ui.select>
@@ -44,11 +45,14 @@
                     <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                         <div class="flex items-start gap-5">
                             {{-- Status Indicator --}}
-                            <div @class([
-                                'mt-1 h-3 w-3 shrink-0 rounded-full ring-4 ring-offset-2',
-                                'bg-emerald-500 ring-emerald-50' => $comment->status === App\Enums\CommentStatusEnum::VISIBLE,
-                                'bg-amber-500 ring-amber-50' => $comment->status === App\Enums\CommentStatusEnum::HIDDEN || $comment->status === App\Enums\CommentStatusEnum::PENDING,
-                            ]) title="{{ $comment->status->label() }}"></div>
+                            <x-ui.tooltip :text="$comment->status->description()" position="right">
+                                <div @class([
+                                    'mt-1 h-3 w-3 shrink-0 rounded-full ring-4 ring-offset-2',
+                                    'bg-emerald-500 ring-emerald-50' => $comment->status === CommentStatusEnum::VISIBLE,
+                                    'bg-red-500 ring-red-50' => $comment->status === CommentStatusEnum::HIDDEN,
+                                    'bg-amber-500 ring-amber-50' => $comment->status === CommentStatusEnum::PENDING,
+                                ])></div>
+                            </x-ui.tooltip>
 
                             <div class="space-y-2">
                                 <div class="flex flex-wrap items-center gap-3">
@@ -68,28 +72,31 @@
                                 <div class="flex items-center gap-2 rounded-xl bg-zinc-50 px-3 py-1.5 w-fit">
                                     <x-lucide-link-2 class="h-3 w-3 text-zinc-400" />
                                     <a href="{{ route('posts.show', $comment->post->slug) }}" class="text-[11px] font-bold text-zinc-500 hover:text-profile-primary transition">
-                                        {{ Str::limit($comment->post->title, 40) }}
+                                        {!! Str::limit($comment->post->title, 40) !!}
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Ações --}}
-                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <button
-                                wire:click="edit({{ $comment->id }})"
-                                class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-100 text-zinc-400 shadow-sm hover:text-zinc-900 hover:border-zinc-300 transition-all"
-                                title="Editar ou Alterar Status"
-                            >
-                                <x-lucide-pencil class="h-4 w-4" />
-                            </button>
-                            <button
-                                wire:click="confirmDelete({{ $comment->id }})"
-                                class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-100 text-zinc-400 shadow-sm hover:text-red-600 hover:border-red-100 transition-all"
-                                title="Excluir"
-                            >
-                                <x-lucide-trash-2 class="h-4 w-4" />
-                            </button>
+                        <div class="flex items-center gap-2 transition-all duration-300">
+                            <x-ui.tooltip text="Editar ou Moderar">
+                                <button
+                                    wire:click="edit({{ $comment->id }})"
+                                    class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-100 text-zinc-400 shadow-sm hover:text-zinc-900 hover:border-zinc-300 transition-all"
+                                >
+                                    <x-lucide-pencil class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
+                            
+                            <x-ui.tooltip text="Excluir Comentário">
+                                <button
+                                    wire:click="confirmDelete({{ $comment->id }})"
+                                    class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-zinc-100 text-zinc-400 shadow-sm hover:text-red-600 hover:border-red-100 transition-all"
+                                >
+                                    <x-lucide-trash-2 class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
                         </div>
                     </div>
                 </li>
@@ -109,16 +116,32 @@
     {{-- Modal de Edição --}}
     <x-ui.modal name="edit-comment-modal" title="Moderar Comentário">
         <form wire:submit="save" class="space-y-6">
+            @if($this->form->comment && $this->form->comment->user_id !== auth()->id())
+                <div class="flex items-center gap-2">
+                    <x-ui.tooltip :text="$this->form->comment->status->description()" position="right">
+                        <span @class([
+                            'px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border',
+                            'bg-emerald-50 text-emerald-600 border-emerald-100' => $this->form->comment->status === CommentStatusEnum::VISIBLE,
+                            'bg-red-50 text-red-600 border-red-100' => $this->form->comment->status === CommentStatusEnum::HIDDEN,
+                            'bg-amber-50 text-amber-600 border-amber-100' => $this->form->comment->status === CommentStatusEnum::PENDING,
+                        ])>
+                            Status Atual: {{ $this->form->comment->status->label() }}
+                        </span>
+                    </x-ui.tooltip>
+                </div>
+            @endif
+
             <x-ui.textarea
                 label="Conteúdo do Comentário"
                 wire:model="form.content"
                 rows="4"
                 :error="$errors->first('form.content')"
+                :readonly="$this->form->comment && $this->form->comment->user_id !== auth()->id()"
             />
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <x-ui.select label="Status de Visibilidade" wire:model="form.status" :error="$errors->first('form.status')">
-                    @foreach(App\Enums\CommentStatusEnum::options() as $opt)
+                    @foreach(CommentStatusEnum::options() as $opt)
                         <option value="{{ $opt['value'] }}">{{ $opt['label'] }}</option>
                     @endforeach
                 </x-ui.select>

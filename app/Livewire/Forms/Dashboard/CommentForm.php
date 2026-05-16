@@ -26,8 +26,10 @@ class CommentForm extends Form
 
     public function rules(): array
     {
+        $isAuthor = $this->comment && $this->comment->user_id === auth()->id();
+
         return [
-            'content' => ['required', 'string', 'min:3', 'max:1000'],
+            'content' => [$isAuthor ? 'required' : 'nullable', 'string', 'min:3', 'max:1000'],
             'status' => ['required', Rule::enum(CommentStatusEnum::class)],
         ];
     }
@@ -36,10 +38,15 @@ class CommentForm extends Form
     {
         $this->validate();
 
-        $this->comment->update([
-            'content' => $this->content,
-            'status' => $this->status,
-        ]);
+        $isAuthor = $this->comment->user_id === auth()->id();
+
+        $data = ['status' => $this->status];
+
+        if ($isAuthor) {
+            $data['content'] = $this->content;
+        }
+
+        $this->comment->update($data);
 
         $this->reset();
     }

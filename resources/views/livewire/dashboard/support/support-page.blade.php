@@ -106,9 +106,12 @@
                                     </td>
                                     <td class="px-8 py-5 text-right">
                                          @if($ticket->admin_response)
-                                            <x-ui.button sizes="xs" variant="secondary" wire:click="selectTicket({{ $ticket->id }})">
-                                                Ver Resposta
-                                            </x-ui.button>
+                                            <x-ui.tooltip text="Ver Resposta" position="left">
+                                                <x-ui.button sizes="xs" variant="secondary" wire:click="selectTicket({{ $ticket->id }})" class="!rounded-xl">
+                                                    <x-lucide-eye class="h-4 w-4 sm:mr-2" />
+                                                    <span class="hidden sm:inline">Ver Resposta</span>
+                                                </x-ui.button>
+                                            </x-ui.tooltip>
                                          @endif
                                     </td>
                                 </tr>
