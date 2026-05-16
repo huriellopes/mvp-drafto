@@ -17,6 +17,7 @@ use App\Models\PostView;
 use App\Models\Profile;
 use App\Models\Report;
 use App\Models\User;
+use App\Observers\CommentObserver;
 use App\Observers\PostObserver;
 use App\Observers\UserObserver;
 use App\Policies\CollectionPolicy;
@@ -62,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
 
         User::observe(UserObserver::class);
         Post::observe(PostObserver::class);
+        Comment::observe(CommentObserver::class);
 
         Blade::if('module', function (mixed $slug) {
             if (!function_exists('is_module_enabled')) {
