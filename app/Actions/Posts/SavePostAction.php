@@ -34,7 +34,15 @@ final class SavePostAction
 
             // Sênior: Sanitização de Segurança contra XSS
             $sanitizedContent = Purifier::clean($dto->content);
-            $sanitizedExcerpt = $dto->excerpt ? Purifier::clean($dto->excerpt) : null;
+
+            // Sênior: Gera resumo automático se estiver publicando e estiver vazio
+            $excerpt = $dto->excerpt;
+            if ($dto->status === PostStatusEnum::PUBLISHED && empty(trim((string) $excerpt))) {
+                // Para resumos automáticos, usamos texto puro derivado do conteúdo já limpo
+                $sanitizedExcerpt = Str::limit(strip_tags($sanitizedContent), 160);
+            } else {
+                $sanitizedExcerpt = $excerpt ? Purifier::clean($excerpt) : null;
+            }
 
             // Removemos tags e dados de SEO para processar separadamente/background
             $data = collect($dto->toArray())->except(['tags', 'seo_title', 'seo_description', 'category_id'])->toArray();
