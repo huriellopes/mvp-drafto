@@ -28,9 +28,17 @@
                 <div class="-mt-12 mb-6 relative inline-block">
                     <div class="h-24 w-24 overflow-hidden rounded-3xl border-4 border-white dark:border-zinc-900 bg-zinc-100 dark:bg-zinc-800 shadow-md">
                         @if ($form->avatar && method_exists($form->avatar, 'temporaryUrl'))
-                            <img src="{{ $form->avatar->temporaryUrl() }}" class="h-full w-full object-cover">
+                            <img
+                                src="{{ $form->avatar->temporaryUrl() }}"
+                                class="h-full w-full object-cover"
+                                alt="{{ auth()->user()->profile->name }}"
+                            />
                         @elseif(auth()->user()->profile?->avatar_path)
-                            <img src="{{ Storage::url(auth()->user()->profile->avatar_path) }}" class="h-full w-full object-cover">
+                            <img
+                                src="{{ Storage::url(auth()->user()->profile->avatar_path) }}"
+                                class="h-full w-full object-cover"
+                                alt="{{ auth()->user()->profile->name }}"
+                            />
                         @else
                             <div class="flex h-full items-center justify-center text-2xl font-black uppercase tracking-widest text-zinc-400">
                                 {{ get_initials(auth()->user()->name) }}

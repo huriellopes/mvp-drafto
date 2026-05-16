@@ -30,7 +30,6 @@ class Home extends Component
 {
     public function placeholder(): View
     {
-        // Passamos uma versão "vazia" do DTO ou apenas a view para performance máxima
         return view('livewire.public.site.placeholders.home');
     }
 
@@ -48,14 +47,12 @@ class Home extends Component
                 ->get();
         });
 
-        // Sênior: Proteção contra cache corrompido ou 'Incomplete Object'
         if (!$writers instanceof Collection) {
             Cache::forget('home_featured_writers_v2');
 
             return $this->featuredWriters();
         }
 
-        // Sênior: Eager load do status de follow apenas para o usuário logado (não cacheado globalmente)
         if (auth()->check()) {
             $writers->loadExists(['followers as is_followed_by_auth_user' => function ($q) {
                 $q->where('follower_id', auth()->id());
@@ -100,7 +97,6 @@ class Home extends Component
 
         $stats = $this->getHomeStats();
 
-        // 3. Montamos o DTO
         $data = new HomeDataDTO(
             totalPosts: $stats['totalPosts'],
             totalUsers: $stats['totalUsers'],

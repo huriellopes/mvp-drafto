@@ -9,14 +9,16 @@ use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
 use App\Notifications\Auth\WelcomeNotification;
+use App\Traits\GeneratesUsername;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Throwable;
 
 final class RegisterUserAction
 {
+    use GeneratesUsername;
+
     /**
      * @throws Throwable
      */
@@ -38,6 +40,8 @@ final class RegisterUserAction
 
             if ($isWriter) {
                 $user->profile()->create([
+                    'name' => $data->name,
+                    'email' => $data->email,
                     'username' => $this->generateUniqueUsername($data->name),
                     'is_verified' => true,
                 ]);
@@ -51,13 +55,6 @@ final class RegisterUserAction
 
             return $user;
         });
-    }
-
-    private function generateUniqueUsername(string $name): string
-    {
-        $base = Str::slug(Str::replace('@', '', $name));
-
-        return $base . '-' . Str::lower(Str::random(4));
     }
 
     private function validateRole(string $role): string

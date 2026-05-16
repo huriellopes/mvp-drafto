@@ -107,7 +107,7 @@ class ProfileForm extends Form
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:100'],
-            'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_.]+$/', Rule::unique('profiles', 'username')->ignore(auth()->user()->profile?->id)],
+            'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_.-]+$/', Rule::unique('profiles', 'username')->ignore(auth()->user()->profile?->id)],
             'email' => ['required', 'string', 'email', Rule::unique('profiles', 'email')->ignore(auth()->user()->profile?->id)],
             'bio' => ['nullable', 'string'],
             'website_url' => ['nullable', 'url'],
@@ -132,6 +132,18 @@ class ProfileForm extends Form
             'seo_description' => ['nullable', 'string', 'max:160'],
             'avatar' => ['nullable', 'image', 'max:1024'],
             'cover' => ['nullable', 'image', 'max:2048'],
+        ];
+    }
+
+    public function validationAttributes(): array
+    {
+        return [
+            'name' => 'nome',
+            'username' => 'nome de usuário',
+            'email' => 'e-mail',
+            'bio' => 'biografia',
+            'website_url' => 'site',
+            'location' => 'localização',
         ];
     }
 

@@ -5,7 +5,7 @@
 @if ($user)
     <div class="space-y-3">
         <div
-            x-show="!sidebarCollapsed"
+            x-show="!sidebarCollapsed || sidebarOpen"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 translate-y-2"
             class="rounded-2xl bg-zinc-50 p-4 border border-zinc-100 mb-3"

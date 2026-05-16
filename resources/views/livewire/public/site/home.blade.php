@@ -18,27 +18,38 @@
             </p>
         </div>
 
+        @php
+            $writersCount = count($data->featuredWriters ?? []);
+        @endphp
+
         <div class="relative w-full" x-data="{
             next() { this.$refs.container.scrollBy({ left: 450, behavior: 'smooth' }) },
             prev() { this.$refs.container.scrollBy({ left: -450, behavior: 'smooth' }) }
         }">
-            <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent z-20 pointer-events-none hidden lg:block"></div>
-            <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white dark:from-zinc-950 to-transparent z-20 pointer-events-none hidden lg:block"></div>
+            @if($writersCount > 1)
+                <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent z-20 pointer-events-none hidden lg:block"></div>
+                <div class="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white dark:from-zinc-950 to-transparent z-20 pointer-events-none hidden lg:block"></div>
+            @endif
 
-            <div class="max-w-7xl mx-auto px-4 relative">
-                <div class="flex items-center gap-3 absolute -top-12 right-4 z-30">
-                    <button @click="prev" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                        <x-lucide-arrow-left class="h-5 w-5" />
-                    </button>
-                    <button @click="next" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                        <x-lucide-arrow-right class="h-5 w-5" />
-                    </button>
+            @if($writersCount > 1)
+                <div class="max-w-7xl mx-auto px-4 relative">
+                    <div class="flex items-center gap-3 absolute -top-12 right-4 z-30">
+                        <button @click="prev" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                            <x-lucide-arrow-left class="h-5 w-5" />
+                        </button>
+                        <button @click="next" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                            <x-lucide-arrow-right class="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div x-ref="container" class="flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 lg:px-[calc((100vw-1280px)/2+1rem)] py-10 hide-scrollbar">
                 @foreach($data->featuredWriters as $writer)
-                    <x-public.writer-card :writer="$writer" />
+                    <x-public.writer-card 
+                        :writer="$writer" 
+                        class="snap-start transition-all duration-300 min-w-[320px] max-w-[380px]"
+                    />
                 @endforeach
             </div>
         </div>
