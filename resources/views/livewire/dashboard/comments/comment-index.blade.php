@@ -135,13 +135,20 @@
                 </div>
             @endif
 
-            <x-ui.textarea
-                label="Conteúdo do Comentário"
-                wire:model="form.content"
-                rows="4"
-                :error="$errors->first('form.content')"
-                :readonly="$this->form->comment && $this->form->comment->user_id !== auth()->id()"
-            />
+            <div class="space-y-2">
+                <label class="text-sm font-bold text-zinc-700">Conteúdo do Comentário</label>
+                @if($this->form->comment && $this->form->comment->user_id !== auth()->id())
+                    <div class="prose prose-sm max-w-none p-4 rounded-2xl bg-zinc-50 border border-zinc-100 text-zinc-600">
+                        {!! $this->form->content !!}
+                    </div>
+                @else
+                    <x-ui.rich-editor
+                        wire:model="form.content"
+                        placeholder="Edite o comentário..."
+                    />
+                @endif
+                @error('form.content') <p class="text-xs text-red-500 font-bold mt-1">{{ $message }}</p> @enderror
+            </div>
 
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <x-ui.select label="Status de Visibilidade" wire:model="form.status" :error="$errors->first('form.status')">
