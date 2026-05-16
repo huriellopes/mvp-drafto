@@ -51,6 +51,11 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
     /** @use HasFactory<UserFactory> */
     use HasFactory, KeepsDeletedModels, Notifiable, \OwenIt\Auditing\Auditable;
 
+    /**
+     * Flag para pular o envio do e-mail de verificação padrão (usado no WelcomeNotification).
+     */
+    public bool $skipVerificationEmail = false;
+
     protected array $auditExclude = [
         'password',
         'remember_token',
@@ -239,6 +244,10 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
 
     public function sendEmailVerificationNotification(): void
     {
+        if ($this->skipVerificationEmail) {
+            return;
+        }
+
         $this->notify(new VerifyEmailNotification());
     }
 

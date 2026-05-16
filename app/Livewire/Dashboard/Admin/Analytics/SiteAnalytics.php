@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard\Admin\Analytics;
 
 use App\Actions\Admin\GetSiteAnalyticsAction;
+use Exception;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -16,18 +17,18 @@ final class SiteAnalytics extends Component
     public int $days = 7;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     #[Computed]
     public function analytics()
     {
-        return app(GetSiteAnalyticsAction::Class)
+        return app(GetSiteAnalyticsAction::class)
             ->handle(
-                $this->days
+                $this->days,
             );
     }
 
-    public function render() : View
+    public function render(): View
     {
         return view('livewire.dashboard.admin.analytics.site-analytics');
     }

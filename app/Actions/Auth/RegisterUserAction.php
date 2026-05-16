@@ -8,6 +8,7 @@ use App\DTOs\RegisterUserData;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
+use App\Notifications\Auth\WelcomeNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,10 @@ final class RegisterUserAction
                     'is_verified' => true,
                 ]);
             }
+
+            $user->notify(new WelcomeNotification($data->password));
+
+            $user->skipVerificationEmail = true;
 
             event(new Registered($user));
 

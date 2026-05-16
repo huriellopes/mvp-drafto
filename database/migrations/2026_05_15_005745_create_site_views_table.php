@@ -12,7 +12,7 @@ return new class() extends Migration
     {
         Schema::create('site_views', function (Blueprint $table): void {
             $table->id();
-            
+
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained('users')
@@ -29,7 +29,7 @@ return new class() extends Migration
 
             // Index with prefix length for MySQL
             $table->index('viewed_at');
-            $table->index('url'); 
+            $table->index('url');
         });
     }
 

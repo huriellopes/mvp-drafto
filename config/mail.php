@@ -51,6 +51,34 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'contact' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_CONTACT_HOST', env('MAIL_HOST', '127.0.0.1')),
+            'port' => env('MAIL_CONTACT_PORT', env('MAIL_PORT', 2525)),
+            'username' => env('MAIL_CONTACT_USERNAME', env('MAIL_USERNAME')),
+            'password' => env('MAIL_CONTACT_PASSWORD', env('MAIL_PASSWORD')),
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'from' => [
+                'address' => env('MAIL_CONTACT_FROM_ADDRESS', 'contato@drafto.pro'),
+                'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Drafto')),
+            ],
+        ],
+
+        'support' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_SUPPORT_HOST', env('MAIL_HOST', '127.0.0.1')),
+            'port' => env('MAIL_SUPPORT_PORT', env('MAIL_PORT', 2525)),
+            'username' => env('MAIL_SUPPORT_USERNAME', env('MAIL_USERNAME')),
+            'password' => env('MAIL_SUPPORT_PASSWORD', env('MAIL_PASSWORD')),
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'from' => [
+                'address' => env('MAIL_SUPPORT_FROM_ADDRESS', 'support@drafto.pro'),
+                'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Drafto Support')),
+            ],
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

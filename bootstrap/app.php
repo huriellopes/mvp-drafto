@@ -11,6 +11,7 @@ use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Http\Middleware\LogContextMiddleware;
 use App\Http\Middleware\TrackPostView;
 use App\Http\Middleware\TrackProfileView;
+use App\Http\Middleware\TrackSiteView;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -42,7 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             LogContextMiddleware::class,
             CheckBanned::class,
-            \App\Http\Middleware\TrackSiteView::class,
+            TrackSiteView::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

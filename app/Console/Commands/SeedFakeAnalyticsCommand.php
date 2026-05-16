@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 final class SeedFakeAnalyticsCommand extends Command
 {
     protected $signature = 'app:seed-fake-analytics';
+
     protected $description = 'Seed the site_views table with fake data for testing';
 
     public function handle(): void
