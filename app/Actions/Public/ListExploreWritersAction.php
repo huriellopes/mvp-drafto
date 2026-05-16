@@ -27,10 +27,10 @@ final class ListExploreWritersAction
                         $q->where('visibility', ProfileVisibilityEnum::PUBLIC)
                             ->whereNotNull('name')
                             ->whereNotNull('username')
-                            ->whereNotNull('bio')
+                            ->whereNotNull('email')
                             ->where('name', '<>', '')
                             ->where('username', '<>', '')
-                            ->where('bio', '<>', '');
+                            ->where('email', '<>', '');
                     })
                     ->when($data->search, function ($q) use ($data) {
                         $q->where(function ($sub) use ($data) {
