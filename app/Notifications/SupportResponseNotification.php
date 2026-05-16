@@ -18,12 +18,12 @@ final class SupportResponseNotification extends Notification implements ShouldQu
         public Support $support,
     ) {}
 
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['mail', 'database'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())
             ->mailer('support')
@@ -36,7 +36,7 @@ final class SupportResponseNotification extends Notification implements ShouldQu
             ->line(__('notifications.support.response.thanks'));
     }
 
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable): array
     {
         return [
             'support_id' => $this->support->id,
