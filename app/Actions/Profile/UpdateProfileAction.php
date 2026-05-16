@@ -54,8 +54,8 @@ final class UpdateProfileAction
             ProcessProfileMediaJob::dispatch($profile, $oldAvatarPath, $oldCoverPath);
         }
 
-        // Sênior: Limpa o cache do perfil público
-        Cache::tags(["profile_{$profile->username}"])->flush();
+        // Sênior: Limpa o cache do perfil público e da listagem de escritores
+        Cache::tags(["profile_{$profile->username}", 'writers', 'explore'])->flush();
 
         // Sênior: Atualiza ou cria as configurações de UI do perfil
         $profile->settings()->updateOrCreate(
