@@ -19,11 +19,21 @@ enum CommentStatusEnum: string
         };
     }
 
+    public function description(): string
+    {
+        return match ($this) {
+            self::VISIBLE => 'O comentário está visível para todos os usuários e visitantes.',
+            self::HIDDEN => 'O comentário foi ocultado e não aparece publicamente.',
+            self::PENDING => 'O comentário está aguardando revisão da moderação.',
+        };
+    }
+
     public function color(): string
     {
         return match ($this) {
             self::VISIBLE => 'green',
-            self::HIDDEN, self::PENDING => 'yellow',
+            self::HIDDEN => 'danger',
+            self::PENDING => 'amber',
         };
     }
 
