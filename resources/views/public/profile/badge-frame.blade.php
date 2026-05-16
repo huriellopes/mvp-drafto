@@ -9,7 +9,7 @@
         body { font-family: 'Instrument Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-transparent antialiased h-full flex items-center justify-center p-4">
+<body class="bg-transparent antialiased flex items-start justify-center">
     <x-public.author-badge 
         :user="$user" 
         mode="embed" 
@@ -17,7 +17,7 @@
         :showStats="request()->query('showStats', 'true') === 'true'" 
         :showBio="request()->query('showBio', 'true') === 'true'" 
         :showLocation="request()->query('showLocation', 'true') === 'true'"
-        class="w-[480px] shadow-2xl"
+        class="w-[420px]"
     />
 </body>
 </html>

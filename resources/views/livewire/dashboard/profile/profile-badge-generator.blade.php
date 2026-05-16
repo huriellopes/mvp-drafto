@@ -75,20 +75,6 @@
                 </div>
             </x-ui.section-card>
 
-            {{-- Plan Status --}}
-            <div class="rounded-[2.5rem] p-8 border-2 transition-all duration-500 bg-emerald-50 border-emerald-100 dark:bg-emerald-500/5 dark:border-emerald-500/20">
-                <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-lg bg-emerald-600 shadow-emerald-500/20">
-                        <x-lucide-award class="h-6 w-6" />
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Status do Crachá</h4>
-                        <p class="text-xs text-zinc-500 font-medium">
-                            Acesso Vitalício Liberado (Ultra-HD + Verificado)
-                        </p>
-                    </div>
-                </div>
-            </div>
 
             {{-- Embed Code --}}
             <div class="rounded-[2.5rem] bg-zinc-900 border border-white/5 p-8 space-y-4 shadow-2xl" x-data="{ copied: false }">
@@ -106,7 +92,7 @@
                 </div>
                 <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
                     <code x-ref="embedCode" class="text-[10px] text-zinc-400 font-mono block break-all leading-relaxed">
-                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}&showStats={{ $form->showStats ? 'true' : 'false' }}&showBio={{ $form->showBio ? 'true' : 'false' }}&showLocation={{ $form->showLocation ? 'true' : 'false' }}&embed=true" width="450" height="280" frameborder="0"&gt;&lt;/iframe&gt;
+                        &lt;iframe src="{{ route('public.profile.badge', $this->user->profile->username) }}?theme={{ $form->theme }}&showStats={{ $form->showStats ? 'true' : 'false' }}&showBio={{ $form->showBio ? 'true' : 'false' }}&showLocation={{ $form->showLocation ? 'true' : 'false' }}&embed=true" width="420" height="600" frameborder="0"&gt;&lt;/iframe&gt;
                     </code>
                 </div>
             </div>
@@ -117,7 +103,7 @@
             <h4 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-12 italic">{{ __('dashboard.badge.preview_title') }}</h4>
 
             {{-- O NOVO CARD UNIFICADO --}}
-            <div class="w-full max-w-md">
+            <div class="w-[420px] max-w-full">
                 <x-public.author-badge 
                     :user="$this->user" 
                     mode="embed" 

@@ -21,7 +21,7 @@
         : "";
 @endphp
 
-<div {{ $attributes->merge(['class' => "group relative overflow-hidden rounded-[3.5rem] border p-10 shadow-sm backdrop-blur-sm transition-all hover:shadow-xl $themeClasses"]) }}
+<div {{ $attributes->merge(['class' => "group relative overflow-hidden rounded-[3.5rem] border shadow-sm backdrop-blur-sm transition-all hover:shadow-xl " . ($mode === 'embed' ? 'p-8' : 'p-10') . " $themeClasses"]) }}
      @if($brandStyle) style="{{ $brandStyle }}" @endif
      id="{{ $mode === 'embed' ? 'badge-preview' : '' }}"
 >
@@ -37,24 +37,27 @@
 
     <div class="text-center space-y-6 relative z-10">
         {{-- Avatar Section --}}
-        <div class="relative inline-block">
-            <div class="absolute inset-0 bg-indigo-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-500"></div>
+        <a href="{{ route('profile.show', $profile->username) }}" 
+           @if($mode === 'embed') target="_blank" rel="noopener noreferrer" @else wire:navigate @endif
+           class="relative inline-block group/avatar"
+        >
+            <div class="absolute inset-0 bg-indigo-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover/avatar:opacity-100 transition duration-500"></div>
             
             @if($profile->avatar_path)
                 <img src="{{ Storage::url($profile->avatar_path) }}"
-                     class="relative mx-auto h-32 w-32 rounded-[2.5rem] object-cover shadow-2xl ring-4 ring-current/5 transition-transform duration-500 group-hover:scale-105"
+                     class="relative mx-auto h-32 w-32 rounded-[2.5rem] object-cover shadow-2xl ring-4 ring-current/5 transition-transform duration-500 group-hover/avatar:scale-105"
                      alt="{{ $user->display_name }}"
                      crossorigin="anonymous"
                 />
             @else
                 <div @class([
-                    "relative mx-auto h-32 w-32 rounded-[2.5rem] flex items-center justify-center text-3xl font-black tracking-widest shadow-2xl ring-4 ring-current/5 transition-transform duration-500 group-hover:scale-105",
+                    "relative mx-auto h-32 w-32 rounded-[2.5rem] flex items-center justify-center text-3xl font-black tracking-widest shadow-2xl ring-4 ring-current/5 transition-transform duration-500 group-hover/avatar:scale-105",
                     $theme === 'light' ? 'bg-zinc-100 text-zinc-400' : 'bg-white/10 text-white/50'
                 ])>
                     {{ get_initials($user->display_name) }}
                 </div>
             @endif
-        </div>
+        </a>
 
         {{-- Identity Section --}}
         <div class="space-y-1">
@@ -112,12 +115,15 @@
             </div>
         @else
             <div class="pt-6 flex justify-center">
-                <div @class([
-                    "flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border shadow-inner",
-                    $theme === 'light' ? 'bg-zinc-50 border-zinc-100' : 'bg-white/5 border-white/5'
+                <a href="{{ route('profile.show', $profile->username) }}" 
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   @class([
+                    "flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border shadow-inner transition-all hover:scale-105 active:scale-95",
+                    $theme === 'light' ? 'bg-zinc-50 border-zinc-100 text-zinc-600 hover:bg-zinc-100' : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10'
                 ])>
                     Acesse no Drafto <x-lucide-arrow-right class="h-3 w-3" />
-                </div>
+                </a>
             </div>
         @endif
     </div>
