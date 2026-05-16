@@ -12,12 +12,17 @@ use App\Livewire\Traits\WithBackgroundExport;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.app', [
+    'heading' => 'Logs de Auditoria',
+    'subheading' => 'Monitoramento de auditoria',
+])]
+#[Title('Logs de Auditoria')]
 class AuditLogIndex extends Component
 {
     use WithBackgroundExport, WithPagination;
