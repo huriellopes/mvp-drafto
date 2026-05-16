@@ -14,7 +14,10 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.app', [
+    'heading' => 'Gestão de Suporte',
+    'subheading' => 'Gerencie os tickets do site.'
+])]
 #[Title('Gestão de Suporte')]
 final class SupportIndex extends Component
 {
