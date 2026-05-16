@@ -7,12 +7,16 @@ namespace App\Livewire\Dashboard\Settings;
 use App\Actions\Auth\ConfirmTwoFactorAuthAction;
 use App\Actions\Auth\DisableTwoFactorAuthAction;
 use App\Actions\Auth\GenerateTwoFactorSecretAction;
+use App\Jobs\GenerateRecoveryCodesJob;
 use App\Models\User;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
@@ -25,6 +29,10 @@ class TwoFactorManager extends Component
     public bool $showingRecoveryCodes = false;
 
     public string $code = '';
+
+    public ?string $generatedPath = null;
+
+    public ?string $generatingFormat = null;
 
     public function enable(GenerateTwoFactorSecretAction $generateAction): void
     {
@@ -64,6 +72,44 @@ class TwoFactorManager extends Component
     public function showRecoveryCodes(): void
     {
         $this->showingRecoveryCodes = !$this->showingRecoveryCodes;
+    }
+
+    public function downloadRecoveryCodes(string $format): void
+    {
+        $user = Auth::user();
+        $codes = $user->two_factor_recovery_codes;
+
+        if (empty($codes)) {
+            Toaster::error('Nenhum código de recuperação encontrado.');
+
+            return;
+        }
+
+        $this->generatingFormat = $format;
+        $timestamp = now()->format('d-m-Y');
+        $username = Str::slug($user->profile?->username ?? $user->name);
+        $filename = "drafto-{$username}-{$timestamp}";
+        $this->generatedPath = "temp/{$filename}.{$format}";
+
+        GenerateRecoveryCodesJob::dispatch($user, $format, $timestamp);
+
+        Toaster::info('Seu arquivo está sendo gerado em segundo plano...');
+    }
+
+    #[Computed]
+    public function isFileReady(): bool
+    {
+        if (!$this->generatedPath) {
+            return false;
+        }
+
+        return Storage::disk('local')->exists($this->generatedPath);
+    }
+
+    public function clearGeneratedFile(): void
+    {
+        $this->generatedPath = null;
+        $this->generatingFormat = null;
     }
 
     public function getTwoFactorQrCodeSvgProperty(): string

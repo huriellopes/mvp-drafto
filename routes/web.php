@@ -7,6 +7,7 @@ use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Public\AnalyticsController;
 use App\Http\Controllers\Public\ProfileBadgeController;
+use App\Http\Controllers\RecoveryCodeDownloadController;
 use App\Http\Controllers\TrixAttachmentController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Livewire\Dashboard\Support\SupportPage;
@@ -70,6 +71,9 @@ Route::middleware(['auth'])
         Route::livewire('/suporte', SupportPage::class)
             ->middleware(['module:support'])
             ->name('support');
+
+        Route::get('/download-recovery-codes', RecoveryCodeDownloadController::class)
+            ->name('recovery-codes.download');
 
         // Módulos Administrativos
         Route::group([], base_path('routes/parts/admin-routes.php'));

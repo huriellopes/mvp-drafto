@@ -7,6 +7,7 @@ namespace App\Notifications;
 use App\DTOs\SupportContactData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -20,7 +21,14 @@ class SupportMessageReceivedNotification extends Notification implements ShouldQ
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
+        // Se estivermos enviando para uma rota (email direto), usamos apenas mail
+        if ($notifiable instanceof AnonymousNotifiable) {
+            return ['mail'];
+        }
+
+        // Se for um modelo de usuário (Admins), enviamos apenas para o database
+        // para evitar duplicidade de e-mail no super admin
+        return ['database'];
     }
 
     public function toMail(object $notifiable): MailMessage
