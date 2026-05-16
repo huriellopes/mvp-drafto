@@ -53,6 +53,9 @@ final class RegisterUserAction
 
             event(new Registered($user));
 
+            // Sênior: Notifica o registro no canal de suporte
+            Log::channel('telegram_support')->info("✅ Novo usuário registrado: **{$user->name}** ({$user->email})");
+
             return $user;
         });
     }

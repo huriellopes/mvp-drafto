@@ -54,6 +54,33 @@ return [
 
     'channels' => [
 
+        'telegram_debug' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'level' => 'debug',
+            'thread' => env('TELEGRAM_THREAD_DEBUG'),
+        ],
+
+        'telegram_support' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'level' => 'info',
+            'thread' => env('TELEGRAM_THREAD_SUPPORT'),
+        ],
+
+        'telegram_alerts' => [
+            'driver' => 'custom',
+            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'level' => 'warning', // Captura warning, error, critical, etc.
+            'thread' => env('TELEGRAM_THREAD_ALERTS'),
+        ],
+
+        'telegram_all' => [
+            'driver' => 'stack',
+            'channels' => ['telegram_debug', 'telegram_support', 'telegram_alerts'],
+            'ignore_exceptions' => false,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),
