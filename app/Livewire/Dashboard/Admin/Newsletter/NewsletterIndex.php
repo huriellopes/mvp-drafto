@@ -8,8 +8,10 @@ use App\Actions\Newsletter\DeleteSubscriberAction;
 use App\Actions\Newsletter\ListSubscribersAction;
 use App\DTOs\NewsletterFilterData;
 use App\Exports\SubscribersExport;
+use App\Jobs\ExportDataJob;
 use App\Jobs\SendNewsletterJob;
 use App\Livewire\Forms\Admin\NewsletterFilterForm;
+use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\NewsletterSubscriber;
 use App\Models\PostCategory;
 use Illuminate\Support\Facades\Cache;
@@ -21,14 +23,13 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 #[Layout('layouts.app', ['heading' => 'Newsletter', 'subheading' => 'Gerencie os inscritos e preferências de conteúdo'])]
 #[Title('Inscritos Newsletter')]
 #[Lazy]
 class NewsletterIndex extends Component
 {
-    use WithPagination;
+    use WithBackgroundExport, WithPagination;
 
     public NewsletterFilterForm $filters;
 
@@ -68,12 +69,19 @@ class NewsletterIndex extends Component
         Toaster::success('Inscrito removido com sucesso.');
     }
 
-    public function export(): BinaryFileResponse
+    public function export(): void
     {
         $filters = NewsletterFilterData::from($this->filters->all());
+        $fileName = 'inscritos-newsletter-' . now()->format('Y-m-d-His') . '.xlsx';
+        $this->generatedPath = 'temp/' . $fileName;
 
-        return (new SubscribersExport($filters))
-            ->download('inscritos-newsletter-' . now()->format('Y-m-d') . '.xlsx');
+        ExportDataJob::dispatch(
+            SubscribersExport::class,
+            ['filters' => $filters],
+            $fileName,
+        );
+
+        Toaster::info('A lista de inscritos está sendo exportada...');
     }
 
     public function sendManualNewsletter(): void

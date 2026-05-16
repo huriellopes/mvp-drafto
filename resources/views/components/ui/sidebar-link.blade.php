@@ -20,7 +20,7 @@
     </span>
 
     <span
-        x-show="!sidebarCollapsed"
+        x-show="!sidebarCollapsed || sidebarOpen"
         x-transition:enter="transition ease-out duration-200 delay-100"
         x-transition:enter-start="opacity-0 -translate-x-2"
         class="truncate"

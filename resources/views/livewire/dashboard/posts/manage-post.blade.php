@@ -11,7 +11,7 @@
     <form wire:submit="save" class="space-y-6">
 
         {{-- Header Sticky --}}
-        <div class="sticky top-0 z-0 -mx-4 border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-md sm:mx-0 sm:rounded-b-[2rem]">
+        <div class="sticky top-0 z-40 -mx-4 border-b border-zinc-200 bg-white/80 px-4 py-4 backdrop-blur-md sm:mx-0 sm:rounded-b-[2rem]">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="flex items-center gap-4">
                     <a href="{{ $post?->isPublished() ? route('dashboard.posts.index') : route('dashboard.posts.draft') }}"
@@ -20,15 +20,33 @@
                     </a>
                     <div class="min-w-0">
                         <h1 class="truncate text-sm font-bold text-zinc-900">{{ $post?->exists ? 'Editando: ' . $post->title : 'Nova Publicação' }}</h1>
-                        <p class="text-xs text-zinc-500">Salve e publique quando estiver satisfeito.</p>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <p class="text-xs text-zinc-500">Salve e publique quando estiver satisfeito.</p>
+                            @if($post?->exists)
+                                <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-l border-zinc-200 pl-2">
+                                    <div wire:loading wire:target="save" class="flex items-center gap-1.5 text-indigo-600">
+                                        <x-lucide-loader-2 class="h-3 w-3 animate-spin" />
+                                        Salvando...
+                                    </div>
+                                    <div wire:loading.remove wire:target="save" class="flex items-center gap-1.5">
+                                        <x-lucide-check-circle-2 class="h-3 w-3 text-emerald-500" />
+                                        @if($lastSavedAt)
+                                            Salvo às {{ $lastSavedAt }}
+                                        @else
+                                            Sincronizado
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <x-ui.button loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
-                        Salvar agora
+                    <x-ui.button type="submit" loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
+                        Salvar Rascunho
                     </x-ui.button>
-                    <x-ui.button type="button" wire:click="publish" class="!w-auto px-8 shadow-lg shadow-zinc-900/10">
+                    <x-ui.button type="button" wire:click="publish" loading="publish" class="!w-auto px-8 shadow-lg shadow-zinc-900/10">
                         {{ $post?->isPublished() ? 'Atualizar' : 'Publicar' }}
                     </x-ui.button>
                 </div>
@@ -44,6 +62,7 @@
                             wire:model.live.debounce.500ms="form.title"
                             placeholder="Título da obra..."
                             class="!border-none px-0 !text-5xl !font-black tracking-tight focus:ring-0 sm:!text-6xl"
+                            :error="$errors->first('form.title')"
                         />
                         <div class="mt-8 flex gap-4">
                             <span class="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-600">
@@ -58,6 +77,7 @@
                             placeholder="Conte sua história..."
                             uploadUrl="{{ route('trix.attachments.store') }}"
                         />
+                        @error('form.content') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </div>
@@ -70,36 +90,38 @@
                     </div>
 
                     <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
-                        <x-ui.input label="Slug da URL" wire:model="form.slug" placeholder="link-do-artigo" />
+                        <x-ui.input label="Slug da URL" wire:model.blur="form.slug" placeholder="link-do-artigo" :error="$errors->first('form.slug')" />
 
                         <x-ui.suggestion-input 
                             label="Categoria" 
-                            wire:model="form.category_id" 
+                            wire:model.live="form.category_id" 
                             :available="$categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toArray()"
                             placeholder="Pesquisar ou criar categoria..."
                             createMessage="Sugestão de nova categoria:"
+                            :error="$errors->first('form.category_id')"
                         />
 
                         <x-ui.suggestion-input 
                             label="Tags" 
-                            wire:model="form.tags" 
+                            wire:model.live="form.tags" 
                             :available="$availableTags->map(fn($t) => ['id' => $t->id, 'name' => $t->name])->values()->toArray()"
                             placeholder="Adicionar tag..."
                             multiple="true"
                             createMessage="Sugestão de nova tag:"
+                            :error="$errors->first('form.tags')"
                         />
 
-                        <x-ui.select label="Tipo de conteúdo" wire:model="form.type">
+                        <x-ui.select label="Tipo de conteúdo" wire:model.live="form.type">
                             @foreach(PostTypeEnum::cases() as $type)
                                 <option value="{{ $type->value }}">{{ $type->label() }}</option>
                             @endforeach
                         </x-ui.select>
 
-                        <x-ui.textarea label="Resumo (SEO)" wire:model="form.excerpt" rows="3" />
+                        <x-ui.textarea label="Resumo (SEO)" wire:model.blur="form.excerpt" rows="3" :error="$errors->first('form.excerpt')" />
 
                         <div class="flex items-center justify-between rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100">
                             <span class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Comentários</span>
-                            <input type="checkbox" wire:model="form.comments_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                            <input type="checkbox" wire:model.live="form.comments_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
                         </div>
                     </div>
 
@@ -120,6 +142,7 @@
                                         wire:model.blur="form.seo_title"
                                         placeholder="Título para o Google"
                                         description="Recomendado: 50-60 caracteres"
+                                        :error="$errors->first('form.seo_title')"
                                     />
                                     <x-ui.textarea
                                         label="Descrição SEO (Meta Description)"
@@ -127,6 +150,7 @@
                                         rows="3"
                                         placeholder="Resumo para atrair cliques nos resultados de busca"
                                         description="Recomendado: 120-160 caracteres"
+                                        :error="$errors->first('form.seo_description')"
                                     />
                                     <p class="text-[10px] text-zinc-400 italic font-medium leading-relaxed">
                                         <x-lucide-info class="h-3 w-3 inline mr-0.5" />

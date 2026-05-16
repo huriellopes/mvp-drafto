@@ -16,6 +16,10 @@ Schedule::command('app:archive-post-views')
     ->dailyAt('03:00')
     ->onOneServer();
 
+Schedule::command('app:cleanup-exports')
+    ->twiceMonthly(1, 16, '03:00')
+    ->onOneServer();
+
 Schedule::command('seo:generate-sitemap')
     ->dailyAt('02:00')
     ->onOneServer();

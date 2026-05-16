@@ -12,7 +12,9 @@ use App\Actions\Users\ToggleUserStatusAction;
 use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
 use App\Exports\UsersExport;
+use App\Jobs\ExportDataJob;
 use App\Livewire\Forms\Admin\UserForm;
+use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\Module;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +27,6 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 #[Layout('layouts.app', ['heading' => 'Gestão de Usuários', 'subheading' => 'Administre as contas da plataforma'])]
@@ -33,7 +34,7 @@ use Throwable;
 #[Lazy]
 class UserIndex extends Component
 {
-    use WithPagination;
+    use WithBackgroundExport, WithPagination;
 
     public UserForm $form;
 
@@ -222,7 +223,7 @@ class UserIndex extends Component
         $this->form->reset();
     }
 
-    public function export(): BinaryFileResponse
+    public function export(): void
     {
         $filters = UserFilterData::from([
             'search' => $this->search,
@@ -231,8 +232,16 @@ class UserIndex extends Component
             'direction' => $this->direction,
         ]);
 
-        return (new UsersExport($filters))
-            ->download('usuarios-drafto-' . now()->format('Y-m-d') . '.xlsx');
+        $fileName = 'usuarios-drafto-' . now()->format('Y-m-d-His') . '.xlsx';
+        $this->generatedPath = 'temp/' . $fileName;
+
+        ExportDataJob::dispatch(
+            UsersExport::class,
+            ['filters' => $filters],
+            $fileName,
+        );
+
+        Toaster::info('A lista de usuários está sendo exportada...');
     }
 
     public function render(): View

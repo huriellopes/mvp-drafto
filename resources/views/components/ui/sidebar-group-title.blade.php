@@ -1,5 +1,5 @@
 <div
-    x-show="!sidebarCollapsed"
+    x-show="!sidebarCollapsed || sidebarOpen"
     x-transition
     class="mb-3 px-2"
 >

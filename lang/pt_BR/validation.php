@@ -125,6 +125,8 @@ return [
     'uploaded' => 'Falha no upload do campo :attribute.',
     'url' => 'O campo :attribute deve ser uma URL válida.',
     'uuid' => 'O campo :attribute deve ser um UUID válido.',
+    'required_field' => 'Obrigatório',
+    'optional_field' => 'Opcional',
 
     /*
     |--------------------------------------------------------------------------

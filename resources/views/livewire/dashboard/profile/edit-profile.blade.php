@@ -6,41 +6,120 @@
     {{ Breadcrumbs::render('dashboard.profile') }}
 
     <form wire:submit="save" class="space-y-10">
-        {{-- Seção Visual --}}
-        <section class="overflow-hidden rounded-3xl border border-zinc-200 bg-white dark:bg-zinc-900 dark:border-zinc-800 shadow-sm">
-            <div class="relative h-48 bg-zinc-100 dark:bg-zinc-800">
-                @if ($form->cover && method_exists($form->cover, 'temporaryUrl'))
-                    <img src="{{ $form->cover->temporaryUrl() }}" class="h-full w-full object-cover" />
-                @elseif(auth()->user()->profile?->cover_path)
-                    <img src="{{ Storage::url(auth()->user()->profile->cover_path) }}" class="h-full w-full object-cover">
+        {{-- Visual Section --}}
+        <section class="overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            {{-- Interactive Cover --}}
+            <div
+                class="group relative h-48 bg-zinc-100 transition-all dark:bg-zinc-800"
+                x-data="{ isDropping: false }"
+                @dragover.prevent="isDropping = true"
+                @dragleave.prevent="isDropping = false"
+                @drop.prevent="isDropping = false"
+            >
+                {{-- Show permanent image from DB with cache buster --}}
+                @if ($this->profile?->cover_path)
+                    <img src="/storage/{{ $this->profile->cover_path }}?v={{ now()->timestamp }}" class="h-full w-full object-cover">
                 @endif
 
-                <label class="absolute bottom-4 right-4 cursor-pointer rounded-xl bg-white/90 px-3 py-2 text-xs font-semibold text-zinc-900 backdrop-blur hover:bg-white transition shadow-sm border border-zinc-200/50">
+                <label
+                    @class([
+                        'absolute inset-0 flex cursor-pointer flex-col items-center justify-center transition-all duration-300',
+                        'bg-black/40 opacity-0 group-hover:opacity-100 backdrop-blur-[2px]' => !$this->profile?->cover_path && !$form->cover,
+                        'bg-black/50 opacity-0 group-hover:opacity-100 backdrop-blur-sm' => $this->profile?->cover_path || $form->cover,
+                    ])
+                    :class="{ 'bg-indigo-600/40 opacity-100 backdrop-blur-md': isDropping }"
+                >
                     <input type="file" wire:model="form.cover" class="sr-only">
-                    <span wire:loading.remove wire:target="form.cover">{{ __('dashboard.profile.edit.visual_section.change_cover') }}</span>
-                    <span wire:loading wire:target="form.cover" class="flex items-center gap-2 text-zinc-600">
-                         <x-lucide-loader-2 class="h-3 w-3 animate-spin" /> {{ __('dashboard.profile.edit.visual_section.processing') }}
-                    </span>
+                    <div class="flex flex-col items-center gap-2 text-white drop-shadow-lg" wire:loading.remove wire:target="form.cover">
+                        <x-lucide-image class="h-8 w-8 transition-transform group-hover:scale-110" />
+                        <span class="text-[10px] font-black uppercase tracking-widest">{{ __('dashboard.profile.edit.visual_section.change_cover') }}</span>
+                        <span class="text-[8px] font-bold opacity-70 italic">{{ __('dashboard.profile.edit.visual_section.change_cover_help') }}</span>
+                    </div>
+
+                    <div wire:loading wire:target="form.cover" class="flex flex-col items-center gap-2 text-white">
+                        <x-lucide-loader-2 class="h-6 w-6 animate-spin" />
+                        <span class="text-[10px] font-black uppercase tracking-widest">{{ __('dashboard.profile.edit.visual_section.processing') }}</span>
+                    </div>
                 </label>
+
+                {{-- Delete Cover Button --}}
+                @if($this->profile?->cover_path)
+                    <button 
+                        type="button" 
+                        x-on:click="$dispatch('open-modal', { name: 'confirm-cover-deletion' })"
+                        class="absolute top-4 right-4 z-20 p-2.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 text-red-500 hover:text-red-600 hover:bg-white transition shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 backdrop-blur-sm"
+                        title="{{ __('dashboard.profile.edit.delete_cover.confirm') }}"
+                    >
+                        <x-lucide-trash-2 class="h-4 w-4" />
+                    </button>
+                @endif
             </div>
 
             <div class="relative px-8 pb-8">
-                <div class="-mt-12 mb-6 relative inline-block">
-                    <div class="h-24 w-24 overflow-hidden rounded-3xl border-4 border-white dark:border-zinc-900 bg-zinc-100 dark:bg-zinc-800 shadow-md">
-                        @if ($form->avatar && method_exists($form->avatar, 'temporaryUrl'))
-                            <img src="{{ $form->avatar->temporaryUrl() }}" class="h-full w-full object-cover">
-                        @elseif(auth()->user()->profile?->avatar_path)
-                            <img src="{{ Storage::url(auth()->user()->profile->avatar_path) }}" class="h-full w-full object-cover">
+                {{-- Interactive Avatar --}}
+                <div
+                    class="group relative -mt-12 mb-6 inline-block"
+                    x-data="{ isDropping: false }"
+                    @dragover.prevent="isDropping = true"
+                    @dragleave.prevent="isDropping = false"
+                    @drop.prevent="isDropping = false"
+                >
+                    <div @class([
+                        'h-24 w-24 overflow-hidden rounded-3xl border-4 transition-all duration-300 bg-zinc-100 dark:bg-zinc-800 shadow-md',
+                        'border-white dark:border-zinc-900 group-hover:scale-105 group-hover:shadow-xl'
+                    ])>
+                        {{-- Show permanent image from DB with cache buster --}}
+                        @if($this->profile?->avatar_path)
+                            <img
+                                src="/storage/{{ $this->profile->avatar_path }}?v={{ now()->timestamp }}"
+                                class="h-full w-full object-cover"
+                                alt="{{ $this->profile->name }}"
+                            />
                         @else
                             <div class="flex h-full items-center justify-center text-2xl font-black uppercase tracking-widest text-zinc-400">
-                                {{ get_initials(auth()->user()->name) }}
+                                {{ get_initials($form->name) }}
                             </div>
                         @endif
                     </div>
-                    <label class="absolute -bottom-1 -right-1 cursor-pointer rounded-full bg-zinc-900 p-2 text-white shadow-lg hover:bg-zinc-800 transition active:scale-95">
+
+                    <label
+                        @class([
+                            'absolute inset-0 flex cursor-pointer flex-col items-center justify-center rounded-3xl transition-all duration-300',
+                            'bg-black/40 opacity-0 group-hover:opacity-100 backdrop-blur-[2px]' => !$this->profile?->avatar_path && !$form->avatar,
+                            'bg-black/50 opacity-0 group-hover:opacity-100 backdrop-blur-sm' => $this->profile?->avatar_path || $form->avatar,
+                        ])
+                        :class="{ 'bg-indigo-600/40 opacity-100 backdrop-blur-md': isDropping }"
+                    >
                         <input type="file" wire:model="form.avatar" class="sr-only">
-                        <x-lucide-camera wire:loading.remove wire:target="form.avatar" class="h-4 w-4" />
-                        <x-lucide-loader-2 wire:loading wire:target="form.avatar" class="h-4 w-4 animate-spin" />
+                        <div class="flex flex-col items-center gap-1 text-white" wire:loading.remove wire:target="form.avatar">
+                            <x-lucide-camera class="h-5 w-5 transition-transform group-hover:scale-110" />
+                            <span class="text-[8px] font-black uppercase tracking-tighter">{{ __('dashboard.profile.edit.visual_section.change_avatar') }}</span>
+                        </div>
+                        <div wire:loading wire:target="form.avatar">
+                            <x-lucide-loader-2 class="h-5 w-5 animate-spin text-white" />
+                        </div>
+                    </label>
+
+                    {{-- Delete Avatar Button --}}
+                    @if($this->profile?->avatar_path)
+                        <button 
+                            type="button" 
+                            x-on:click="$dispatch('open-modal', { name: 'confirm-avatar-deletion' })"
+                            class="absolute -top-2 -left-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-red-500 shadow-md border border-zinc-100 dark:border-zinc-800 hover:text-red-600 transition group-hover:scale-110"
+                            title="{{ __('dashboard.profile.edit.delete_avatar.confirm') }}"
+                        >
+                            <x-lucide-trash-2 class="h-3.5 w-3.5" />
+                        </button>
+                    @endif
+
+                    {{-- Edit Button (Pencil) - Fully Clickable for triggers --}}
+                    <label 
+                        for="avatar-upload-pencil"
+                        class="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg dark:bg-white dark:text-zinc-900 transition-all hover:scale-110 active:scale-95 z-30"
+                        title="{{ __('dashboard.profile.edit.visual_section.change_avatar') }}"
+                    >
+                        <x-lucide-pencil class="h-3.5 w-3.5" />
+                        <input id="avatar-upload-pencil" type="file" wire:model="form.avatar" class="sr-only">
                     </label>
                 </div>
 
@@ -52,7 +131,7 @@
                         :error="$errors->first('form.name')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.input>
 
@@ -63,7 +142,7 @@
                         :error="$errors->first('form.email')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.input>
                 </div>
@@ -77,7 +156,7 @@
                         :error="$errors->first('form.username')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.input>
 
@@ -88,14 +167,14 @@
                         :error="$errors->first('form.website_url')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.input>
                 </div>
             </div>
         </section>
 
-        {{-- Seção de Informações (Bio) --}}
+        {{-- About Section --}}
         <x-ui.section-card title="{{ __('dashboard.profile.edit.about_section.title') }}" description="{{ __('dashboard.profile.edit.about_section.description') }}">
             <div class="space-y-6">
                 <div>
@@ -105,23 +184,23 @@
                         :error="$errors->first('form.bio')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.textarea>
                 </div>
             </div>
         </x-ui.section-card>
 
-        {{-- Sua Localização --}}
-        <x-ui.section-card title="Sua Localização" description="Informe de onde você escreve (Opcional).">
+        {{-- Location Section --}}
+        <x-ui.section-card title="{{ __('dashboard.profile.edit.about_section.location_title') ?? 'Sua Localização' }}" description="{{ __('dashboard.profile.edit.about_section.location_desc') ?? 'Informe de onde você escreve (Opcional).' }}">
             <x-slot:title_extra>
-                <x-ui.badge label="Opcional" color="zinc" class="ml-2" />
+                <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-2" />
             </x-slot:title_extra>
 
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <x-ui.select wire:model.live="selectedUf" label="{{ __('dashboard.profile.edit.about_section.state_label') }}">
                     <x-slot:label_extra>
-                        <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                        <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                     </x-slot:label_extra>
                     <option value="">{{ __('dashboard.profile.edit.about_section.select_state') }}</option>
                     @foreach($ufs as $uf)
@@ -132,7 +211,7 @@
                 <div class="relative">
                     <x-ui.select wire:model="form.location" label="{{ __('dashboard.profile.edit.about_section.city_label') }}" wire:loading.attr="disabled" wire:target="selectedUf" :error="$errors->first('form.location')">
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                         <option value="">{{ $selectedUf ? __('dashboard.profile.edit.about_section.select_city') : __('dashboard.profile.edit.about_section.select_state_first') }}</option>
                         @foreach($this->municipios as $municipio)
@@ -146,15 +225,14 @@
             </div>
         </x-ui.section-card>
 
-        {{-- Personalização Avançada --}}
-        <x-ui.section-card title="Identidade Visual" description="Personalize as cores, fontes e estilos dos elementos do seu perfil público.">
+        {{-- Visual Identity Section --}}
+        <x-ui.section-card title="{{ __('dashboard.profile.edit.style_section.title') }}" description="{{ __('dashboard.profile.edit.style_section.description') }}">
             <div class="space-y-10">
-                {{-- Cores --}}
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                     <div>
                         <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
                             {{ __('dashboard.profile.edit.style_section.primary_color') }}
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.primary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
@@ -167,7 +245,7 @@
                     <div>
                         <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
                             {{ __('dashboard.profile.edit.style_section.accent_color') }}
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.accent_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
@@ -179,39 +257,39 @@
 
                     <div>
                         <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                            Cor Secundária
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            {{ __('dashboard.profile.edit.style_section.secondary_color') }}
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.secondary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                {{ $form->secondary_color ?? 'Nenhuma' }}
+                                {{ $form->secondary_color ?? __('dashboard.profile.edit.style_section.none') }}
                             </span>
                         </div>
                     </div>
 
                     <div>
                         <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                            Cor do Texto
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            {{ __('dashboard.profile.edit.style_section.text_color') }}
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.text_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                {{ $form->text_color ?? 'Padrão' }}
+                                {{ $form->text_color ?? __('dashboard.profile.edit.style_section.default') }}
                             </span>
                         </div>
                     </div>
 
                     <div>
                         <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                            Cor de Fundo (Página)
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            {{ __('dashboard.profile.edit.style_section.background_color') }}
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
                             <input type="color" wire:model.live="form.background_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                {{ $form->background_color ?? 'Padrão' }}
+                                {{ $form->background_color ?? __('dashboard.profile.edit.style_section.default') }}
                             </span>
                         </div>
                     </div>
@@ -219,7 +297,7 @@
                     <div>
                         <x-ui.select wire:model="form.theme_mode" label="{{ __('dashboard.profile.edit.style_section.theme_mode') }}">
                             <x-slot:label_extra>
-                                <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                                <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                             </x-slot:label_extra>
                             @foreach(ThemePlatformEnum::options() as $option)
                                 <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
@@ -229,18 +307,18 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                    <x-ui.select wire:model="form.layout_type" label="Layout do Perfil">
+                    <x-ui.select wire:model="form.layout_type" label="{{ __('dashboard.profile.edit.style_section.layout_type') }}">
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                         <option value="default">Layout Padrão (Sidebar)</option>
                         <option value="centered">Centralizado (Foco no Autor)</option>
                         <option value="grid">Grade (Foco em Posts)</option>
                     </x-ui.select>
 
-                    <x-ui.select wire:model="form.button_style" label="Estilo dos Botões">
+                    <x-ui.select wire:model="form.button_style" label="{{ __('dashboard.profile.edit.style_section.button_style') }}">
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                         <option value="rounded-md">Arredondado Leve</option>
                         <option value="rounded-xl">Arredondado Médio</option>
@@ -248,18 +326,18 @@
                         <option value="square">Quadrado</option>
                     </x-ui.select>
 
-                    <x-ui.select wire:model="form.card_style" label="Estilo dos Cards">
+                    <x-ui.select wire:model="form.card_style" label="{{ __('dashboard.profile.edit.style_section.card_style') }}">
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                         <option value="bordered">Com Bordas</option>
                         <option value="shadow">Com Sombra</option>
                         <option value="flat">Flat (Fundo Cinza)</option>
                     </x-ui.select>
 
-                    <x-ui.select wire:model="form.font_family" label="Tipografia">
+                    <x-ui.select wire:model="form.font_family" label="{{ __('dashboard.profile.edit.style_section.font_family') }}">
                         <x-slot:label_extra>
-                            <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                         </x-slot:label_extra>
                         <option value="sans">Sans Serif (Padrão)</option>
                         <option value="serif">Serifado (Clássico)</option>
@@ -270,27 +348,27 @@
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 pt-6 border-t border-zinc-100 dark:border-zinc-800">
                     <x-ui.checkbox
                         wire:model="form.show_subscriber_count"
-                        label="Exibir seguidores"
-                        description="Mostra o total de seguidores publicamente."
+                        label="{{ __('dashboard.profile.edit.style_section.show_followers') }}"
+                        description="{{ __('dashboard.profile.edit.style_section.show_followers_desc') }}"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.checkbox>
                     <x-ui.checkbox
                         wire:model="form.show_view_count"
-                        label="Exibir visualizações"
-                        description="Exibe o contador de visitas do perfil."
+                        label="{{ __('dashboard.profile.edit.style_section.show_views') }}"
+                        description="{{ __('dashboard.profile.edit.style_section.show_views_desc') }}"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.checkbox>
                 </div>
             </div>
         </x-ui.section-card>
 
-        {{-- Seção de Privacidade --}}
+        {{-- Privacy Section --}}
         <x-ui.section-card title="{{ __('dashboard.profile.edit.privacy_section.title') }}" description="{{ __('dashboard.profile.edit.privacy_section.description') }}">
             <div class="space-y-8">
                 <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -302,7 +380,7 @@
                             :error="$errors->first('form.show_email_publicly')"
                         >
                             <x-slot:label_extra>
-                                <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                                <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                             </x-slot:label_extra>
                         </x-ui.checkbox>
                     </div>
@@ -316,7 +394,7 @@
                             class="w-full"
                         >
                             <x-slot:label_extra>
-                                <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                                <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
                             </x-slot:label_extra>
                             @foreach(ProfileVisibilityEnum::options() as $visibility)
                                 <option value="{{ $visibility['value'] }}">{{ $visibility['label'] }}</option>
@@ -335,6 +413,7 @@
             </div>
         </x-ui.section-card>
 
+        {{-- SEO Section --}}
         <x-ui.section-card
             title="{{ __('dashboard.profile.edit.seo_section.title') }}"
             description="{{ __('dashboard.profile.edit.seo_section.description') }}"
@@ -353,16 +432,16 @@
                         :error="$errors->first('form.is_searchable')"
                     >
                         <x-slot:label_extra>
-                            <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </x-slot:label_extra>
                     </x-ui.checkbox>
 
                     <div class="mt-4 flex items-start gap-3 px-1 text-[10px] font-medium leading-relaxed text-zinc-500">
                         <x-lucide-info class="h-3.5 w-3.5 mt-0.5 shrink-0" />
                         @if($form->is_searchable)
-                            <p>Seu perfil ficará visível em buscadores como Google e Bing. Isso pode levar alguns dias para ser processado pelos motores de busca.</p>
+                            <p>{{ __('dashboard.profile.edit.seo_section.google_visible') }}</p>
                         @else
-                            <p class="text-amber-600 dark:text-amber-500/80">Adicionaremos uma tag 'noindex'. Buscadores serão instruídos a não exibir seu perfil nos resultados de pesquisa.</p>
+                            <p class="text-amber-600 dark:text-amber-500/80">{{ __('dashboard.profile.edit.seo_section.google_hidden') }}</p>
                         @endif
                     </div>
                 </div>
@@ -372,28 +451,28 @@
                         <div class="grid grid-cols-1 gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 animate-in fade-in duration-500">
                             <x-ui.input
                                 wire:model.blur="form.seo_title"
-                                label="Título SEO Customizado"
-                                description="Título que aparecerá no Google (Recomendado: 50-60 caracteres)"
+                                label="{{ __('dashboard.profile.edit.seo_section.custom_title') }}"
+                                description="{{ __('dashboard.profile.edit.seo_section.custom_title_desc') }}"
                                 placeholder="{{ $form->name }}"
                                 maxlength="60"
                                 :error="$errors->first('form.seo_title')"
                             >
                                 <x-slot:label_extra>
-                                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                                 </x-slot:label_extra>
                             </x-ui.input>
 
                             <x-ui.textarea
                                 wire:model.blur="form.seo_description"
-                                label="Meta Descrição SEO"
-                                description="Breve resumo para os resultados de busca (Recomendado: 120-160 caracteres)"
+                                label="{{ __('dashboard.profile.edit.seo_section.meta_description') }}"
+                                description="{{ __('dashboard.profile.edit.seo_section.meta_description_desc') }}"
                                 placeholder="{{ $form->bio }}"
                                 maxlength="160"
                                 rows="3"
                                 :error="$errors->first('form.seo_description')"
                             >
                                 <x-slot:label_extra>
-                                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                                 </x-slot:label_extra>
                             </x-ui.textarea>
                         </div>
@@ -412,4 +491,82 @@
             </x-ui.button>
         </div>
     </form>
+
+    {{-- Cover Cropper Modal --}}
+    <x-ui.modal name="cover-cropper-modal" title="{{ __('dashboard.profile.edit.cropper.title') }}" :maxWidth="'4xl'">
+        <div class="space-y-6"
+             x-data="{
+                cropper: null,
+                setup() {
+                    if (this.cropper) this.cropper.destroy();
+                    const img = document.getElementById('cover-preview-image');
+                    if (!img) return;
+
+                    this.cropper = new Cropper(img, {
+                        aspectRatio: 3 / 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        background: false,
+                        zoomable: true,
+                        movable: true,
+                    });
+                },
+                confirm() {
+                    if (!this.cropper) return;
+                    const data = this.cropper.getData(true);
+                    $wire.saveCrop(data);
+                }
+             }"
+             x-on:open-modal.window="if ($event.detail.name === 'cover-cropper-modal') setTimeout(() => setup(), 100)"
+        >
+            <div class="relative overflow-hidden rounded-2xl bg-black min-h-[300px] flex items-center justify-center">
+                @if ($form->cover && method_exists($form->cover, 'temporaryUrl'))
+                    <img id="cover-preview-image" src="{{ $form->cover->temporaryUrl() }}" class="max-w-full block">
+                @endif
+            </div>
+
+            <div class="flex items-center justify-between gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-700">
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="cropper.zoom(0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                        <x-lucide-zoom-in class="h-4 w-4" />
+                    </button>
+                    <button type="button" @click="cropper.zoom(-0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                        <x-lucide-zoom-out class="h-4 w-4" />
+                    </button>
+                    <button type="button" @click="cropper.reset()" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                        <x-lucide-rotate-ccw class="h-4 w-4" />
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <x-ui.button variant="secondary" x-on:click="$dispatch('close-modal', { name: 'cover-cropper-modal' })" type="button" class="!w-auto px-6">
+                        {{ __('dashboard.profile.edit.cropper.cancel') }}
+                    </x-ui.button>
+                    <x-ui.button @click="confirm()" type="button" class="!w-auto px-10">
+                        {{ __('dashboard.profile.edit.cropper.apply') }}
+                    </x-ui.button>
+                </div>
+            </div>
+        </div>
+    </x-ui.modal>
+
+    {{-- Deletion Confirmation Modals --}}
+    <x-ui.confirm-modal 
+        name="confirm-avatar-deletion" 
+        title="{{ __('dashboard.profile.edit.delete_avatar.title') }}"
+        content="{{ __('dashboard.profile.edit.delete_avatar.content') }}"
+        buttonText="{{ __('dashboard.profile.edit.delete_avatar.confirm') }}"
+        variant="danger"
+        action="removeAvatar"
+    />
+
+    <x-ui.confirm-modal 
+        name="confirm-cover-deletion" 
+        title="{{ __('dashboard.profile.edit.delete_cover.title') }}"
+        content="{{ __('dashboard.profile.edit.delete_cover.content') }}"
+        buttonText="{{ __('dashboard.profile.edit.delete_cover.confirm') }}"
+        variant="danger"
+        action="removeCover"
+    />
 </div>

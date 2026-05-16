@@ -113,7 +113,13 @@
                         <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" alt="Drafto Logo" class="w-8 h-auto" />
                     </div>
 
-                    <div x-show="!sidebarCollapsed" x-transition class="min-w-0">
+                    <template x-if="sidebarCollapsed">
+                        <x-lucide-chevron-right 
+                            class="hidden lg:block h-4 w-4 text-zinc-400 group-hover:text-indigo-600 transition-colors"
+                        />
+                    </template>
+
+                    <div x-show="!sidebarCollapsed || sidebarOpen" x-transition class="min-w-0">
                         <p class="truncate text-sm font-semibold text-zinc-900">
                             {{ config('app.name') }}
                         </p>
