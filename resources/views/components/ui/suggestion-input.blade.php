@@ -3,7 +3,8 @@
     'label' => null, 
     'placeholder' => 'Pesquisar...', 
     'multiple' => false,
-    'createMessage' => 'Criar novo: '
+    'createMessage' => 'Criar novo: ',
+    'error' => null
 ])
 
 <div x-data="{
@@ -61,7 +62,11 @@
     @endif
 
     <div class="relative">
-        <div class="flex flex-wrap gap-2 p-2 min-h-[44px] rounded-2xl bg-zinc-50 border border-zinc-200 focus-within:ring-2 focus-within:ring-zinc-900 transition">
+        <div @class([
+            'flex flex-wrap gap-2 p-2 min-h-[44px] rounded-2xl bg-zinc-50 border focus-within:ring-2 transition',
+            'border-zinc-200 focus-within:ring-zinc-900' => !$error,
+            'border-red-500 focus-within:ring-red-500' => $error
+        ])>
             {{-- Múltiplo --}}
             @if($multiple)
                 <template x-for="(id, index) in selected" :key="index">
@@ -118,4 +123,8 @@
             </template>
         </div>
     </div>
+
+    @if($error)
+        <p class="mt-1 text-sm text-red-600">{{ $error }}</p>
+    @endif
 </div>

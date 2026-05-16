@@ -78,8 +78,12 @@ final class SavePostAction
     /**
      * Sênior: Processa a categoria, criando se for um novo nome.
      */
-    private function processCategory(User $user, int|string $category): int
+    private function processCategory(User $user, int|string|null $category): ?int
     {
+        if (!$category) {
+            return null;
+        }
+
         if (is_numeric($category)) {
             $existing = PostCategory::find($category);
 
@@ -104,7 +108,7 @@ final class SavePostAction
             return $newCategory->id;
         }
 
-        throw new Exception('A categoria fornecida é inválida.');
+        return null;
     }
 
     /**

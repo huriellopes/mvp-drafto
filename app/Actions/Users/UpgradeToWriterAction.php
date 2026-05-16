@@ -8,13 +8,14 @@ use App\Enums\RoleEnum;
 use App\Models\User;
 use App\Traits\GeneratesUsername;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class UpgradeToWriterAction
 {
     use GeneratesUsername;
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function exec(User $user): void
     {
