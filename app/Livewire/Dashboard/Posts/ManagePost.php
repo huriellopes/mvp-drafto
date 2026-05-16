@@ -43,7 +43,7 @@ class ManagePost extends Component
     }
 
     #[On('cover-prepared')]
-    public function setCover(string $coverPath)
+    public function setCover(?string $coverPath)
     {
         $this->updatedCoverPath = $coverPath;
         $this->save(isAutosave: true);

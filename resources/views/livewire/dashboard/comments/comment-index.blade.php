@@ -71,7 +71,11 @@
 
                                 <div class="flex items-center gap-2 rounded-xl bg-zinc-50 px-3 py-1.5 w-fit">
                                     <x-lucide-link-2 class="h-3 w-3 text-zinc-400" />
-                                    <a href="{{ route('posts.show', $comment->post->slug) }}" class="text-[11px] font-bold text-zinc-500 hover:text-profile-primary transition">
+                                    <a
+                                        href="{{ route('posts.show', $comment->post->slug) }}"
+                                        target="_blank"
+                                        class="text-[11px] font-bold text-zinc-500 hover:text-profile-primary transition"
+                                    >
                                         {!! Str::limit($comment->post->title, 40) !!}
                                     </a>
                                 </div>
