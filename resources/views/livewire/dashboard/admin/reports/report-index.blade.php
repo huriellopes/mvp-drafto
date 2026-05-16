@@ -68,7 +68,7 @@
             <tr wire:key="{{ $report->id }}" class="group hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors">
                 <td class="px-6 py-4">
                     <div class="flex flex-col">
-                        <span class="font-bold text-zinc-900 dark:text-white">{{ $report->reporter->name }}</span>
+                        <span class="font-bold text-zinc-900 dark:text-white">{{ $report->reporter?->name ?? __('Anonymous') }}</span>
                         <span class="text-[10px] text-zinc-400 uppercase font-black tracking-widest">{{ $report->created_at->diffForHumans() }}</span>
                     </div>
                 </td>
@@ -150,7 +150,7 @@
                 <div class="flex items-center gap-2 mb-3">
                     <span class="px-2 py-0.5 rounded-md bg-zinc-200 dark:bg-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{{ $activeReport?->reason?->label() }}</span>
                     <span class="text-zinc-400">•</span>
-                    <span class="text-zinc-500 font-medium">{{ __('dashboard.admin.reports.modal.reported_by', ['name' => $activeReport?->reporter->name ?? '']) }}</span>
+                    <span class="text-zinc-500 font-medium">{{ __('dashboard.admin.reports.modal.reported_by', ['name' => $activeReport?->reporter?->name ?? __('Anonymous')]) }}</span>
                 </div>
                 <p class="text-zinc-600 dark:text-zinc-400 leading-relaxed italic">"{{ $activeReport?->description ?? __('dashboard.admin.reports.modal.no_description') }}"</p>
             </div>

@@ -52,7 +52,7 @@
 
                             <div class="space-y-2">
                                 <div class="flex flex-wrap items-center gap-3">
-                                    <span class="text-sm font-black text-zinc-900">{{ $comment->author->name }}</span>
+                                    <span class="text-sm font-black text-zinc-900">{{ $comment->author?->name ?? __('Anonymous') }}</span>
                                     <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{{ $comment->created_at->translatedFormat('d M, Y') }}</span>
                                     @if($comment->parent_id)
                                         <span class="inline-flex items-center gap-1 rounded-lg bg-zinc-100 px-2 py-0.5 text-[9px] font-black text-zinc-500 uppercase">

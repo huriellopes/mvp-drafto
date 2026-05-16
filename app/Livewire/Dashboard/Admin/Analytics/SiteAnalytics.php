@@ -12,10 +12,15 @@ use Exception;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.app', [
+    'heading' => 'Analytics do Site',
+    'subheading' => 'Monitoramento de visitas do site.'
+])]
+#[Title('Analytics do Site')]
 final class SiteAnalytics extends Component
 {
     use WithBackgroundExport;
