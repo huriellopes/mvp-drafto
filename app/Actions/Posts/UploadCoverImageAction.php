@@ -32,8 +32,9 @@ final class UploadCoverImageAction
             y: (int) $cropData['y'],
         );
 
-        // Redimensionar para o tamanho alvo
-        $image->resize($targetWidth, $targetHeight);
+        // Sênior: Redimensionar mantendo a proporção do recorte para evitar distorção
+        // Definimos uma largura padrão de 1200px para garantir qualidade em telas retina
+        $image->scale(width: $targetWidth);
 
         // Salvando no storage public como WebP
         Storage::disk('public')->put($path, (string) $image->encodeUsingFileExtension('webp', 90));
