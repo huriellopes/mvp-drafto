@@ -135,7 +135,7 @@
                             </div>
                             <div class="flex gap-2">
                                 <a 
-                                    href="{{ route('dashboard.recovery-codes.download', ['path' => $generatedPath]) }}" 
+                                    href="{{ route('dashboard.temporary-file.download', ['path' => $generatedPath]) }}" 
                                     wire:click="clearGeneratedFile"
                                     class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white transition-colors hover:bg-emerald-700 shadow-sm"
                                 >

@@ -6,13 +6,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class RecoveryCodeDownloadController extends Controller
+final class TemporaryFileDownloadController extends Controller
 {
     /**
-     * Handle the download and cleanup of recovery codes.
+     * Handle the download and cleanup of temporary files.
      */
     public function __invoke(Request $request): BinaryFileResponse
     {
@@ -22,12 +21,8 @@ class RecoveryCodeDownloadController extends Controller
             abort(404);
         }
 
-        // Verifica se o arquivo pertence ao usuário (nome do arquivo contém o slug do usuário)
-        $user = auth()->user();
-        $username = Str::slug($user->profile?->username ?? $user->name);
-        $filename = basename($path);
-
-        if (!str_starts_with($filename, "drafto-{$username}-")) {
+        // Segurança: Apenas arquivos dentro da pasta temp/
+        if (!str_starts_with($path, 'temp/')) {
             abort(403);
         }
 

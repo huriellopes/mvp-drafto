@@ -72,8 +72,8 @@ Route::middleware(['auth'])
             ->middleware(['module:support'])
             ->name('support');
 
-        Route::get('/download-recovery-codes', RecoveryCodeDownloadController::class)
-            ->name('recovery-codes.download');
+        Route::get('/download-temporary-file', \App\Http\Controllers\TemporaryFileDownloadController::class)
+            ->name('temporary-file.download');
 
         // Módulos Administrativos
         Route::group([], base_path('routes/parts/admin-routes.php'));

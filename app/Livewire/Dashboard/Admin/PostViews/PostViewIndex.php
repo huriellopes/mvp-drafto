@@ -7,6 +7,8 @@ namespace App\Livewire\Dashboard\Admin\PostViews;
 use App\Actions\PostViews\ListPostViewsAction;
 use App\DTOs\PostViewFilterData;
 use App\Exports\PostViewsExport;
+use App\Jobs\ExportDataJob;
+use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\PostView;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -21,7 +23,7 @@ use Masmerise\Toaster\Toaster;
 #[Title('Visualizações de Posts')]
 class PostViewIndex extends Component
 {
-    use WithPagination;
+    use WithBackgroundExport, WithPagination;
 
     #[Url(history: true)]
     public string $search = '';
@@ -40,12 +42,19 @@ class PostViewIndex extends Component
         $this->sort = $column;
     }
 
-    public function export()
+    public function export(): void
     {
         $filters = PostViewFilterData::from($this->all());
+        $fileName = 'analytics_posts_' . now()->format('Ymd_His') . '.xlsx';
+        $this->generatedPath = 'temp/' . $fileName;
 
-        return (new PostViewsExport($filters))
-            ->download('analytics_posts_' . now()->format('Ymd_His') . '.xlsx');
+        ExportDataJob::dispatch(
+            PostViewsExport::class,
+            ['filters' => $filters],
+            $fileName,
+        );
+
+        Toaster::info('O relatório de visualizações está sendo gerado...');
     }
 
     public function confirmDelete(int $id): void

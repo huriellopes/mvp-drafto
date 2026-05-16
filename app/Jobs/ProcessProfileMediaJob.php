@@ -42,7 +42,7 @@ final class ProcessProfileMediaJob implements ShouldQueue
             $this->profile->avatar_path = $this->optimizeImage($this->profile->avatar_path, 'avatars', 400, 400);
         }
 
-        // 2. Otimizar Capa
+        // 2. Otimizar Capa (Apenas se não for WebP já, ex: uploads diretos sem crop)
         if ($this->profile->cover_path && !$this->isWebp($this->profile->cover_path)) {
             $this->profile->cover_path = $this->optimizeImage($this->profile->cover_path, 'covers', 1200, 400);
         }
@@ -51,7 +51,7 @@ final class ProcessProfileMediaJob implements ShouldQueue
             $this->profile->saveQuietly();
         }
 
-        // 3. Cleanup
+        // 3. Cleanup: Deleta as imagens antigas para economizar espaço
         $this->cleanup($this->oldAvatarPath, $this->profile->avatar_path);
         $this->cleanup($this->oldCoverPath, $this->profile->cover_path);
     }
@@ -75,14 +75,14 @@ final class ProcessProfileMediaJob implements ShouldQueue
                 return $currentPath;
             }
 
-            $imageManager = new ImageManager(new Driver());
-            $image = $imageManager->read($fullPath);
+            $imageManager = ImageManager::usingDriver(new Driver());
+            $image = $imageManager->decodePath($fullPath);
 
             // Redimensionamento inteligente (cover/fit)
             $image->cover($width, $height);
 
             $newPath = $folder . '/' . pathinfo($currentPath, PATHINFO_FILENAME) . '.webp';
-            Storage::disk('public')->put($newPath, $image->toWebp(80)->toString());
+            Storage::disk('public')->put($newPath, (string) $image->encodeUsingFileExtension('webp', 80));
 
             if ($newPath !== $currentPath) {
                 Storage::disk('public')->delete($currentPath);
@@ -98,12 +98,23 @@ final class ProcessProfileMediaJob implements ShouldQueue
 
     private function cleanup(?string $oldPath, ?string $currentPath): void
     {
-        if ($oldPath && $oldPath !== $currentPath) {
-            try {
-                Storage::disk('public')->delete($oldPath);
-            } catch (Exception $e) {
-                Log::warning('Erro ao deletar imagem antiga de perfil: ' . $oldPath);
+        if (!$oldPath || $oldPath === $currentPath) {
+            return;
+        }
+
+        try {
+            $disk = Storage::disk('public');
+
+            // 1. Deleta o arquivo original (o caminho que veio do banco)
+            $disk->delete($oldPath);
+
+            // 2. Sênior: Deleta versões processadas (WebP) caso o original fosse JPG/PNG
+            $webpPath = pathinfo($oldPath, PATHINFO_DIRNAME) . '/' . pathinfo($oldPath, PATHINFO_FILENAME) . '.webp';
+            if ($webpPath !== $oldPath && $webpPath !== $currentPath) {
+                $disk->delete($webpPath);
             }
+        } catch (Exception $e) {
+            Log::warning("Erro ao deletar imagem antiga de perfil ({$oldPath}): " . $e->getMessage());
         }
     }
 }

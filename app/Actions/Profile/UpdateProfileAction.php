@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Profile;
 
+use App\Actions\Posts\UploadCoverImageAction;
 use App\DTOs\UpdateProfileData;
 use App\Jobs\ProcessProfileMediaJob;
 use App\Models\User;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 
 final class UpdateProfileAction
 {
-    public function exec(User $user, UpdateProfileData $data): void
+    public function exec(User $user, UpdateProfileData $data, ?array $coverCropData = null): void
     {
         $profileData = [
             'name' => $data->name,
@@ -28,18 +29,19 @@ final class UpdateProfileAction
             'is_searchable' => $data->is_searchable,
         ];
 
-        $oldAvatarPath = null;
+        $oldAvatarPath = $user->profile?->avatar_path;
+        $oldCoverPath = $user->profile?->cover_path;
 
         if ($data->avatar) {
-            $oldAvatarPath = $user->profile?->avatar_path;
             $profileData['avatar_path'] = $data->avatar->store('avatars', 'public');
         }
 
-        $oldCoverPath = null;
-
         if ($data->cover) {
-            $oldCoverPath = $user->profile?->cover_path;
-            $profileData['cover_path'] = $data->cover->store('covers', 'public');
+            if ($coverCropData) {
+                $profileData['cover_path'] = app(UploadCoverImageAction::class)->exec($data->cover, $coverCropData);
+            } else {
+                $profileData['cover_path'] = $data->cover->store('covers', 'public');
+            }
         }
 
         $profile = $user->profile()->updateOrCreate(
@@ -47,7 +49,7 @@ final class UpdateProfileAction
             $profileData,
         );
 
-        // Sênior: Despacha o processamento de mídia para a fila (Otimização WebP + Redimensionamento)
+        // Despacha o processamento de mídia apenas se houver novas imagens
         if ($data->avatar || $data->cover) {
             ProcessProfileMediaJob::dispatch($profile, $oldAvatarPath, $oldCoverPath);
         }

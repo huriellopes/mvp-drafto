@@ -10,25 +10,31 @@ use Illuminate\Support\Facades\DB;
 
 final class GetSiteAnalyticsAction
 {
-    public function handle(int $days = 30): SiteAnalyticsData
+    public function handle(int $days = 30, ?string $startDate = null, ?string $endDate = null): SiteAnalyticsData
     {
-        $startDate = now()->subDays($days);
+        $start = $startDate
+            ? now()->parse($startDate)->startOfDay()
+            : now()->subDays($days)->startOfDay();
+
+        $end = $endDate
+            ? now()->parse($endDate)->endOfDay()
+            : now()->endOfDay();
 
         $totalViews = SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->count();
 
         $uniqueVisitors = SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->distinct('session_id')
             ->count();
 
         $avgDuration = (float) SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->avg('duration') ?? 0.0;
 
         $topPages = SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->select('url', DB::raw('count(*) as total'))
             ->groupBy('url')
             ->orderByDesc('total')
@@ -37,7 +43,7 @@ final class GetSiteAnalyticsAction
             ->toArray();
 
         $topSearches = SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->whereNotNull('search_query')
             ->select('search_query', DB::raw('count(*) as total'))
             ->groupBy('search_query')
@@ -47,7 +53,7 @@ final class GetSiteAnalyticsAction
             ->toArray();
 
         $viewsPerDay = SiteView::query()
-            ->where('viewed_at', '>=', $startDate)
+            ->whereBetween('viewed_at', [$start, $end])
             ->select(DB::raw('DATE(viewed_at) as date'), DB::raw('count(*) as total'))
             ->groupBy('date')
             ->orderBy('date')

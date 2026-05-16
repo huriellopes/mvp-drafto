@@ -68,6 +68,9 @@ class ProfileForm extends Form
 
     public function setUser(User $user): void
     {
+        $this->avatar = null;
+        $this->cover = null;
+
         $profile = $user->profile;
 
         if (!$profile) {

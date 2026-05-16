@@ -95,12 +95,12 @@ final class ProcessPostMediaAndSeoJob implements ShouldQueue
                 return;
             }
 
-            $imageManager = new ImageManager(new Driver());
-            $image = $imageManager->read($path);
+            $imageManager = ImageManager::usingDriver(new Driver());
+            $image = $imageManager->decodePath($path);
 
             $newPath = 'posts/' . pathinfo($coverPath, PATHINFO_FILENAME) . '.webp';
 
-            Storage::disk('public')->put($newPath, $image->toWebp(80)->toString());
+            Storage::disk('public')->put($newPath, (string) $image->encodeUsingFileExtension('webp', 80));
 
             // Deleta o original se for diferente (ex: .jpg)
             if ($newPath !== $coverPath) {
