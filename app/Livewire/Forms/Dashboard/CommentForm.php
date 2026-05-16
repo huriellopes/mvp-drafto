@@ -39,6 +39,7 @@ class CommentForm extends Form
         $this->validate();
 
         $isAuthor = $this->comment->user_id === auth()->id();
+        $originalStatus = $this->comment->status;
 
         $data = ['status' => $this->status];
 
@@ -47,6 +48,15 @@ class CommentForm extends Form
         }
 
         $this->comment->update($data);
+
+        // Sênior: Se o status mudou, notifica no Telegram
+        if ($originalStatus->value !== $this->status) {
+            $authorName = $this->comment->user->name ?? 'Anônimo';
+            $moderatorName = auth()->user()->name;
+            $newStatusLabel = CommentStatusEnum::tryFrom($this->status)?->label() ?? 'Desconhecido';
+            
+            Log::channel('telegram_support')->info("💬 Comentário de **{$authorName}** foi moderado por **{$moderatorName}**. Novo status: **{$newStatusLabel}**.");
+        }
 
         $this->reset();
     }
