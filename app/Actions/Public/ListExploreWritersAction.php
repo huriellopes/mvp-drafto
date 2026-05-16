@@ -28,11 +28,9 @@ final class ListExploreWritersAction
                             ->whereNotNull('name')
                             ->whereNotNull('username')
                             ->whereNotNull('bio')
-                            ->whereNotNull('avatar_path')
                             ->where('name', '<>', '')
                             ->where('username', '<>', '')
-                            ->where('bio', '<>', '')
-                            ->where('avatar_path', '<>', '');
+                            ->where('bio', '<>', '');
                     })
                     ->when($data->search, function ($q) use ($data) {
                         $q->where(function ($sub) use ($data) {
