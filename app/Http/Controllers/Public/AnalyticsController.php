@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Public;
 
 use App\Actions\Public\UpdateSiteViewDurationAction;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 final class AnalyticsController extends Controller
 {
@@ -21,7 +21,7 @@ final class AnalyticsController extends Controller
         $action->handle(
             sessionId: session()->getId(),
             url: $request->input('url'),
-            duration: (int) $request->input('duration')
+            duration: (int) $request->input('duration'),
         );
 
         return response()->json(['status' => 'success']);

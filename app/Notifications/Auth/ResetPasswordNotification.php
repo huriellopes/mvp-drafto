@@ -17,6 +17,7 @@ class ResetPasswordNotification extends ResetPassword implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())
+            ->mailer('contact')
             ->subject(__('Recuperação de senha na Drafto'))
             ->view('emails.auth.reset-password', [
                 'user' => $notifiable,
