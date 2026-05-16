@@ -2,9 +2,10 @@
 
 @php
     $id = $attributes->get('id') ?? ($attributes->wire('model') ? $attributes->wire('model')->value() : 'input-' . Str::random(8));
+    $isPassword = $attributes->get('type') === 'password';
 @endphp
 
-<div class="w-full">
+<div class="w-full" @if($isPassword) x-data="{ show: false }" @endif>
     @if($label)
         <label for="{{ $id }}" class="mb-2 flex items-center gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             {{ $label }}
@@ -29,12 +30,25 @@
             {{ $attributes->merge([
                 'id' => $id,
                 'autocomplete' => 'off',
-            'spellcheck' => 'false',
-            'class' => 'block w-full bg-transparent px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 focus:placeholder:opacity-50 transition-all'
+                'spellcheck' => 'false',
+                'class' => 'block w-full bg-transparent px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 focus:placeholder:opacity-50 transition-all'
             ]) }}
+            @if($isPassword)
+                :type="show ? 'text' : 'password'"
+            @endif
             />
 
-        @if($suffix)
+        @if($isPassword)
+            <button
+                type="button"
+                class="pr-4 pl-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors focus:outline-none"
+                x-on:click="show = !show"
+                title="Toggle password visibility"
+            >
+                <x-lucide-eye x-show="!show" class="h-4 w-4" />
+                <x-lucide-eye-off x-show="show" class="h-4 w-4" x-cloak />
+            </button>
+        @elseif($suffix)
             <span class="pr-4 pl-2 text-zinc-400 font-medium select-none">
                 {{ $suffix }}
             </span>

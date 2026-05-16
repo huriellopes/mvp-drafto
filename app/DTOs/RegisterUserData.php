@@ -12,6 +12,7 @@ class RegisterUserData extends Data
         public string $name,
         public string $email,
         public string $password,
+        public string $password_confirmation,
         public string $role,
     ) {}
 }

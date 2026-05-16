@@ -21,6 +21,8 @@ class RegisterForm extends Form
 
     public string $password = '';
 
+    public string $password_confirmation = '';
+
     public string $role = 'reader';
 
     public function rules(): array
@@ -28,7 +30,7 @@ class RegisterForm extends Form
         return [
             'name' => ['required', 'string', 'max:255', 'min:3'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', Password::default()],
+            'password' => ['required', 'string', 'confirmed', Password::default()],
             'role' => ['required', 'string', 'in:writer,reader'],
         ];
     }
