@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Public;
 
 use App\Models\SiteView;
-use Illuminate\Support\Facades\DB;
 
 final class UpdateSiteViewDurationAction
 {

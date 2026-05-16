@@ -26,6 +26,7 @@ final class SupportResponseNotification extends Notification implements ShouldQu
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
+            ->mailer('support')
             ->subject(__('notifications.support.response.subject', ['subject' => $this->support->subject]))
             ->greeting(__('notifications.support.response.greeting', ['name' => $notifiable->name]))
             ->line(__('notifications.support.response.body'))

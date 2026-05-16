@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Models\SiteView;
+use App\Actions\Public\StoreSiteViewAction;
+use App\DTOs\Public\StoreSiteViewData;
+use App\Jobs\ProcessSiteViewJob;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
-use App\Jobs\ProcessSiteViewJob;
 
 it('tracks a site view when visiting home page', function () {
     Queue::fake();
@@ -18,18 +19,18 @@ it('tracks a site view when visiting home page', function () {
 
 it('saves a site view in the database when job is processed', function () {
     $user = User::factory()->create();
-    
-    $data = new \App\DTOs\Public\StoreSiteViewData(
+
+    $data = new StoreSiteViewData(
         userId: $user->id,
         url: 'http://localhost/',
         ipAddress: '127.0.0.1',
         userAgent: 'Testing',
         sessionId: 'test-session',
         searchQuery: 'test search',
-        duration: 0
+        duration: 0,
     );
 
-    (new \App\Actions\Public\StoreSiteViewAction())->handle($data);
+    (new StoreSiteViewAction())->handle($data);
 
     $this->assertDatabaseHas('site_views', [
         'user_id' => $user->id,

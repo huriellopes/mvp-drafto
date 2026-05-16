@@ -28,6 +28,7 @@ final class UserBannedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
+            ->mailer('support')
             ->error()
             ->subject(__('notifications.report.banned.subject', ['app' => config('app.name')]))
             ->greeting(__('notifications.report.banned.greeting', ['name' => $notifiable->name]))
