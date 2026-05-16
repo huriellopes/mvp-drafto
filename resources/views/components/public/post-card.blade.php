@@ -6,8 +6,10 @@
         @if($post->cover_image_url)
             <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
         @else
-            <div class="flex h-full w-full items-center justify-center bg-indigo-500/5">
-                <x-lucide-image class="h-8 w-8 text-indigo-500/20" />
+            <div class="flex h-full w-full items-center justify-center bg-indigo-500/5 select-none">
+                 <span class="text-6xl font-black text-indigo-500/10 tracking-tighter uppercase">
+                     {{ get_initials($post->title) }}
+                 </span>
             </div>
         @endif
 

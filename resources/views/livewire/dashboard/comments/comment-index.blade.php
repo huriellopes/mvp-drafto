@@ -66,7 +66,7 @@
                                 </div>
 
                                 <p class="text-sm leading-relaxed text-zinc-600 max-w-2xl">
-                                    {{ $comment->content }}
+                                    {!! $comment->content !!}
                                 </p>
 
                                 <div class="flex items-center gap-2 rounded-xl bg-zinc-50 px-3 py-1.5 w-fit">
@@ -88,7 +88,7 @@
                                     <x-lucide-pencil class="h-4 w-4" />
                                 </button>
                             </x-ui.tooltip>
-                            
+
                             <x-ui.tooltip text="Excluir Comentário">
                                 <button
                                     wire:click="confirmDelete({{ $comment->id }})"
