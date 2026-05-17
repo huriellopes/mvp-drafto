@@ -25,7 +25,6 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
         ?string $threadId = null,
         $level = Level::Error,
     ) {
-        // Sênior: Se o level vier como string, o Monolog espera que seja resolvido
         parent::__construct($level);
         $this->token = $token;
         $this->chatId = $chatId;

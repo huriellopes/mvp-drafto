@@ -16,15 +16,12 @@ final class CreateTelegramLogger
     {
         $logger = new Logger('telegram');
 
-        // Sênior: Garantimos que o thread ID da configuração do canal tenha prioridade total
-        $threadId = array_key_exists('thread', $config) 
-            ? $config['thread'] 
+        $threadId = array_key_exists('thread', $config)
+            ? $config['thread']
             : config('services.telegram.thread');
 
-        // Sênior: Se o ID não for numérico ou estiver vazio, tratamos como NULL (Main Chat)
         $threadId = (is_numeric($threadId)) ? (string) $threadId : null;
 
-        // Sênior: Resolvemos o nível de log para o Enum do Monolog 3.x
         $level = Level::fromName(ucfirst($config['level'] ?? 'error'));
 
         $handler = new TelegramLoggerHandler(

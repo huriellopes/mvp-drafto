@@ -41,6 +41,8 @@ class SavedIndex extends Component
 
     public ?int $postIdBeingRemoved = null;
 
+    public bool $isRemovingFromCollection = false;
+
     public ?int $postIdBeingMoved = null;
 
     public ?int $targetCollectionId = null;
@@ -108,6 +110,7 @@ class SavedIndex extends Component
     public function confirmUnsave(int $postId): void
     {
         $this->postIdBeingRemoved = $postId;
+        $this->isRemovingFromCollection = !is_null($this->collection);
         $this->dispatch('open-modal', name: 'confirm-unsave-post');
     }
 
@@ -117,11 +120,26 @@ class SavedIndex extends Component
             return;
         }
 
+        $user = auth()->user();
         $post = Post::findOrFail($this->postIdBeingRemoved);
-        $action->exec(auth()->user(), $post);
+
+        if ($this->isRemovingFromCollection) {
+            // Sênior: Se estivermos em uma coleção, apenas removemos o vínculo com a coleção,
+            // mantendo o post nos itens salvos (lista geral).
+            app(MoveToCollectionAction::class)->exec(
+                user: $user,
+                postId: $post->id,
+                collectionId: null,
+            );
+            Toaster::info('Post removido da coleção, mas continua nos seus itens salvos.');
+        } else {
+            // Remove completamente dos itens salvos
+            $action->exec($user, $post);
+            Toaster::info('Post removido dos itens salvos.');
+        }
 
         $this->postIdBeingRemoved = null;
-        Toaster::info('Post removido dos itens salvos.');
+        $this->isRemovingFromCollection = false;
     }
 
     public function openMoveModal(int $postId, ?int $currentCollectionId): void

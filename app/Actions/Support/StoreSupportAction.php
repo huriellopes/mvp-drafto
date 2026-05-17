@@ -11,6 +11,7 @@ use App\Enums\SupportStatusEnum;
 use App\Models\Support;
 use App\Models\User;
 use App\Notifications\SupportMessageReceivedNotification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 final class StoreSupportAction

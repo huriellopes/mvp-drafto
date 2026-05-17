@@ -85,18 +85,6 @@
                 </x-ui.select>
             </div>
 
-            @if(auth()->user()->isAdmin())
-                <div class="rounded-3xl bg-zinc-900 p-1 pl-4 pr-1 flex items-center justify-between text-white text-[10px] font-bold uppercase tracking-widest shadow-xl">
-                    <div class="flex items-center gap-2">
-                        <x-lucide-shield-alert class="h-3.5 w-3.5 text-amber-400" />
-                        Visão Geral da Plataforma (Admin)
-                    </div>
-                    <div class="bg-white/10 rounded-2xl px-3 py-1.5 backdrop-blur-md">
-                        Modo Auditoria
-                    </div>
-                </div>
-            @endif
-
             {{-- Grid --}}
             <div
                 wire:loading.class="opacity-50"
@@ -282,9 +270,11 @@
     {{-- Modal: Confirmação de Remoção Post --}}
     <x-ui.confirm-modal
         name="confirm-unsave-post"
-        title="Remover dos Salvos"
-        content="Tem certeza que deseja remover este post da sua biblioteca? Ele será excluído permanentemente da sua lista de salvos e coleções."
-        buttonText="Sim, Remover"
+        :title="$isRemovingFromCollection ? 'Remover da Coleção' : 'Remover dos Salvos'"
+        :content="$isRemovingFromCollection
+            ? 'Tem certeza que deseja remover este post desta coleção? Ele continuará disponível na sua lista geral de itens salvos.'
+            : 'Tem certeza que deseja remover este post da sua biblioteca? Ele será excluído permanentemente da sua lista de salvos e coleções.'"
+        :buttonText="$isRemovingFromCollection ? 'Sim, Remover da Coleção' : 'Sim, Remover dos Salvos'"
         variant="danger"
         action="unsave"
     />
