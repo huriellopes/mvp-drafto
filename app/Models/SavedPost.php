@@ -13,6 +13,12 @@ class SavedPost extends Pivot
 
     protected $table = 'saved_posts';
 
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'collection_id',
+    ];
+
     public function collection(): BelongsTo
     {
         return $this->belongsTo(Collection::class);

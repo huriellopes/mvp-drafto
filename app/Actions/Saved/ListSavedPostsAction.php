@@ -19,18 +19,19 @@ final class ListSavedPostsAction
     {
         $query = Post::query();
 
-        if ($user->isAdmin()) {
-            // No modo Admin/Auditoria, vemos todos os salvos de todos os usuários
-            $query->select('posts.*', 'saved_posts.created_at as saved_at', 'saved_posts.collection_id')
-                ->join('saved_posts', 'posts.id', '=', 'saved_posts.post_id');
-        } else {
-            // Usuário comum vê apenas os seus
-            $query->select('posts.*', 'saved_posts.created_at as saved_at', 'saved_posts.collection_id')
-                ->join('saved_posts', function ($join) use ($user) {
-                    $join->on('posts.id', '=', 'saved_posts.post_id')
-                        ->where('saved_posts.user_id', '=', $user->id);
-                });
-        }
+        /**
+         * Sênior: Na Biblioteca pessoal, o usuário (mesmo sendo Admin) deve ver apenas os SEUS itens.
+         * O Modo Auditoria deve ser evitado aqui para não quebrar ações de gerenciamento (como mover/remover)
+         * que esperam que o registro pertença ao usuário autenticado.
+         */
+        $query->select([
+            'posts.*',
+            'saved_posts.created_at as saved_at',
+            'saved_posts.collection_id',
+        ])->join('saved_posts', function ($join) use ($user) {
+            $join->on('posts.id', '=', 'saved_posts.post_id')
+                ->where('saved_posts.user_id', '=', $user->id);
+        });
 
         // Definimos a coluna de ordenação para evitar ambiguidade (posts.created_at vs saved_posts.created_at)
         $sortColumn = $filters->sort === 'created_at' ? 'saved_posts.created_at' : "posts.{$filters->sort}";

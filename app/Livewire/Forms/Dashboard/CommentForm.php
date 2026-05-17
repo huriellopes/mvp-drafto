@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Dashboard;
 
 use App\Enums\CommentStatusEnum;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
 
@@ -49,12 +50,11 @@ class CommentForm extends Form
 
         $this->comment->update($data);
 
-        // Sênior: Se o status mudou, notifica no Telegram
         if ($originalStatus->value !== $this->status) {
             $authorName = $this->comment->user->name ?? 'Anônimo';
             $moderatorName = auth()->user()->name;
             $newStatusLabel = CommentStatusEnum::tryFrom($this->status)?->label() ?? 'Desconhecido';
-            
+
             Log::channel('telegram_support')->info("💬 Comentário de **{$authorName}** foi moderado por **{$moderatorName}**. Novo status: **{$newStatusLabel}**.");
         }
 

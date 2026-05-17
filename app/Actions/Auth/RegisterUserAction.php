@@ -13,6 +13,7 @@ use App\Traits\GeneratesUsername;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 final class RegisterUserAction
@@ -53,7 +54,6 @@ final class RegisterUserAction
 
             event(new Registered($user));
 
-            // Sênior: Notifica o registro no canal de suporte
             Log::channel('telegram_support')->info("✅ Novo usuário registrado: **{$user->name}** ({$user->email})");
 
             return $user;
