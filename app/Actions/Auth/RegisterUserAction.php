@@ -54,7 +54,13 @@ final class RegisterUserAction
 
             event(new Registered($user));
 
-            Log::channel('telegram_support')->info("✅ Novo usuário registrado: **{$user->name}** ({$user->email})");
+            Log::channel('telegram_support')->info("✅ Novo usuário registrado: **{$user->name}**", [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role->label(),
+                'status' => $user->status->label(),
+                'ip_address' => $user->ip_address,
+            ]);
 
             return $user;
         });
