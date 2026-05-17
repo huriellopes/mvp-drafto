@@ -8,10 +8,6 @@ Schedule::command('drafto:send-newsletter')
 Schedule::command('drafto:sync-views')
     ->hourly();
 
-Schedule::command('app:expire-trials')
-    ->dailyAt('00:00')
-    ->runInBackground();
-
 Schedule::command('app:archive-post-views')
     ->dailyAt('03:00')
     ->onOneServer();
