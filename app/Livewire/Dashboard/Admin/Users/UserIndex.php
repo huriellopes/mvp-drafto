@@ -72,7 +72,7 @@ class UserIndex extends Component
 
         if (app(ImpersonateUserAction::class)->exec($this->selectedUserForImpersonation)) {
             Toaster::success("Agora você está logado como {$this->selectedUserForImpersonation->name}");
-            $this->redirectRoute('dashboard.index', navigate: true);
+            $this->redirect(route('dashboard.index'));
         } else {
             Toaster::error('Não foi possível realizar a impersonação.');
         }

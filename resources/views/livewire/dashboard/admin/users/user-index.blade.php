@@ -12,7 +12,8 @@
         <div class="flex flex-1 items-center gap-3">
             <div class="w-full md:w-80">
                 <x-ui.input
-                    wire:model.live.debounce.300ms="search"
+                    wire:model="search"
+                    wire:keydown.enter="updatedSearch"
                     placeholder="{{ __('dashboard.admin.users.search_placeholder') }}"
                     type="search"
                 >
@@ -67,138 +68,138 @@
     <div class="min-h-[600px] transition-all duration-300" wire:loading.class="opacity-60 pointer-events-none">
         <x-ui.table>
             <x-slot:header>
-            <x-ui.table.th label="{{ __('dashboard.admin.users.table.user') }}" column="name" :sort="$sort" :direction="$direction" />
-            <x-ui.table.th label="{{ __('dashboard.admin.users.table.role') }}" column="role" :sort="$sort" :direction="$direction" />
-            <x-ui.table.th label="Verificado" />
-            <x-ui.table.th label="{{ __('dashboard.admin.users.table.status') }}" column="status" :sort="$sort" :direction="$direction" />
-            <x-ui.table.th label="{{ __('dashboard.admin.users.table.last_login') }}" column="last_login_at" :sort="$sort" :direction="$direction" />
-            <th class="px-6 py-4 text-right">{{ __('dashboard.admin.users.table.actions') }}</th>
-        </x-slot:header>
+                <x-ui.table.th label="{{ __('dashboard.admin.users.table.user') }}" column="name" :sort="$sort" :direction="$direction" />
+                <x-ui.table.th label="{{ __('dashboard.admin.users.table.role') }}" column="role" :sort="$sort" :direction="$direction" />
+                <x-ui.table.th label="Verificado" />
+                <x-ui.table.th label="{{ __('dashboard.admin.users.table.status') }}" column="status" :sort="$sort" :direction="$direction" />
+                <x-ui.table.th label="{{ __('dashboard.admin.users.table.last_login') }}" column="last_login_at" :sort="$sort" :direction="$direction" />
+                <th class="px-6 py-4 text-right">{{ __('dashboard.admin.users.table.actions') }}</th>
+            </x-slot:header>
 
-        @forelse($this->users as $user)
-            <tr wire:key="user-row-{{ $user->id }}" class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition">
-                <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-zinc-500">
-                            {{ substr($user->name, 0, 1) }}
+            @forelse($this->users as $user)
+                <tr wire:key="user-row-{{ $user->id }}" class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center font-bold text-zinc-500">
+                                {{ substr($user->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-zinc-900 dark:text-white">{{ $user->name }}</p>
+                                <p class="text-xs text-zinc-500">{{ $user->email }}</p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="font-bold text-zinc-900 dark:text-white">{{ $user->name }}</p>
-                            <p class="text-xs text-zinc-500">{{ $user->email }}</p>
-                        </div>
-                    </div>
-                </td>
-                <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400 text-xs italic">
-                    {{ $user->role->label() }}
-                </td>
+                    </td>
+                    <td class="px-6 py-4 text-zinc-600 dark:text-zinc-400 text-xs italic">
+                        {{ $user->role->label() }}
+                    </td>
 
-                {{-- Coluna Verificado (Toggle) --}}
-                <td class="px-6 py-4">
-                    <button
-                        wire:click="toggleVerification({{ $user->id }})"
-                        @class([
-                            'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2',
-                            'bg-blue-600' => $user->profile?->is_verified,
-                            'bg-zinc-200 dark:bg-zinc-700' => ! $user->profile?->is_verified,
-                        ])
-                    >
-                        <span @class([
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                            'translate-x-5' => $user->profile?->is_verified,
-                            'translate-x-0' => ! $user->profile?->is_verified,
-                        ])></span>
-
-                        @if($user->isVerified())
-                            <x-lucide-badge-check class="absolute -right-6 top-1 h-4 w-4 text-blue-500" />
-                        @endif
-                    </button>
-                </td>
-
-                <td class="px-6 py-4">
-                    <button
-                        wire:click="toggleStatus({{ $user->id }})"
-                        wire:loading.attr="disabled"
-                        wire:target="toggleStatus({{ $user->id }})"
-                        class="group flex items-center gap-2 transition active:scale-95 disabled:opacity-50"
-                    >
-                        <span @class([
-                            'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition',
-                            'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' => $user->status === UserStatusEnum::ACTIVE,
-                            'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400' => $user->status === UserStatusEnum::PENDING,
-                            'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' => $user->status === UserStatusEnum::SUSPENDED,
-                        ])>
-                            <x-lucide-refresh-cw
-                                wire:loading
-                                wire:target="toggleStatus({{ $user->id }})"
-                                class="h-3 w-3 animate-spin"
-                            />
-                            <span wire:loading.remove wire:target="toggleStatus({{ $user->id }})" @class([
-                                'h-1.5 w-1.5 rounded-full',
-                                'bg-emerald-600' => $user->status === UserStatusEnum::ACTIVE,
-                                'bg-zinc-600' => $user->status === UserStatusEnum::PENDING,
-                                'bg-amber-600' => $user->status === UserStatusEnum::SUSPENDED,
+                    {{-- Coluna Verificado (Toggle) --}}
+                    <td class="px-6 py-4">
+                        <button
+                            wire:click="toggleVerification({{ $user->id }})"
+                            @class([
+                                'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2',
+                                'bg-blue-600' => $user->profile?->is_verified,
+                                'bg-zinc-200 dark:bg-zinc-700' => ! $user->profile?->is_verified,
+                            ])
+                        >
+                            <span @class([
+                                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                                'translate-x-5' => $user->profile?->is_verified,
+                                'translate-x-0' => ! $user->profile?->is_verified,
                             ])></span>
-                            {{ $user->status->label() }}
-                        </span>
-                    </button>
-                </td>
-                <td class="px-6 py-4 text-xs text-zinc-500">
-                    {{ $user->last_login_at?->diffForHumans() ?? __('dashboard.admin.users.table.never') }}
-                </td>
-                <td class="px-6 py-4 text-right">
-                    <div class="flex justify-end gap-2">
-                        <x-ui.tooltip text="Gerenciar Módulos">
-                            <button
-                                wire:click="manageModules({{ $user->id }})"
-                                class="p-2 text-zinc-400 hover:text-indigo-600 transition"
-                            >
-                                <x-lucide-layout-grid class="h-4 w-4" />
-                            </button>
-                        </x-ui.tooltip>
 
-                        <x-ui.tooltip text="Impersonar (Logar como)">
-                            <button
-                                wire:click="confirmImpersonation({{ $user->id }})"
-                                class="p-2 text-zinc-400 hover:text-amber-600 transition"
-                            >
-                                <x-lucide-user-cog class="h-4 w-4" />
-                            </button>
-                        </x-ui.tooltip>
-                        <x-ui.tooltip text="Editar Usuário">
-                            <button
-                                wire:click="edit({{ $user->id }})"
-                                class="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
-                            >
-                                <x-lucide-pencil class="h-4 w-4" />
-                            </button>
-                        </x-ui.tooltip>
+                            @if($user->isVerified())
+                                <x-lucide-badge-check class="absolute -right-6 top-1 h-4 w-4 text-blue-500" />
+                            @endif
+                        </button>
+                    </td>
 
-                        @if($user->id !== auth()->id())
-                            <x-ui.tooltip text="Excluir Usuário">
+                    <td class="px-6 py-4">
+                        <button
+                            wire:click="toggleStatus({{ $user->id }})"
+                            wire:loading.attr="disabled"
+                            wire:target="toggleStatus({{ $user->id }})"
+                            class="group flex items-center gap-2 transition active:scale-95 disabled:opacity-50"
+                        >
+                            <span @class([
+                                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold transition',
+                                'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' => $user->status === UserStatusEnum::ACTIVE,
+                                'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400' => $user->status === UserStatusEnum::PENDING,
+                                'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' => $user->status === UserStatusEnum::SUSPENDED,
+                            ])>
+                                <x-lucide-refresh-cw
+                                    wire:loading
+                                    wire:target="toggleStatus({{ $user->id }})"
+                                    class="h-3 w-3 animate-spin"
+                                />
+                                <span wire:loading.remove wire:target="toggleStatus({{ $user->id }})" @class([
+                                    'h-1.5 w-1.5 rounded-full',
+                                    'bg-emerald-600' => $user->status === UserStatusEnum::ACTIVE,
+                                    'bg-zinc-600' => $user->status === UserStatusEnum::PENDING,
+                                    'bg-amber-600' => $user->status === UserStatusEnum::SUSPENDED,
+                                ])></span>
+                                {{ $user->status->label() }}
+                            </span>
+                        </button>
+                    </td>
+                    <td class="px-6 py-4 text-xs text-zinc-500">
+                        {{ $user->last_login_at?->diffForHumans() ?? __('dashboard.admin.users.table.never') }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <x-ui.tooltip text="Gerenciar Módulos">
                                 <button
-                                    type="button"
-                                    wire:click="confirmUserDeletion({{ $user->id }})"
-                                    class="p-2 text-zinc-400 hover:text-red-600 transition"
+                                    wire:click="manageModules({{ $user->id }})"
+                                    class="p-2 text-zinc-400 hover:text-indigo-600 transition"
                                 >
-                                    <x-lucide-trash-2 class="h-4 w-4" />
+                                    <x-lucide-layout-grid class="h-4 w-4" />
                                 </button>
                             </x-ui.tooltip>
-                        @endif
-                    </div>
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="6" class="px-6 py-12">
-                    <x-ui.empty-state title="Nenhum usuário encontrado" description="Tente ajustar seus filtros de busca ou limpe os parâmetros de ordenação." />
-                </td>
-            </tr>
-        @endforelse
 
-        <x-slot:footer>
-            {{ $this->users->links() }}
-        </x-slot:footer>
-    </x-ui.table>
+                            <x-ui.tooltip text="Impersonar (Logar como)">
+                                <button
+                                    wire:click="confirmImpersonation({{ $user->id }})"
+                                    class="p-2 text-zinc-400 hover:text-amber-600 transition"
+                                >
+                                    <x-lucide-user-cog class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
+                            <x-ui.tooltip text="Editar Usuário">
+                                <button
+                                    wire:click="edit({{ $user->id }})"
+                                    class="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
+                                >
+                                    <x-lucide-pencil class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
+
+                            @if($user->id !== auth()->id())
+                                <x-ui.tooltip text="Excluir Usuário">
+                                    <button
+                                        type="button"
+                                        wire:click="confirmUserDeletion({{ $user->id }})"
+                                        class="p-2 text-zinc-400 hover:text-red-600 transition"
+                                    >
+                                        <x-lucide-trash-2 class="h-4 w-4" />
+                                    </button>
+                                </x-ui.tooltip>
+                            @endif
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="px-6 py-12">
+                        <x-ui.empty-state title="Nenhum usuário encontrado" description="Tente ajustar seus filtros de busca ou limpe os parâmetros de ordenação." />
+                    </td>
+                </tr>
+            @endforelse
+
+            <x-slot:footer>
+                {{ $this->users->links() }}
+            </x-slot:footer>
+        </x-ui.table>
     </div>
 
     {{-- Modal de Formulário --}}
