@@ -2,7 +2,7 @@
 
 <div x-data="{
     async share() {
-        const url = '{{ route('posts.show', $post->slug) }}';
+        const url = '{{ $post->getShareUrl() }}';
 
         if (navigator.share) {
             try {

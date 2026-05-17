@@ -135,7 +135,7 @@
 
                         {{-- Actions --}}
                         <div class="mt-8 flex items-center gap-3 md:mb-4">
-                            <x-ui.share-profile :username="$this->user->profile->username" />
+                            <x-ui.share-profile :user="$this->user" />
 
                             @if($this->user->profile->website_url)
                                 <a href="{{ $this->user->profile->website_url }}" target="_blank" class="flex h-12 w-12 items-center justify-center rounded-profile-button {{ $cardClasses }} text-zinc-600 transition hover:text-profile-primary">

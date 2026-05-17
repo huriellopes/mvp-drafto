@@ -74,6 +74,11 @@ Route::middleware(['auth'])
         Route::get('/download-temporary-file', \App\Http\Controllers\TemporaryFileDownloadController::class)
             ->name('temporary-file.download');
 
+        // Módulo Encurtador de Links (Escritor)
+        Route::livewire('/encurtador', \App\Livewire\Dashboard\Modules\LinkShortenerDashboard::class)
+            ->middleware(['module:link_shortener', 'module.access:link_shortener'])
+            ->name('short-links.index');
+
         // Módulos Administrativos
         Route::group([], base_path('routes/parts/admin-routes.php'));
 
@@ -117,3 +122,6 @@ Route::get('/newsletter/verify', VerifySubscriberController::class)
 Route::get('/newsletter/unsubscribe/{email}', UnsubscribeController::class)
     ->name('newsletter.unsubscribe')
     ->middleware('signed');
+
+Route::get('/s/{code}', \App\Http\Controllers\ShortLinkController::class)
+    ->name('shortlink.redirect');

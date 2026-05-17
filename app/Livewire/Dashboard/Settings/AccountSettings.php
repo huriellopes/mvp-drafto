@@ -29,6 +29,9 @@ class AccountSettings extends Component
         $this->dispatch('open-modal', name: 'confirm-become-writer');
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function becomeWriter(): void
     {
         $user = auth()->user();

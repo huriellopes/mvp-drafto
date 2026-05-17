@@ -73,6 +73,13 @@
                     {{ __('dashboard.sidebar.links.followers') }}
                 </x-ui.sidebar-link>
                 @endmodule
+
+                @module(ModuleEnum::LINK_SHORTENER)
+                <x-ui.sidebar-link href="{{ route('dashboard.short-links.index') }}" :active="request()->routeIs('dashboard.short-links.index')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-link class="h-5 w-5" /></x-slot:icon>
+                    {{ __('Encurtador') }}
+                </x-ui.sidebar-link>
+                @endmodule
             </nav>
         </div>
     @endif
@@ -105,6 +112,11 @@
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.users.index') }}" :active="request()->routeIs('dashboard.admin.users.*')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-users class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.users') }}
+                </x-ui.sidebar-link>
+
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.short-links.index') }}" :active="request()->routeIs('dashboard.admin.short-links.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-link class="h-5 w-5" /></x-slot:icon>
+                    Links Encurtados
                 </x-ui.sidebar-link>
 
                 {{-- Suporte --}}

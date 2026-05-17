@@ -18,6 +18,7 @@ enum ModuleEnum: string
             self::SAVED_POST => trans('dashboard.modules.items.saved_post'),
             self::COMMENTS => trans('dashboard.modules.items.comments'),
             self::SUPPORT => __('dashboard.modules.items.support'),
+            self::LINK_SHORTENER => 'Encurtador de Links',
         };
     }
 
@@ -30,4 +31,5 @@ enum ModuleEnum: string
     case SAVED_POST = 'saved_post';
     case COMMENTS = 'comments';
     case SUPPORT = 'support';
+    case LINK_SHORTENER = 'link_shortener';
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Modules\GenerateShortLinkAction;
 use App\Enums\PostStatusEnum;
 use App\Enums\PostTypeEnum;
 use App\Enums\PostVisibilityEnum;
@@ -111,6 +112,22 @@ class Post extends Model implements Auditable, Sitemapable
     public function views(): HasMany
     {
         return $this->hasMany(PostView::class);
+    }
+
+    public function shortLinks(): MorphMany
+    {
+        return $this->morphMany(ShortLink::class, 'shortable');
+    }
+
+    /**
+     * Sênior: Retorna a URL de compartilhamento, encurtada se o módulo estiver ativo.
+     */
+    public function getShareUrl(): string
+    {
+        return app(GenerateShortLinkAction::class)->exec(
+            user: auth()->user() ?? $this->author,
+            shortable: $this,
+        );
     }
 
     public function scopePublished(Builder $query): Builder

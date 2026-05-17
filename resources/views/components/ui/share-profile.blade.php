@@ -1,11 +1,11 @@
-@props(['username'])
+@props(['user'])
 
 <div x-data="{
     share() {
-        const url = '{{ route('profile.show', $username) }}';
+        const url = '{{ $user->getShareUrl() }}';
         if (navigator.share) {
             navigator.share({
-                title: 'Confira o perfil de {{ $username }} na Drafto',
+                title: 'Confira o perfil de {{ $user->profile->username }} na Drafto',
                 url: url
             });
         } else {
