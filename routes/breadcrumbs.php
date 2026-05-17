@@ -31,6 +31,11 @@ Breadcrumbs::for('dashboard.support', function (BreadcrumbTrail $trail) {
     $trail->push('Suporte', route('dashboard.support'));
 });
 
+Breadcrumbs::for('dashboard.short-links.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Encurtador de Links', route('dashboard.short-links.index'));
+});
+
 Breadcrumbs::for('dashboard.admin.support', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Gestão de Suporte', route('dashboard.admin.support.index'));
@@ -92,6 +97,11 @@ Breadcrumbs::for('dashboard.modules.index', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('dashboard.users.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Controle de Usuários', route('dashboard.admin.users.index'));
+});
+
+Breadcrumbs::for('dashboard.admin.short-links.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Links Encurtados', route('dashboard.admin.short-links.index'));
 });
 
 Breadcrumbs::for('dashboard.newsletter.index', function (BreadcrumbTrail $trail) {

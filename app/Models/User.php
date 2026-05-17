@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Modules\GenerateShortLinkAction;
 use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
@@ -179,6 +180,22 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $this->hasMany(PostView::class);
     }
 
+    public function shortLinks(): MorphMany
+    {
+        return $this->morphMany(ShortLink::class, 'shortable');
+    }
+
+    /**
+     * Sênior: Retorna a URL de compartilhamento do perfil, encurtada se o módulo estiver ativo.
+     */
+    public function getShareUrl(): string
+    {
+        return app(GenerateShortLinkAction::class)->exec(
+            user: auth()->user() ?? $this,
+            shortable: $this,
+        );
+    }
+
     public function modules(): BelongsToMany
     {
         return $this->belongsToMany(Module::class)
@@ -267,8 +284,12 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         };
     }
 
-    public function isModuleAvailable(string $slug): bool
+    public function isModuleAvailable(string|ModuleEnum $slug): bool
     {
+        if ($slug instanceof ModuleEnum) {
+            $slug = $slug->value;
+        }
+
         if ($this->hasRole(RoleEnum::SUPER_ADMIN)) {
             return true;
         }

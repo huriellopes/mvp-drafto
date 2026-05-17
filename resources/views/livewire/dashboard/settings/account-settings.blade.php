@@ -7,7 +7,7 @@
 
         @if(auth()->user()->role === RoleEnum::READER)
             <div class="shrink-0">
-                <x-ui.button 
+                <x-ui.button
                     wire:click="openBecomeWriterModal"
                     variant="primary"
                     sizes="sm"
