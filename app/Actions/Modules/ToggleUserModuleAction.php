@@ -11,23 +11,17 @@ use Illuminate\Support\Facades\Cache;
 
 final class ToggleUserModuleAction
 {
-    /**
-     * Toggles the enabled status of a module for a specific user.
-     */
     public function exec(User $user, Module $module): bool
     {
-        $moduleInCollection = $user->modules
-            ->firstWhere('id', $module->id);
+        $pivot = $user->modules()->where('module_id', $module->id)->first()?->pivot;
 
-        $currentStatus = $moduleInCollection
-            ? $moduleInCollection->pivot->is_enabled
-            : false;
+        $newStatus = $pivot ? !$pivot->is_enabled : true;
 
-        $newStatus = !$currentStatus;
-
-        $user->modules()->updateExistingPivot($module->id, [
-            'is_enabled' => $newStatus,
-            'updated_at' => Carbon::now(),
+        $user->modules()->syncWithoutDetaching([
+            $module->id => [
+                'is_enabled' => $newStatus,
+                'updated_at' => Carbon::now(),
+            ],
         ]);
 
         $this->invalidateCache($user, $module);
