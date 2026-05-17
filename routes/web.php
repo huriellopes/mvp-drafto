@@ -80,7 +80,7 @@ Route::middleware(['auth'])
             ->name('short-links.index');
 
         // Módulos Administrativos
-        Route::group([], base_path('routes/parts/admin-routes.php'));
+        require base_path('routes/parts/admin-routes.php');
 
         // Área do Escritor e Leitor
         Route::name('')->group(function () {
