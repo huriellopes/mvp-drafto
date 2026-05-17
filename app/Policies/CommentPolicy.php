@@ -24,7 +24,7 @@ class CommentPolicy
 
     public function view(?User $user, Comment $comment): bool
     {
-        return $comment->status === CommentStatusEnum::APPROVED;
+        return $comment->status === CommentStatusEnum::VISIBLE;
     }
 
     public function create(?User $user): bool
@@ -51,7 +51,7 @@ class CommentPolicy
     {
         return $user->isActive()
             && $comment->user_id === $user->id
-            && $comment->status === CommentStatusEnum::APPROVED;
+            && $comment->status === CommentStatusEnum::VISIBLE;
     }
 
     public function delete(User $user, Comment $comment): bool
@@ -76,7 +76,7 @@ class CommentPolicy
     public function like(User $user, Comment $comment): bool
     {
         return $user->isActive()
-            && $comment->status === CommentStatusEnum::APPROVED;
+            && $comment->status === CommentStatusEnum::VISIBLE;
     }
 
     public function moderate(User $user, Comment $comment): bool
