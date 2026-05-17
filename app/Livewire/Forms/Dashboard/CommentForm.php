@@ -55,7 +55,13 @@ class CommentForm extends Form
             $moderatorName = auth()->user()->name;
             $newStatusLabel = CommentStatusEnum::tryFrom($this->status)?->label() ?? 'Desconhecido';
 
-            Log::channel('telegram_support')->info("💬 Comentário de **{$authorName}** foi moderado por **{$moderatorName}**. Novo status: **{$newStatusLabel}**.");
+            Log::channel('telegram_support')->info("💬 Comentário moderado por **{$moderatorName}**", [
+                'author' => $authorName,
+                'comment_id' => $this->comment->id,
+                'new_status' => $newStatusLabel,
+                'content_preview' => mb_substr($this->comment->content, 0, 100),
+                'moderator' => $moderatorName,
+            ]);
         }
 
         $this->reset();
