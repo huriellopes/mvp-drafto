@@ -94,4 +94,16 @@ return [
             'enable_contact_form' => true,
         ],
     ],
+    [
+        'slug' => ModuleEnum::LINK_SHORTENER,
+        'name' => 'Encurtador de Links',
+        'description' => 'Geração de URLs curtas e amigáveis para compartilhamento de posts e perfil.',
+        'icon' => 'link',
+        'settings' => [
+            'enable_for_profile' => true,
+            'enable_for_posts' => true,
+            'enable_analytics' => true,
+            'default_code_length' => 6,
+        ],
+    ],
 ];

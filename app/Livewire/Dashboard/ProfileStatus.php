@@ -11,13 +11,21 @@ use Livewire\Component;
 class ProfileStatus extends Component
 {
     /**
-     * Get the public profile URL.
+     * Get the original public profile URL.
      */
     public function getProfileUrlProperty(): string
     {
         $username = Auth::user()->profile?->username;
 
         return $username ? route('profile.show', $username) : '#';
+    }
+
+    /**
+     * Get the shareable profile URL (shortened if module is active).
+     */
+    public function getShareUrlProperty(): string
+    {
+        return Auth::user()->getShareUrl();
     }
 
     /**

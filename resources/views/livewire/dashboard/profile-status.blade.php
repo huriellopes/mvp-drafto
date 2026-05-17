@@ -15,7 +15,7 @@
             </div>
 
             <div x-data="{ 
-                copyText: @js($this->profileUrl),
+                copyText: @js($this->shareUrl),
                 copied: false,
                 copy() {
                     if (this.copyText === '#') return;
