@@ -50,7 +50,15 @@ final class StoreSupportAction
         ));
 
         // Sênior: Notifica o novo ticket no canal de suporte do Telegram
-        Log::channel('telegram_support')->info("🎫 Novo ticket de suporte aberto por **{$user->name}**. \nAssunto: {$support->subject}");
+        Log::channel('telegram_support')->info("🎫 Novo ticket de suporte aberto por **{$user->name}**", [
+            'ticket_id' => $support->id,
+            'subject' => $support->subject,
+            'message' => $support->message,
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
+        ]);
 
         return $support;
     }
