@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Widgets;
 
+use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Models\Comment;
 use App\Models\Post;
@@ -22,7 +23,8 @@ class StatsOverview extends Component
         if ($user->isAdmin()) {
             return [
                 ['title' => 'Total Usuários', 'value' => User::count(), 'desc' => 'Plataforma'],
-                ['title' => 'Total Posts', 'value' => Post::count(), 'desc' => 'Global'],
+                ['title' => 'Posts Publicados', 'value' => Post::where('status', PostStatusEnum::PUBLISHED)->count(), 'desc' => 'Global'],
+                ['title' => 'Rascunhos Globais', 'value' => Post::where('status', PostStatusEnum::DRAFT)->count(), 'desc' => 'Em andamento'],
                 ['title' => 'Denúncias', 'value' => Report::where('status', 'pending')->count(), 'desc' => 'Pendentes'],
                 ['title' => 'Views Globais', 'value' => Post::sum('views_count'), 'desc' => 'Alcance total'],
             ];
@@ -30,9 +32,10 @@ class StatsOverview extends Component
 
         if ($user->hasRole(RoleEnum::WRITER)) {
             return [
-                ['title' => 'Meus Posts', 'value' => $user->posts()->count(), 'desc' => 'Criados por você'],
+                ['title' => 'Posts Publicados', 'value' => $user->posts()->where('status', PostStatusEnum::PUBLISHED)->count(), 'desc' => 'Artigos visíveis'],
+                ['title' => 'Meus Rascunhos', 'value' => $user->posts()->where('status', PostStatusEnum::DRAFT)->count(), 'desc' => 'Em andamento'],
                 ['title' => 'Seguidores', 'value' => $user->followers()->count(), 'desc' => 'Pessoas te seguindo'],
-                ['title' => 'Interações', 'value' => Comment::whereHas('post', fn ($q) => $q->where('user_id', $user->id))->count(), 'desc' => 'Comentários em seus posts'],
+                ['title' => 'Interações', 'value' => Comment::whereHas('post', fn ($q) => $q->where('user_id', $user->id))->count(), 'desc' => 'Comentários'],
                 ['title' => 'Minhas Views', 'value' => $user->posts()->sum('views_count'), 'desc' => 'Total acumulado'],
             ];
         }
