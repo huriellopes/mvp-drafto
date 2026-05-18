@@ -79,4 +79,47 @@
             />
         </noscript>
     @endif
-@endif
+
+    {{-- Sênior: Sistema de Rastreamento Global de Eventos (Event Delegation) --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pageContext = @json($context);
+
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('[data-tracking]');
+                if (!target) return;
+
+                let eventName = target.getAttribute('data-tracking');
+                
+                // Sênior: Padronização forçada dfto_...
+                if (!eventName.startsWith('dfto_')) {
+                    eventName = 'dfto_' + eventName;
+                }
+
+                let customParams = {};
+
+                try {
+                    const rawParams = target.getAttribute('data-tracking-params');
+                    if (rawParams) customParams = JSON.parse(rawParams);
+                } catch (err) {
+                    console.warn('Drafto Tracking: Falha ao processar parâmetros do evento', err);
+                }
+
+                const finalParams = { ...pageContext, ...customParams };
+
+                // 1. Google Analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', eventName, finalParams);
+                }
+
+                // 2. Meta Pixel
+                if (typeof fbq !== 'undefined') {
+                    fbq('trackCustom', eventName, finalParams);
+                }
+
+                // console.log(`[Tracking] Evento: ${eventName}`, finalParams);
+            });
+        });
+    </script>
+    @endif
+
