@@ -16,6 +16,11 @@ class GenerateSitemapAction
 {
     public function exec(): void
     {
+        $baseUrl = 'https://drafto.pro';
+        config(['app.url' => $baseUrl]);
+        \Illuminate\Support\Facades\URL::forceRootUrl($baseUrl);
+        \Illuminate\Support\Facades\URL::forceScheme('https');
+
         $sitemap = Sitemap::create();
 
         // 1. Static Routes
