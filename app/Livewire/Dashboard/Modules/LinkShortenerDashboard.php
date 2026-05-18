@@ -31,8 +31,9 @@ final class LinkShortenerDashboard extends Component
 
     public function mount(): void
     {
-        $this->enableForProfile = (bool) auth()->user()->getModuleSetting(ModuleEnum::LINK_SHORTENER, 'enable_for_profile', true);
-        $this->enableForPosts = (bool) auth()->user()->getModuleSetting(ModuleEnum::LINK_SHORTENER, 'enable_for_posts', true);
+        $user = auth()->user();
+        $this->enableForProfile = (bool) $user->getModuleSetting(ModuleEnum::LINK_SHORTENER, 'enable_for_profile', true);
+        $this->enableForPosts = (bool) $user->getModuleSetting(ModuleEnum::LINK_SHORTENER, 'enable_for_posts', true);
     }
 
     public function updatedEnableForProfile($value): void
