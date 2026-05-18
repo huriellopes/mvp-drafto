@@ -116,8 +116,23 @@
 </main>
 
 <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-12">
-    <div class="mx-auto max-w-7xl px-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        <p>&copy; {{ date('Y') }} Drafto. Escreva com clareza. Publique com identidade.</p>
+    <div class="mx-auto max-w-7xl px-4 flex flex-col items-center gap-6">
+        <div class="flex gap-6">
+            @if($instagramUrl = config('social.instagram.url'))
+                <a 
+                    href="{{ $instagramUrl }}" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    class="text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                    data-tracking="dfto_click_social_instagram_guest"
+                >
+                    <x-lucide-instagram class="h-5 w-5" />
+                </a>
+            @endif
+        </div>
+        <div class="text-center text-sm text-zinc-500 dark:text-zinc-400">
+            <p>&copy; {{ date('Y') }} Drafto. Escreva com clareza. Publique com identidade.</p>
+        </div>
     </div>
 </footer>
 </body>

@@ -10,9 +10,17 @@
             </p>
 
             <div class="flex gap-6">
-                <a href="#" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"><x-lucide-instagram class="h-5 w-5" /></a>
-                <a href="#" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"><x-lucide-twitter class="h-5 w-5" /></a>
-                <a href="#" class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"><x-lucide-github class="h-5 w-5" /></a>
+                @if($instagramUrl = config('social.instagram.url'))
+                    <a 
+                        href="{{ $instagramUrl }}" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                        data-tracking="dfto_click_social_instagram"
+                    >
+                        <x-lucide-instagram class="h-5 w-5" />
+                    </a>
+                @endif
             </div>
         </div>
     </div>
