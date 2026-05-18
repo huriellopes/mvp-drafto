@@ -40,7 +40,8 @@
             gtag('config', '{{ $gaId }}', {
                 'author_username': '{{ $context['author_username'] }}',
                 'content_type': '{{ $context['content_type'] }}',
-                'category': '{{ $context['category'] }}'
+                'category': '{{ $context['category'] }}',
+                'send_page_view': true
             });
         </script>
     @endif
@@ -69,10 +70,9 @@
             'https://connect.facebook.net/en_US/fbevents.js');
 
             fbq('init', '{{ $globalPixelId }}');
-
-            {{-- Enviamos o PageView com dados contextuais para segmentação --}}
             fbq('track', 'PageView', @json($context));
         </script>
+
         <noscript>
             <img height="1" width="1" style="display:none"
                  src="https://www.facebook.com/tr?id={{ $globalPixelId }}&ev=PageView&noscript=1"
@@ -90,7 +90,7 @@
                 if (!target) return;
 
                 let eventName = target.getAttribute('data-tracking');
-                
+
                 // Sênior: Padronização forçada dfto_...
                 if (!eventName.startsWith('dfto_')) {
                     eventName = 'dfto_' + eventName;
@@ -117,7 +117,7 @@
                     fbq('trackCustom', eventName, finalParams);
                 }
 
-                // console.log(`[Tracking] Evento: ${eventName}`, finalParams);
+                console.log(`[Tracking] Evento: ${eventName}`, finalParams);
             });
         });
     </script>
