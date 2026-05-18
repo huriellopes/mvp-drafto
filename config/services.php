@@ -43,4 +43,16 @@ return [
         'thread' => env('TELEGRAM_THREAD_ID'),
     ],
 
+    'google' => [
+        'analytics_id' => env('GOOGLE_ANALYTICS_ID'),
+        'search_console_id' => env('GOOGLE_SEARCH_CONSOLE_ID'),
+        'ads_id' => env('GOOGLE_ADS_ID'),
+    ],
+
+    'meta' => [
+        'pixel_id' => env('META_PIXEL_ID'),
+        'business_id' => env('META_BUSINESS_ID'),
+        'system_user_token' => env('META_SYSTEM_USER_TOKEN'),
+    ],
+
 ];
