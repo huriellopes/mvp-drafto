@@ -101,10 +101,10 @@
 
             <div class="flex items-center gap-4">
                 @auth
-                    <a href="{{ route('dashboard.index') }}" class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" wire:navigate>Dashboard</a>
+                    <a href="{{ route('dashboard.index') }}" class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" wire:navigate data-tracking="dfto_click_dashboard">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" wire:navigate>Entrar</a>
-                    <a href="{{ route('register') }}" class="rounded-xl bg-zinc-900 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-900 hover:opacity-90 transition shadow-sm" wire:navigate>Começar a escrever</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" wire:navigate data-tracking="dfto_click_login">Entrar</a>
+                    <a href="{{ route('register') }}" class="rounded-xl bg-zinc-900 dark:bg-white px-4 py-2 text-sm font-semibold text-white dark:text-zinc-900 hover:opacity-90 transition shadow-sm" wire:navigate data-tracking="dfto_click_register">Começar a escrever</a>
                 @endauth
             </div>
         </div>

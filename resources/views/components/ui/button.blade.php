@@ -5,6 +5,8 @@
     'type' => 'button',
     'icon' => null,
     'href' => null,
+    'tracking' => null,
+    'trackingParams' => [],
 ])
 
 @php
@@ -36,6 +38,8 @@
 
 <{{ $tag }}
     {{ $href ? "href=$href" : '' }}
+    @if($tracking) data-tracking="{{ $tracking }}" @endif
+    @if(!empty($trackingParams)) data-tracking-params="{{ json_encode($trackingParams) }}" @endif
     {{ $attributes->merge(['type' => $href ? null : $type, 'class' => $classes]) }}
     @if($target && !$href)
         wire:loading.attr="disabled"
