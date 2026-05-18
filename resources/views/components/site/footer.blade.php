@@ -9,19 +9,7 @@
                 &copy; {{ date('Y') }} Drafto Platform. Feito para quem ama as palavras.
             </p>
 
-            <div class="flex gap-6">
-                @if($instagramUrl = config('social.instagram.url'))
-                    <a 
-                        href="{{ $instagramUrl }}" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        class="text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-                        data-tracking="dfto_click_social_instagram"
-                    >
-                        <x-lucide-instagram class="h-5 w-5" />
-                    </a>
-                @endif
-            </div>
+            <x-ui.social-links context="footer" />
         </div>
     </div>
 </footer>
