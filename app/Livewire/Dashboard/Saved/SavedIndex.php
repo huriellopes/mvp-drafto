@@ -110,7 +110,14 @@ class SavedIndex extends Component
     public function confirmUnsave(int $postId): void
     {
         $this->postIdBeingRemoved = $postId;
-        $this->isRemovingFromCollection = !is_null($this->collection);
+
+        /**
+         * Sênior: Verificamos se há um ID de coleção ativo para decidir se apenas
+         * removemos da coleção ou se removemos dos salvos completamente.
+         * Usar empty() ou o método resolver garante que "" (string vazia da URL) seja tratada como null.
+         */
+        $this->isRemovingFromCollection = !empty($this->collection);
+
         $this->dispatch('open-modal', name: 'confirm-unsave-post');
     }
 
@@ -124,22 +131,23 @@ class SavedIndex extends Component
         $post = Post::findOrFail($this->postIdBeingRemoved);
 
         if ($this->isRemovingFromCollection) {
-            // Sênior: Se estivermos em uma coleção, apenas removemos o vínculo com a coleção,
-            // mantendo o post nos itens salvos (lista geral).
+            // Sênior: Remove apenas o vínculo com a coleção atual
             app(MoveToCollectionAction::class)->exec(
                 user: $user,
                 postId: $post->id,
                 collectionId: null,
             );
-            Toaster::info('Post removido da coleção, mas continua nos seus itens salvos.');
+            Toaster::info('Post movido para a lista geral de salvos.');
         } else {
-            // Remove completamente dos itens salvos
+            // Remove completamente da biblioteca do usuário
             $action->exec($user, $post);
             Toaster::info('Post removido dos itens salvos.');
         }
 
+        // Sênior: Limpamos o estado e invalidamos a propriedade computada para forçar o refresh do grid
         $this->postIdBeingRemoved = null;
         $this->isRemovingFromCollection = false;
+        unset($this->savedPosts);
     }
 
     public function openMoveModal(int $postId, ?int $currentCollectionId): void

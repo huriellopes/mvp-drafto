@@ -60,11 +60,11 @@
                 </div>
 
                 @if($tab === 'following')
-                    <button wire:click="confirmUnfollow({{ $person->id }})" class="h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:text-white">
+                    <button wire:click="confirmUnfollow({{ $person->id }})" class="h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-red-600 hover:text-white">
                         <x-lucide-user-minus class="h-4 w-4" />
                     </button>
                 @else
-                    <a href="{{ route('profile.show', $person->profile->username) }}" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 text-zinc-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-zinc-900 hover:text-white">
+                    <a href="{{ route('profile.show', $person->profile->username) }}" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 text-zinc-400 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all hover:bg-zinc-900 hover:text-white">
                         <x-lucide-external-link class="h-4 w-4" />
                     </a>
                 @endif
