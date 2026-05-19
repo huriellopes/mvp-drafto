@@ -39,7 +39,7 @@
                                 </div>
                             </button>
 
-                            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                 <button wire:click="openEditCollectionModal({{ $item->id }})" class="p-1.5 text-zinc-400 hover:text-zinc-900">
                                     <x-lucide-pencil class="h-3.5 w-3.5" />
                                 </button>
@@ -103,11 +103,15 @@
 
                             <div class="absolute right-3 top-3 flex gap-2 transition-all duration-300 opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
                                 <button
-                                    wire:click="openMoveModal({{ $post->id }}, {{ $post->pivot?->collection_id ?? ($post->collection_id ?? 'null') }})"
+                                    wire:click="openMoveModal({{ $post->id }}, {{ $post->collection_id ?? ($post->pivot?->collection_id ?? 'null') }})"
                                     class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-zinc-600 shadow-xl backdrop-blur transition hover:text-zinc-900 active:scale-90"
                                     title="Organizar"
                                 >
-                                    <x-lucide-folder-input class="h-4 w-4" />
+                                    @if($post->collection_id || ($post->pivot && $post->pivot->collection_id))
+                                        <x-lucide-folder-open class="h-4 w-4" />
+                                    @else
+                                        <x-lucide-folder-input class="h-4 w-4" />
+                                    @endif
                                 </button>
 
                                 <button
@@ -185,7 +189,13 @@
     {{-- Modal: Mover para Coleção --}}
     <x-ui.modal name="move-to-collection-modal" title="Organizar Conteúdo">
         <div class="space-y-6">
-            <p class="text-sm text-zinc-500">Selecione uma coleção para mover este conteúdo ou remova-o de todas as coleções.</p>
+            <p class="text-sm text-zinc-500">
+                @if($targetCollectionId)
+                    Este post já está em uma coleção. Deseja <strong>reorganizar</strong> ou mover para outra?
+                @else
+                    Selecione uma coleção para mover este conteúdo ou mantenha-o na lista geral.
+                @endif
+            </p>
 
             <div class="space-y-3">
                 <label class="block text-sm font-bold text-zinc-700">Escolha a Coleção destino:</label>
@@ -242,20 +252,35 @@
                 wire:model="collectionForm.name"
                 placeholder="Ex: Estudos de Laravel..."
                 :error="$errors->first('collectionForm.name')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.input>
+
             <x-ui.input
                 label="Slug"
                 wire:model="collectionForm.slug"
                 placeholder="Ex: estudos-laravel..."
                 :error="$errors->first('collectionForm.slug')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.input>
+
             <x-ui.textarea
-                label="Descrição (Opcional)"
+                label="Descrição"
                 wire:model="collectionForm.description"
                 placeholder="Sobre o que é esta coleção?"
                 rows="3"
                 :error="$errors->first('collectionForm.description')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.textarea>
+
             <div class="flex justify-end gap-3 pt-4">
                 <x-ui.button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'new-collection-modal' })">
                     Cancelar
@@ -286,20 +311,32 @@
                 label="Nome da Coleção"
                 wire:model="collectionForm.name"
                 :error="$errors->first('collectionForm.name')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.input>
 
             <x-ui.input
                 label="Slug"
                 wire:model="collectionForm.slug"
                 :error="$errors->first('collectionForm.slug')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Obrigatório" color="red" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.input>
 
             <x-ui.textarea
-                label="Descrição (Opcional)"
+                label="Descrição"
                 wire:model="collectionForm.description"
                 rows="3"
                 :error="$errors->first('collectionForm.description')"
-            />
+            >
+                <x-slot:label_extra>
+                    <x-ui.badge label="Opcional" color="zinc" class="ml-1" />
+                </x-slot:label_extra>
+            </x-ui.textarea>
 
             <div class="flex justify-end gap-3 pt-4">
                 <x-ui.button type="button" variant="secondary" x-on:click="$dispatch('close-modal', { name: 'edit-collection-modal' })">
