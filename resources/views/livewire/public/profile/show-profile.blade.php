@@ -88,17 +88,9 @@
     @else
         {{-- 2. Perfil Ativo ou Preview do Dono --}}
         <div class="pb-20" wire:key="profile-active-state">
-            {{-- Banner de Alerta para o Dono --}}
+            {{-- Aviso Flutuante para o Dono --}}
             @if($this->isOwner)
-                <div class="relative z-[60] flex items-center justify-between bg-zinc-950 px-6 py-2.5 text-white border-b border-white/5">
-                    <div class="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                        <span class="flex h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span>
-                        Modo de Visualização do Autor
-                    </div>
-                    <a href="{{ route('dashboard.profile') }}" wire:navigate class="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition">
-                        Editar Perfil
-                    </a>
-                </div>
+                <x-ui.author-preview-badge />
             @endif
 
             {{-- Cover Image --}}
