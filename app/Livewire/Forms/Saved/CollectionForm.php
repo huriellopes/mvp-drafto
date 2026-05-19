@@ -29,13 +29,17 @@ class CollectionForm extends Form
                 'string',
                 'min:3',
                 'max:50',
-                Rule::unique('collections', 'name')->where('user_id', auth()->id()),
+                Rule::unique('collections', 'name')
+                    ->where('user_id', auth()->id())
+                    ->when($this->collection, fn ($q) => $q->ignore($this->collection->id)),
             ],
             'slug' => [
-                'nullable',
+                'required',
                 'string',
                 'min:3',
-                Rule::unique('collections', 'slug')->where('user_id', auth()->id()),
+                Rule::unique('collections', 'slug')
+                    ->where('user_id', auth()->id())
+                    ->when($this->collection, fn ($q) => $q->ignore($this->collection->id)),
             ],
             'description' => ['nullable', 'string', 'max:255'],
         ];
@@ -68,15 +72,7 @@ class CollectionForm extends Form
 
     public function update(): void
     {
-        $this->validate([
-            'name' => [
-                'required', 'string', 'min:3', 'max:50',
-                Rule::unique('collections', 'name')
-                    ->where('user_id', auth()->id())
-                    ->ignore($this->collection->id),
-            ],
-            'description' => ['nullable', 'string', 'max:255'],
-        ]);
+        $this->validate();
 
         app(UpdateCollectionAction::class)->exec(
             collection: $this->collection,
@@ -87,6 +83,6 @@ class CollectionForm extends Form
             ),
         );
 
-        $this->reset(['name', 'description', 'collection']);
+        $this->reset(['name', 'slug', 'description', 'collection']);
     }
 }

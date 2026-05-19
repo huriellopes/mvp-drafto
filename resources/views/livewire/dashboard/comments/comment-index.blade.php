@@ -83,7 +83,7 @@
                         </div>
 
                         {{-- Ações --}}
-                        <div class="flex items-center gap-2 transition-all duration-300">
+                        <div class="flex items-center gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
                             <x-ui.tooltip text="Editar ou Moderar">
                                 <button
                                     wire:click="edit({{ $comment->id }})"
