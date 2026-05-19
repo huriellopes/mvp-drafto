@@ -16,7 +16,7 @@
                 <div class="flex items-center gap-4">
                     <a href="{{ $post?->isPublished() ? route('dashboard.posts.index') : route('dashboard.posts.draft') }}"
                        class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-500 ring-1 ring-zinc-200 transition hover:text-zinc-900">
-                        <x-lucide-arrow-left class="h-5 w-5" />
+                        <x-lucide-chevron-left class="h-5 w-5" />
                     </a>
                     <div class="min-w-0">
                         <h1 class="truncate text-sm font-bold text-zinc-900">{{ $post?->exists ? 'Editando: ' . $post->title : 'Nova Publicação' }}</h1>

@@ -78,7 +78,7 @@
     @if($this->suggestions->isNotEmpty())
         <div class="mt-6 pt-4 border-t border-zinc-50 dark:border-zinc-800">
             <a href="{{ route('writers.explore') }}" class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-profile-primary transition flex items-center justify-center gap-2">
-                Ver todos <x-lucide-arrow-right class="h-3 w-3" />
+                Ver todos <x-lucide-chevron-right class="h-3 w-3" />
             </a>
         </div>
     @endif

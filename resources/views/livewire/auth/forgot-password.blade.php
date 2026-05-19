@@ -46,7 +46,7 @@
                 class="w-full"
                 wire:navigate
             >
-                <x-lucide-arrow-left class="h-4 w-4 mr-2" />
+                <x-lucide-chevron-left class="h-4 w-4 mr-2" />
                 Voltar para o Login
             </x-ui.button>
         </div>

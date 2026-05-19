@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-zinc-900">
-                <x-lucide-arrow-right class="h-4 w-4" />
+                <x-lucide-chevron-right class="h-4 w-4" />
             </div>
         </div>
     </div>

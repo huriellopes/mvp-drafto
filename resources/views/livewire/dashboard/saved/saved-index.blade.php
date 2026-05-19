@@ -101,7 +101,7 @@
                                 </div>
                             @endif
 
-                            <div class="absolute right-3 top-3 flex gap-2 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                            <div class="absolute right-3 top-3 flex gap-2 transition-all duration-300 opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0">
                                 <button
                                     wire:click="openMoveModal({{ $post->id }}, {{ $post->pivot?->collection_id ?? ($post->collection_id ?? 'null') }})"
                                     class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-zinc-600 shadow-xl backdrop-blur transition hover:text-zinc-900 active:scale-90"

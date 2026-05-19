@@ -27,7 +27,7 @@
             </x-ui.select>
 
             <button wire:click="sortBy('{{ $sort }}')" class="flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-600 transition hover:bg-zinc-50">
-                <x-lucide-arrow-up-down @class(['h-4 w-4 transition', 'rotate-180' => $direction === 'desc']) />
+                <x-lucide-chevrons-up-down @class(['h-4 w-4 transition', 'rotate-180' => $direction === 'desc']) />
             </button>
         </div>
     </div>
