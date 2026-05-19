@@ -23,9 +23,13 @@
 
         <a href="{{ route('dashboard.profile') }}"
            wire:navigate
-           class="group relative flex h-12 items-center justify-center overflow-hidden rounded-[1.8rem] bg-indigo-600 px-8 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-700 active:scale-95 shadow-lg shadow-indigo-600/20"
+           class="group relative flex h-12 items-center justify-center overflow-hidden rounded-[1.8rem] bg-indigo-600 px-6 sm:px-8 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:bg-indigo-700 active:scale-95 shadow-lg shadow-indigo-600/20"
         >
-            <span class="relative z-10">Editar Perfil</span>
+            <div class="relative z-10 flex items-center gap-2">
+                <x-lucide-pencil class="h-3.5 w-3.5" />
+                <span class="hidden sm:inline">Editar Perfil</span>
+                <span class="inline sm:hidden">Editar</span>
+            </div>
         </a>
     </div>
 </div>
