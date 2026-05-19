@@ -35,10 +35,10 @@
                 <div class="max-w-7xl mx-auto px-4 relative">
                     <div class="flex items-center gap-3 absolute -top-12 right-4 z-30">
                         <button @click="prev" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                            <x-lucide-arrow-left class="h-5 w-5" />
+                            <x-lucide-chevron-left class="h-5 w-5" />
                         </button>
                         <button @click="next" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                            <x-lucide-arrow-right class="h-5 w-5" />
+                            <x-lucide-chevron-right class="h-5 w-5" />
                         </button>
                     </div>
                 </div>
@@ -93,7 +93,7 @@
             <a href="{{ route('posts.explore') }}" wire:navigate class="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
                 Ver todo o acervo
                 <div class="h-10 w-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 group-hover:border-zinc-900 dark:group-hover:border-white transition-colors">
-                    <x-lucide-arrow-right class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <x-lucide-chevron-right class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </div>
             </a>
         </div>

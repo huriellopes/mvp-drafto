@@ -75,7 +75,7 @@
                         @if($post?->slug)
                             <a href="{{ route('posts.show', $post->slug) }}" 
                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-lg transition hover:scale-110 active:scale-95 dark:bg-white dark:text-zinc-900">
-                                <x-lucide-arrow-right class="h-4 w-4" />
+                                <x-lucide-chevron-right class="h-4 w-4" />
                             </a>
                         @endif
                     </div>

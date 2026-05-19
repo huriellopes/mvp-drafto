@@ -22,7 +22,7 @@
 
             <div class="relative flex items-center">
                 @if($sort === $column)
-                    <x-lucide-arrow-up @class([
+                    <x-lucide-chevron-up @class([
                         'h-3 w-3 transition-transform duration-200',
                         'rotate-180' => $direction === 'desc'
                     ]) />
