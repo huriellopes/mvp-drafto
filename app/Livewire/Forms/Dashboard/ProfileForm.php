@@ -81,7 +81,7 @@ class ProfileForm extends Form
         $this->username = $profile->username ?? '';
         $this->email = $profile->email ?? '';
         $this->bio = $profile->bio;
-        $this->website_url = $profile->website_url;
+        $this->website_url = $profile->website_url ?? 'https://';
         $this->location = $profile->location;
         $this->primary_color = $profile->primary_color ?? '#18181b';
         $this->accent_color = $profile->accent_color ?? '#3f3f46';
@@ -152,6 +152,8 @@ class ProfileForm extends Form
 
     public function update(): void
     {
+        $this->sanitizeWebsiteUrl();
+
         $this->validate();
 
         $dto = UpdateProfileData::from($this->all());
@@ -160,5 +162,31 @@ class ProfileForm extends Form
             user: auth()->user(),
             data: $dto,
         );
+    }
+
+    private function sanitizeWebsiteUrl(): void
+    {
+        $url = trim($this->website_url ?? '');
+
+        // Sênior: Se o campo estiver vazio ou for apenas o prefixo, limpamos para null
+        if (empty($url) || in_array($url, ['https://', 'http://', 'https:/', 'http:/'], true)) {
+            $this->website_url = null;
+
+            return;
+        }
+
+        // Sênior: Se não possuir protocolo, forçamos https://
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            $url = 'https://' . $url;
+        }
+
+        // Sênior: Corrige casos de colagem duplicada (ex: https://https://dominio.com)
+        $url = str_replace(
+            ['https://https://', 'https://http://', 'http://https://', 'http://http://'],
+            ['https://', 'http://', 'https://', 'http://'],
+            $url,
+        );
+
+        $this->website_url = $url;
     }
 }

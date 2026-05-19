@@ -55,7 +55,7 @@ final class UpdateProfileAction
         }
 
         // Sênior: Limpa o cache do perfil público e da listagem de escritores
-        Cache::tags(["profile_{$profile->username}", 'writers', 'explore'])->flush();
+        Cache::tags(['profiles', "profile_{$profile->username}", 'writers', 'explore'])->flush();
 
         // Sênior: Atualiza ou cria as configurações de UI do perfil
         $profile->settings()->updateOrCreate(

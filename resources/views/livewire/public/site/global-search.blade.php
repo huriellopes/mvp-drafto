@@ -85,7 +85,7 @@
                                             <p class="text-sm font-bold text-zinc-900 dark:text-white">{{ $author->name }}</p>
                                             <p class="text-[10px] font-medium text-zinc-500 italic truncate">@<span></span>{{ $author->profile->username }}</p>
                                         </div>
-                                        <x-lucide-arrow-up-right class="h-4 w-4 text-zinc-300 group-hover:text-profile-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                                        <x-lucide-chevron-right class="h-4 w-4 text-zinc-300 group-hover:text-profile-primary transition-all" />
                                     </a>
                                 @endforeach
                             </div>

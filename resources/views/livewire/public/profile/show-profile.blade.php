@@ -16,7 +16,7 @@
     };
 @endphp
 
-<div class="min-h-screen bg-zinc-50 dark:bg-zinc-950" 
+<div class="min-h-screen bg-zinc-50 dark:bg-zinc-950"
      style="background-color: var(--profile-bg); color: var(--profile-text);"
      x-data="{
         scrolled: false,
@@ -81,7 +81,7 @@
             </p>
 
             <a href="/" wire:navigate class="mt-10 font-bold text-profile-primary hover:underline flex items-center gap-2">
-                <x-lucide-arrow-left class="h-4 w-4" />
+                <x-lucide-chevron-left class="h-4 w-4" />
                 Explorar outros escritores
             </a>
         </div>
@@ -138,16 +138,29 @@
                             <x-ui.share-profile :user="$this->user" />
 
                             @if($this->user->profile->website_url)
-                                <a href="{{ $this->user->profile->website_url }}" target="_blank" class="flex h-12 w-12 items-center justify-center rounded-profile-button {{ $cardClasses }} text-zinc-600 transition hover:text-profile-primary">
-                                    <x-lucide-globe class="h-5 w-5" />
+                                <a href="{{ $this->user->profile->website_url }}"
+                                   target="_blank"
+                                   class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95"
+                                   title="Website"
+                                >
+                                    <x-lucide-globe class="h-4 w-4 text-profile-primary" />
+                                </a>
+                            @endif
+
+                            @if($this->user->profile->show_email_publicly && $this->user->profile->email)
+                                <a href="mailto:{{ $this->user->profile->email }}"
+                                   class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 transition hover:text-profile-primary dark:hover:text-profile-primary shadow-sm active:scale-95"
+                                   title="Enviar E-mail"
+                                >
+                                    <x-lucide-mail class="h-5 w-5" />
                                 </a>
                             @endif
 
                             @if (!$this->isOwner)
                                 <livewire:actions.follow-button :user="$this->user" :key="'follow-'.$this->user->id" />
                             @else
-                                <a href="{{ route('dashboard.profile') }}" wire:navigate class="inline-flex h-12 px-6 items-center justify-center rounded-profile-button {{ $cardClasses }} text-sm font-bold text-zinc-900 shadow-sm transition hover:bg-zinc-50">
-                                    <x-lucide-settings class="mr-2 h-4 w-4" />
+                                <a href="{{ route('dashboard.profile') }}" wire:navigate class="inline-flex h-12 px-6 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95">
+                                    <x-lucide-settings class="mr-2 h-4 w-4 text-profile-primary" />
                                     Configurar
                                 </a>
                             @endif

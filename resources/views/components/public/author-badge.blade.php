@@ -80,9 +80,39 @@
 
         {{-- Bio Section --}}
         @if($showBio && $profile->bio)
-            <p class="text-sm leading-relaxed font-medium italic opacity-80 line-clamp-2">
-                "{{ $profile->bio }}"
-            </p>
+            <div x-data="{ 
+                expanded: false, 
+                showButton: false,
+                checkResize() {
+                    this.showButton = this.$refs.bioText.scrollHeight > this.$refs.bioText.offsetHeight;
+                }
+            }"
+            x-init="$nextTick(() => checkResize())"
+            @window.resize.debounce.200ms="checkResize()"
+            class="relative space-y-2"
+            >
+                <p x-ref="bioText"
+                   :class="expanded ? '' : 'line-clamp-2'"
+                   class="text-sm leading-relaxed font-medium italic opacity-80 transition-all duration-500 whitespace-pre-line"
+                >
+                    "{{ $profile->bio }}"
+                </p>
+
+                <button x-show="showButton"
+                        @click="expanded = !expanded"
+                        type="button"
+                        @class([
+                            "text-[9px] font-black uppercase tracking-widest hover:opacity-70 transition flex items-center justify-center gap-1 mx-auto",
+                            $theme === 'light' ? 'text-indigo-600' : 'text-amber-400'
+                        ])
+                >
+                    <span x-text="expanded ? 'Ver menos' : 'Ver mais'"></span>
+                    <x-lucide-chevron-down
+                        class="h-2.5 w-2.5 transition-transform duration-500"
+                        ::class="expanded ? 'rotate-180' : ''"
+                    />
+                </button>
+            </div>
         @endif
 
         {{-- Stats Section (Only for embed/customized) --}}
@@ -122,7 +152,7 @@
                     "flex items-center gap-2 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border shadow-inner transition-all hover:scale-105 active:scale-95",
                     $theme === 'light' ? 'bg-zinc-50 border-zinc-100 text-zinc-600 hover:bg-zinc-100' : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10'
                 ])>
-                    Acesse no Drafto <x-lucide-arrow-right class="h-3 w-3" />
+                    Acesse no Drafto <x-lucide-chevron-right class="h-3 w-3" />
                 </a>
             </div>
         @endif
