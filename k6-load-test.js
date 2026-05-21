@@ -14,10 +14,9 @@ export const options = {
   },
 };
 
-const BASE_URL = 'http://localhost'; // Altere para a URL do seu ambiente Sail se necessário
+const BASE_URL = __ENV.BASE_URL || 'http://localhost'; // Altere para a URL do seu ambiente Sail se necessário
 
 export default function () {
-  // 1. Acessa a Home (Geralmente pesada pelo Livewire)
   const homeRes = http.get(BASE_URL);
   check(homeRes, {
     'home status 200': (r) => r.status === 200,
@@ -25,7 +24,6 @@ export default function () {
 
   sleep(1);
 
-  // 2. Acessa a listagem de artigos
   const exploreRes = http.get(`${BASE_URL}/artigos`);
   check(exploreRes, {
     'explore status 200': (r) => r.status === 200,
@@ -33,9 +31,7 @@ export default function () {
 
   sleep(2);
 
-  // 3. Simula visualização de um post (Testa o middleware TrackPostView)
-  // Nota: Você deve ajustar o slug para um post real existente no seu banco
-  const postRes = http.get(`${BASE_URL}/posts/meu-primeiro-artigo`);
+  const postRes = http.get(`${BASE_URL}/posts/aut-praesentium-tempore-veniam`);
   check(postRes, {
     'post view status 200': (r) => r.status === 200,
   });
