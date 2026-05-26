@@ -108,3 +108,25 @@ it('automatically generates an excerpt when publishing if none is provided', fun
     expect($post->excerpt)->not->toBeEmpty()
         ->and($post->excerpt)->toBe(Str::limit(strip_tags($content), 160));
 });
+
+it('correctly saves a scheduled post with a specific published_at date', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+    $scheduledDate = now()->addDays(2)->format('Y-m-d H:i');
+
+    $dto = new SavePostData(
+        title: 'Scheduled Post',
+        slug: 'scheduled-post',
+        category_id: $category->id,
+        content: 'Content',
+        status: PostStatusEnum::SCHEDULED,
+        published_at: $scheduledDate,
+    );
+
+    $post = $this->action->exec($user, $dto);
+
+    expect($post->status)->toBe(PostStatusEnum::SCHEDULED)
+        ->and($post->published_at->format('Y-m-d H:i'))->toBe($scheduledDate);
+});

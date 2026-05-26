@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard\Posts;
 
 use App\Actions\Posts\SavePostAction;
+use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
+use App\Models\Module;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Tag;
@@ -30,6 +32,8 @@ class ManagePost extends Component
     public ?string $updatedCoverPath = null;
 
     public bool $isSaving = false;
+
+    public bool $showScheduleModal = false;
 
     public ?string $lastSavedAt = null;
 
@@ -150,6 +154,55 @@ class ManagePost extends Component
         } catch (ValidationException $e) {
             $this->notifyError('Preencha todos os campos obrigatórios antes de publicar.');
 
+            throw $e;
+        } catch (Exception $e) {
+            $this->notifyError($e->getMessage());
+        }
+    }
+
+    public function schedule()
+    {
+        try {
+            // Agendamento exige validação completa
+            $this->validate();
+
+            if (!$this->form->published_at) {
+                $this->addError('form.published_at', 'A data de agendamento é obrigatória.');
+                return;
+            }
+
+            if (now()->parse($this->form->published_at)->isPast()) {
+                $this->addError('form.published_at', 'A data de agendamento deve ser no futuro.');
+                return;
+            }
+
+            // Sênior: Proteção de Rate Limit para agendamento
+            $executed = RateLimiter::attempt(
+                'schedule-post:' . auth()->id(),
+                $maxAttempts = 3,
+                function () {
+                    $dto = $this->form->toDTO($this->updatedCoverPath, PostStatusEnum::SCHEDULED);
+
+                    $this->post = app(SavePostAction::class)->exec(
+                        auth()->user(),
+                        $dto,
+                        $this->post,
+                    );
+                },
+                decaySeconds: 60,
+            );
+
+            if (!$executed) {
+                $this->notifyError('Muitas tentativas de agendamento. Aguarde um momento.');
+                return;
+            }
+
+            $this->notifySuccess('Post agendado com sucesso!');
+            $this->showScheduleModal = false;
+
+            return $this->redirect(route('dashboard.posts.index'), navigate: true);
+        } catch (ValidationException $e) {
+            $this->notifyError('Preencha todos os campos obrigatórios antes de agendar.');
             throw $e;
         } catch (Exception $e) {
             $this->notifyError($e->getMessage());

@@ -14,6 +14,7 @@
             'inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider',
             'bg-green-100 text-green-700' => $post->status === PostStatusEnum::PUBLISHED,
             'bg-zinc-100 text-zinc-600' => $post->status === PostStatusEnum::ARCHIVED,
+            'bg-indigo-100 text-indigo-700' => $post->status === PostStatusEnum::SCHEDULED,
         ])>
             {{ $post->status->label() }}
         </span>

@@ -135,6 +135,11 @@ class Post extends Model implements Auditable, Sitemapable
         return $query->where('status', PostStatusEnum::PUBLISHED);
     }
 
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('status', PostStatusEnum::SCHEDULED);
+    }
+
     public function scopePublic(Builder $query): Builder
     {
         return $query->where('visibility', PostVisibilityEnum::PUBLIC);
@@ -153,6 +158,11 @@ class Post extends Model implements Auditable, Sitemapable
     public function isPublished(): bool
     {
         return $this->status === PostStatusEnum::PUBLISHED;
+    }
+
+    public function isScheduled(): bool
+    {
+        return $this->status === PostStatusEnum::SCHEDULED;
     }
 
     public function isArticle(): bool

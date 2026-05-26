@@ -1,6 +1,7 @@
 @use(App\Enums\PostStatusEnum)
 @use(App\Enums\PostTypeEnum)
 @use(App\Enums\ModuleEnum)
+@use(App\Models\Module)
 
 <div class="mx-auto w-full max-w-7xl px-4 pb-20 2xl:max-w-[1550px]">
     @if($post?->exists)
@@ -46,6 +47,14 @@
                     <x-ui.button type="submit" loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
                         Salvar Rascunho
                     </x-ui.button>
+                    
+                    @if(Module::isEnabled(ModuleEnum::POST_SCHEDULER))
+                        <x-ui.button type="button" @click="$dispatch('open-modal', { name: 'schedule-modal' })" class="!bg-indigo-50 !text-indigo-600 border border-indigo-100 !w-auto px-6 hover:!bg-indigo-100">
+                            <x-lucide-calendar-clock class="h-4 w-4 mr-2" />
+                            Agendar
+                        </x-ui.button>
+                    @endif
+
                     <x-ui.button type="button" wire:click="publish" loading="publish" class="!w-auto px-8 shadow-lg shadow-zinc-900/10">
                         {{ $post?->isPublished() ? 'Atualizar' : 'Publicar' }}
                     </x-ui.button>
@@ -164,4 +173,35 @@
             </aside>
         </div>
     </form>
+
+    {{-- Modal de Agendamento --}}
+    <x-ui.modal name="schedule-modal" wire:model="showScheduleModal" title="Agendar Publicação" max-width="lg">
+        <div class="p-6 space-y-6">
+            <div class="rounded-2xl bg-indigo-50 p-4 ring-1 ring-indigo-100 flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-indigo-200">
+                    <x-lucide-calendar-check class="h-5 w-5 text-indigo-600" />
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-indigo-900">Planeje seu lançamento</h4>
+                    <p class="text-xs text-indigo-700 leading-relaxed mt-0.5">Escolha o melhor momento para sua audiência ler seu novo conteúdo.</p>
+                </div>
+            </div>
+
+            <x-ui.input 
+                type="datetime-local" 
+                label="Data e Hora da Publicação" 
+                wire:model="form.published_at" 
+                :error="$errors->first('form.published_at')"
+            />
+
+            <div class="flex flex-col gap-3">
+                <x-ui.button wire:click="schedule" loading="schedule" class="w-full">
+                    Confirmar Agendamento
+                </x-ui.button>
+                <x-ui.button @click="show = false" class="!bg-white !text-zinc-500 hover:!text-zinc-900 w-full">
+                    Cancelar
+                </x-ui.button>
+            </div>
+        </div>
+    </x-ui.modal>
 </div>
