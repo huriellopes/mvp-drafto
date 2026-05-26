@@ -21,18 +21,14 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Module extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
-
-    // Helper Sênior: Verifica se um módulo está ativo com Cache para performance
     public static function isEnabled(ModuleEnum|string $slug): bool
     {
         $value = $slug instanceof ModuleEnum ? $slug->value : $slug;
 
-        // Sênior: Aumentado para 24h pois agora usamos Redis e temos limpeza automática no booted()
         return (bool) Cache::remember("module_status_{$value}_v3", now()->addDay(), function () use ($value) {
             return self::where('slug', $value)->where('is_enabled', true)->exists();
         });
     }
-
     public function getRouteKeyName(): string
     {
         return 'slug';

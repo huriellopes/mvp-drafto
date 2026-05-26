@@ -26,5 +26,6 @@ class SavePostData extends Data
         public ?string $seo_title = null,
         public ?string $seo_description = null,
         public ?string $cover_image_path = null,
+        public ?string $published_at = null,
     ) {}
 }

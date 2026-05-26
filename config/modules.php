@@ -106,4 +106,14 @@ return [
             'default_code_length' => 6,
         ],
     ],
+    [
+        'slug' => ModuleEnum::POST_SCHEDULER,
+        'name' => 'Agendador de Postagens',
+        'description' => 'Permite que escritores agendem a publicação de seus posts para uma data e hora futura.',
+        'icon' => 'calendar-clock',
+        'settings' => [
+            'notify_author' => true,
+            'max_scheduled_posts' => 10,
+        ],
+    ],
 ];

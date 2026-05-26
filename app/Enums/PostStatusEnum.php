@@ -16,6 +16,7 @@ enum PostStatusEnum: string
             self::DRAFT => __('enums.post_status.draft'),
             self::PUBLISHED => __('enums.post_status.published'),
             self::ARCHIVED => __('enums.post_status.archived'),
+            self::SCHEDULED => __('enums.post_status.scheduled'),
         };
     }
 
@@ -25,10 +26,12 @@ enum PostStatusEnum: string
             self::DRAFT => 'yellow',
             self::PUBLISHED => 'green',
             self::ARCHIVED => 'gray',
+            self::SCHEDULED => 'blue',
         };
     }
 
     case DRAFT = 'draft';
     case PUBLISHED = 'published';
     case ARCHIVED = 'archived';
+    case SCHEDULED = 'scheduled';
 }

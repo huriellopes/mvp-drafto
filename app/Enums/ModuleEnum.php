@@ -19,6 +19,7 @@ enum ModuleEnum: string
             self::COMMENTS => trans('dashboard.modules.items.comments'),
             self::SUPPORT => __('dashboard.modules.items.support'),
             self::LINK_SHORTENER => 'Encurtador de Links',
+            self::POST_SCHEDULER => 'Agendador de Postagens',
         };
     }
 
@@ -32,4 +33,5 @@ enum ModuleEnum: string
     case COMMENTS = 'comments';
     case SUPPORT = 'support';
     case LINK_SHORTENER = 'link_shortener';
+    case POST_SCHEDULER = 'post_scheduler';
 }

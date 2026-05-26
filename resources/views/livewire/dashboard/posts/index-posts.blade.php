@@ -26,6 +26,7 @@
                 <x-ui.select wire:model.live="status" class="!py-2.5">
                     <option value="">{{ __('dashboard.posts.index.all_status') }}</option>
                     <option value="{{ PostStatusEnum::PUBLISHED->value }}">{{ __('dashboard.posts.index.published') }}</option>
+                    <option value="{{ PostStatusEnum::SCHEDULED->value }}">{{ PostStatusEnum::SCHEDULED->label() }}</option>
                     <option value="{{ PostStatusEnum::ARCHIVED->value }}">{{ __('dashboard.posts.index.archived') }}</option>
                 </x-ui.select>
             </div>

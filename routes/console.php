@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+Schedule::command('posts:publish-scheduled')
+    ->everyMinute();
+
 Schedule::command('drafto:send-newsletter')
     ->dailyAt('08:00');
 
