@@ -20,18 +20,18 @@ final class GetSiteAnalyticsAction
             ? now()->parse($endDate)->endOfDay()
             : now()->endOfDay();
 
-        $totalViews = SiteView::query()
+        $stats = SiteView::query()
             ->whereBetween('viewed_at', [$start, $end])
-            ->count();
+            ->select([
+                DB::raw('count(*) as total_views'),
+                DB::raw('count(distinct session_id) as unique_visitors'),
+                DB::raw('avg(duration) as avg_duration'),
+            ])
+            ->first();
 
-        $uniqueVisitors = SiteView::query()
-            ->whereBetween('viewed_at', [$start, $end])
-            ->distinct('session_id')
-            ->count();
-
-        $avgDuration = (float) SiteView::query()
-            ->whereBetween('viewed_at', [$start, $end])
-            ->avg('duration') ?? 0.0;
+        $totalViews = (int) ($stats->total_views ?? 0);
+        $uniqueVisitors = (int) ($stats->unique_visitors ?? 0);
+        $avgDuration = (float) ($stats->avg_duration ?? 0.0);
 
         $topPages = SiteView::query()
             ->whereBetween('viewed_at', [$start, $end])

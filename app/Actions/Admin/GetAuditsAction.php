@@ -10,6 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use OwenIt\Auditing\Models\Audit;
 
 final class GetAuditsAction
@@ -75,10 +76,12 @@ final class GetAuditsAction
     public function getAvailableUsers(): Collection
     {
         return collect(Cache::remember('audit_available_users_v3', now()->addHour(), function () {
-            $userIds = Audit::query()->distinct()->pluck('user_id')->filter()->toArray();
-
             return User::query()
-                ->whereIn('id', $userIds)
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('audits')
+                        ->whereColumn('audits.user_id', 'users.id');
+                })
                 ->orderBy('name')
                 ->get(['id', 'name'])
                 ->toArray();
