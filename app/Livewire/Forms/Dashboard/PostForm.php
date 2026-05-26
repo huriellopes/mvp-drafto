@@ -48,6 +48,9 @@ class PostForm extends Form
 
     public ?string $seo_description = null;
 
+    #[Validate('nullable|date|after:now')]
+    public ?string $published_at = null;
+
     public function rules(): array
     {
         return [
@@ -104,6 +107,7 @@ class PostForm extends Form
         $this->comments_enabled = $post->comments_enabled;
         $this->seo_enabled = $post->seo_enabled;
         $this->tags = $post->tags->pluck('id')->toArray();
+        $this->published_at = $post->published_at?->format('Y-m-d\TH:i');
 
         // Carrega dados de SEO se existirem
         $this->seo_title = $post->seo?->title;
@@ -127,6 +131,7 @@ class PostForm extends Form
             seo_title: $this->seo_title,
             seo_description: $this->seo_description,
             cover_image_path: $coverImagePath ?? ($this->post?->cover_image_path),
+            published_at: $this->published_at,
         );
     }
 }

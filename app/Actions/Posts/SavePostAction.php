@@ -28,6 +28,7 @@ final class SavePostAction
         /** @var Post $savedPost */
         $savedPost = DB::transaction(function () use ($user, $dto, $post, $oldImagePath) {
             $isPublishing = $dto->status === PostStatusEnum::PUBLISHED && (!$post || $post->status !== PostStatusEnum::PUBLISHED);
+            $isScheduling = $dto->status === PostStatusEnum::SCHEDULED;
 
             // Sênior: Validação e Processamento de Categoria (Find or Create)
             $categoryId = $this->processCategory($user, $dto->category_id);
@@ -37,7 +38,7 @@ final class SavePostAction
 
             // Sênior: Gera resumo automático se estiver publicando e estiver vazio
             $excerpt = $dto->excerpt;
-            if ($dto->status === PostStatusEnum::PUBLISHED && empty(trim((string) $excerpt))) {
+            if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && empty(trim((string) $excerpt))) {
                 // Para resumos automáticos, usamos texto puro derivado do conteúdo já limpo
                 $sanitizedExcerpt = Str::limit(strip_tags($sanitizedContent), 160);
             } else {
@@ -45,23 +46,23 @@ final class SavePostAction
             }
 
             // Removemos tags e dados de SEO para processar separadamente/background
-            $data = collect($dto->toArray())->except(['tags', 'seo_title', 'seo_description', 'category_id'])->toArray();
+            $data = collect($dto->toArray())->except(['tags', 'seo_title', 'seo_description', 'category_id', 'published_at'])->toArray();
             $data['content'] = $sanitizedContent;
             $data['excerpt'] = $sanitizedExcerpt;
             $data['category_id'] = $categoryId;
 
-            if ($post) {
-                // Se o status estiver mudando para publicado agora, definimos a data
-                if ($isPublishing) {
-                    $data['published_at'] = now();
-                }
+            // Sênior: Define a data de publicação/agendamento
+            if ($isPublishing) {
+                $data['published_at'] = $dto->published_at ?? now();
+            } elseif ($isScheduling) {
+                $data['published_at'] = $dto->published_at;
+            }
 
+            if ($post) {
                 $post->update($data);
             } else {
                 /** @var Post $post */
-                $post = $user->posts()->create(array_merge($data, [
-                    'published_at' => $isPublishing ? now() : null,
-                ]));
+                $post = $user->posts()->create($data);
             }
 
             // Sincronização de Tags (Sênior: Processa tags existentes e novas)

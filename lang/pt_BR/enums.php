@@ -50,6 +50,7 @@ return [
         'draft' => 'Rascunho',
         'published' => 'Publicado',
         'archived' => 'Arquivado',
+        'scheduled' => 'Agendado',
     ],
 
     'post_type' => [
