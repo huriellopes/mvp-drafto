@@ -8,7 +8,9 @@ use App\Actions\Auth\ImpersonateUserAction;
 use App\Actions\Modules\ToggleUserModuleAction;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUsersAction;
+use App\Actions\Users\ResetUserPasswordAction;
 use App\Actions\Users\ToggleUserStatusAction;
+use App\DTOs\AdminResetPasswordData;
 use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
 use App\Exports\UsersExport;
@@ -58,10 +60,39 @@ class UserIndex extends Component
 
     public ?User $selectedUserForModules = null;
 
+    public ?User $selectedUserForPasswordReset = null;
+
+    public string $defaultPassword = 'Drafto@2026';
+
     public function confirmImpersonation(User $user): void
     {
         $this->selectedUserForImpersonation = $user;
         $this->dispatch('open-modal', name: 'confirm-impersonation');
+    }
+
+    public function confirmPasswordReset(User $user): void
+    {
+        $this->selectedUserForPasswordReset = $user;
+        $this->dispatch('open-modal', name: 'confirm-password-reset');
+    }
+
+    public function resetPassword(): void
+    {
+        if (!$this->selectedUserForPasswordReset) {
+            return;
+        }
+
+        app(ResetUserPasswordAction::class)->exec(
+            new AdminResetPasswordData(
+                userId: $this->selectedUserForPasswordReset->id,
+                password: $this->defaultPassword,
+            ),
+        );
+
+        Toaster::success("Senha do usuário {$this->selectedUserForPasswordReset->name} resetada com sucesso.");
+
+        $this->selectedUserForPasswordReset = null;
+        $this->dispatch('close-modal', name: 'confirm-password-reset');
     }
 
     public function impersonate(): void

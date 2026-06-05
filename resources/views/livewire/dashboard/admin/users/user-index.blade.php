@@ -165,6 +165,16 @@
                                     <x-lucide-user-cog class="h-4 w-4" />
                                 </button>
                             </x-ui.tooltip>
+
+                            <x-ui.tooltip text="Resetar Senha">
+                                <button
+                                    wire:click="confirmPasswordReset({{ $user->id }})"
+                                    class="p-2 text-zinc-400 hover:text-rose-600 transition"
+                                >
+                                    <x-lucide-key-round class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
+
                             <x-ui.tooltip text="Editar Usuário">
                                 <button
                                     wire:click="edit({{ $user->id }})"
@@ -251,6 +261,15 @@
         buttonText="{{ __('dashboard.admin.users.delete_modal.confirm') }}"
         variant="danger"
         action="delete"
+    />
+
+    <x-ui.confirm-modal
+        name="confirm-password-reset"
+        :title="__('dashboard.admin.users.reset_password_modal.title')"
+        :content="__('dashboard.admin.users.reset_password_modal.content', ['name' => $selectedUserForPasswordReset?->name, 'password' => $defaultPassword])"
+        :buttonText="__('dashboard.admin.users.reset_password_modal.confirm')"
+        variant="danger"
+        action="resetPassword"
     />
 
     {{-- Modal de Módulos do Usuário --}}
