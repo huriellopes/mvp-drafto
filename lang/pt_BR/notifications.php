@@ -105,4 +105,15 @@ return [
     'common' => [
         'platform_footer' => '© :year Drafto. A plataforma definitiva para escritores e leitores.',
     ],
+    'admin' => [
+        'password_reset' => [
+            'subject' => 'Sua senha foi resetada - Drafto',
+            'greeting' => 'Olá, :name!',
+            'line1' => 'Um administrador da plataforma resetou sua senha.',
+            'line2' => 'Sua nova senha temporária é: **:password**',
+            'action' => 'Acessar minha conta',
+            'line3' => 'Recomendamos que você altere sua senha assim que realizar o login.',
+            'line4' => 'Se você não solicitou isso, entre em contato com o suporte imediatamente.',
+        ],
+    ],
 ];
