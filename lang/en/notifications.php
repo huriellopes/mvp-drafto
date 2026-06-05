@@ -103,6 +103,17 @@ return [
         ],
     ],
     'common' => [
-        'platform_footer' => '© :year Drafto. The definitive platform for writers and readers.',
+        'platform_footer' => '© :year Drafto. The ultimate platform for writers and readers.',
     ],
-];
+    'admin' => [
+        'password_reset' => [
+            'subject' => 'Your password has been reset - Drafto',
+            'greeting' => 'Hello, :name!',
+            'line1' => 'A platform administrator has reset your password.',
+            'line2' => 'Your new temporary password is: **:password**',
+            'action' => 'Access my account',
+            'line3' => 'We recommend that you change your password as soon as you log in.',
+            'line4' => 'If you did not request this, please contact support immediately.',
+        ],
+    ],
+    ];

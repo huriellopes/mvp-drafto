@@ -50,12 +50,16 @@ Route::get('/email/verify', function () {
 | Rotas Protegidas (Dashboard Comum)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])
+Route::middleware(['auth', 'must.change.password'])
     ->prefix('dashboard')
     ->name('dashboard.')
     ->group(function () {
 
         Route::livewire('/', 'dashboard.index')->name('index');
+
+        // Senha Obrigatória
+        Route::livewire('/alterar-senha', 'dashboard.auth.force-change-password')
+            ->name('force-password-change');
 
         // Perfil e Conta (Base para todos)
         Route::livewire('/perfil/editar', 'dashboard.profile.edit-profile')

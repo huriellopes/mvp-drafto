@@ -27,6 +27,7 @@ final class StoreUserAction
                 'name' => $data->name,
                 'email' => $data->email,
                 'password' => $data->password,
+                'must_change_password' => true,
                 'role' => $data->role,
                 'status' => $data->status,
             ]);

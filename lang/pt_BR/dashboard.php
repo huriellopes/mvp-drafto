@@ -268,6 +268,11 @@ return [
                 'content' => 'Tem certeza que deseja remover este usuário? Esta ação não pode ser desfeita e todos os dados vinculados poderão ser afetados.',
                 'confirm' => 'Excluir Permanentemente',
             ],
+            'reset_password_modal' => [
+                'title' => 'Resetar Senha',
+                'content' => 'Você está prestes a resetar a senha de :name. A nova senha será ":password". O usuário receberá um e-mail com essa informação. Deseja continuar?',
+                'confirm' => 'Sim, Resetar Senha',
+            ],
         ],
         'newsletter' => [
             'title' => 'Gestão de Newsletter',

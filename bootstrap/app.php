@@ -7,6 +7,7 @@ use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\CheckEmailVerificationInterval;
 use App\Http\Middleware\CheckModuleAccess;
 use App\Http\Middleware\CheckModuleStatus;
+use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Http\Middleware\LogContextMiddleware;
 use App\Http\Middleware\TrackPostView;
@@ -38,6 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'can' => Authorize::class,
             'module.access' => CheckModuleAccess::class,
             'allow.iframe' => AllowIframeMiddleware::class,
+            'must.change.password' => EnsurePasswordIsChanged::class,
         ]);
 
         $middleware->web(append: [
