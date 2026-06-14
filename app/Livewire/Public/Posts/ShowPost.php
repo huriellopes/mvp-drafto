@@ -57,6 +57,38 @@ class ShowPost extends Component
         return app(GetRelatedPostsAction::class)->exec(post: $this->post)->posts;
     }
 
+    #[Computed]
+    public function renderedContent(): string
+    {
+        $content = $this->post->content;
+
+        // Sênior: Interpreta tags <iframe> (sejam elas HTML puro ou entidades escapadas)
+        // Isso resolve o problema de quando o usuário cola o código como texto no editor
+        return preg_replace_callback(
+            '/(?:<iframe|&lt;iframe)[^>]*?src=["\']([^"\']+)["\'][^>]*?(?:>|&gt;).*?(?:<\/iframe>|&lt;\/iframe&gt;)/is',
+            function ($matches) {
+                $rawTag = html_entity_decode($matches[0]);
+                $src = html_entity_decode($matches[1]);
+
+                // Só processa e renderiza se for YouTube ou Vimeo (Segurança)
+                if (str_contains($src, 'youtube.com/embed') || str_contains($src, 'player.vimeo.com/video')) {
+                    
+                    $finalTag = $rawTag;
+                    
+                    // Sênior: Força a inclusão do referrerpolicy para evitar bloqueios de domínio (ex: FIFA)
+                    if (str_contains($src, 'youtube.com') && !str_contains($rawTag, 'referrerpolicy')) {
+                        $finalTag = str_replace('<iframe', '<iframe referrerpolicy="strict-origin-when-cross-origin"', $rawTag);
+                    }
+
+                    return '<div class="aspect-video w-full rounded-2xl overflow-hidden my-8 ring-1 ring-zinc-200 dark:ring-zinc-800 shadow-sm">' . $finalTag . '</div>';
+                }
+
+                return $matches[0];
+            },
+            $content
+        );
+    }
+
     public function render(): View
     {
         return view('livewire.public.posts.show-post')

@@ -98,7 +98,7 @@ Route::middleware(['auth', 'must.change.password'])
 | Recursos de Sistema & Públicos Específicos
 |--------------------------------------------------------------------------
 */
-Route::post('/trix/attachments', [TrixAttachmentController::class, 'store'])
+Route::post('/trix/attachments', TrixAttachmentController::class)
     ->middleware(['auth'])
     ->name('trix.attachments.store');
 

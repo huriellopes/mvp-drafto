@@ -32,6 +32,26 @@ return [
             'AutoFormat.AutoParagraph' => true,
             'AutoFormat.RemoveEmpty' => true,
         ],
+        'post_content' => [
+            'HTML.Doctype' => 'HTML 4.01 Transitional',
+            'HTML.Allowed' => 'h1,h2,h3,h4,blockquote,pre[class],code,div[class|style],b,strong,i,em,u,s,a[href|title|target],ul,ol,li,p[class|style],br,span[style],img[width|height|alt|src|class],iframe[src|width|height|frameborder|allowfullscreen|class|allow|style|referrerpolicy],video[src|width|height|poster|preload|controls|controlslist|playsinline|class],source[src|type]',
+            'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align,width,height,aspect-ratio,max-width,border-radius',
+            'HTML.SafeIframe' => true,
+            'URI.SafeIframeRegexp' => '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
+            'AutoFormat.AutoParagraph' => true,
+            'AutoFormat.RemoveEmpty' => true,
+            // <video>/<source> não têm filhos (o src fica no atributo), então o
+            // RemoveEmpty os descartaria. O Predicate preserva o elemento quando
+            // ele possui o atributo listado (mesma lógica do iframe[src] padrão).
+            'AutoFormat.RemoveEmpty.Predicate' => [
+                'colgroup' => [],
+                'th' => [],
+                'td' => [],
+                'iframe' => ['src'],
+                'video' => ['src'],
+                'source' => ['src'],
+            ],
+        ],
         'test' => [
             'Attr.EnableID' => 'true',
         ],
@@ -41,7 +61,7 @@ return [
         ],
         'custom_definition' => [
             'id' => 'html5-definitions',
-            'rev' => 1,
+            'rev' => 2,
             'debug' => false,
             'elements' => [
                 // http://developers.whatwg.org/sections.html
@@ -69,6 +89,8 @@ return [
                     'poster' => 'URI',
                     'preload' => 'Enum#auto,metadata,none',
                     'controls' => 'Bool',
+                    'controlslist' => 'Text',
+                    'playsinline' => 'Bool',
                 ]],
                 ['source', 'Block', 'Flow', 'Common', [
                     'src' => 'URI',
@@ -89,6 +111,8 @@ return [
             ],
             'attributes' => [
                 ['iframe', 'allowfullscreen', 'Bool'],
+                ['iframe', 'allow', 'Text'],
+                ['iframe', 'referrerpolicy', 'Text'],
                 ['table', 'height', 'Text'],
                 ['td', 'border', 'Text'],
                 ['th', 'border', 'Text'],

@@ -11,27 +11,39 @@ use Illuminate\Support\Str;
 class TrixAttachmentController extends Controller
 {
     /**
-     * Handles file uploads from the Trix editor.
-     * Stores the file and returns the public URL.
+     * Handles image and video uploads from the rich editor (Quill).
+     * Stores the file on the public disk and returns its URL and type.
      */
     public function __invoke(Request $request): JsonResponse
     {
+        return $this->store($request);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
         $request->validate([
-            'file' => ['required', 'file', 'image', 'max:5120'],
+            'file' => [
+                'required',
+                'file',
+                'mimetypes:image/jpeg,image/png,image/gif,image/webp,image/svg+xml,video/mp4,video/webm,video/ogg,video/quicktime',
+                // 50MB: cobre vídeos curtos; imagens raramente passam disso.
+                'max:51200',
+            ],
         ]);
 
         $file = $request->file('file');
+        $isVideo = str_starts_with((string) $file->getMimeType(), 'video/');
 
-        // Salvando no disco público
         $path = $file->storeAs(
             'trix-attachments',
             Str::uuid() . '.' . $file->getClientOriginalExtension(),
             'public',
         );
 
-        // Retornando a URL absoluta para evitar problemas de caminho relativo
+        // URL absoluta evita problemas de caminho relativo no editor/renderização.
         return response()->json([
             'url' => asset('storage/' . $path),
+            'type' => $isVideo ? 'video' : 'image',
         ]);
     }
 }

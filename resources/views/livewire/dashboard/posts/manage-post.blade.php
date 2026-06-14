@@ -1,9 +1,4 @@
-@use(App\Enums\PostStatusEnum)
-@use(App\Enums\PostTypeEnum)
-@use(App\Enums\ModuleEnum)
-@use(App\Models\Module)
-
-<div class="mx-auto w-full max-w-7xl px-4 pb-20 2xl:max-w-[1550px]">
+@use(App\Enums\PostStatusEnum)@use(App\Enums\PostTypeEnum)@use(App\Enums\ModuleEnum)@use(App\Models\Module)<div class="mx-auto w-full max-w-7xl px-4 pb-20 2xl:max-w-[1550px]">
     @if($post?->exists)
         {{ Breadcrumbs::render('dashboard.posts.edit', $post) }}
     @else
@@ -47,7 +42,7 @@
                     <x-ui.button type="submit" loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
                         Salvar Rascunho
                     </x-ui.button>
-                    
+
                     @if(Module::isEnabled(ModuleEnum::POST_SCHEDULER))
                         <x-ui.button type="button" @click="$dispatch('open-modal', { name: 'schedule-modal' })" class="!bg-indigo-50 !text-indigo-600 border border-indigo-100 !w-auto px-6 hover:!bg-indigo-100">
                             <x-lucide-calendar-clock class="h-4 w-4 mr-2" />
@@ -81,7 +76,7 @@
                     </div>
 
                     <div class="p-8 sm:p-12 pt-6">
-                        <x-ui.rich-editor
+                        <x-ui.quill-editor
                             wire:model="form.content"
                             placeholder="Conte sua história..."
                             uploadUrl="{{ route('trix.attachments.store') }}"
@@ -101,18 +96,18 @@
                     <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
                         <x-ui.input label="Slug da URL" wire:model.blur="form.slug" placeholder="link-do-artigo" :error="$errors->first('form.slug')" />
 
-                        <x-ui.suggestion-input 
-                            label="Categoria" 
-                            wire:model.live="form.category_id" 
+                        <x-ui.suggestion-input
+                            label="Categoria"
+                            wire:model.live="form.category_id"
                             :available="$categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toArray()"
                             placeholder="Pesquisar ou criar categoria..."
                             createMessage="Sugestão de nova categoria:"
                             :error="$errors->first('form.category_id')"
                         />
 
-                        <x-ui.suggestion-input 
-                            label="Tags" 
-                            wire:model.live="form.tags" 
+                        <x-ui.suggestion-input
+                            label="Tags"
+                            wire:model.live="form.tags"
                             :available="$availableTags->map(fn($t) => ['id' => $t->id, 'name' => $t->name])->values()->toArray()"
                             placeholder="Adicionar tag..."
                             multiple="true"
@@ -187,10 +182,10 @@
                 </div>
             </div>
 
-            <x-ui.input 
-                type="datetime-local" 
-                label="Data e Hora da Publicação" 
-                wire:model="form.published_at" 
+            <x-ui.input
+                type="datetime-local"
+                label="Data e Hora da Publicação"
+                wire:model="form.published_at"
                 :error="$errors->first('form.published_at')"
             />
 
