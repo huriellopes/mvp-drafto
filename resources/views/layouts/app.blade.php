@@ -20,39 +20,14 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
-
-    <script>
-        document.addEventListener('trix-before-initialize', () => {
-            Trix.config.blockAttributes.heading2 = {
-                tagName: 'h2',
-                terminal: true,
-                breakOnReturn: true,
-                group: false,
-            };
-
-            Trix.config.textAttributes.code = {
-                tagName: 'code',
-                inheritable: true,
-                parser(element) {
-                    return element.tagName === 'CODE' && element.parentElement?.tagName !== 'PRE';
-                },
-            };
-
-            Trix.config.blockAttributes.codeBlock = {
-                tagName: 'pre',
-                terminal: true,
-                breakOnReturn: false,
-                group: false,
-                parser(element) {
-                    return element.tagName === 'PRE';
-                },
-            };
-        });
-    </script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

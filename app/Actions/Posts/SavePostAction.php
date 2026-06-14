@@ -34,7 +34,7 @@ final class SavePostAction
             $categoryId = $this->processCategory($user, $dto->category_id);
 
             // Sênior: Sanitização de Segurança contra XSS
-            $sanitizedContent = Purifier::clean($dto->content);
+            $sanitizedContent = Purifier::clean($dto->content, 'post_content');
 
             // Sênior: Gera resumo automático se estiver publicando e estiver vazio
             $excerpt = $dto->excerpt;

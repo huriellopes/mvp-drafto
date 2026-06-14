@@ -98,7 +98,7 @@
                                 prose-headings:font-black prose-headings:tracking-tighter
                                 prose-p:leading-relaxed prose-p:text-zinc-600 dark:prose-p:text-zinc-400
                                 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline">
-                    {!! $this->post->content !!}
+                    {!! $this->renderedContent !!}
                 </article>
 
                 {{-- Related Posts --}}
