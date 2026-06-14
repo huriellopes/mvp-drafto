@@ -48,7 +48,10 @@ class PostForm extends Form
 
     public ?string $seo_description = null;
 
-    #[Validate('nullable|date|after:now')]
+    // Sem "after:now": ao editar um post já publicado, a data carregada é
+    // passada e quebraria a validação de atualizar/publicar. A exigência de
+    // data futura para agendamento é checada manualmente em schedule().
+    #[Validate('nullable|date')]
     public ?string $published_at = null;
 
     public function rules(): array
