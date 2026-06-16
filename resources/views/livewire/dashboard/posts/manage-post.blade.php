@@ -78,6 +78,7 @@
                     <div class="p-8 sm:p-12 pt-6">
                         <x-ui.quill-editor
                             wire:model="form.content"
+                            :initial="$form->content"
                             placeholder="Conte sua história..."
                             uploadUrl="{{ route('trix.attachments.store') }}"
                         />

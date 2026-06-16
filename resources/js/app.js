@@ -116,7 +116,6 @@ const registerQuillVideoBlot = () => {
         }
     }
 
-    // Blot para vídeo EMBUTIDO via link (YouTube/Vimeo): <iframe class="ql-video">.
     class VideoEmbedBlot extends BlockEmbed {
         static blotName = 'videoEmbed';
         static tagName = 'iframe';
@@ -148,18 +147,12 @@ document.addEventListener('alpine:init', () => {
 
     Alpine.data('quillEditor', ({ model, uploadUrl, placeholder }) => ({
         quill: null,
-        // Nome da propriedade Livewire (ex.: "form.content"). Escrevemos via
-        // $wire diretamente — passar @entangle pela factory quebra o binding.
         model,
         uploadUrl,
         placeholder,
         uploading: false,
         uploadLabel: 'Processando',
-        // Última posição conhecida do cursor (atualizada via selection-change).
-        // Usar getSelection() no clique do toolbar lança erro quando o editor
-        // perdeu o foco para o botão, então rastreamos a seleção continuamente.
         savedRange: null,
-        // Estado do modal de vídeo por link (x-ui.modal).
         videoUrl: '',
         videoError: '',
 
@@ -188,87 +181,45 @@ document.addEventListener('alpine:init', () => {
                 },
             });
 
-            // Quill 2.0.3 lança "Cannot read properties of null (reading
-            // 'offset')" em selection.getRange()/update() quando a seleção nativa
-            // aponta para fora do editor — o que acontece ao clicar num botão do
-            // toolbar SEM antes clicar no editor (caso real na edição). Isso
-            // impedia os botões de imagem/vídeo de funcionarem. Blindamos esses
-            // dois caminhos: são inofensivos (o conteúdo continua íntegro).
             const selection = this.quill.selection;
             if (selection) {
                 if (typeof selection.getRange === 'function') {
-                    const originalGetRange = selection.getRange.bind(selection);
-                    selection.getRange = (...args) => {
+                    const original = selection.getRange.bind(selection);
+                    selection.getRange = (...a) => {
                         try {
-                            return originalGetRange(...args);
+                            return original(...a);
                         } catch (e) {
-                            return [null, null];
+                            const fallback =
+                                selection.lastRange || { index: Math.max(0, this.quill.getLength() - 1), length: 0 };
+                            return [fallback, null];
                         }
                     };
                 }
-                if (typeof selection.update === 'function') {
-                    const originalUpdate = selection.update.bind(selection);
-                    selection.update = (...args) => {
-                        try {
-                            return originalUpdate(...args);
-                        } catch (e) {
-                            /* seleção fora do editor: ignora com segurança */
-                        }
-                    };
-                }
-                // setNativeRange faz range.setStart(); com um índice inválido
-                // (ex.: após insert programático) lança "offset ... larger than
-                // node's length" e travava o PRÓXIMO clique no toolbar.
-                if (typeof selection.setNativeRange === 'function') {
-                    const originalSetNativeRange = selection.setNativeRange.bind(selection);
-                    selection.setNativeRange = (...args) => {
-                        try {
-                            return originalSetNativeRange(...args);
-                        } catch (e) {
-                            /* range inválido: ignora com segurança */
-                        }
-                    };
-                }
-                // getBounds também faz range.setStart() (para medir posição).
-                // focus() -> scrollSelectionIntoView() -> getBounds() lança com
-                // seleção inválida após inserir um embed de bloco (vídeo); null
-                // faz o Quill pular o scroll com segurança.
                 if (typeof selection.getBounds === 'function') {
-                    const originalGetBounds = selection.getBounds.bind(selection);
-                    selection.getBounds = (...args) => {
-                        try {
-                            return originalGetBounds(...args);
-                        } catch (e) {
-                            return null;
-                        }
+                    const original = selection.getBounds.bind(selection);
+                    selection.getBounds = (...a) => {
+                        try { return original(...a); } catch (e) { return null; }
+                    };
+                }
+                if (typeof selection.setNativeRange === 'function') {
+                    const original = selection.setNativeRange.bind(selection);
+                    selection.setNativeRange = (...a) => {
+                        try { return original(...a); } catch (e) { /* ignore */ }
                     };
                 }
             }
 
-            // Carga inicial do conteúdo existente (edição). Fonte 'silent' para
-            // não emitir text-change nem disparar a sincronização de seleção do
-            // Quill (que lança quando o editor ainda não recebeu foco).
-            const initial = this.$wire.get(this.model);
-            if (initial) {
-                const sel = window.getSelection();
-                if (sel) sel.removeAllRanges();
-                this.quill.clipboard.dangerouslyPasteHTML(0, initial, 'silent');
-            }
 
-            // Editor -> Livewire
             this.quill.on('text-change', (_delta, _oldDelta, source) => {
                 if (source === 'user') {
                     this.syncToLivewire();
                 }
             });
 
-            // Rastreia a posição do cursor para inserir embeds no lugar certo.
             this.quill.on('selection-change', (range) => {
                 if (range) this.savedRange = range;
             });
 
-            // Garante que <iframe> de vídeo (YouTube/Vimeo) existentes sejam
-            // reconhecidos ao recarregar o conteúdo, em vez de descartados.
             const Delta = window.Quill.import('delta');
             this.quill.clipboard.addMatcher('IFRAME', (node, delta) => {
                 const src = node.getAttribute('src');
@@ -280,9 +231,6 @@ document.addEventListener('alpine:init', () => {
             let html = this.quill.getSemanticHTML();
             if (html === '<p></p>') html = '';
 
-            // Escrita diferida (false): não dispara request a cada tecla; o valor
-            // segue junto no próximo commit (salvar/publicar ou autosave de outro
-            // campo), exatamente como o wire:model deferido original.
             this.$wire.set(this.model, html, false);
         },
 

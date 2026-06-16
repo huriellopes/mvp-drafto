@@ -1,6 +1,7 @@
 @props([
     'placeholder' => 'Conte sua história...',
     'uploadUrl' => route('trix.attachments.store'),
+    'initial' => '',
 ])
 
 <div
@@ -23,7 +24,10 @@
         </div>
     </div>
 
-    <div x-ref="editor" class="min-h-[40rem] bg-white border border-zinc-200 rounded-b-xl"></div>
+    {{-- O conteúdo inicial é renderizado AQUI dentro para o Quill adotá-lo na
+         construção. Evita setContents pós-init, que corrompia a seleção e
+         travava a digitação na edição. --}}
+    <div x-ref="editor" class="min-h-[40rem] bg-white border border-zinc-200 rounded-b-xl">{!! $initial !!}</div>
 
     {{-- Modal de vídeo por link (YouTube/Vimeo) ou upload do computador --}}
     <x-ui.modal name="quill-video-link" title="Inserir vídeo">
