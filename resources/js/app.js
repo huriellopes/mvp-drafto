@@ -87,6 +87,26 @@ if (!document.documentElement.hasAttribute('data-site-theme')) {
  |
  | @see https://quilljs.com/docs/guides/cloning-medium-with-parchment
  --------------------------------------------------------------------------- */
+if (typeof window !== 'undefined' && !window.__quillErrorSilencerInstalled) {
+    window.__quillErrorSilencerInstalled = true;
+    window.addEventListener(
+        'error',
+        (event) => {
+            const fromQuill = (event.filename || '').includes('quill');
+            const msg = (event.message || '').toLowerCase();
+            const isSelectionBug =
+                msg.includes("reading 'offset'") ||
+                msg.includes('setstart') ||
+                (msg.includes('offset') && msg.includes('4294967295'));
+            if (fromQuill && isSelectionBug) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        },
+        true,
+    );
+}
+
 const registerQuillVideoBlot = () => {
     if (typeof window.Quill === 'undefined' || window.__quillVideoBlotRegistered) return;
     window.__quillVideoBlotRegistered = true;
@@ -116,7 +136,6 @@ const registerQuillVideoBlot = () => {
         }
     }
 
-    // Blot para vídeo EMBUTIDO via link (YouTube/Vimeo): <iframe class="ql-video">.
     class VideoEmbedBlot extends BlockEmbed {
         static blotName = 'videoEmbed';
         static tagName = 'iframe';
@@ -148,20 +167,21 @@ document.addEventListener('alpine:init', () => {
 
     Alpine.data('quillEditor', ({ model, uploadUrl, placeholder }) => ({
         quill: null,
-        // Nome da propriedade Livewire (ex.: "form.content"). Escrevemos via
-        // $wire diretamente — passar @entangle pela factory quebra o binding.
         model,
         uploadUrl,
         placeholder,
         uploading: false,
         uploadLabel: 'Processando',
-        // Última posição conhecida do cursor (atualizada via selection-change).
-        // Usar getSelection() no clique do toolbar lança erro quando o editor
-        // perdeu o foco para o botão, então rastreamos a seleção continuamente.
         savedRange: null,
-        // Estado do modal de vídeo por link (x-ui.modal).
         videoUrl: '',
         videoError: '',
+        linkUrl: '',
+        linkText: '',
+        linkError: '',
+        linkRange: null,
+        errorMessage: '',
+        guardSelection: null,
+        unguardSelection: null,
 
         init() {
             registerQuillVideoBlot();
@@ -188,87 +208,81 @@ document.addEventListener('alpine:init', () => {
                 },
             });
 
-            // Quill 2.0.3 lança "Cannot read properties of null (reading
-            // 'offset')" em selection.getRange()/update() quando a seleção nativa
-            // aponta para fora do editor — o que acontece ao clicar num botão do
-            // toolbar SEM antes clicar no editor (caso real na edição). Isso
-            // impedia os botões de imagem/vídeo de funcionarem. Blindamos esses
-            // dois caminhos: são inofensivos (o conteúdo continua íntegro).
-            const selection = this.quill.selection;
-            if (selection) {
-                if (typeof selection.getRange === 'function') {
-                    const originalGetRange = selection.getRange.bind(selection);
-                    selection.getRange = (...args) => {
+            // Contorno PONTUAL de um bug do Quill 2.0.3: getRange()/getBounds()
+            // lançam quando o editor está sem foco — situação que só ocorre ao
+            // INSERIR mídia logo após o diálogo de arquivo/modal. As proteções
+            // são INSTALADAS só durante a inserção e REMOVIDAS logo depois. Na
+            // edição normal os métodos do Quill são os originais (sem wrapper),
+            // então digitar/apagar/enter/colar funcionam 100% livres — com ou
+            // sem imagem/vídeo no conteúdo.
+            const sel = this.quill.selection;
+            if (sel) {
+                const origGetRange = sel.getRange.bind(sel);
+                const origGetBounds = sel.getBounds.bind(sel);
+                const origSetNativeRange = sel.setNativeRange.bind(sel);
+                this.guardSelection = () => {
+                    sel.getRange = (...a) => {
                         try {
-                            return originalGetRange(...args);
+                            return origGetRange(...a);
                         } catch (e) {
-                            return [null, null];
+                            return [sel.lastRange || { index: Math.max(0, this.quill.getLength() - 1), length: 0 }, null];
                         }
                     };
-                }
-                if (typeof selection.update === 'function') {
-                    const originalUpdate = selection.update.bind(selection);
-                    selection.update = (...args) => {
-                        try {
-                            return originalUpdate(...args);
-                        } catch (e) {
-                            /* seleção fora do editor: ignora com segurança */
-                        }
+                    sel.getBounds = (...a) => {
+                        try { return origGetBounds(...a); } catch (e) { return null; }
                     };
-                }
-                // setNativeRange faz range.setStart(); com um índice inválido
-                // (ex.: após insert programático) lança "offset ... larger than
-                // node's length" e travava o PRÓXIMO clique no toolbar.
-                if (typeof selection.setNativeRange === 'function') {
-                    const originalSetNativeRange = selection.setNativeRange.bind(selection);
-                    selection.setNativeRange = (...args) => {
-                        try {
-                            return originalSetNativeRange(...args);
-                        } catch (e) {
-                            /* range inválido: ignora com segurança */
-                        }
+                    // setNativeRange faz range.setStart(); com índice inválido
+                    // (estado pós-apagar mídia) lança "offset ... is invalid".
+                    sel.setNativeRange = (...a) => {
+                        try { return origSetNativeRange(...a); } catch (e) { /* ignore */ }
                     };
-                }
-                // getBounds também faz range.setStart() (para medir posição).
-                // focus() -> scrollSelectionIntoView() -> getBounds() lança com
-                // seleção inválida após inserir um embed de bloco (vídeo); null
-                // faz o Quill pular o scroll com segurança.
-                if (typeof selection.getBounds === 'function') {
-                    const originalGetBounds = selection.getBounds.bind(selection);
-                    selection.getBounds = (...args) => {
-                        try {
-                            return originalGetBounds(...args);
-                        } catch (e) {
-                            return null;
-                        }
-                    };
-                }
+                };
+                this.unguardSelection = () => {
+                    delete sel.getRange;
+                    delete sel.getBounds;
+                    delete sel.setNativeRange;
+                };
             }
 
-            // Carga inicial do conteúdo existente (edição). Fonte 'silent' para
-            // não emitir text-change nem disparar a sincronização de seleção do
-            // Quill (que lança quando o editor ainda não recebeu foco).
-            const initial = this.$wire.get(this.model);
-            if (initial) {
-                const sel = window.getSelection();
-                if (sel) sel.removeAllRanges();
-                this.quill.clipboard.dangerouslyPasteHTML(0, initial, 'silent');
+            // Clicar nos botões de imagem/vídeo do toolbar dispara um handler
+            // INTERNO do Quill (focus + getRange/setSelection) ANTES do nosso —
+            // e ele lança quando a seleção está inválida (ex.: logo após apagar
+            // uma imagem), fazendo o botão "não responder" (a janela não abre).
+            // Interceptamos o clique em CAPTURA e chamamos nosso handler direto,
+            // impedindo o handler problemático do Quill de rodar.
+            const toolbar = this.quill.getModule('toolbar');
+            const toolbarEl = toolbar?.container;
+            if (toolbarEl) {
+                const intercept = (selector, fn) => {
+                    const btn = toolbarEl.querySelector(selector);
+                    if (!btn) return;
+                    btn.addEventListener(
+                        'click',
+                        (e) => {
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            fn();
+                        },
+                        true,
+                    );
+                };
+                intercept('.ql-image', () => this.uploadFile('image'));
+                intercept('.ql-video', () => this.insertVideo());
+                // O link nativo do Quill só funciona com texto selecionado e
+                // quebra sem foco. Usamos um modal que funciona em qualquer caso.
+                intercept('.ql-link', () => this.insertLink());
             }
 
-            // Editor -> Livewire
             this.quill.on('text-change', (_delta, _oldDelta, source) => {
                 if (source === 'user') {
                     this.syncToLivewire();
                 }
             });
 
-            // Rastreia a posição do cursor para inserir embeds no lugar certo.
             this.quill.on('selection-change', (range) => {
                 if (range) this.savedRange = range;
             });
 
-            // Garante que <iframe> de vídeo (YouTube/Vimeo) existentes sejam
-            // reconhecidos ao recarregar o conteúdo, em vez de descartados.
             const Delta = window.Quill.import('delta');
             this.quill.clipboard.addMatcher('IFRAME', (node, delta) => {
                 const src = node.getAttribute('src');
@@ -280,9 +294,6 @@ document.addEventListener('alpine:init', () => {
             let html = this.quill.getSemanticHTML();
             if (html === '<p></p>') html = '';
 
-            // Escrita diferida (false): não dispara request a cada tecla; o valor
-            // segue junto no próximo commit (salvar/publicar ou autosave de outro
-            // campo), exatamente como o wire:model deferido original.
             this.$wire.set(this.model, html, false);
         },
 
@@ -291,27 +302,22 @@ document.addEventListener('alpine:init', () => {
          * conhecida do cursor, de forma resiliente à perda de foco do editor.
          */
         insertEmbedAt(embedType, value) {
-            // Índice de inserção: última posição conhecida do cursor, limitado ao
-            // tamanho atual do documento (evita offsets inválidos no Quill).
             const length = this.quill.getLength();
             let index = this.savedRange ? this.savedRange.index : length - 1;
             index = Math.max(0, Math.min(index, length - 1));
 
+            // Instala a proteção SÓ durante a inserção (editor sem foco após
+            // diálogo/modal). Reativa o foco e insere no cursor.
+            if (this.guardSelection) this.guardSelection();
             try {
-                // Dar foco e uma seleção VÁLIDA antes de inserir mantém o estado
-                // interno do Quill consistente.
-                this.quill.focus();
-                this.quill.setSelection(index, 0);
-                this.quill.insertEmbed(index, embedType, value);
+                this.quill.getSelection(true); // foca o editor (documentado)
+                this.quill.insertEmbed(index, embedType, value, 'user');
                 this.quill.setSelection(index + 1, 0);
                 this.savedRange = { index: index + 1, length: 0 };
-            } catch (e) {
-                // O Parchment do Quill pode dessincronizar em certos estados do
-                // documento (erro "insertBefore ... not a child"). Recupera
-                // reconstruindo o conteúdo a partir do HTML atual + o embed,
-                // garantindo que o vídeo/imagem seja SEMPRE inserido.
-                console.warn('insertEmbed fallback:', e?.message);
-                this.appendEmbedHtml(embedType, value);
+            } finally {
+                // Remove a proteção após o ciclo de update assíncrono do Quill,
+                // voltando à edição totalmente livre (sem wrappers).
+                if (this.unguardSelection) setTimeout(this.unguardSelection, 200);
             }
 
             this.syncToLivewire();
@@ -358,10 +364,80 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            this.insertEmbedAt('videoEmbed', embedUrl);
+            // Fecha o modal ANTES de inserir, para o editor não disputar foco com
+            // o overlay do modal (o que gerava um erro de seleção na inserção).
             this.videoUrl = '';
             this.videoError = '';
             this.$dispatch('close-modal', { name: 'quill-video-link' });
+            setTimeout(() => this.insertEmbedAt('videoEmbed', embedUrl), 60);
+        },
+
+        /**
+         * Botão de link: abre o modal para inserir/aplicar um link. Guarda a
+         * seleção atual (texto selecionado) para aplicar o link nela.
+         */
+        insertLink() {
+            // Captura a seleção atual (texto selecionado) ANTES de abrir o modal.
+            const length = this.quill.getLength();
+            this.linkRange = this.savedRange
+                ? { index: this.savedRange.index, length: this.savedRange.length }
+                : { index: Math.max(0, length - 1), length: 0 };
+            this.linkUrl = '';
+            this.linkText = '';
+            this.linkError = '';
+            this.$dispatch('open-modal', { name: 'quill-link' });
+        },
+
+        /** Confirma o link do modal: aplica à seleção ou insere no cursor. */
+        confirmLink() {
+            let url = (this.linkUrl || '').trim();
+            if (url === '') {
+                this.linkError = 'Informe a URL do link.';
+                return;
+            }
+            // Normaliza: adiciona https:// se não houver protocolo (exceto mailto).
+            if (!/^(https?:\/\/|mailto:|\/)/i.test(url)) {
+                url = 'https://' + url;
+            }
+
+            const range = this.linkRange || { index: Math.max(0, this.quill.getLength() - 1), length: 0 };
+            const text = (this.linkText || '').trim();
+
+            this.linkUrl = '';
+            this.linkText = '';
+            this.linkError = '';
+            this.$dispatch('close-modal', { name: 'quill-link' });
+
+            // Aplica via Delta EXPLÍCITO (com o atributo link embutido), sob a
+            // blindagem de seleção — não depende de foco/seleção do Quill, que
+            // quebraria nesse estado.
+            setTimeout(() => {
+                const Delta = window.Quill.import('delta');
+                if (this.guardSelection) this.guardSelection();
+                try {
+                    if (range.length > 0) {
+                        // Aplica o link ao texto já selecionado.
+                        this.quill.updateContents(
+                            new Delta().retain(range.index).retain(range.length, { link: url }),
+                            'user',
+                        );
+                        this.savedRange = { index: range.index + range.length, length: 0 };
+                    } else {
+                        // Sem seleção: insere o texto (ou a própria URL) como link.
+                        const display = text || url;
+                        this.quill.updateContents(
+                            new Delta().retain(range.index).insert(display, { link: url }),
+                            'user',
+                        );
+                        this.savedRange = { index: range.index + display.length, length: 0 };
+                    }
+                } catch (e) {
+                    console.warn('insertLink fallback:', e?.message);
+                } finally {
+                    if (this.unguardSelection) setTimeout(this.unguardSelection, 200);
+                }
+                this.syncToLivewire();
+            }, 60);
         },
 
         /** Botão do modal: fechar e enviar um vídeo do computador. */
@@ -404,6 +480,20 @@ document.addEventListener('alpine:init', () => {
                 const file = inputEl.files[0];
                 if (!file) return;
 
+                // Validação de tamanho ANTES do upload: evita o erro 413 do
+                // servidor e mostra uma mensagem clara. Limite alinhado ao PHP
+                // (100MB). Para vídeos maiores, o usuário usa um link.
+                const MAX_BYTES = 100 * 1024 * 1024;
+                if (file.size > MAX_BYTES) {
+                    const mb = Math.round(file.size / (1024 * 1024));
+                    this.showError(
+                        type === 'video'
+                            ? `Este vídeo tem ${mb} MB e excede o limite de 100 MB. Para vídeos maiores, cole um link do YouTube ou Vimeo no botão de vídeo.`
+                            : `Esta imagem tem ${mb} MB e excede o limite de 100 MB. Reduza o tamanho e tente novamente.`,
+                    );
+                    return;
+                }
+
                 this.uploading = true;
                 this.uploadLabel = type === 'video' ? 'Enviando Vídeo' : 'Processando Imagem';
 
@@ -420,7 +510,16 @@ document.addEventListener('alpine:init', () => {
                         body: formData,
                     });
 
-                    if (!response.ok) throw new Error('Falha no upload');
+                    if (!response.ok) {
+                        if (response.status === 413 || response.status === 422) {
+                            this.showError(
+                                'O arquivo excede o tamanho permitido (máx. 100 MB). Para vídeos maiores, use um link do YouTube ou Vimeo.',
+                            );
+                        } else {
+                            this.showError('Não foi possível enviar o arquivo. Verifique o formato e tente novamente.');
+                        }
+                        return;
+                    }
 
                     const data = await response.json();
                     const embedType = data.type === 'video' ? 'video' : 'image';
@@ -428,13 +527,19 @@ document.addEventListener('alpine:init', () => {
                     this.insertEmbedAt(embedType, data.url);
                 } catch (error) {
                     console.error('Upload Error:', error);
-                    alert('Não foi possível enviar o arquivo. Verifique o tamanho e o formato.');
+                    this.showError('Não foi possível enviar o arquivo. Verifique sua conexão e tente novamente.');
                 } finally {
                     this.uploading = false;
                 }
             };
 
             inputEl.click();
+        },
+
+        /** Exibe uma mensagem de erro no modal (substitui o alert nativo). */
+        showError(message) {
+            this.errorMessage = message;
+            this.$dispatch('open-modal', { name: 'quill-error' });
         },
     }));
 });
