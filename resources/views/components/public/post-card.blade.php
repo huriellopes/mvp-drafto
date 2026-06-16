@@ -43,15 +43,15 @@
         </h3>
 
         <p class="mb-6 line-clamp-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400 font-medium">
-            {{ $post->excerpt }}
+            {!! $post->excerpt !!}
         </p>
 
         <div class="mt-auto flex items-center justify-between border-t border-zinc-50 pt-6 dark:border-zinc-800/50">
             <div class="flex items-center gap-3">
-                <x-ui.avatar 
-                    :src="$post->author->profile->avatar_path ? Storage::url($post->author->profile->avatar_path) : null" 
-                    :name="$post->author->name" 
-                    size="sm" 
+                <x-ui.avatar
+                    :src="$post->author->profile->avatar_path ? Storage::url($post->author->profile->avatar_path) : null"
+                    :name="$post->author->name"
+                    size="sm"
                     class="ring-2 ring-zinc-50 dark:ring-zinc-800"
                 />
                 <div class="flex flex-col">

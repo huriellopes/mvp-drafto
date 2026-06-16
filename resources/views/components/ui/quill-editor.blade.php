@@ -1,7 +1,8 @@
 @props([
     'placeholder' => 'Conte sua história...',
-    'uploadUrl' => route('trix.attachments.store'),
+    'uploadUrl' => route('editor.attachments.store'),
     'initial' => '',
+    'maxUploadKb' => config('editor.max_upload_kb'),
 ])
 
 <div
@@ -10,6 +11,7 @@
         model: '{{ $attributes->wire('model')->value() }}',
         uploadUrl: '{{ $uploadUrl }}',
         placeholder: '{{ addslashes($placeholder) }}',
+        maxUploadKb: {{ (int) $maxUploadKb }},
     })"
     class="relative group"
 >

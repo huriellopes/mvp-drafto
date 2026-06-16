@@ -7,7 +7,7 @@ use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Public\AnalyticsController;
 use App\Http\Controllers\Public\ProfileBadgeController;
-use App\Http\Controllers\TrixAttachmentController;
+use App\Http\Controllers\EditorAttachmentController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Livewire\Dashboard\Support\SupportPage;
 use Illuminate\Http\Request;
@@ -98,9 +98,9 @@ Route::middleware(['auth', 'must.change.password'])
 | Recursos de Sistema & Públicos Específicos
 |--------------------------------------------------------------------------
 */
-Route::post('/trix/attachments', TrixAttachmentController::class)
+Route::post('/editor/attachments', EditorAttachmentController::class)
     ->middleware(['auth'])
-    ->name('trix.attachments.store');
+    ->name('editor.attachments.store');
 
 Route::post('/analytics/duration', [AnalyticsController::class, 'updateDuration'])
     ->name('analytics.duration');

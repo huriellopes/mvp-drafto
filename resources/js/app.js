@@ -165,11 +165,13 @@ const registerQuillVideoBlot = () => {
 document.addEventListener('alpine:init', () => {
     registerQuillVideoBlot();
 
-    Alpine.data('quillEditor', ({ model, uploadUrl, placeholder }) => ({
+    Alpine.data('quillEditor', ({ model, uploadUrl, placeholder, maxUploadKb }) => ({
         quill: null,
         model,
         uploadUrl,
         placeholder,
+        // Limite de upload (KB) vindo do servidor (config/editor.php) — fonte única.
+        maxUploadKb: maxUploadKb || 102400,
         uploading: false,
         uploadLabel: 'Processando',
         savedRange: null,
@@ -481,15 +483,16 @@ document.addEventListener('alpine:init', () => {
                 if (!file) return;
 
                 // Validação de tamanho ANTES do upload: evita o erro 413 do
-                // servidor e mostra uma mensagem clara. Limite alinhado ao PHP
-                // (100MB). Para vídeos maiores, o usuário usa um link.
-                const MAX_BYTES = 100 * 1024 * 1024;
-                if (file.size > MAX_BYTES) {
+                // servidor e mostra uma mensagem clara. Limite vindo do servidor
+                // (config/editor.php). Para vídeos maiores, o usuário usa um link.
+                const maxBytes = this.maxUploadKb * 1024;
+                const limitMb = Math.round(this.maxUploadKb / 1024);
+                if (file.size > maxBytes) {
                     const mb = Math.round(file.size / (1024 * 1024));
                     this.showError(
                         type === 'video'
-                            ? `Este vídeo tem ${mb} MB e excede o limite de 100 MB. Para vídeos maiores, cole um link do YouTube ou Vimeo no botão de vídeo.`
-                            : `Esta imagem tem ${mb} MB e excede o limite de 100 MB. Reduza o tamanho e tente novamente.`,
+                            ? `Este vídeo tem ${mb} MB e excede o limite de ${limitMb} MB. Para vídeos maiores, cole um link do YouTube ou Vimeo no botão de vídeo.`
+                            : `Esta imagem tem ${mb} MB e excede o limite de ${limitMb} MB. Reduza o tamanho e tente novamente.`,
                     );
                     return;
                 }
@@ -513,7 +516,7 @@ document.addEventListener('alpine:init', () => {
                     if (!response.ok) {
                         if (response.status === 413 || response.status === 422) {
                             this.showError(
-                                'O arquivo excede o tamanho permitido (máx. 100 MB). Para vídeos maiores, use um link do YouTube ou Vimeo.',
+                                `O arquivo excede o tamanho permitido (máx. ${limitMb} MB). Para vídeos maiores, use um link do YouTube ou Vimeo.`,
                             );
                         } else {
                             this.showError('Não foi possível enviar o arquivo. Verifique o formato e tente novamente.');
