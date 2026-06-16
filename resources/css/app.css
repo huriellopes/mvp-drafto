@@ -11,7 +11,7 @@
     --color-profile-secondary: var(--profile-secondary);
     --color-profile-text: var(--profile-text);
     --color-profile-bg: var(--profile-bg);
-    
+
     --radius-profile-button: var(--profile-button-radius);
 
     --radius-3xl: 1.5rem;
@@ -70,8 +70,9 @@ article img {
    Toaster Overrides
 --------------------------------------- */
 
-[id^="toaster-"] {
-    z-index: 9999 !important;
+#toaster,
+[id^="toaster"] {
+    z-index: 100000 !important;
 }
 
 .no-transitions,

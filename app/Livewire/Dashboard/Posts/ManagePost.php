@@ -168,11 +168,13 @@ class ManagePost extends Component
 
             if (!$this->form->published_at) {
                 $this->addError('form.published_at', 'A data de agendamento é obrigatória.');
+                $this->notifyWarning('Informe a data e a hora da publicação para agendar.');
                 return;
             }
 
             if (now()->parse($this->form->published_at)->isPast()) {
                 $this->addError('form.published_at', 'A data de agendamento deve ser no futuro.');
+                $this->notifyWarning('A data de agendamento deve ser no futuro.');
                 return;
             }
 
@@ -197,8 +199,9 @@ class ManagePost extends Component
                 return;
             }
 
+            // Fecha o modal (x-ui.modal escuta o evento close-modal) e notifica.
+            $this->dispatch('close-modal', name: 'schedule-modal');
             $this->notifySuccess('Post agendado com sucesso!');
-            $this->showScheduleModal = false;
 
             return $this->redirect(route('dashboard.posts.index'), navigate: true);
         } catch (ValidationException $e) {

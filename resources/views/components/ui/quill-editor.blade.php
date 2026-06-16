@@ -64,4 +64,53 @@
             </div>
         </div>
     </x-ui.modal>
+
+    {{-- Modal de link --}}
+    <x-ui.modal name="quill-link" title="Inserir link">
+        <div class="space-y-5">
+            <div>
+                <label class="mb-2 block text-xs font-bold uppercase tracking-widest text-zinc-500">URL</label>
+                <input
+                    type="url"
+                    x-model="linkUrl"
+                    @keydown.enter.prevent="confirmLink()"
+                    x-on:open-modal.window="if ($event.detail.name === 'quill-link') setTimeout(() => $el.focus(), 120)"
+                    placeholder="https://exemplo.com"
+                    class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none"
+                />
+            </div>
+            <div>
+                <label class="mb-2 block text-xs font-bold uppercase tracking-widest text-zinc-500">Texto (opcional)</label>
+                <input
+                    type="text"
+                    x-model="linkText"
+                    @keydown.enter.prevent="confirmLink()"
+                    placeholder="Texto a exibir (usado quando nada está selecionado)"
+                    class="w-full rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-900 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none"
+                />
+            </div>
+            <p x-show="linkError" x-cloak x-text="linkError" class="text-sm text-red-600"></p>
+            <div class="flex flex-col gap-3 sm:flex-row-reverse">
+                <x-ui.button type="button" @click="confirmLink()" class="!w-auto px-6">Inserir link</x-ui.button>
+                <x-ui.button type="button" @click="$dispatch('close-modal', { name: 'quill-link' })" class="!bg-white !text-zinc-500 hover:!text-zinc-900 !w-auto px-6">Cancelar</x-ui.button>
+            </div>
+        </div>
+    </x-ui.modal>
+
+    {{-- Modal de erro (substitui o alert nativo) --}}
+    <x-ui.modal name="quill-error" title="Não foi possível enviar">
+        <div class="space-y-6">
+            <div class="flex gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 ring-1 ring-red-100">
+                    <x-lucide-alert-triangle class="h-5 w-5 text-red-500" />
+                </div>
+                <p class="text-sm leading-relaxed text-zinc-600" x-text="errorMessage"></p>
+            </div>
+            <div class="flex justify-end">
+                <x-ui.button type="button" @click="$dispatch('close-modal', { name: 'quill-error' })" class="!w-auto px-6">
+                    Entendi
+                </x-ui.button>
+            </div>
+        </div>
+    </x-ui.modal>
 </div>

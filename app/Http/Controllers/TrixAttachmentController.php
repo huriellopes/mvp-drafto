@@ -26,8 +26,9 @@ class TrixAttachmentController extends Controller
                 'required',
                 'file',
                 'mimetypes:image/jpeg,image/png,image/gif,image/webp,image/svg+xml,video/mp4,video/webm,video/ogg,video/quicktime',
-                // 50MB: cobre vídeos curtos; imagens raramente passam disso.
-                'max:51200',
+                // 100MB: alinhado ao limite do PHP (post_max_size/upload_max_filesize).
+                // Para vídeos maiores, o usuário deve usar um link do YouTube/Vimeo.
+                'max:102400',
             ],
         ]);
 
