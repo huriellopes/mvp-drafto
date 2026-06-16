@@ -8,11 +8,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class TrixAttachmentController extends Controller
+class EditorAttachmentController extends Controller
 {
     /**
      * Handles image and video uploads from the rich editor (Quill).
-     * Stores the file on the public disk and returns its URL and type.
+     * Stores the file on the configured disk and returns its URL and type.
      */
     public function __invoke(Request $request): JsonResponse
     {
@@ -25,10 +25,9 @@ class TrixAttachmentController extends Controller
             'file' => [
                 'required',
                 'file',
-                'mimetypes:image/jpeg,image/png,image/gif,image/webp,image/svg+xml,video/mp4,video/webm,video/ogg,video/quicktime',
-                // 100MB: alinhado ao limite do PHP (post_max_size/upload_max_filesize).
-                // Para vídeos maiores, o usuário deve usar um link do YouTube/Vimeo.
-                'max:102400',
+                'mimetypes:' . implode(',', config('editor.allowed_mimetypes')),
+                // Limite vindo de config/editor.php (alinhado ao PHP do servidor).
+                'max:' . config('editor.max_upload_kb'),
             ],
         ]);
 
@@ -36,9 +35,9 @@ class TrixAttachmentController extends Controller
         $isVideo = str_starts_with((string) $file->getMimeType(), 'video/');
 
         $path = $file->storeAs(
-            'trix-attachments',
+            config('editor.upload_path'),
             Str::uuid() . '.' . $file->getClientOriginalExtension(),
-            'public',
+            config('editor.upload_disk'),
         );
 
         // URL absoluta evita problemas de caminho relativo no editor/renderização.

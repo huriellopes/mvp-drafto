@@ -80,7 +80,7 @@
                             wire:model="form.content"
                             :initial="$form->content"
                             placeholder="Conte sua história..."
-                            uploadUrl="{{ route('trix.attachments.store') }}"
+                            uploadUrl="{{ route('editor.attachments.store') }}"
                         />
                         @error('form.content') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>

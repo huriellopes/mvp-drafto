@@ -36,27 +36,6 @@ if (!function_exists('format_currency')) {
     }
 }
 
-if (!function_exists('money')) {
-    /**
-     * Formata um valor vindo do Stripe (centavos) para moeda legível.
-     */
-    function money(int|float $amount, string $currency = 'brl'): string
-    {
-        $amount = $amount / 100;
-        $currency = mb_strtoupper($currency);
-
-        if ($currency === 'BRL') {
-            return 'R$ ' . number_format($amount, 2, ',', '.');
-        }
-
-        if ($currency === 'USD') {
-            return '$' . number_format($amount, 2, '.', ',');
-        }
-
-        return $currency . ' ' . number_format($amount, 2);
-    }
-}
-
 if (!function_exists('get_initials')) {
     /**
      * Retorna as iniciais de um nome.
