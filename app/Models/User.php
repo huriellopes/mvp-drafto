@@ -38,6 +38,10 @@ use Spatie\Sitemap\Tags\Url;
     'status',
     'ip_address',
     'last_login_at',
+    'wants_reengagement_emails',
+    'wants_product_updates',
+    'reengagement_sent_at',
+    'reengagement_stage',
     'email_verified_at',
     'banned_until',
     'ban_reason',
@@ -239,6 +243,33 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $this->status === UserStatusEnum::ACTIVE;
     }
 
+    /**
+     * Data da última atividade considerada para inatividade: o mais recente
+     * entre o último login, a última escrita (post) e a criação da conta.
+     * Usa `posts_max_created_at` se já vier carregado via subquery (evita N+1).
+     */
+    public function lastActivityAt(): Carbon
+    {
+        $lastPostAt = $this->getAttribute('posts_max_created_at')
+            ?? $this->posts()->max('created_at');
+
+        $dates = array_filter([
+            $this->last_login_at,
+            $lastPostAt ? Carbon::parse($lastPostAt) : null,
+            $this->created_at,
+        ]);
+
+        return empty($dates) ? now() : Carbon::parse(max($dates));
+    }
+
+    /**
+     * Quantos dias o usuário está inativo (sem logar e sem escrever).
+     */
+    public function inactiveDays(): int
+    {
+        return (int) $this->lastActivityAt()->diffInDays(now());
+    }
+
     public function isFollowing(User $user): bool
     {
         return $this->following()
@@ -372,6 +403,10 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
             'password' => 'hashed',
             'must_change_password' => 'boolean',
             'last_login_at' => 'datetime',
+            'wants_reengagement_emails' => 'boolean',
+            'wants_product_updates' => 'boolean',
+            'reengagement_sent_at' => 'datetime',
+            'reengagement_stage' => 'integer',
             'banned_until' => 'datetime',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:json',

@@ -21,6 +21,9 @@
 </head>
 <body style="font-family: sans-serif; color: #374151; line-height: 1.6;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="margin-bottom: 24px;">
+            <img src="{{ asset('images/logo.png') }}" width="120" alt="{{ config('app.name') }}" style="height: auto; display: block; border: 0; outline: none; text-decoration: none;">
+        </div>
         <h2 style="color: #111827;">{{ __('mail.newsletter.verification.greeting') }}</h2>
         <p>{!! __('mail.newsletter.verification.body1') !!}</p>
         <p>{{ __('mail.newsletter.verification.body2') }}</p>

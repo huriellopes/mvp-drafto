@@ -32,8 +32,7 @@
     <table class="main" cellpadding="0" cellspacing="0">
         <tr>
             <td class="header">
-                <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="52" height="52" alt="Drafto Logo" style="border-radius: 16px;">
-                <div style="margin-top: 12px; font-weight: 800; font-size: 16px; color: #ffffff; letter-spacing: -0.025em;">{{ config('app.name') }}</div>
+                <img src="{{ asset('images/logo.png') }}" width="132" alt="{{ config('app.name') }}" style="height: auto; display: block; border: 0; outline: none; text-decoration: none;">
             </td>
         </tr>
         <tr>

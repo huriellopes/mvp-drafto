@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard\Admin\Users;
 
 use App\Actions\Auth\ImpersonateUserAction;
+use App\Actions\Engagement\SendReengagementEmailAction;
 use App\Actions\Modules\ToggleUserModuleAction;
 use App\Actions\Users\DeleteUserAction;
 use App\Actions\Users\ListUsersAction;
@@ -62,6 +63,8 @@ class UserIndex extends Component
 
     public ?User $selectedUserForPasswordReset = null;
 
+    public ?User $selectedUserForReengagement = null;
+
     public string $defaultPassword = 'Drafto@2026';
 
     public function confirmImpersonation(User $user): void
@@ -93,6 +96,36 @@ class UserIndex extends Component
 
         $this->selectedUserForPasswordReset = null;
         $this->dispatch('close-modal', name: 'confirm-password-reset');
+    }
+
+    public function confirmReengagement(User $user): void
+    {
+        $this->selectedUserForReengagement = $user;
+        $this->dispatch('open-modal', name: 'confirm-reengagement');
+    }
+
+    public function sendReengagement(): void
+    {
+        $user = $this->selectedUserForReengagement;
+
+        if (!$user) {
+            return;
+        }
+
+        if (!$user->wants_reengagement_emails) {
+            Toaster::warning("{$user->name} optou por não receber lembretes de retorno.");
+        } elseif (!$user->isActive()) {
+            Toaster::warning("A conta de {$user->name} não está ativa.");
+        } elseif ($user->banned_until?->isFuture()) {
+            Toaster::warning("{$user->name} está com acesso suspenso.");
+        } else {
+            // force: envio manual ignora cooldown/faixa e não exige e-mail verificado.
+            app(SendReengagementEmailAction::class)->exec($user, force: true);
+            Toaster::success("E-mail de retorno enviado para {$user->name}.");
+        }
+
+        $this->selectedUserForReengagement = null;
+        $this->dispatch('close-modal', name: 'confirm-reengagement');
     }
 
     public function impersonate(): void

@@ -12,5 +12,7 @@ class UpdateUserSettingsData extends Data
         public string $name,
         public string $email,
         public ?string $password = null,
+        public bool $wants_reengagement_emails = true,
+        public bool $wants_product_updates = true,
     ) {}
 }

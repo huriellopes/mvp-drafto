@@ -26,3 +26,7 @@ Schedule::command('app:generate-missing-excerpts')
 Schedule::command('seo:generate-sitemap')
     ->dailyAt('02:00')
     ->onOneServer();
+
+Schedule::command('users:reengage')
+    ->dailyAt('09:00')
+    ->onOneServer();

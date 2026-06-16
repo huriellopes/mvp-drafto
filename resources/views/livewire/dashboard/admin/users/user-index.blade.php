@@ -175,6 +175,15 @@
                                 </button>
                             </x-ui.tooltip>
 
+                            <x-ui.tooltip text="Enviar e-mail de retorno">
+                                <button
+                                    wire:click="confirmReengagement({{ $user->id }})"
+                                    class="p-2 text-zinc-400 hover:text-indigo-600 transition"
+                                >
+                                    <x-lucide-mail-plus class="h-4 w-4" />
+                                </button>
+                            </x-ui.tooltip>
+
                             <x-ui.tooltip text="Editar Usuário">
                                 <button
                                     wire:click="edit({{ $user->id }})"
@@ -270,6 +279,14 @@
         :buttonText="__('dashboard.admin.users.reset_password_modal.confirm')"
         variant="danger"
         action="resetPassword"
+    />
+
+    <x-ui.confirm-modal
+        name="confirm-reengagement"
+        title="Enviar e-mail de retorno"
+        :content="'Enviar um e-mail convidando ' . ($selectedUserForReengagement?->name ?? 'o usuário') . ' a voltar e escrever no Drafto?'"
+        buttonText="Enviar e-mail"
+        action="sendReengagement"
     />
 
     {{-- Modal de Módulos do Usuário --}}

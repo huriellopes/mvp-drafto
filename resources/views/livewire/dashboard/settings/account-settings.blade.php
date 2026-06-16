@@ -72,6 +72,26 @@
             </div>
         </x-ui.section-card>
 
+        <x-ui.section-card title="Preferências de e-mail" description="Escolha quais comunicações você quer receber por e-mail.">
+            <div class="space-y-4">
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100 dark:bg-zinc-800/40 dark:ring-zinc-800">
+                    <div class="min-w-0">
+                        <span class="block text-sm font-bold text-zinc-800 dark:text-zinc-100">Lembretes de retorno</span>
+                        <span class="block text-xs text-zinc-500">E-mails nos convidando a voltar quando você ficar um tempo sem escrever.</span>
+                    </div>
+                    <input type="checkbox" wire:model="form.wants_reengagement_emails" class="h-5 w-5 shrink-0 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                </label>
+
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100 dark:bg-zinc-800/40 dark:ring-zinc-800">
+                    <div class="min-w-0">
+                        <span class="block text-sm font-bold text-zinc-800 dark:text-zinc-100">Novidades da plataforma</span>
+                        <span class="block text-xs text-zinc-500">Avisos sobre melhorias e novidades do Drafto.</span>
+                    </div>
+                    <input type="checkbox" wire:model="form.wants_product_updates" class="h-5 w-5 shrink-0 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                </label>
+            </div>
+        </x-ui.section-card>
+
         <div class="flex justify-end gap-3 border-t border-zinc-200 dark:border-zinc-800 pt-8">
             <x-ui.button
                 type="submit"
