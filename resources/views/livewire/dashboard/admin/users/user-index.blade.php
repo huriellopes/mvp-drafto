@@ -247,7 +247,7 @@
                 <x-ui.button type="button" x-on:click="$dispatch('close-modal', { name: 'user-form-modal' })" variant="secondary" class="!w-auto px-8">
                     {{ __('dashboard.admin.users.modal.cancel') }}
                 </x-ui.button>
-                <x-ui.button loading="save" class="!w-auto px-10">
+                <x-ui.button type="submit" loading="save" class="!w-auto px-10">
                     {{ __('dashboard.admin.users.modal.submit') }}
                 </x-ui.button>
             </div>
