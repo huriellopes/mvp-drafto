@@ -10,6 +10,8 @@ Route::prefix('admin')
     ->group(function () {
         Route::livewire('/newsletter', 'dashboard.admin.newsletter.newsletter-index')
             ->name('newsletter.index');
+        Route::livewire('/novidades', 'dashboard.admin.updates.update-index')
+            ->name('updates.index');
         Route::livewire('/reports', 'dashboard.admin.reports.report-index')
             ->name('reports.index');
         Route::livewire('/users', 'dashboard.admin.users.user-index')

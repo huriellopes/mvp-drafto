@@ -50,6 +50,15 @@ article img {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.ql-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.ql-editor {
+    flex: 1 1 auto;
+}
+
 .ql-editor img {
     max-width: 100%;
     height: auto;

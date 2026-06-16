@@ -20,10 +20,16 @@ class UserSettingsForm extends Form
 
     public string $password_confirmation = '';
 
+    public bool $wants_reengagement_emails = true;
+
+    public bool $wants_product_updates = true;
+
     public function setUser(User $user): void
     {
         $this->name = $user->name;
         $this->email = $user->email;
+        $this->wants_reengagement_emails = (bool) $user->wants_reengagement_emails;
+        $this->wants_product_updates = (bool) $user->wants_product_updates;
     }
 
     public function rules(): array
@@ -36,6 +42,8 @@ class UserSettingsForm extends Form
                 Rule::unique('users', 'email')->ignore(auth()->id()),
             ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'wants_reengagement_emails' => ['boolean'],
+            'wants_product_updates' => ['boolean'],
         ];
     }
 

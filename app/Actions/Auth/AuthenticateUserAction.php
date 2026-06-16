@@ -67,6 +67,10 @@ final class AuthenticateUserAction
         $loggedUser->update([
             'last_login_at' => Carbon::now(),
             'ip_address' => request()->ip(),
+            // O usuário voltou: zera o ciclo de e-mails de retorno para que ele
+            // possa ser reengajado de novo caso fique inativo no futuro.
+            'reengagement_stage' => null,
+            'reengagement_sent_at' => null,
         ]);
 
         return true;

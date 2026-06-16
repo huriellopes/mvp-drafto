@@ -15,6 +15,8 @@ final class UpdateUserSettingsAction
         $updateData = [
             'name' => $data->name,
             'email' => $data->email,
+            'wants_reengagement_emails' => $data->wants_reengagement_emails,
+            'wants_product_updates' => $data->wants_product_updates,
         ];
 
         if ($user->email !== $data->email) {

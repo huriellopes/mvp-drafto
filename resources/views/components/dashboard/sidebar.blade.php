@@ -130,6 +130,11 @@
                     {{ __('dashboard.sidebar.links.newsletter') }}
                 </x-ui.sidebar-link>
 
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.updates.index') }}" :active="request()->routeIs('dashboard.admin.updates.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-megaphone class="h-5 w-5" /></x-slot:icon>
+                    Novidades
+                </x-ui.sidebar-link>
+
                 <x-ui.sidebar-link href="{{ route('dashboard.admin.reports.index') }}" :active="request()->routeIs('dashboard.admin.reports.*')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-shield-alert class="h-5 w-5" /></x-slot:icon>
                     {{ __('dashboard.sidebar.links.moderation') }}

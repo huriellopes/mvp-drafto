@@ -127,5 +127,9 @@ Route::get('/newsletter/unsubscribe/{email}', UnsubscribeController::class)
     ->name('newsletter.unsubscribe')
     ->middleware('signed');
 
+Route::get('/email/preferencias/{user}/{type}/cancelar', [\App\Http\Controllers\EmailPreferencesController::class, 'unsubscribe'])
+    ->name('email.preferences.unsubscribe')
+    ->middleware('signed');
+
 Route::get('/s/{code}', \App\Http\Controllers\ShortLinkController::class)
     ->name('shortlink.redirect');
