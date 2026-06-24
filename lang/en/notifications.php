@@ -116,4 +116,4 @@ return [
             'line4' => 'If you did not request this, please contact support immediately.',
         ],
     ],
-    ];
+];

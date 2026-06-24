@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Logging\Telegram\CreateTelegramLogger;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -56,21 +57,21 @@ return [
 
         'telegram_debug' => [
             'driver' => 'custom',
-            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'via' => CreateTelegramLogger::class,
             'level' => 'debug',
             'thread' => env('TELEGRAM_THREAD_DEBUG'),
         ],
 
         'telegram_support' => [
             'driver' => 'custom',
-            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'via' => CreateTelegramLogger::class,
             'level' => 'info',
             'thread' => env('TELEGRAM_THREAD_SUPPORT'),
         ],
 
         'telegram_alerts' => [
             'driver' => 'custom',
-            'via' => \App\Logging\Telegram\CreateTelegramLogger::class,
+            'via' => CreateTelegramLogger::class,
             'level' => 'warning', // Captura warning, error, critical, etc.
             'thread' => env('TELEGRAM_THREAD_ALERTS'),
         ],

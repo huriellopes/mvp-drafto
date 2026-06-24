@@ -261,7 +261,7 @@
                             <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
-                            <input type="color" wire:model.live="form.secondary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <input type="color" value="{{ $form->secondary_color ?? '#000000' }}" x-on:change="$wire.set('form.secondary_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
                                 {{ $form->secondary_color ?? __('dashboard.profile.edit.style_section.none') }}
                             </span>
@@ -274,7 +274,7 @@
                             <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
-                            <input type="color" wire:model.live="form.text_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <input type="color" value="{{ $form->text_color ?? '#000000' }}" x-on:change="$wire.set('form.text_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
                                 {{ $form->text_color ?? __('dashboard.profile.edit.style_section.default') }}
                             </span>
@@ -287,7 +287,7 @@
                             <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
                         </label>
                         <div class="flex items-center gap-4">
-                            <input type="color" wire:model.live="form.background_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                            <input type="color" value="{{ $form->background_color ?? '#000000' }}" x-on:change="$wire.set('form.background_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
                             <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
                                 {{ $form->background_color ?? __('dashboard.profile.edit.style_section.default') }}
                             </span>
@@ -481,15 +481,16 @@
             </div>
         </x-ui.section-card>
 
-        <div class="flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800 pt-8">
+        {{-- Barra fixa de salvar: cola no fim da tela ao rolar, sem precisar descer a página toda. --}}
+        <x-ui.sticky-bar>
             <x-ui.button
                 type="submit"
                 loading="save"
                 sizes="lg"
-                class="w-full">
+                class="w-full justify-center">
                 {{ __('dashboard.profile.edit.submit_button') }}
             </x-ui.button>
-        </div>
+        </x-ui.sticky-bar>
     </form>
 
     {{-- Cover Cropper Modal --}}

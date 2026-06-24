@@ -5,20 +5,52 @@
     'showStats' => true,
     'showBio' => true,
     'showLocation' => false,
+    'embedImages' => false, // true: embute imagens como data URI (necessário p/ exportar PNG via html-to-image)
 ])
 
 @php
     $profile = $user->profile;
-    
+
     $themeClasses = match($theme) {
         'dark' => 'bg-[#09090b] text-white border-white/10',
         'brand' => 'text-white border-white/20',
         default => 'bg-white text-zinc-900 border-zinc-100',
     };
 
-    $brandStyle = $theme === 'brand' 
-        ? "background: linear-gradient(135deg, {$profile->primary_color}, {$profile->accent_color});" 
+    $brandStyle = $theme === 'brand'
+        ? "background: linear-gradient(135deg, {$profile->primary_color}, {$profile->accent_color});"
         : "";
+
+    // Evita UrlGenerationException quando o perfil ainda não tem username.
+    $profileUrl = $profile->username ? route('profile.show', $profile->username) : '#';
+
+    // Converte um arquivo local em data URI base64. Quando o crachá vai ser exportado
+    // como PNG (html-to-image), embutir as imagens evita qualquer fetch/CORS/taint de canvas
+    // — funciona mesmo que a origem do app não bata com o APP_URL.
+    $toDataUri = function (?string $absolutePath): ?string {
+        if (!$absolutePath || !is_file($absolutePath)) {
+            return null;
+        }
+
+        $mime = mime_content_type($absolutePath) ?: 'image/png';
+
+        return 'data:' . $mime . ';base64,' . base64_encode((string) file_get_contents($absolutePath));
+    };
+
+    // Logo (marca d'água)
+    $logoPath = public_path('images/favicon/android-chrome-192x192.png');
+    $logoUrl = $embedImages
+        ? ($toDataUri($logoPath) ?? (parse_url(asset('images/favicon/android-chrome-192x192.png'), PHP_URL_PATH) ?: asset('images/favicon/android-chrome-192x192.png')))
+        : (parse_url(asset('images/favicon/android-chrome-192x192.png'), PHP_URL_PATH) ?: asset('images/favicon/android-chrome-192x192.png'));
+
+    // Avatar
+    $avatarUrl = null;
+    if ($profile->avatar_path) {
+        $relativeAvatar = parse_url(Storage::url($profile->avatar_path), PHP_URL_PATH) ?: Storage::url($profile->avatar_path);
+        $avatarUrl = $embedImages
+            ? ($toDataUri(Storage::disk('public')->path($profile->avatar_path)) ?? $relativeAvatar)
+            : $relativeAvatar;
+    }
 @endphp
 
 <div {{ $attributes->merge(['class' => "group relative overflow-hidden rounded-[3.5rem] border shadow-sm backdrop-blur-sm transition-all hover:shadow-xl " . ($mode === 'embed' ? 'p-8' : 'p-10') . " $themeClasses"]) }}
@@ -28,26 +60,25 @@
     {{-- Decorative Watermark (Only for embed) --}}
     @if($mode === 'embed')
         <div class="absolute -top-10 -right-10 opacity-[0.03] rotate-12 pointer-events-none">
-            <x-application-logo class="h-64 w-auto fill-current" />
+            <img src="{{ $logoUrl }}" class="h-64 w-auto" alt="{{ config('app.name') }}" />
         </div>
         <div class="absolute top-10 right-10 opacity-30">
-            <x-application-logo class="h-6 w-auto fill-current" />
+            <img src="{{ $logoUrl }}" class="h-6 w-auto" alt="{{ config('app.name') }}" />
         </div>
     @endif
 
     <div class="text-center space-y-6 relative z-10">
         {{-- Avatar Section --}}
-        <a href="{{ route('profile.show', $profile->username) }}" 
+        <a href="{{ $profileUrl }}"
            @if($mode === 'embed') target="_blank" rel="noopener noreferrer" @else wire:navigate @endif
            class="relative inline-block group/avatar"
         >
             <div class="absolute inset-0 bg-indigo-500/20 rounded-[2.5rem] blur-xl opacity-0 group-hover/avatar:opacity-100 transition duration-500"></div>
             
             @if($profile->avatar_path)
-                <img src="{{ Storage::url($profile->avatar_path) }}"
+                <img src="{{ $avatarUrl }}"
                      class="relative mx-auto h-32 w-32 rounded-[2.5rem] object-cover shadow-2xl ring-4 ring-current/5 transition-transform duration-500 group-hover/avatar:scale-105"
                      alt="{{ $user->display_name }}"
-                     crossorigin="anonymous"
                 />
             @else
                 <div @class([
@@ -135,7 +166,7 @@
         {{-- Actions / Footer --}}
         @if($mode === 'profile')
             <div class="flex items-center gap-3 pt-4">
-                <a href="{{ route('profile.show', $profile->username) }}" 
+                <a href="{{ $profileUrl }}"
                    wire:navigate
                    class="flex-1 inline-flex items-center justify-center h-11 px-6 text-xs font-black uppercase tracking-widest rounded-2xl bg-indigo-600 border border-indigo-600 text-white shadow-sm transition-all hover:bg-indigo-700 active:scale-95"
                 >
@@ -145,7 +176,7 @@
             </div>
         @else
             <div class="pt-6 flex justify-center">
-                <a href="{{ route('profile.show', $profile->username) }}" 
+                <a href="{{ $profileUrl }}"
                    target="_blank"
                    rel="noopener noreferrer"
                    @class([

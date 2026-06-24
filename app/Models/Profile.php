@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ProfileVisibilityEnum;
 use App\Enums\ThemePlatformEnum;
+use App\Traits\GeneratesUsername;
 use Database\Factories\ProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -38,6 +39,8 @@ use RalphJSmit\Laravel\SEO\Support\HasSEO;
 ])]
 class Profile extends Model implements Auditable
 {
+    use GeneratesUsername;
+
     /** @use HasFactory<ProfileFactory> */
     use HasFactory, \OwenIt\Auditing\Auditable;
 
@@ -132,6 +135,21 @@ class Profile extends Model implements Auditable
     public function isComplete(): bool
     {
         return empty($this->getMissingFields());
+    }
+
+    /**
+     * Garante que todo perfil nasça com um username (gerado a partir do nome),
+     * evitando UrlGenerationException em rotas que dependem do username.
+     * O usuário pode atualizá-lo depois em Editar Perfil.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Profile $profile): void {
+            if (blank($profile->username)) {
+                $base = $profile->name ?: ($profile->user?->name ?? 'usuario');
+                $profile->username = $profile->generateUniqueUsername($base);
+            }
+        });
     }
 
     protected function handle(): Attribute

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Settings;
 
+use App\Actions\Users\DeleteMyAccountAction;
+use App\Actions\Users\ExportUserDataAction;
 use App\Actions\Users\UpgradeToWriterAction;
 use App\Enums\RoleEnum;
 use App\Livewire\Forms\Settings\UserSettingsForm;
@@ -12,6 +14,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 #[Layout('layouts.app', ['heading' => 'Configurações', 'subheading' => 'Gerencie os dados da sua conta e segurança'])]
 #[Title('Configurações de Conta')]
@@ -30,7 +34,7 @@ class AccountSettings extends Component
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function becomeWriter(): void
     {
@@ -50,6 +54,45 @@ class AccountSettings extends Component
         Toaster::success('Parabéns! Agora você é um Escritor no Drafto.');
 
         $this->redirect(route('dashboard.account'), navigate: true);
+    }
+
+    public function openDeleteAccountModal(): void
+    {
+        $this->dispatch('open-modal', name: 'confirm-delete-account');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function deleteAccount(): void
+    {
+        $user = auth()->user();
+
+        auth()->logout();
+
+        app(DeleteMyAccountAction::class)->exec($user);
+
+        session()->invalidate();
+        session()->regenerateToken();
+
+        Toaster::success('Sua conta foi excluída. Esperamos te ver novamente em breve.');
+
+        $this->redirectRoute('home', navigate: true);
+    }
+
+    public function exportData(): StreamedResponse
+    {
+        $data = app(ExportUserDataAction::class)->exec(auth()->user());
+
+        $filename = 'drafto-meus-dados-' . now()->format('Y-m-d') . '.json';
+
+        return response()->streamDownload(
+            function () use ($data) {
+                echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            },
+            $filename,
+            ['Content-Type' => 'application/json'],
+        );
     }
 
     public function save(): void

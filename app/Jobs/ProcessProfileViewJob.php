@@ -26,9 +26,7 @@ final class ProcessProfileViewJob implements ShouldQueue
     public function __construct(
         private readonly int $profileId,
         private readonly ?int $userId,
-        private readonly string $sessionId,
         private readonly string $ipHash,
-        private readonly string $userAgent,
     ) {}
 
     public function handle(): void

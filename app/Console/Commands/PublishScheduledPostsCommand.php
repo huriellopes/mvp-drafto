@@ -19,6 +19,7 @@ class PublishScheduledPostsCommand extends Command
     {
         if (!Module::isEnabled(ModuleEnum::POST_SCHEDULER)) {
             $this->warn('O módulo de agendamento de postagens está desativado.');
+
             return;
         }
 

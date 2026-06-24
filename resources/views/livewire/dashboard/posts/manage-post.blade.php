@@ -168,6 +168,17 @@
                 </div>
             </aside>
         </div>
+
+        {{-- Barra fixa de ações: salvar/publicar sem rolar até o topo. --}}
+        <x-ui.sticky-bar align="end">
+            <x-ui.button type="submit" loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
+                Salvar Rascunho
+            </x-ui.button>
+
+            <x-ui.button type="button" wire:click="publish" loading="publish" class="!w-auto px-8 shadow-lg shadow-zinc-900/10">
+                {{ $post?->isPublished() ? 'Atualizar' : 'Publicar' }}
+            </x-ui.button>
+        </x-ui.sticky-bar>
     </form>
 
     {{-- Modal de Agendamento --}}

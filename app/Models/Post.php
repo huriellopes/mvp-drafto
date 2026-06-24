@@ -124,8 +124,11 @@ class Post extends Model implements Auditable, Sitemapable
      */
     public function getShareUrl(): string
     {
+        /** @var User $user */
+        $user = auth()->user() ?? $this->author;
+
         return app(GenerateShortLinkAction::class)->exec(
-            user: auth()->user() ?? $this->author,
+            user: $user,
             shortable: $this,
         );
     }

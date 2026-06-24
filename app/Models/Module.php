@@ -21,6 +21,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Module extends Model implements Auditable
 {
     use \OwenIt\Auditing\Auditable;
+
     public static function isEnabled(ModuleEnum|string $slug): bool
     {
         $value = $slug instanceof ModuleEnum ? $slug->value : $slug;
@@ -29,6 +30,7 @@ class Module extends Model implements Auditable
             return self::where('slug', $value)->where('is_enabled', true)->exists();
         });
     }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

@@ -20,7 +20,7 @@ final class SendReengagementEmailAction
      *
      * @param  int|null  $stage  faixa específica; se null, é resolvida pela inatividade.
      * @param  bool  $force  ignora cooldown/faixa-já-enviada (uso manual pelo admin).
-     * @return bool  true se o e-mail foi enfileirado.
+     * @return bool true se o e-mail foi enfileirado.
      */
     public function exec(User $user, ?int $stage = null, bool $force = false): bool
     {
