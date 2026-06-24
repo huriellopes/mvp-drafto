@@ -68,6 +68,16 @@ it('validates password confirmation', function () {
         ->assertHasErrors(['form.password']);
 });
 
+it('can export the own data as a json download', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(AccountSettings::class)
+        ->call('exportData')
+        ->assertFileDownloaded('drafto-meus-dados-' . now()->format('Y-m-d') . '.json');
+});
+
 it('can delete the own account', function () {
     $user = User::factory()->create();
 

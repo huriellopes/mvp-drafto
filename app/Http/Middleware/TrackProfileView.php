@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use App\Jobs\ProcessProfileViewJob;
 use App\Models\User;
+use App\Support\CookieConsent;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +21,11 @@ final class TrackProfileView
     public function terminate(Request $request, Response $response): void
     {
         if (!$request->routeIs('profile.show') || $response->getStatusCode() !== 200) {
+            return;
+        }
+
+        // LGPD: só contabiliza a visualização (que armazena IP) com consentimento de análise.
+        if (!CookieConsent::allows($request, 'analytics')) {
             return;
         }
 

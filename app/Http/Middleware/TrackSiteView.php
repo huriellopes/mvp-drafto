@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use App\DTOs\Public\StoreSiteViewData;
 use App\Jobs\ProcessSiteViewJob;
+use App\Support\CookieConsent;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +27,11 @@ final class TrackSiteView
 
         // Exclude specific paths or routes if needed (e.g., telescope, livewire internal)
         if ($request->is('livewire/*', 'up', 'horizon/*', 'telescope/*', 'admin/*', 'analytics/*')) {
+            return;
+        }
+
+        // LGPD: só rastreia visitas (que armazenam IP) com consentimento de análise.
+        if (!CookieConsent::allows($request, 'analytics')) {
             return;
         }
 

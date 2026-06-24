@@ -7,7 +7,7 @@
             <div class="absolute inset-0 bg-profile-primary/20 rounded-[2rem] rotate-6 group-hover:rotate-12 transition-transform duration-500"></div>
             <div class="relative h-full w-full overflow-hidden rounded-[2rem] bg-zinc-100 ring-4 ring-white dark:ring-zinc-900 shadow-sm">
                 <img
-                    src="{{ $writer->profile->avatar_path ? Storage::url($writer->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.$writer->display_name }}"
+                    src="{{ $writer->profile?->avatar_path ? Storage::url($writer->profile?->avatar_path) : 'https://ui-avatars.com/api/?name='.$writer->display_name }}"
                     loading="lazy" decoding="async"
                     class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt="{{ $writer->display_name }}">
@@ -23,7 +23,7 @@
                 @endif
             </h3>
             <p class="text-profile-primary text-xs font-bold italic tracking-wide">
-                {{ "@".$writer->profile->username }}
+                {{ "@".$writer->profile?->username }}
             </p>
         </div>
 
@@ -54,6 +54,6 @@
             {{ $actions }}
         </div>
     @else
-        <a href="{{ route('profile.show', $writer->profile->username) }}" wire:navigate class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
+        <a href="{{ route('profile.show', $writer->profile?->username) }}" wire:navigate class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
     @endif
 </div>

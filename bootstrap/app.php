@@ -29,6 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'stripe/*',
         ]);
 
+        // Cookie de consentimento (LGPD) é definido/lido pelo JS do banner, logo não é criptografado.
+        $middleware->encryptCookies(except: [
+            'drafto_consent',
+        ]);
+
         $middleware->alias([
             'check.verification.interval' => CheckEmailVerificationInterval::class,
             'check.banned' => CheckBanned::class,

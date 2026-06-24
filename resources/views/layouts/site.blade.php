@@ -97,5 +97,6 @@
 @livewireScripts
 
 <x-toaster-hub />
+<x-cookie-consent />
 </body>
 </html>

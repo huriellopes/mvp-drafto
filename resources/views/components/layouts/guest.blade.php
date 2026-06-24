@@ -118,10 +118,18 @@
 <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-12">
     <div class="mx-auto max-w-7xl px-4 flex flex-col items-center gap-6">
         <x-ui.social-links context="guest_footer" />
+        <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-400 dark:text-zinc-500">
+            <a href="{{ route('pages.privacy') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Política de Privacidade</a>
+            <a href="{{ route('pages.terms') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Termos de Uso</a>
+            <a href="{{ route('pages.guidelines') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Diretrizes</a>
+            <button type="button" onclick="window.draftoOpenConsent && window.draftoOpenConsent()" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Preferências de cookies</button>
+        </nav>
         <div class="text-center text-sm text-zinc-500 dark:text-zinc-400">
             <p>&copy; {{ date('Y') }} Drafto. Escreva com clareza. Publique com identidade.</p>
         </div>
     </div>
 </footer>
+
+<x-cookie-consent />
 </body>
 </html>

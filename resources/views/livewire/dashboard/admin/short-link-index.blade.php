@@ -8,8 +8,8 @@
             @if($this->isFileReady)
                 <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 px-4 py-2 rounded-2xl animate-in fade-in slide-in-from-right-2">
                     <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600">Pronto!</span>
-                    <a 
-                        href="{{ route('dashboard.temporary-file.download', ['path' => $generatedPath]) }}" 
+                    <a
+                        href="{{ route('dashboard.temporary-file.download', ['path' => $generatedPath]) }}"
                         wire:click="clearGeneratedFile"
                         class="flex h-8 items-center gap-2 rounded-xl bg-emerald-600 px-3 text-[10px] font-bold text-white transition hover:bg-emerald-700 shadow-sm"
                     >
@@ -103,7 +103,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2">
                                     <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">{{ $link->code }}</span>
-                                    <button 
+                                    <button
                                         x-on:click="navigator.clipboard.writeText('{{ route('shortlink.redirect', $link->code) }}'); $dispatch('toaster:success', { message: 'Link copiado!' })"
                                         class="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition"
                                     >
@@ -118,7 +118,7 @@
                                     </div>
                                     <div class="flex flex-col">
                                         <span class="font-bold text-zinc-900 dark:text-white">{{ $link->user->name }}</span>
-                                        <span class="text-[10px] text-zinc-500">@ {{ $link->user->profile->username }}</span>
+                                        <span class="text-[10px] text-zinc-500">@ {{ $link->user->profile?->username ?? ' -- ' }}</span>
                                     </div>
                                 </div>
                             </td>
@@ -151,7 +151,7 @@
                                 {{ $link->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button 
+                                <button
                                     wire:click="confirmDeletion({{ $link->id }})"
                                     class="p-2 text-zinc-400 hover:text-red-600 transition-colors"
                                 >

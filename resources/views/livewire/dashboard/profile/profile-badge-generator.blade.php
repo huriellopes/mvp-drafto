@@ -11,7 +11,7 @@
         const card = document.getElementById('badge-preview');
         if (!card) return;
 
-        if (typeof htmlToImage === 'undefined') {
+        if (typeof html2canvas === 'undefined') {
             $dispatch('notify', { message: '{{ __('dashboard.badge.messages.loading_motor') }}', type: 'warning' });
             return;
         }
@@ -20,19 +20,18 @@
         $dispatch('notify', { message: '{{ __('dashboard.badge.messages.preparing') }}', type: 'info' });
 
         try {
-            const dataUrl = await htmlToImage.toPng(card, {
-                pixelRatio: 4, // Qualidade extrema para redes sociais
-                backgroundColor: null,
-                cacheBust: true,
-                style: {
-                    borderRadius: '3.5rem',
-                    transform: 'scale(1)'
-                }
+            // html2canvas-pro rasteriza direto em canvas e entende oklch/lab/lch (Tailwind v4).
+            // As imagens (avatar/logo) já vêm em base64 via embedImages, então não há fetch/CORS.
+            const canvas = await html2canvas(card, {
+                scale: 4,               // Alta resolução para redes sociais
+                backgroundColor: null,  // Preserva transparência
+                useCORS: true,
+                logging: false,
             });
 
             const link = document.createElement('a');
             link.download = 'drafto-badge-{{ $this->user->profile->username }}.png';
-            link.href = dataUrl;
+            link.href = canvas.toDataURL('image/png');
             link.click();
 
             $dispatch('notify', { message: '{{ __('dashboard.badge.messages.success') }}', type: 'success' });
@@ -104,13 +103,14 @@
 
             {{-- O NOVO CARD UNIFICADO --}}
             <div class="w-[420px] max-w-full">
-                <x-public.author-badge 
-                    :user="$this->user" 
-                    mode="embed" 
-                    :theme="$form->theme" 
-                    :showStats="$form->showStats" 
-                    :showBio="$form->showBio" 
+                <x-public.author-badge
+                    :user="$this->user"
+                    mode="embed"
+                    :theme="$form->theme"
+                    :showStats="$form->showStats"
+                    :showBio="$form->showBio"
                     :showLocation="$form->showLocation"
+                    :embedImages="true"
                     class="shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)]"
                 />
             </div>
@@ -137,4 +137,8 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+@assets
+    {{-- html2canvas-pro: fork do html2canvas que SUPORTA cores oklch/lab/lch (Tailwind v4)
+         e rasteriza direto em <canvas> (sem foreignObject/SVG), evitando imagem em branco. --}}
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.2.0/dist/html2canvas-pro.min.js"></script>
+@endassets

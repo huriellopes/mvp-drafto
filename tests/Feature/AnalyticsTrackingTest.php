@@ -8,10 +8,20 @@ use App\Jobs\ProcessSiteViewJob;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
 
-it('tracks a site view when visiting home page', function () {
+it('does not track a site view without analytics consent', function () {
     Queue::fake();
 
     $this->get(route('home'))
+        ->assertStatus(200);
+
+    Queue::assertNotPushed(ProcessSiteViewJob::class);
+});
+
+it('tracks a site view when analytics consent is given', function () {
+    Queue::fake();
+
+    $this->withUnencryptedCookie('drafto_consent', json_encode(['analytics' => true, 'marketing' => false]))
+        ->get(route('home'))
         ->assertStatus(200);
 
     Queue::assertPushed(ProcessSiteViewJob::class);
