@@ -75,7 +75,7 @@ class EditProfile extends Component
 
         app(UpdateProfileMediaAction::class)->updateAvatar(auth()->user(), $this->form->avatar);
 
-        $this->form->avatar = null; 
+        $this->form->avatar = null;
         auth()->user()->refresh();
         $this->form->setUser(auth()->user());
 
@@ -100,11 +100,11 @@ class EditProfile extends Component
         app(UpdateProfileMediaAction::class)->updateCover(auth()->user(), $this->form->cover, $data);
 
         $this->form->cover = null;
-        $this->isCoverCropped = true; 
+        $this->isCoverCropped = true;
         $this->coverCropData = null;
 
         $this->dispatch('close-modal', name: 'cover-cropper-modal');
-        
+
         auth()->user()->refresh();
         $this->form->setUser(auth()->user());
 
@@ -114,11 +114,12 @@ class EditProfile extends Component
     public function removeAvatar(): void
     {
         $profile = $this->profile;
+
         if ($profile && $profile->avatar_path) {
             $oldPath = $profile->avatar_path;
             $profile->update(['avatar_path' => null]);
             Storage::disk('public')->delete($oldPath);
-            
+
             auth()->user()->refresh();
             $this->form->setUser(auth()->user());
             Toaster::success(__('dashboard.profile.edit.messages.avatar_removed'));
@@ -128,11 +129,12 @@ class EditProfile extends Component
     public function removeCover(): void
     {
         $profile = $this->profile;
+
         if ($profile && $profile->cover_path) {
             $oldPath = $profile->cover_path;
             $profile->update(['cover_path' => null]);
             Storage::disk('public')->delete($oldPath);
-            
+
             auth()->user()->refresh();
             $this->form->setUser(auth()->user());
             Toaster::success(__('dashboard.profile.edit.messages.cover_removed'));
@@ -156,9 +158,11 @@ class EditProfile extends Component
             Toaster::success(__('dashboard.profile.edit.messages.success'));
         } catch (ValidationException $e) {
             Toaster::error(__('dashboard.profile.edit.messages.validation_error'));
+
             throw $e;
         } catch (Throwable $e) {
             Toaster::error(__('dashboard.profile.edit.messages.error'));
+
             throw $e;
         }
     }

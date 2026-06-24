@@ -166,7 +166,7 @@ class ProfileForm extends Form
 
     private function sanitizeWebsiteUrl(): void
     {
-        $url = trim($this->website_url ?? '');
+        $url = mb_trim($this->website_url ?? '');
 
         // Sênior: Se o campo estiver vazio ou for apenas o prefixo, limpamos para null
         if (empty($url) || in_array($url, ['https://', 'http://', 'https:/', 'http:/'], true)) {

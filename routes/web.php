@@ -3,12 +3,16 @@
 declare(strict_types=1);
 
 use App\Actions\Auth\VerifyEmailAction;
+use App\Http\Controllers\EditorAttachmentController;
+use App\Http\Controllers\EmailPreferencesController;
 use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Public\AnalyticsController;
 use App\Http\Controllers\Public\ProfileBadgeController;
-use App\Http\Controllers\EditorAttachmentController;
+use App\Http\Controllers\ShortLinkController;
+use App\Http\Controllers\TemporaryFileDownloadController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
+use App\Livewire\Dashboard\Modules\LinkShortenerDashboard;
 use App\Livewire\Dashboard\Support\SupportPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,11 +79,11 @@ Route::middleware(['auth', 'must.change.password'])
             ->middleware(['module:support'])
             ->name('support');
 
-        Route::get('/download-temporary-file', \App\Http\Controllers\TemporaryFileDownloadController::class)
+        Route::get('/download-temporary-file', TemporaryFileDownloadController::class)
             ->name('temporary-file.download');
 
         // Módulo Encurtador de Links (Escritor)
-        Route::livewire('/encurtador', \App\Livewire\Dashboard\Modules\LinkShortenerDashboard::class)
+        Route::livewire('/encurtador', LinkShortenerDashboard::class)
             ->middleware(['module:link_shortener', 'module.access:link_shortener'])
             ->name('short-links.index');
 
@@ -127,9 +131,9 @@ Route::get('/newsletter/unsubscribe/{email}', UnsubscribeController::class)
     ->name('newsletter.unsubscribe')
     ->middleware('signed');
 
-Route::get('/email/preferencias/{user}/{type}/cancelar', [\App\Http\Controllers\EmailPreferencesController::class, 'unsubscribe'])
+Route::get('/email/preferencias/{user}/{type}/cancelar', [EmailPreferencesController::class, 'unsubscribe'])
     ->name('email.preferences.unsubscribe')
     ->middleware('signed');
 
-Route::get('/s/{code}', \App\Http\Controllers\ShortLinkController::class)
+Route::get('/s/{code}', ShortLinkController::class)
     ->name('shortlink.redirect');

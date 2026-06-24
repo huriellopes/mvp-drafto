@@ -11,6 +11,10 @@ parameters:
 
     treatPhpDocTypesAsCertain: false
 
+    # Padrões de ignore podem ficar obsoletos conforme o código evolui;
+    # não falhar a análise por isso (o baseline cobre a dívida atual).
+    reportUnmatchedIgnoredErrors: false
+
     ignoreErrors:
         - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Model#'
@@ -33,6 +37,15 @@ parameters:
         - '#Parameter \#1 \$items of static method Illuminate\\Support\\Collection<.*>::make\(\) expects .* given#'
         - '#Parameter \$published_time of class RalphJSmit\\Laravel\\SEO\\Support\\SEOData constructor expects Carbon\\CarbonInterface\|null, string\|null given#'
         - '#Using nullsafe property access on non-nullable type Illuminate\\Database\\Eloquent\\Model\. Use -> instead#'
+
+        # Atributos dinâmicos de pivot (withPivot) não são conhecidos estaticamente pelo Eloquent.
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot::\$(is_enabled|settings)#'
+        # Local scopes chamados sobre objetos de Relation (ex.: $post->comments()->root()) — funcionam via __call em runtime.
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany::root\(\)#'
+        # maatwebsite/excel FromQuery::query() declara retorno incluindo Laravel\Scout\Builder, dependência opcional não instalada.
+        - '#Method App\\Exports\\.*Export::query\(\) has invalid return type Laravel\\Scout\\Builder#'
+        # match() exaustivo sobre o enum Monolog\Level: o último arm/default é redundante por exaustividade.
+        - '#Match arm comparison between Monolog\\Level::[A-Za-z]+ and Monolog\\Level::[A-Za-z]+ is always true#'
 
     excludePaths:
         # - ./*/*/FileToBeExcluded.php

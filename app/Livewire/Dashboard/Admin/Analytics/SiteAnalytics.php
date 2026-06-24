@@ -18,7 +18,7 @@ use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', [
     'heading' => 'Analytics do Site',
-    'subheading' => 'Monitoramento de visitas do site.'
+    'subheading' => 'Monitoramento de visitas do site.',
 ])]
 #[Title('Analytics do Site')]
 final class SiteAnalytics extends Component

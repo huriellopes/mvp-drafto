@@ -110,6 +110,7 @@ final class ProcessProfileMediaJob implements ShouldQueue
 
             // 2. Sênior: Deleta versões processadas (WebP) caso o original fosse JPG/PNG
             $webpPath = pathinfo($oldPath, PATHINFO_DIRNAME) . '/' . pathinfo($oldPath, PATHINFO_FILENAME) . '.webp';
+
             if ($webpPath !== $oldPath && $webpPath !== $currentPath) {
                 $disk->delete($webpPath);
             }

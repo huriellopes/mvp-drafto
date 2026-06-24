@@ -104,6 +104,75 @@
         </div>
     </form>
 
+    {{-- Privacidade e dados --}}
+    <x-ui.section-card
+        title="Privacidade e dados"
+        description="Gerencie seus dados pessoais e suas preferências de privacidade."
+    >
+        <div class="flex flex-col gap-4 rounded-2xl bg-zinc-50 p-5 ring-1 ring-zinc-100 dark:bg-zinc-800/40 dark:ring-zinc-800 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <span class="block text-sm font-bold text-zinc-800 dark:text-zinc-100">Baixar meus dados</span>
+                <span class="mt-1 block text-xs leading-5 text-zinc-500">
+                    Exporte uma cópia em JSON dos seus dados (conta, perfil, posts, comentários e coleções), conforme seu direito de portabilidade (LGPD).
+                </span>
+            </div>
+
+            <x-ui.button
+                type="button"
+                wire:click="exportData"
+                loading="exportData"
+                variant="secondary"
+                size="sm"
+                class="w-full shrink-0 !rounded-xl sm:w-auto"
+            >
+                <x-lucide-download class="mr-2 h-4 w-4" />
+                Exportar dados
+            </x-ui.button>
+        </div>
+
+{{--        <div class="mt-4 text-xs text-zinc-500">--}}
+{{--            Leia nossa--}}
+{{--            <a href="{{ route('pages.privacy') }}" target="_blank" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Política de Privacidade</a>--}}
+{{--            ou--}}
+{{--            <button type="button" onclick="window.draftoOpenConsent && window.draftoOpenConsent()" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">gerencie suas preferências de cookies</button>.--}}
+{{--        </div>--}}
+    </x-ui.section-card>
+
+    {{-- Zona de Perigo --}}
+    <x-ui.section-card
+        title="Zona de perigo"
+        description="Ações irreversíveis relacionadas à sua conta."
+    >
+        <div class="flex flex-col gap-4 rounded-2xl border border-red-100 bg-red-50 p-5 dark:border-red-500/20 dark:bg-red-500/10 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <span class="block text-sm font-bold text-red-700 dark:text-red-400">Deletar minha conta</span>
+                <span class="mt-1 block text-xs leading-5 text-red-600/80 dark:text-red-400/70">
+                    Sua conta e todos os dados associados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos. Esta ação não pode ser desfeita.
+                </span>
+            </div>
+
+            <x-ui.button
+                type="button"
+                wire:click="openDeleteAccountModal"
+                variant="danger"
+                size="sm"
+                class="w-full shrink-0 !rounded-xl sm:w-auto"
+            >
+                <x-lucide-trash-2 class="mr-2 h-4 w-4" />
+                Deletar conta
+            </x-ui.button>
+        </div>
+    </x-ui.section-card>
+
+    <x-ui.confirm-modal
+        name="confirm-delete-account"
+        title="Deletar conta"
+        content="Tem certeza que deseja deletar sua conta? Todos os seus dados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos permanentemente. Esta ação não pode ser desfeita."
+        buttonText="Sim, deletar minha conta"
+        variant="danger"
+        action="deleteAccount"
+    />
+
     <x-ui.confirm-modal
         name="confirm-become-writer"
         title="Tornar-se Escritor"

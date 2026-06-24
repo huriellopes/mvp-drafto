@@ -202,5 +202,6 @@
 @livewireScripts
 
 <livewire:public.report-modal />
+<x-cookie-consent />
 </body>
 </html>

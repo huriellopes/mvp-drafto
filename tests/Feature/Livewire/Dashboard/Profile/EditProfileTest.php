@@ -32,6 +32,7 @@ it('can update profile information', function () {
     Livewire::test(EditProfile::class)
         ->set('form.name', 'New Name')
         ->set('form.username', 'newuser')
+        ->set('form.email', 'newuser@example.com')
         ->set('form.bio', 'New bio description')
         ->call('save')
         ->assertHasNoErrors();
@@ -47,7 +48,7 @@ it('validates profile fields', function () {
     $this->actingAs($user);
 
     Livewire::test(EditProfile::class)
-        ->set('form.name', 'abc') // min:5
+        ->set('form.name', 'ab') // min:3
         ->set('form.username', '') // required
         ->call('save')
         ->assertHasErrors(['form.name', 'form.username']);

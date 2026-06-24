@@ -26,13 +26,18 @@ final class UpdateProfileMediaAction
 
         $user->profile()->update(['avatar_path' => $path]);
 
-        ProcessProfileMediaJob::dispatch($user->profile, $oldPath, null);
+        $profile = $user->profile;
+
+        if ($profile) {
+            ProcessProfileMediaJob::dispatch($profile, $oldPath, null);
+        }
 
         return $path;
     }
 
     /**
      * Handles immediate definitive upload, cropping, and DB update for profile cover.
+     *
      * @throws InvalidArgumentException
      */
     public function updateCover(User $user, UploadedFile $file, array $cropData): string
@@ -50,7 +55,7 @@ final class UpdateProfileMediaAction
             width: (int) $cropData['width'],
             height: (int) $cropData['height'],
             x: (int) $cropData['x'],
-            y: (int) $cropData['y']
+            y: (int) $cropData['y'],
         );
 
         // Resize to standard cover dimensions (3:1 ratio)
@@ -62,7 +67,11 @@ final class UpdateProfileMediaAction
         $user->profile()->update(['cover_path' => $path]);
 
         // Dispatch background cleanup
-        ProcessProfileMediaJob::dispatch($user->profile, null, $oldPath);
+        $profile = $user->profile;
+
+        if ($profile) {
+            ProcessProfileMediaJob::dispatch($profile, null, $oldPath);
+        }
 
         return $path;
     }

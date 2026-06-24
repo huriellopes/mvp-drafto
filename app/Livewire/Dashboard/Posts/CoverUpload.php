@@ -7,6 +7,7 @@ namespace App\Livewire\Dashboard\Posts;
 use App\Actions\Posts\UploadCoverImageAction;
 use App\Models\Post;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -59,11 +60,11 @@ class CoverUpload extends Component
             // Sênior: Atualizamos o path local para o preview refletir a mudança imediatamente
             $this->currentCoverPath = $path;
             $this->isCropped = true;
-            
+
             // Limpa os estados de upload temporário
-            $this->image = null; 
-            $this->imageUrl = null; 
-            
+            $this->image = null;
+            $this->imageUrl = null;
+
             $this->dispatch('cover-prepared', coverPath: $path);
             Toaster::info('Capa preparada!');
         } catch (Exception $e) {
@@ -80,7 +81,7 @@ class CoverUpload extends Component
         try {
             // Sênior: Se o arquivo existir e não for uma URL externa, deleta do storage
             if (!str_starts_with($this->currentCoverPath, 'http')) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($this->currentCoverPath);
+                Storage::disk('public')->delete($this->currentCoverPath);
             }
 
             $this->currentCoverPath = null;
@@ -92,7 +93,7 @@ class CoverUpload extends Component
 
             $this->dispatch('cover-prepared', coverPath: null);
             Toaster::info('Capa removida com sucesso.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Toaster::error('Falha ao remover a imagem.');
         }
     }

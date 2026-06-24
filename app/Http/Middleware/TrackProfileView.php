@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use App\Jobs\ProcessProfileViewJob;
 use App\Models\User;
+use App\Support\CookieConsent;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,11 @@ final class TrackProfileView
             return;
         }
 
+        // LGPD: só contabiliza a visualização (que armazena IP) com consentimento de análise.
+        if (!CookieConsent::allows($request, 'analytics')) {
+            return;
+        }
+
         $username = $request->route('username');
         $username = mb_strtolower(str_replace('@', '', $username));
 
@@ -35,9 +41,7 @@ final class TrackProfileView
             ProcessProfileViewJob::dispatch(
                 $profile->id,
                 auth()->id(),
-                session()->getId(),
                 md5($request->ip() ?? 'unknown'),
-                $request->userAgent() ?? 'unknown',
             );
         }
     }

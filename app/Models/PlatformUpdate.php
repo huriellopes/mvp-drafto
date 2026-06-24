@@ -17,14 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class PlatformUpdate extends Model
 {
-    protected function casts(): array
-    {
-        return [
-            'sent_at' => 'datetime',
-            'recipients_count' => 'integer',
-        ];
-    }
-
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -33,5 +25,13 @@ class PlatformUpdate extends Model
     public function isSent(): bool
     {
         return $this->sent_at !== null;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'sent_at' => 'datetime',
+            'recipients_count' => 'integer',
+        ];
     }
 }

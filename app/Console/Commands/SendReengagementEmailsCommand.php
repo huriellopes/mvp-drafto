@@ -32,6 +32,7 @@ class SendReengagementEmailsCommand extends Command
             ->chunkById(200, function ($users) use ($action, &$sent, &$scanned) {
                 foreach ($users as $user) {
                     $scanned++;
+
                     if ($action->exec($user)) {
                         $sent++;
                     }
