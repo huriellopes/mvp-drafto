@@ -37,7 +37,7 @@ class PostCollectionForm extends Form
                     ->when($this->collection, fn ($q) => $q->ignore($this->collection->id)),
             ],
             'slug' => [
-                'nullable',
+                'required',
                 'string',
                 'min:3',
                 Rule::unique('post_collections', 'slug')

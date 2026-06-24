@@ -17,12 +17,29 @@ it('lets a writer create a collection', function () {
     Livewire::actingAs($writer)
         ->test(PostCollectionsIndex::class)
         ->set('form.name', 'Contos de Inverno')
+        ->set('form.slug', 'contos-de-inverno')
         ->set('form.description', 'Minha série sazonal')
         ->set('form.visibility', PostCollectionVisibilityEnum::PRIVATE->value)
         ->call('createCollection')
         ->assertHasNoErrors();
 
     expect(PostCollection::where('user_id', $writer->id)->where('name', 'Contos de Inverno')->exists())->toBeTrue();
+});
+
+it('requires name, slug and visibility to create a collection', function () {
+    $writer = User::factory()->writer()->create();
+
+    Livewire::actingAs($writer)
+        ->test(PostCollectionsIndex::class)
+        ->set('form.name', '')
+        ->set('form.slug', '')
+        ->set('form.visibility', '')
+        ->call('createCollection')
+        ->assertHasErrors([
+            'form.name' => 'required',
+            'form.slug' => 'required',
+            'form.visibility' => 'required',
+        ]);
 });
 
 it('attaches and detaches one of the writer own posts via the organize modal', function () {

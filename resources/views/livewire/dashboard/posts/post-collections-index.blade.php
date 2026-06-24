@@ -25,33 +25,50 @@
                     </button>
 
                     @foreach($this->collections as $item)
-                        <div class="group relative" wire:key="sidebar-collection-{{ $item->id }}">
+                        <div
+                            wire:key="sidebar-collection-{{ $item->id }}"
+                            @class([
+                                'group flex items-center rounded-2xl pr-2 text-sm font-semibold transition-all duration-300',
+                                'bg-zinc-900 text-white shadow-lg shadow-zinc-200/50' => $collection === $item->slug,
+                                'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900' => $collection !== $item->slug,
+                            ])
+                        >
                             <button
                                 wire:click="$set('collection', '{{ $item->slug }}')"
-                                @class([
-                                    'flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-300',
-                                    'bg-zinc-900 text-white shadow-lg shadow-zinc-200/50' => $collection === $item->slug,
-                                    'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900' => $collection !== $item->slug,
-                                ])
+                                class="flex min-w-0 flex-1 items-center gap-3 py-3 pl-4"
                             >
-                                <span class="flex min-w-0 items-center gap-3">
-                                    <x-lucide-folder @class(['h-4 w-4 shrink-0', 'text-white' => $collection === $item->slug, 'text-zinc-400' => $collection !== $item->slug]) />
-                                    <span class="max-w-[100px] truncate">{{ $item->name }}</span>
-                                </span>
+                                <x-lucide-folder @class(['h-4 w-4 shrink-0', 'text-white' => $collection === $item->slug, 'text-zinc-400' => $collection !== $item->slug]) />
+                                <span class="max-w-[100px] truncate">{{ $item->name }}</span>
+                            </button>
+
+                            <div class="flex shrink-0 items-center gap-0.5 pl-1">
+                                <button
+                                    wire:click="openEditModal({{ $item->id }})"
+                                    title="Editar"
+                                    @class([
+                                        'flex h-7 w-7 items-center justify-center rounded-lg transition-colors',
+                                        'text-white/70 hover:bg-white/20 hover:text-white' => $collection === $item->slug,
+                                        'text-zinc-400 hover:bg-zinc-200 hover:text-zinc-900' => $collection !== $item->slug,
+                                    ])
+                                >
+                                    <x-lucide-pencil class="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                    wire:click="confirmDelete({{ $item->id }})"
+                                    title="Excluir"
+                                    @class([
+                                        'flex h-7 w-7 items-center justify-center rounded-lg transition-colors',
+                                        'text-white/70 hover:bg-red-500/30 hover:text-white' => $collection === $item->slug,
+                                        'text-zinc-400 hover:bg-red-50 hover:text-red-600' => $collection !== $item->slug,
+                                    ])
+                                >
+                                    <x-lucide-trash-2 class="h-3.5 w-3.5" />
+                                </button>
                                 <span @class([
-                                    'shrink-0 rounded-full px-1.5 text-[10px] font-bold',
+                                    'rounded-full px-1.5 text-[10px] font-bold',
                                     'bg-white/20 text-white' => $collection === $item->slug,
                                     'bg-zinc-100 text-zinc-400' => $collection !== $item->slug,
                                 ])>{{ $item->posts_count }}</span>
-                            </button>
-
-                            <div class="absolute right-9 top-1/2 flex -translate-y-1/2 items-center opacity-100 transition-opacity lg:opacity-0 lg:group-hover:opacity-100">
-                                <button wire:click="openEditModal({{ $item->id }})" title="Editar" class="p-1.5 text-zinc-400 hover:text-zinc-900">
-                                    <x-lucide-pencil class="h-3.5 w-3.5" />
-                                </button>
-                                <button wire:click="confirmDelete({{ $item->id }})" title="Excluir" class="p-1.5 text-zinc-400 hover:text-red-600">
-                                    <x-lucide-trash-2 class="h-3.5 w-3.5" />
-                                </button>
                             </div>
                         </div>
                     @endforeach
@@ -181,12 +198,45 @@
 
     {{-- Modal: criar coleção --}}
     <x-ui.modal name="post-collection-modal" title="Nova coleção">
-        <form wire:submit="createCollection" class="space-y-5">
-            <x-ui.input wire:model="form.name" label="Nome" placeholder="Ex.: Contos de inverno" :error="$errors->first('form.name')" />
-            <x-ui.input wire:model="form.slug" label="Slug (opcional)" placeholder="contos-de-inverno" :error="$errors->first('form.slug')" />
-            <x-ui.textarea wire:model="form.description" label="Descrição (opcional)" rows="3" :error="$errors->first('form.description')" />
+        <form
+            wire:submit="createCollection"
+            class="space-y-5"
+            x-data="{
+                slug: @entangle('form.slug'),
+                slugTouched: false,
+                slugify(value) {
+                    return value.toString().toLowerCase().trim()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                },
+            }"
+            x-on:open-modal.window="if ($event.detail.name === 'post-collection-modal') { slugTouched = false }"
+        >
+            <x-ui.input
+                wire:model="form.name"
+                label="Nome"
+                placeholder="Ex.: Contos de inverno"
+                :error="$errors->first('form.name')"
+                x-on:input="if (! slugTouched) { slug = slugify($event.target.value) }"
+            >
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
+            </x-ui.input>
+            <x-ui.input
+                label="Slug"
+                placeholder="contos-de-inverno"
+                :error="$errors->first('form.slug')"
+                x-model="slug"
+                x-on:input="slugTouched = true"
+            >
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
+            </x-ui.input>
+            <x-ui.textarea wire:model="form.description" label="Descrição" rows="3" :error="$errors->first('form.description')">
+                <x-slot:label_extra><x-ui.field-badge /></x-slot:label_extra>
+            </x-ui.textarea>
 
             <x-ui.select wire:model="form.visibility" label="Visibilidade" :error="$errors->first('form.visibility')">
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
                 @foreach(PostCollectionVisibilityEnum::cases() as $option)
                     <option value="{{ $option->value }}">{{ $option->label() }} — {{ $option->description() }}</option>
                 @endforeach
@@ -202,11 +252,18 @@
     {{-- Modal: editar coleção --}}
     <x-ui.modal name="edit-post-collection-modal" title="Editar coleção">
         <form wire:submit="updateCollection" class="space-y-5">
-            <x-ui.input wire:model="form.name" label="Nome" :error="$errors->first('form.name')" />
-            <x-ui.input wire:model="form.slug" label="Slug" :error="$errors->first('form.slug')" />
-            <x-ui.textarea wire:model="form.description" label="Descrição (opcional)" rows="3" :error="$errors->first('form.description')" />
+            <x-ui.input wire:model="form.name" label="Nome" :error="$errors->first('form.name')">
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
+            </x-ui.input>
+            <x-ui.input wire:model="form.slug" label="Slug" :error="$errors->first('form.slug')">
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
+            </x-ui.input>
+            <x-ui.textarea wire:model="form.description" label="Descrição" rows="3" :error="$errors->first('form.description')">
+                <x-slot:label_extra><x-ui.field-badge /></x-slot:label_extra>
+            </x-ui.textarea>
 
             <x-ui.select wire:model="form.visibility" label="Visibilidade" :error="$errors->first('form.visibility')">
+                <x-slot:label_extra><x-ui.field-badge :required="true" /></x-slot:label_extra>
                 @foreach(PostCollectionVisibilityEnum::cases() as $option)
                     <option value="{{ $option->value }}">{{ $option->label() }} — {{ $option->description() }}</option>
                 @endforeach
