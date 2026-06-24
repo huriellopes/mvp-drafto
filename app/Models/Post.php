@@ -87,6 +87,17 @@ class Post extends Model implements Auditable, Sitemapable
         return $this->belongsToMany(Tag::class, 'post_tag', 'post_id', 'tag_id');
     }
 
+    /**
+     * Coleções de obras do autor às quais este post pertence.
+     *
+     * @return BelongsToMany<PostCollection, $this>
+     */
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(PostCollection::class, 'post_collection_post')
+            ->withTimestamps();
+    }
+
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);

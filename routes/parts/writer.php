@@ -14,6 +14,10 @@ Route::prefix('posts')->name('posts.')->group(function () {
         ->middleware('module:draft')
         ->name('draft');
 
+    Route::livewire('/colecoes', 'dashboard.posts.post-collections-index')
+        ->middleware(['module:my_posts', 'module.access:my_posts'])
+        ->name('collections.index');
+
     Route::livewire('/create', 'dashboard.posts.manage-post')
         ->middleware('module:my_posts')
         ->name('create');

@@ -116,6 +116,11 @@ Route::livewire('/@{username}', 'public.profile.show-profile')
     ->name('profile.show')
     ->where('username', '[a-z0-9._]+');
 
+Route::livewire('/@{username}/colecao/{collection}', 'public.profile.show-profile-collection')
+    ->name('profile.collection')
+    ->where('username', '[a-z0-9._]+')
+    ->where('collection', '[a-z0-9._-]+');
+
 Route::livewire('/posts/{slug}', 'public.posts.show-post')
     ->middleware(['track.post'])
     ->name('posts.show');

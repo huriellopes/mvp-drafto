@@ -46,15 +46,15 @@
                 <div class="flex items-center gap-4">
                     <div class="h-14 w-14 overflow-hidden rounded-2xl bg-zinc-50">
                         @if($person->profile?->avatar_path)
-                            <img src="{{ Storage::url($person->profile->avatar_path) }}" class="h-full w-full object-cover">
+                            <img src="{{ Storage::url($person->profile->avatar_path) }}" class="h-full w-full object-cover" alt="{{ $person->display_name }}" />
                         @else
                             <div class="flex h-full w-full items-center justify-center font-black text-zinc-300 bg-zinc-100">
-                                {{ substr($person->name, 0, 1) }}
+                                {{ substr($person->display_name, 0, 1) }}
                             </div>
                         @endif
                     </div>
                     <div class="min-w-0">
-                        <h4 class="truncate text-sm font-black text-zinc-900">{{ $person->name }}</h4>
+                        <h4 class="truncate text-sm font-black text-zinc-900">{{ $person->display_name }}</h4>
                         <p class="truncate text-xs font-medium text-profile-primary">{{ '@' . $person->profile?->username }}</p>
                     </div>
                 </div>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Public\Profile;
 
+use App\Enums\PostCollectionVisibilityEnum;
 use App\Models\User;
 use App\Services\Profile\ProfileSeoGenerator;
 use Illuminate\Support\Facades\Cache;
@@ -63,6 +64,17 @@ class ShowProfile extends Component
             ->published()
             ->latest()
             ->paginate(12);
+    }
+
+    #[Computed]
+    public function publicCollections()
+    {
+        return $this->user->postCollections()
+            ->where('visibility', PostCollectionVisibilityEnum::PUBLIC)
+            ->whereHas('posts', fn ($q) => $q->published())
+            ->withCount(['posts as published_posts_count' => fn ($q) => $q->published()])
+            ->orderBy('name')
+            ->get();
     }
 
     public function render(): View

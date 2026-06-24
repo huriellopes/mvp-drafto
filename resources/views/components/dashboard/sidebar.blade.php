@@ -67,6 +67,13 @@
                 </x-ui.sidebar-link>
                 @endmodule
 
+                @module(ModuleEnum::MY_POSTS)
+                <x-ui.sidebar-link href="{{ route('dashboard.posts.collections.index') }}" :active="request()->routeIs('dashboard.posts.collections.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-folder-tree class="h-5 w-5" /></x-slot:icon>
+                    Coleções
+                </x-ui.sidebar-link>
+                @endmodule
+
                 @module(ModuleEnum::FOLLOWS)
                 <x-ui.sidebar-link href="{{ route('dashboard.follows') }}" :active="request()->routeIs('dashboard.follows')" wire:navigate.hover>
                     <x-slot:icon><x-lucide-users-round class="h-5 w-5" /></x-slot:icon>

@@ -116,6 +116,24 @@
                             :error="$errors->first('form.tags')"
                         />
 
+                        @if($availableCollections->isNotEmpty())
+                            <x-ui.suggestion-input
+                                label="Coleções (séries)"
+                                wire:model.live="form.collections"
+                                :available="$availableCollections->map(fn($c) => ['id' => $c->id, 'name' => $c->name])->values()->toArray()"
+                                placeholder="Adicionar a uma coleção..."
+                                multiple="true"
+                                createMessage="Crie coleções na página Coleções:"
+                                :error="$errors->first('form.collections')"
+                            />
+                        @else
+                            <div class="rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100 text-xs text-zinc-500 leading-relaxed">
+                                <x-lucide-library class="h-3.5 w-3.5 inline mr-0.5" />
+                                Organize suas obras em coleções (séries, ensinamentos...).
+                                <a href="{{ route('dashboard.posts.collections.index') }}" wire:navigate class="font-semibold text-indigo-600 underline hover:text-indigo-700">Criar minha primeira coleção</a>.
+                            </div>
+                        @endif
+
                         <x-ui.select label="Tipo de conteúdo" wire:model.live="form.type">
                             @foreach(PostTypeEnum::cases() as $type)
                                 <option value="{{ $type->value }}">{{ $type->label() }}</option>
