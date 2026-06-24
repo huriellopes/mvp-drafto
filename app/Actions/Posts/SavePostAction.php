@@ -39,7 +39,7 @@ final class SavePostAction
             // Sênior: Gera resumo automático se estiver publicando e estiver vazio
             $excerpt = $dto->excerpt;
 
-            if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && empty(trim((string) $excerpt))) {
+            if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && empty(mb_trim((string) $excerpt))) {
                 // Para resumos automáticos, usamos texto puro derivado do conteúdo já limpo
                 $sanitizedExcerpt = Str::limit(strip_tags($sanitizedContent), 160);
             } else {

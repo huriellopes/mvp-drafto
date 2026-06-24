@@ -45,7 +45,7 @@ class GenerateMissingExcerptsCommand extends Command
         foreach ($posts as $post) {
             $cleanContent = strip_tags((string) $post->content);
 
-            if (empty(trim($cleanContent))) {
+            if (empty(mb_trim($cleanContent))) {
                 $bar->advance();
                 continue;
             }
