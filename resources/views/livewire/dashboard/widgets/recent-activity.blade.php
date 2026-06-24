@@ -8,17 +8,21 @@
     <div class="space-y-4">
         @forelse ($this->items as $post)
             <div wire:key="recent-post-{{ $post?->id ?? $loop->index }}" class="group relative flex items-center gap-4 rounded-3xl border border-zinc-100 bg-white p-4 transition-all hover:border-indigo-500/30 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/50">
-                
+
                 {{-- Thumbnail do Post --}}
                 <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
                     @if($post?->cover_image_url)
-                        <img src="{{ $post->cover_image_url }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img
+                            src="{{ $post->cover_image_url }}"
+                            class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            alt="{{ $post->title }}"
+                        />
                     @else
                         <div class="flex h-full w-full items-center justify-center">
                             <x-lucide-image class="h-6 w-6 text-zinc-300 dark:text-zinc-700" />
                         </div>
                     @endif
-                    
+
                     {{-- Badge de Status (para Escritores/Admin) --}}
                     @if(!auth()->user()->hasRole(RoleEnum::READER) && $post?->status)
                         <div class="absolute inset-x-0 bottom-0 bg-black/60 py-0.5 text-center text-[8px] font-black uppercase tracking-widest text-white backdrop-blur-xs">
@@ -36,7 +40,7 @@
                         @endif
                         <span class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase">{{ $post?->created_at?->diffForHumans() ?? '' }}</span>
                     </div>
-                    
+
                     <h4 class="truncate text-sm font-bold text-zinc-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                         {{ $post?->title ?? 'Sem título' }}
                     </h4>
@@ -71,9 +75,9 @@
                                 <x-lucide-bookmark class="h-3.5 w-3.5 fill-current" />
                             </div>
                         @endif
-                        
+
                         @if($post?->slug)
-                            <a href="{{ route('posts.show', $post->slug) }}" 
+                            <a href="{{ route('posts.show', $post->slug) }}" target="_blank"
                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-lg transition hover:scale-110 active:scale-95 dark:bg-white dark:text-zinc-900">
                                 <x-lucide-chevron-right class="h-4 w-4" />
                             </a>
@@ -89,7 +93,7 @@
                 <p class="text-sm font-bold text-zinc-500 dark:text-zinc-400">{{ __('dashboard.widgets.recent_activity.empty') }}</p>
                 <p class="mt-1 text-xs text-zinc-400 dark:text-zinc-500">{{ __('dashboard.widgets.recent_activity.empty_subtitle') }}</p>
                 @if(auth()->user()->hasRole(RoleEnum::READER))
-                    <a href="{{ route('posts.explore') }}" class="mt-4 text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline">{{ __('dashboard.widgets.recent_activity.explore') }}</a>
+                    <a href="{{ route('posts.explore') }}" target="_blank" class="mt-4 text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:underline">{{ __('dashboard.widgets.recent_activity.explore') }}</a>
                 @endif
             </div>
         @endforelse

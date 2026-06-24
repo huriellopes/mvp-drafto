@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Posts;
 
+use App\Actions\PostCollections\SyncPostCollectionsAction;
 use App\DTOs\SavePostData;
 use App\Enums\PostStatusEnum;
 use App\Events\Posts\PostSaved;
@@ -69,6 +70,9 @@ final class SavePostAction
             // Sincronização de Tags (Sênior: Processa tags existentes e novas)
             $processedTags = $this->processTags($user, $dto->tags);
             $post->tags()->sync($processedTags);
+
+            // Sincroniza as coleções de obras do autor (apenas as que são dele).
+            app(SyncPostCollectionsAction::class)->exec($post, $dto->collections);
 
             // Sênior: Despacha evento para hooks externos (SEO, Imagem, Notificações)
             event(new PostSaved($post, [

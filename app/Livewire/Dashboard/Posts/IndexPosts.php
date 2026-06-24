@@ -7,6 +7,7 @@ namespace App\Livewire\Dashboard\Posts;
 use App\Actions\Posts\ListPostsAction;
 use App\DTOs\PostFiltersData;
 use App\Enums\PostStatusEnum;
+use App\Traits\Livewire\ManagesPostCollections;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -20,6 +21,7 @@ use Masmerise\Toaster\Toaster;
 #[Title('Minhas Publicações')]
 class IndexPosts extends Component
 {
+    use ManagesPostCollections;
     use WithPagination;
 
     #[Url(history: true)]

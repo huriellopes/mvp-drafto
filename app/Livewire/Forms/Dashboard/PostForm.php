@@ -41,6 +41,8 @@ class PostForm extends Form
 
     public array $tags = [];
 
+    public array $collections = [];
+
     // SEO Fields
     public bool $seo_enabled = true;
 
@@ -110,6 +112,7 @@ class PostForm extends Form
         $this->comments_enabled = $post->comments_enabled;
         $this->seo_enabled = $post->seo_enabled;
         $this->tags = $post->tags->pluck('id')->toArray();
+        $this->collections = $post->collections->pluck('id')->toArray();
         $this->published_at = $post->published_at?->format('Y-m-d\TH:i');
 
         // Carrega dados de SEO se existirem
@@ -126,6 +129,7 @@ class PostForm extends Form
             content: $this->content ?: '',
             excerpt: $this->excerpt,
             tags: $this->tags,
+            collections: $this->collections,
             type: PostTypeEnum::from($this->type),
             visibility: PostVisibilityEnum::from($this->visibility),
             status: $status,

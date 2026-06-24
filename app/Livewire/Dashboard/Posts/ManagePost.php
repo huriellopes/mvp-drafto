@@ -9,6 +9,7 @@ use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\PostCollection;
 use App\Models\Tag;
 use App\Traits\Livewire\HasStandardResponses;
 use Exception;
@@ -228,9 +229,15 @@ class ManagePost extends Component
             ->orderBy('name', 'asc')
             ->get();
 
+        $collections = PostCollection::query()
+            ->where('user_id', auth()->id())
+            ->orderBy('name', 'asc')
+            ->get();
+
         return view('livewire.dashboard.posts.manage-post', [
             'categories' => $categories,
             'availableTags' => $tags,
+            'availableCollections' => $collections,
         ])->layout('layouts.app', [
             'heading' => $this->post ? 'Editando: ' . $this->post->title : 'Nova Publicação',
         ]);

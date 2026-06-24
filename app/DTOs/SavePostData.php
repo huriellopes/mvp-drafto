@@ -18,6 +18,7 @@ class SavePostData extends Data
         public string $content,
         public ?string $excerpt = null,
         public array $tags = [],
+        public array $collections = [],
         public PostTypeEnum $type = PostTypeEnum::POST,
         public PostVisibilityEnum $visibility = PostVisibilityEnum::PUBLIC,
         public PostStatusEnum $status = PostStatusEnum::DRAFT,

@@ -30,7 +30,7 @@
                                         <img
                                             src="{{ $writer?->profile?->avatar_path ? Storage::url($writer->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($writer?->name ?? 'User') }}"
                                             class="h-full w-full object-cover"
-                                            alt="{{ $writer?->name ?? 'User' }}"
+                                            alt="{{ $writer?->display_name ?? 'User' }}"
                                         />
                                     </div>
                                     <div class="min-w-0">
@@ -53,10 +53,14 @@
                     {{-- Layout para MAIN (Horizontal - Reader) --}}
                     @else
                         <div class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl ring-2 ring-white dark:ring-zinc-800">
-                            <img src="{{ $writer?->profile?->avatar_path ? Storage::url($writer->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($writer?->name ?? 'User') }}" class="h-full w-full object-cover">
+                            <img
+                                src="{{ $writer?->profile?->avatar_path ? Storage::url($writer->profile->avatar_path) : 'https://ui-avatars.com/api/?name='.urlencode($writer?->display_name ?? 'User') }}"
+                                class="h-full w-full object-cover"
+                                alt="{{ $writer?->display_name }}"
+                            >
                         </div>
                         <div class="min-w-0 flex-1">
-                            <h4 class="truncate text-sm font-black text-zinc-900 dark:text-white">{{ $writer?->name ?? 'Usuário' }}</h4>
+                            <h4 class="truncate text-sm font-black text-zinc-900 dark:text-white">{{ $writer?->display_name ?? 'Usuário' }}</h4>
                             <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{{ $writer?->published_posts_count ?? 0 }} Obras</p>
                             <div class="mt-2">
                                 <livewire:actions.follow-button :user="$writer" :key="'suggest-main-'.$writer->id" compact />

@@ -69,6 +69,10 @@
                            class="p-2 text-zinc-400 hover:text-zinc-900 transition rounded-xl hover:bg-zinc-100">
                             <x-lucide-pencil class="h-4 w-4" />
                         </a>
+                        <button wire:click="openCollections({{ $post->id }})" title="Adicionar a coleção"
+                                class="p-2 text-zinc-400 hover:text-indigo-600 transition rounded-xl hover:bg-indigo-50">
+                            <x-lucide-folder-plus class="h-4 w-4" />
+                        </button>
                         <button wire:click="confirmDelete({{ $post->id }})" title="Excluir"
                                 class="p-2 text-zinc-400 hover:text-red-600 transition rounded-xl hover:bg-red-50">
                             <x-lucide-trash-2 class="h-4 w-4" />
@@ -100,4 +104,6 @@
         variant="danger"
         action="deletePost"
     />
+
+    @include('livewire.dashboard.posts.partials.collections-quick-modal')
 </div>

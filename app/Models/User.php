@@ -164,6 +164,16 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $this->hasMany(Collection::class);
     }
 
+    /**
+     * Coleções de obras criadas pelo escritor (séries, ensinamentos...).
+     *
+     * @return HasMany<PostCollection, $this>
+     */
+    public function postCollections(): HasMany
+    {
+        return $this->hasMany(PostCollection::class);
+    }
+
     public function savedPosts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'saved_posts')
