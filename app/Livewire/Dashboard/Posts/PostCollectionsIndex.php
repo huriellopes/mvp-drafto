@@ -5,37 +5,61 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard\Posts;
 
 use App\Actions\PostCollections\DeletePostCollectionAction;
-use App\Actions\PostCollections\TogglePostInCollectionAction;
+use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\Posts\PostCollectionForm;
 use App\Models\Post;
 use App\Models\PostCollection;
+use App\Traits\Livewire\ManagesPostCollections;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
 
 #[Layout('layouts.app', ['heading' => 'Coleções', 'subheading' => 'Organize suas obras em séries, ensinamentos e temas'])]
 #[Title('Minhas Coleções')]
 class PostCollectionsIndex extends Component
 {
+    use ManagesPostCollections;
+    use WithPagination;
+
     public PostCollectionForm $form;
 
     #[Url(as: 'colecao', history: true)]
-    public ?int $collectionId = null;
+    public ?string $collection = null;
+
+    #[Url(history: true)]
+    public string $search = '';
+
+    #[Url(history: true)]
+    public string $statusFilter = '';
 
     public ?int $collectionIdBeingDeleted = null;
-
-    public string $postSearch = '';
 
     public function mount(): void
     {
         $this->authorize('viewAny', PostCollection::class);
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedCollection(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatedStatusFilter(): void
+    {
+        $this->resetPage();
     }
 
     public function createCollection(): void
@@ -76,48 +100,38 @@ class PostCollectionsIndex extends Component
         $collection = $this->ownedCollection($this->collectionIdBeingDeleted);
         $this->authorize('delete', $collection);
 
-        app(DeletePostCollectionAction::class)->exec($collection);
-
-        if ($this->collectionId === $collection->id) {
-            $this->collectionId = null;
+        if ($this->collection === $collection->slug) {
+            $this->collection = null;
         }
+
+        app(DeletePostCollectionAction::class)->exec($collection);
 
         $this->reset('collectionIdBeingDeleted');
         Toaster::success('Coleção removida. Suas obras foram mantidas.');
     }
 
-    public function select(int $id): void
+    public function removeFromActiveCollection(int $postId): void
     {
-        $this->collectionId = $id;
-        $this->postSearch = '';
-    }
+        $active = $this->activeCollection;
 
-    public function clearSelection(): void
-    {
-        $this->collectionId = null;
-    }
-
-    public function togglePost(int $postId): void
-    {
-        $collection = $this->activeCollection;
-
-        if (!$collection) {
+        if (!$active) {
             return;
         }
 
-        $this->authorize('update', $collection);
+        $this->authorize('update', $active);
 
         $post = Post::query()
             ->where('user_id', auth()->id())
             ->findOrFail($postId);
 
-        $attached = app(TogglePostInCollectionAction::class)->exec($collection, $post);
+        $active->posts()->detach($post->id);
 
-        unset($this->activeCollection, $this->attachablePosts);
-
-        Toaster::success($attached ? 'Obra adicionada à coleção.' : 'Obra removida da coleção.');
+        Toaster::success('Obra removida desta coleção.');
     }
 
+    /**
+     * @return Collection<int, PostCollection>
+     */
     #[Computed]
     public function collections(): Collection
     {
@@ -131,39 +145,33 @@ class PostCollectionsIndex extends Component
     #[Computed]
     public function activeCollection(): ?PostCollection
     {
-        if (!$this->collectionId) {
+        if (!$this->collection) {
             return null;
         }
 
         return auth()->user()
             ->postCollections()
-            ->with(['posts' => fn ($q) => $q->latest('post_collection_post.created_at')])
-            ->find($this->collectionId);
+            ->where('slug', $this->collection)
+            ->first();
     }
 
     /**
-     * @return SupportCollection<int, Post>
+     * @return LengthAwarePaginator<int, Post>
      */
     #[Computed]
-    public function attachablePosts(): SupportCollection
+    public function posts(): LengthAwarePaginator
     {
-        $collection = $this->activeCollection;
-
-        if (!$collection) {
-            return new SupportCollection();
-        }
+        $active = $this->activeCollection;
 
         return Post::query()
             ->where('user_id', auth()->id())
-            ->when($this->postSearch, fn (Builder $q) => $q->where('title', 'like', "%{$this->postSearch}%"))
+            ->with('category:id,name')
+            ->when($active, fn (Builder $q) => $q->whereHas('collections', fn (Builder $c) => $c->whereKey($active->id)))
+            ->when($this->search, fn (Builder $q) => $q->where('title', 'like', "%{$this->search}%"))
+            ->when($this->statusFilter === 'draft', fn (Builder $q) => $q->where('status', PostStatusEnum::DRAFT))
+            ->when($this->statusFilter === 'published', fn (Builder $q) => $q->where('status', PostStatusEnum::PUBLISHED))
             ->latest()
-            ->limit(15)
-            ->get(['id', 'title', 'status'])
-            ->map(function (Post $post) use ($collection): Post {
-                $post->setAttribute('in_collection', $collection->posts->contains($post->id));
-
-                return $post;
-            });
+            ->paginate(12);
     }
 
     public function render(): View

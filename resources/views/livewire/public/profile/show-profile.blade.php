@@ -277,6 +277,42 @@
                     </div>
                 </div>
 
+                {{-- Coleções públicas (Séries) --}}
+                @if($this->publicCollections->isNotEmpty())
+                    <div class="mt-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+                        <div @class([
+                            'flex items-center gap-6',
+                            'flex-col text-center' => $settings->layout_type === 'grid'
+                        ])>
+                            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Séries &amp; <span class="text-profile-primary">Coleções.</span></h2>
+                            @if($settings->layout_type !== 'grid')
+                                <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+                            @endif
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach($this->publicCollections as $collection)
+                                <a href="{{ route('profile.collection', ['username' => $this->user->profile->username, 'collection' => $collection->slug]) }}"
+                                   wire:navigate
+                                   class="group relative flex flex-col gap-3 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-profile-primary hover:-translate-y-1 transition-all duration-500">
+                                    <div class="flex items-center gap-3">
+                                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-profile-primary/10 text-profile-primary">
+                                            <x-lucide-folder-tree class="h-5 w-5" />
+                                        </span>
+                                        <span class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                                            {{ $collection->published_posts_count }} {{ \Illuminate\Support\Str::plural('obra', $collection->published_posts_count) }}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight group-hover:text-profile-primary transition-colors">{{ $collection->name }}</h3>
+                                    @if($collection->description)
+                                        <p class="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">{{ $collection->description }}</p>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Posts Grid --}}
                 <div class="mt-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
                     <div @class([

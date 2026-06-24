@@ -25,19 +25,34 @@ it('lets a writer create a collection', function () {
     expect(PostCollection::where('user_id', $writer->id)->where('name', 'Contos de Inverno')->exists())->toBeTrue();
 });
 
-it('attaches and detaches one of the writer own posts via toggle', function () {
+it('attaches and detaches one of the writer own posts via the organize modal', function () {
     $writer = User::factory()->writer()->create();
     $collection = PostCollection::factory()->for($writer)->create();
     $post = Post::factory()->for($writer)->create();
 
     $component = Livewire::actingAs($writer)
         ->test(PostCollectionsIndex::class)
-        ->call('select', $collection->id)
-        ->call('togglePost', $post->id);
+        ->call('openCollections', $post->id)
+        ->call('toggleCollectionForPost', $collection->id);
 
     expect($collection->posts()->whereKey($post->id)->exists())->toBeTrue();
 
-    $component->call('togglePost', $post->id);
+    $component->call('toggleCollectionForPost', $collection->id);
+
+    expect($collection->posts()->whereKey($post->id)->exists())->toBeFalse();
+});
+
+it('removes a post from the active collection', function () {
+    $writer = User::factory()->writer()->create();
+    $collection = PostCollection::factory()->for($writer)->create();
+    $post = Post::factory()->for($writer)->create();
+    $collection->posts()->attach($post->id);
+
+    Livewire::actingAs($writer)
+        ->test(PostCollectionsIndex::class)
+        ->set('collection', $collection->slug)
+        ->call('removeFromActiveCollection', $post->id)
+        ->assertHasNoErrors();
 
     expect($collection->posts()->whereKey($post->id)->exists())->toBeFalse();
 });
