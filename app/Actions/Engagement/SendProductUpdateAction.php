@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Actions\Engagement;
 
+use App\Enums\RoleEnum;
+use App\Enums\UpdateAudienceEnum;
 use App\Enums\UserStatusEnum;
 use App\Mail\ProductUpdateMail;
 use App\Models\PlatformUpdate;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Mail;
 
 final class SendProductUpdateAction
 {
     /**
-     * Enfileira o comunicado de novidades para todos os usuários elegíveis
-     * (ativos, com e-mail verificado e que aceitam avisos de novidades).
-     *
      * @return int total de destinatários enfileirados.
      */
     public function exec(PlatformUpdate $update): int
@@ -27,6 +27,14 @@ final class SendProductUpdateAction
             ->whereNotNull('email_verified_at')
             ->where('wants_product_updates', true)
             ->where(fn ($q) => $q->whereNull('banned_until')->orWhere('banned_until', '<=', now()))
+            ->when(
+                $update->audience === UpdateAudienceEnum::WRITERS,
+                fn (Builder $q) => $q->where('role', RoleEnum::WRITER),
+            )
+            ->when(
+                $update->audience === UpdateAudienceEnum::READERS,
+                fn (Builder $q) => $q->where('role', RoleEnum::READER),
+            )
             ->select(['id', 'name', 'email'])
             ->chunkById(200, function ($users) use ($update, &$count) {
                 foreach ($users as $user) {
