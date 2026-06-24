@@ -32,7 +32,7 @@ class ProductUpdateMail extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Novidades no Drafto: ' . $this->update->title);
+        return new Envelope(subject: 'Novidades no Drafto 🚀');
     }
 
     public function content(): Content
