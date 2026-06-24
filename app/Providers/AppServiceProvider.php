@@ -13,6 +13,7 @@ use App\Models\Comment;
 use App\Models\Follower;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\PostCollection;
 use App\Models\PostView;
 use App\Models\Profile;
 use App\Models\Report;
@@ -24,6 +25,7 @@ use App\Policies\CollectionPolicy;
 use App\Policies\CommentPolicy;
 use App\Policies\FollowerPolicy;
 use App\Policies\PostCategoryPolicy;
+use App\Policies\PostCollectionPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\PostViewPolicy;
 use App\Policies\ProfilePolicy;
@@ -60,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Report::class, ReportPolicy::class);
         Gate::policy(Collection::class, CollectionPolicy::class);
         Gate::policy(PostCategory::class, PostCategoryPolicy::class);
+        Gate::policy(PostCollection::class, PostCollectionPolicy::class);
 
         User::observe(UserObserver::class);
         Post::observe(PostObserver::class);

@@ -81,4 +81,6 @@
         variant="danger"
         action="deletePost"
     />
+
+    @include('livewire.dashboard.posts.partials.collections-quick-modal')
 </div>
