@@ -277,14 +277,14 @@
                     </div>
                 </div>
 
-                {{-- Coleções públicas (Séries) --}}
+                {{-- Coleções públicas --}}
                 @if($this->publicCollections->isNotEmpty())
                     <div class="mt-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
                         <div @class([
                             'flex items-center gap-6',
                             'flex-col text-center' => $settings->layout_type === 'grid'
                         ])>
-                            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Séries &amp; <span class="text-profile-primary">Coleções.</span></h2>
+                            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic"><span class="text-profile-primary">Coleções.</span></h2>
                             @if($settings->layout_type !== 'grid')
                                 <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
                             @endif
