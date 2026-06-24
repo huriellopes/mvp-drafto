@@ -63,4 +63,15 @@ return [
         'pending' => 'Pending',
     ],
 
+    'update_audience' => [
+        'all' => 'Everyone',
+        'writers' => 'Writers',
+        'readers' => 'Readers',
+        'description' => [
+            'all' => 'All eligible users.',
+            'writers' => 'Writers only.',
+            'readers' => 'Readers only.',
+        ],
+    ],
+
 ];

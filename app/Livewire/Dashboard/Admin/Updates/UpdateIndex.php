@@ -25,9 +25,14 @@ class UpdateIndex extends Component
     #[Validate('required|min:10')]
     public string $content = '';
 
+    #[Validate('required|in:all,writers,readers')]
+    public string $audience = 'all';
+
     public ?int $editingId = null;
 
     public ?int $updateIdToSend = null;
+
+    public ?int $updateIdToDelete = null;
 
     /**
      * Carrega um rascunho para edição. Comunicados já enviados não podem ser editados.
@@ -49,11 +54,12 @@ class UpdateIndex extends Component
         $this->editingId = $update->id;
         $this->title = $update->title;
         $this->content = $update->content;
+        $this->audience = $update->audience->value;
     }
 
     public function cancelEdit(): void
     {
-        $this->reset('title', 'content', 'editingId');
+        $this->reset('title', 'content', 'audience', 'editingId');
     }
 
     public function save(): void
@@ -64,6 +70,7 @@ class UpdateIndex extends Component
             'title' => $this->title,
             // Mesma sanitização dos posts (perfil post_content).
             'content' => Purifier::clean($this->content, 'post_content'),
+            'audience' => $this->audience,
         ];
 
         if ($this->editingId) {
@@ -79,7 +86,7 @@ class UpdateIndex extends Component
             Toaster::success('Comunicado salvo como rascunho. Revise e envie quando quiser.');
         }
 
-        $this->reset('title', 'content', 'editingId');
+        $this->reset('title', 'content', 'audience', 'editingId');
     }
 
     public function confirmSend(int $id): void
@@ -104,10 +111,23 @@ class UpdateIndex extends Component
         $this->dispatch('close-modal', name: 'confirm-send-update');
     }
 
-    public function delete(int $id): void
+    public function confirmDelete(int $id): void
     {
-        PlatformUpdate::whereKey($id)->delete();
+        $this->updateIdToDelete = $id;
+        $this->dispatch('open-modal', name: 'confirm-delete-update');
+    }
+
+    public function delete(): void
+    {
+        if (!$this->updateIdToDelete) {
+            return;
+        }
+
+        PlatformUpdate::whereKey($this->updateIdToDelete)->delete();
         Toaster::success('Comunicado removido.');
+
+        $this->updateIdToDelete = null;
+        $this->dispatch('close-modal', name: 'confirm-delete-update');
     }
 
     #[Computed]
