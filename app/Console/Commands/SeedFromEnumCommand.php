@@ -72,7 +72,7 @@ class SeedFromEnumCommand extends Command
             $count++;
         }
 
-        $this->success("Successfully synced {$count} records into [{$table}].");
+        $this->components->info("Successfully synced {$count} records into [{$table}].");
 
         return self::SUCCESS;
     }

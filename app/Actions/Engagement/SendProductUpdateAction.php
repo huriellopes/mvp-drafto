@@ -16,7 +16,7 @@ final class SendProductUpdateAction
      * Enfileira o comunicado de novidades para todos os usuários elegíveis
      * (ativos, com e-mail verificado e que aceitam avisos de novidades).
      *
-     * @return int  total de destinatários enfileirados.
+     * @return int total de destinatários enfileirados.
      */
     public function exec(PlatformUpdate $update): int
     {

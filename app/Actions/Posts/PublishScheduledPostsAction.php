@@ -7,6 +7,7 @@ namespace App\Actions\Posts;
 use App\Enums\PostStatusEnum;
 use App\Models\Post;
 use App\Notifications\Posts\PostPublishedNotification;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -33,7 +34,7 @@ class PublishScheduledPostsAction
 
                     $publishedCount++;
                 });
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error("Erro ao publicar post agendado [ID: {$post->id}]: " . $e->getMessage());
             }
         }

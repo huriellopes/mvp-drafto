@@ -7,6 +7,7 @@ namespace Tests\Feature\Livewire\Dashboard\Settings;
 use App\Livewire\Dashboard\Settings\AccountSettings;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 it('renders the account settings page', function () {
@@ -19,6 +20,8 @@ it('renders the account settings page', function () {
 });
 
 it('can update account information', function () {
+    Notification::fake();
+
     $user = User::factory()->create([
         'name' => 'Old Name',
         'email' => 'old@example.com',
@@ -63,4 +66,22 @@ it('validates password confirmation', function () {
         ->set('form.password_confirmation', 'wrong-confirmation')
         ->call('save')
         ->assertHasErrors(['form.password']);
+});
+
+it('can delete the own account', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    Livewire::test(AccountSettings::class)
+        ->call('deleteAccount')
+        ->assertRedirect(route('home'));
+
+    expect(auth()->check())->toBeFalse()
+        ->and(User::query()->whereKey($user->id)->exists())->toBeFalse();
+
+    $this->assertDatabaseHas('deleted_models', [
+        'key' => $user->id,
+        'model' => $user->getMorphClass(),
+    ]);
 });

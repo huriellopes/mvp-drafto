@@ -38,6 +38,7 @@ final class SavePostAction
 
             // Sênior: Gera resumo automático se estiver publicando e estiver vazio
             $excerpt = $dto->excerpt;
+
             if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && empty(trim((string) $excerpt))) {
                 // Para resumos automáticos, usamos texto puro derivado do conteúdo já limpo
                 $sanitizedExcerpt = Str::limit(strip_tags($sanitizedContent), 160);
@@ -103,21 +104,18 @@ final class SavePostAction
             return (int) $category;
         }
 
-        if (is_string($category)) {
-            $slug = Str::slug($category);
+        // Neste ponto $category é necessariamente uma string não-numérica.
+        $slug = Str::slug($category);
 
-            $newCategory = PostCategory::query()->firstOrCreate(
-                ['slug' => $slug],
-                [
-                    'name' => $category,
-                    'user_id' => $user->id,
-                ],
-            );
+        $newCategory = PostCategory::query()->firstOrCreate(
+            ['slug' => $slug],
+            [
+                'name' => $category,
+                'user_id' => $user->id,
+            ],
+        );
 
-            return $newCategory->id;
-        }
-
-        return null;
+        return $newCategory->id;
     }
 
     /**
@@ -125,7 +123,6 @@ final class SavePostAction
      */
     private function processTags(User $user, array $rawTags): array
     {
-        $allowCustom = true;
         $maxTags = 25;
 
         // Limita a quantidade de tags logo no início
@@ -140,8 +137,8 @@ final class SavePostAction
                 continue;
             }
 
-            // Se for string e o módulo permitir tags customizadas, cria ou recupera
-            if (is_string($tag) && $allowCustom) {
+            // Se for string, cria ou recupera a tag customizada
+            if (is_string($tag)) {
                 $slug = Str::slug($tag);
 
                 $newTag = Tag::query()->firstOrCreate(

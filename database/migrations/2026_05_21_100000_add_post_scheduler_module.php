@@ -6,7 +6,7 @@ use App\Enums\ModuleEnum;
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
+return new class() extends Migration
 {
     public function up(): void
     {
@@ -21,7 +21,7 @@ return new class extends Migration
                     'icon' => $config['icon'],
                     'is_enabled' => true,
                     'settings' => $config['settings'],
-                ]
+                ],
             );
         }
     }

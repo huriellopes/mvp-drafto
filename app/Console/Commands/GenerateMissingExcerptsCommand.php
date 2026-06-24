@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Enums\PostStatusEnum;
 use App\Models\Post;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -34,6 +33,7 @@ class GenerateMissingExcerptsCommand extends Command
 
         if ($posts->isEmpty()) {
             $this->info('No published posts found with missing excerpts.');
+
             return;
         }
 
@@ -41,9 +41,10 @@ class GenerateMissingExcerptsCommand extends Command
         $bar->start();
 
         $updatedCount = 0;
+
         foreach ($posts as $post) {
             $cleanContent = strip_tags((string) $post->content);
-            
+
             if (empty(trim($cleanContent))) {
                 $bar->advance();
                 continue;

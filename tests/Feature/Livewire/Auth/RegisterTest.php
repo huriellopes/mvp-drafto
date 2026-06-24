@@ -6,6 +6,7 @@ namespace Tests\Feature\Livewire\Auth;
 
 use App\Livewire\Auth\Register;
 use App\Models\User;
+use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
 it('renders the registration page', function () {
@@ -15,10 +16,13 @@ it('renders the registration page', function () {
 });
 
 it('can register a new user', function () {
+    Notification::fake();
+
     Livewire::test(Register::class)
         ->set('form.name', 'New User')
         ->set('form.email', 'newuser@example.com')
         ->set('form.password', 'password123')
+        ->set('form.password_confirmation', 'password123')
         ->set('form.role', 'reader')
         ->call('register')
         ->assertHasNoErrors()

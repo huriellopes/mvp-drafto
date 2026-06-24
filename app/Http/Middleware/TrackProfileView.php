@@ -35,9 +35,7 @@ final class TrackProfileView
             ProcessProfileViewJob::dispatch(
                 $profile->id,
                 auth()->id(),
-                session()->getId(),
                 md5($request->ip() ?? 'unknown'),
-                $request->userAgent() ?? 'unknown',
             );
         }
     }

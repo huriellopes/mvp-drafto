@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Dashboard\Posts;
 
 use App\Actions\Posts\SavePostAction;
-use App\Enums\ModuleEnum;
 use App\Enums\PostStatusEnum;
 use App\Livewire\Forms\Dashboard\PostForm;
-use App\Models\Module;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\Tag;
@@ -169,12 +167,14 @@ class ManagePost extends Component
             if (!$this->form->published_at) {
                 $this->addError('form.published_at', 'A data de agendamento é obrigatória.');
                 $this->notifyWarning('Informe a data e a hora da publicação para agendar.');
+
                 return;
             }
 
             if (now()->parse($this->form->published_at)->isPast()) {
                 $this->addError('form.published_at', 'A data de agendamento deve ser no futuro.');
                 $this->notifyWarning('A data de agendamento deve ser no futuro.');
+
                 return;
             }
 
@@ -196,6 +196,7 @@ class ManagePost extends Component
 
             if (!$executed) {
                 $this->notifyError('Muitas tentativas de agendamento. Aguarde um momento.');
+
                 return;
             }
 
@@ -206,6 +207,7 @@ class ManagePost extends Component
             return $this->redirect(route('dashboard.posts.index'), navigate: true);
         } catch (ValidationException $e) {
             $this->notifyError('Preencha todos os campos obrigatórios antes de agendar.');
+
             throw $e;
         } catch (Exception $e) {
             $this->notifyError($e->getMessage());

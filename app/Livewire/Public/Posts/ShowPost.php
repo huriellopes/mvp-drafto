@@ -72,9 +72,9 @@ class ShowPost extends Component
 
                 // Só processa e renderiza se for YouTube ou Vimeo (Segurança)
                 if (str_contains($src, 'youtube.com/embed') || str_contains($src, 'player.vimeo.com/video')) {
-                    
+
                     $finalTag = $rawTag;
-                    
+
                     // Sênior: Força a inclusão do referrerpolicy para evitar bloqueios de domínio (ex: FIFA)
                     if (str_contains($src, 'youtube.com') && !str_contains($rawTag, 'referrerpolicy')) {
                         $finalTag = str_replace('<iframe', '<iframe referrerpolicy="strict-origin-when-cross-origin"', $rawTag);
@@ -85,7 +85,7 @@ class ShowPost extends Component
 
                 return $matches[0];
             },
-            $content
+            $content,
         );
     }
 

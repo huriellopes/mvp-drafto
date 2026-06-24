@@ -104,6 +104,41 @@
         </div>
     </form>
 
+    {{-- Zona de Perigo --}}
+    <x-ui.section-card
+        title="Zona de perigo"
+        description="Ações irreversíveis relacionadas à sua conta."
+    >
+        <div class="flex flex-col gap-4 rounded-2xl border border-red-100 bg-red-50 p-5 dark:border-red-500/20 dark:bg-red-500/10 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+                <span class="block text-sm font-bold text-red-700 dark:text-red-400">Deletar minha conta</span>
+                <span class="mt-1 block text-xs leading-5 text-red-600/80 dark:text-red-400/70">
+                    Sua conta e todos os dados associados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos. Esta ação não pode ser desfeita.
+                </span>
+            </div>
+
+            <x-ui.button
+                type="button"
+                wire:click="openDeleteAccountModal"
+                variant="danger"
+                size="sm"
+                class="w-full shrink-0 !rounded-xl sm:w-auto"
+            >
+                <x-lucide-trash-2 class="mr-2 h-4 w-4" />
+                Deletar conta
+            </x-ui.button>
+        </div>
+    </x-ui.section-card>
+
+    <x-ui.confirm-modal
+        name="confirm-delete-account"
+        title="Deletar conta"
+        content="Tem certeza que deseja deletar sua conta? Todos os seus dados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos permanentemente. Esta ação não pode ser desfeita."
+        buttonText="Sim, deletar minha conta"
+        variant="danger"
+        action="deleteAccount"
+    />
+
     <x-ui.confirm-modal
         name="confirm-become-writer"
         title="Tornar-se Escritor"

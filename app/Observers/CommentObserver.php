@@ -52,7 +52,7 @@ final class CommentObserver
     private function updateCount(Comment $comment, int $amount): void
     {
         $post = $comment->post;
-        
+
         if ($post) {
             $post->timestamps = false;
             $post->increment('comments_count', $amount);

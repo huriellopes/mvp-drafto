@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Livewire\Dashboard;
 
+use App\Enums\RoleEnum;
 use App\Livewire\Dashboard\Saved\SavedIndex;
+use App\Models\Collection;
 use App\Models\Post;
 use App\Models\User;
-use App\Enums\RoleEnum;
-use App\Models\SavedPost;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -56,7 +56,7 @@ class SavedIndexTest extends TestCase
     {
         $user = User::factory()->create();
         $post = Post::factory()->create();
-        $collection = \App\Models\Collection::factory()->create(['user_id' => $user->id]);
+        $collection = Collection::factory()->create(['user_id' => $user->id]);
 
         // Save post into a collection
         $user->savedPosts()->attach($post->id, ['collection_id' => $collection->id]);

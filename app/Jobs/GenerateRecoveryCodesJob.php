@@ -27,7 +27,7 @@ class GenerateRecoveryCodesJob implements ShouldQueue
 
     public function handle(): void
     {
-        $codes = $this->user->two_factor_recovery_codes;
+        $codes = (array) ($this->user->two_factor_recovery_codes ?? []);
 
         if (empty($codes)) {
             return;

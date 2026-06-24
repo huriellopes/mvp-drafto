@@ -8,6 +8,7 @@ use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\ResetPassword;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Livewire\Livewire;
 
@@ -18,6 +19,8 @@ it('renders forgot password page', function () {
 });
 
 it('can request a reset password link', function () {
+    Notification::fake();
+
     $user = User::factory()->create();
 
     Livewire::test(ForgotPassword::class)
