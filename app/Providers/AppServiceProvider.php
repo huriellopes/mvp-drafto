@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Contracts\Services\LoggerInterface;
 use App\Enums\RoleEnum;
 use App\Events\Posts\PostSaved;
+use App\Listeners\EnforceSingleSession;
 use App\Listeners\PlatformMonitor;
 use App\Listeners\Posts\HandlePostMediaAndSeo;
 use App\Models\Collection;
@@ -32,6 +33,7 @@ use App\Policies\PostViewPolicy;
 use App\Policies\ProfilePolicy;
 use App\Policies\ReportPolicy;
 use App\Services\SystemLogger;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
@@ -59,6 +61,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(PostSaved::class, HandlePostMediaAndSeo::class);
+
+        // Sessão única: ao logar, encerra as outras sessões ativas do usuário.
+        Event::listen(Login::class, EnforceSingleSession::class);
 
         // Observabilidade → Telegram (falhas de comandos/crons/jobs/notifications + execução de crons)
         Event::listen(CommandFinished::class, [PlatformMonitor::class, 'commandFinished']);

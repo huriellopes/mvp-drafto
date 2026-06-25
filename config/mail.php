@@ -53,6 +53,7 @@ return [
 
         'contact' => [
             'transport' => 'smtp',
+            'scheme' => env('MAIL_CONTACT_SCHEME', env('MAIL_SCHEME')),
             'host' => env('MAIL_CONTACT_HOST', env('MAIL_HOST', '127.0.0.1')),
             'port' => env('MAIL_CONTACT_PORT', env('MAIL_PORT', 2525)),
             'username' => env('MAIL_CONTACT_USERNAME', env('MAIL_USERNAME')),
@@ -67,6 +68,7 @@ return [
 
         'support' => [
             'transport' => 'smtp',
+            'scheme' => env('MAIL_SUPPORT_SCHEME', env('MAIL_SCHEME')),
             'host' => env('MAIL_SUPPORT_HOST', env('MAIL_HOST', '127.0.0.1')),
             'port' => env('MAIL_SUPPORT_PORT', env('MAIL_PORT', 2525)),
             'username' => env('MAIL_SUPPORT_USERNAME', env('MAIL_USERNAME')),
