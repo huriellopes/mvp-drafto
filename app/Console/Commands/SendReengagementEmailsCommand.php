@@ -27,7 +27,6 @@ class SendReengagementEmailsCommand extends Command
             ->whereNotNull('email_verified_at')
             ->where('wants_reengagement_emails', true)
             ->where(fn ($q) => $q->whereNull('banned_until')->orWhere('banned_until', '<=', now()))
-            // Última escrita carregada via subquery para evitar N+1 (usado em inactiveDays()).
             ->withMax('posts', 'created_at')
             ->chunkById(200, function ($users) use ($action, &$sent, &$scanned) {
                 foreach ($users as $user) {

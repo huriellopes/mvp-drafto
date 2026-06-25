@@ -130,12 +130,12 @@
             </x-ui.button>
         </div>
 
-{{--        <div class="mt-4 text-xs text-zinc-500">--}}
-{{--            Leia nossa--}}
-{{--            <a href="{{ route('pages.privacy') }}" target="_blank" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Política de Privacidade</a>--}}
-{{--            ou--}}
-{{--            <button type="button" onclick="window.draftoOpenConsent && window.draftoOpenConsent()" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">gerencie suas preferências de cookies</button>.--}}
-{{--        </div>--}}
+        <div class="mt-4 text-xs text-zinc-500">
+            Leia nossa
+            <a href="{{ route('pages.privacy') }}" target="_blank" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">Política de Privacidade</a>
+            ou
+            <button type="button" onclick="window.draftoOpenConsent && window.draftoOpenConsent()" class="font-semibold text-indigo-600 underline hover:text-indigo-700 dark:text-indigo-400">gerencie suas preferências de cookies</button>.
+        </div>
     </x-ui.section-card>
 
     {{-- Zona de Perigo --}}

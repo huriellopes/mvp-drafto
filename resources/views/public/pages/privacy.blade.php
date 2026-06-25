@@ -13,12 +13,6 @@
                 <p class="text-xs text-zinc-400">Última atualização: {{ now()->format('d/m/Y') }}</p>
             </header>
 
-            {{-- AVISO: este texto é um modelo de base e deve ser revisado por um(a) advogado(a). --}}
-            <div class="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                <strong>Modelo para revisão.</strong> Este conteúdo é um ponto de partida técnico baseado nos dados
-                efetivamente tratados pela plataforma. Recomenda-se revisão jurídica antes da publicação definitiva.
-            </div>
-
             <div class="space-y-10 text-sm leading-7 text-zinc-600 dark:text-zinc-300">
 
                 <section class="space-y-2">
@@ -26,7 +20,7 @@
                     <p>
                         O Drafto é o controlador dos dados tratados nesta plataforma. Para exercer seus direitos
                         ou tirar dúvidas sobre privacidade, contate nosso Encarregado (DPO) em
-                        <a href="mailto:privacidade@drafto.pro" class="font-semibold text-indigo-600 dark:text-indigo-400">support@drafto.pro</a>.
+                        <a href="mailto:support@drafto.pro" target="_blank" class="font-semibold text-indigo-600 dark:text-indigo-400">support@drafto.pro</a>.
                     </p>
                 </section>
 
@@ -82,7 +76,7 @@
                         <li>Corrigir dados incompletos ou desatualizados (em <em>Configurações</em> e <em>Editar Perfil</em>);</li>
                         <li>Eliminar sua conta e os dados associados (em <em>Configurações → Zona de perigo</em>);</li>
                         <li>Revogar o consentimento de cookies e de e-mails de marketing;</li>
-                        <li>Solicitar portabilidade ou informações sobre o tratamento, via <a href="mailto:privacidade@drafto.pro" class="font-semibold text-indigo-600 dark:text-indigo-400">privacidade@drafto.pro</a>.</li>
+                        <li>Solicitar portabilidade ou informações sobre o tratamento, via <a href="mailto:support@drafto.pro" target="_blank" class="font-semibold text-indigo-600 dark:text-indigo-400">support@drafto.pro</a>.</li>
                     </ul>
                 </section>
 

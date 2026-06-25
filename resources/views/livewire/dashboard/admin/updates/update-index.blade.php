@@ -103,13 +103,54 @@
         </div>
     </div>
 
-    <x-ui.confirm-modal
-        name="confirm-send-update"
-        title="Enviar comunicado"
-        content="Enviar este comunicado por e-mail para todos os usuários que aceitam avisos de novidades?"
-        buttonText="Enviar agora"
-        action="send"
-    />
+    <x-ui.modal name="confirm-send-update" :title="$this->sendingUpdate?->isSent() ? 'Reenviar comunicado' : 'Enviar comunicado'">
+        @if($this->sendingUpdate)
+            @if($this->sendingUpdate->isSent())
+                <p class="text-sm leading-6 text-zinc-600">
+                    Este comunicado <strong>já foi enviado</strong> em
+                    {{ $this->sendingUpdate->sent_at->format('d/m/Y \à\s H:i') }}
+                    para {{ $this->sendingUpdate->recipients_count }} destinatário(s).
+                    Deseja enviá-lo <strong>novamente</strong> para o público "{{ $this->sendingUpdate->audience->label() }}"?
+                </p>
+            @else
+                <p class="text-sm leading-6 text-zinc-600">
+                    Você está prestes a enviar este comunicado por e-mail para o público
+                    <strong>"{{ $this->sendingUpdate->audience->label() }}"</strong>.
+                    Depois de enviado, ele não poderá ser editado — que tal
+                    <strong>revisar a novidade</strong> antes de disparar?
+                </p>
+            @endif
+
+            <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                    type="button"
+                    x-on:click="$dispatch('close-modal', { name: 'confirm-send-update' })"
+                    class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                >
+                    Cancelar
+                </button>
+
+                @unless($this->sendingUpdate->isSent())
+                    <button
+                        type="button"
+                        wire:click="edit({{ $this->sendingUpdate->id }})"
+                        x-on:click="$dispatch('close-modal', { name: 'confirm-send-update' })"
+                        class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                    >
+                        Revisar antes
+                    </button>
+                @endunless
+
+                <button
+                    type="button"
+                    wire:click="send"
+                    class="inline-flex items-center justify-center rounded-2xl bg-zinc-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-zinc-800"
+                >
+                    {{ $this->sendingUpdate->isSent() ? 'Enviar novamente' : 'Enviar agora' }}
+                </button>
+            </div>
+        @endif
+    </x-ui.modal>
 
     <x-ui.confirm-modal
         name="confirm-delete-update"

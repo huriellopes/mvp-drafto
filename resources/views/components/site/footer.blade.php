@@ -13,8 +13,8 @@
         </div>
 
         <nav class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-400 dark:text-zinc-500">
-{{--            <a href="{{ route('pages.privacy') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Política de Privacidade</a>--}}
-{{--            <a href="{{ route('pages.terms') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Termos de Uso</a>--}}
+            <a href="{{ route('pages.privacy') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Política de Privacidade</a>
+            <a href="{{ route('pages.terms') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Termos de Uso</a>
             <a href="{{ route('pages.guidelines') }}" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Diretrizes</a>
             <button type="button" onclick="window.draftoOpenConsent && window.draftoOpenConsent()" class="transition hover:text-zinc-700 dark:hover:text-zinc-300">Preferências de cookies</button>
         </nav>

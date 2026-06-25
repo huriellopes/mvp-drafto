@@ -95,6 +95,17 @@ class UpdateIndex extends Component
         $this->dispatch('open-modal', name: 'confirm-send-update');
     }
 
+    /**
+     * Comunicado atualmente em confirmação de envio (para montar a mensagem do modal).
+     */
+    #[Computed]
+    public function sendingUpdate(): ?PlatformUpdate
+    {
+        return $this->updateIdToSend
+            ? PlatformUpdate::find($this->updateIdToSend)
+            : null;
+    }
+
     public function send(): void
     {
         $update = PlatformUpdate::find($this->updateIdToSend);
