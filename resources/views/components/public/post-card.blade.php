@@ -4,7 +4,11 @@
 <article class="group relative flex flex-col overflow-hidden rounded-[2.5rem] border border-zinc-100 bg-white transition-all duration-500 hover:border-indigo-500/50 hover:shadow-[0_20px_50px_-12px_rgba(79,70,229,0.15)] dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-400/50 dark:hover:shadow-[0_20px_50px_-12px_rgba(79,70,229,0.2)]">
     <div class="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
         @if($post->cover_image_url)
-            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110">
+            {{-- Fundo desfocado da própria capa preenche a zona sem deixar faixas vazias.
+                 A escala maior empurra as bordas esmaecidas pelo blur para fora da área visível. --}}
+            <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover scale-150 blur-2xl opacity-60">
+            {{-- Imagem completa, sem corte, centralizada sobre o fundo --}}
+            <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="relative z-10 h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105">
         @else
             <div class="flex h-full w-full items-center justify-center bg-indigo-500/5 select-none">
                  <span class="text-6xl font-black text-indigo-500/10 tracking-tighter uppercase">

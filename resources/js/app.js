@@ -2,6 +2,12 @@ import './bootstrap';
 import '../../vendor/masmerise/livewire-toaster/resources/js';
 
 const applyTheme = () => {
+    // Páginas de perfil público definem o tema (escolha do dono) no servidor.
+    // Não interferimos para não sobrescrever/piscar o tema renderizado.
+    if (document.documentElement.hasAttribute('data-profile-theme')) {
+        return;
+    }
+
     if (!document.documentElement.hasAttribute('data-site-theme')) {
         document.documentElement.classList.remove('dark');
         document.body.classList.remove('dark'); // Extra safety
@@ -73,7 +79,8 @@ document.addEventListener('alpine:init', () => {
 });
 
 // Immediate cleanup for dashboard if any leak occurs
-if (!document.documentElement.hasAttribute('data-site-theme')) {
+if (!document.documentElement.hasAttribute('data-site-theme')
+    && !document.documentElement.hasAttribute('data-profile-theme')) {
     document.documentElement.classList.remove('dark');
 }
 

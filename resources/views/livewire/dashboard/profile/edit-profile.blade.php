@@ -225,6 +225,77 @@
             </div>
         </x-ui.section-card>
 
+        {{-- Links & Redes Sociais Section --}}
+        <x-ui.section-card title="Redes Sociais e Links" description="Adicione suas redes sociais e links de páginas. Aparecem no seu perfil público.">
+            <x-slot:title_extra>
+                <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-2" />
+            </x-slot:title_extra>
+
+            <div class="space-y-4" x-data="{ from: null }">
+                @forelse($form->links as $index => $link)
+                    <div
+                        wire:key="profile-link-{{ $index }}"
+                        x-on:dragover.prevent
+                        x-on:drop.prevent="if (from !== null) { $wire.reorderLinks(from, {{ $index }}); } from = null"
+                        :class="from === {{ $index }} ? 'opacity-50' : ''"
+                        class="flex flex-col gap-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 sm:flex-row sm:items-center"
+                    >
+                        {{-- Alça de arrastar para reordenar --}}
+                        <button
+                            type="button"
+                            draggable="true"
+                            x-on:dragstart="from = {{ $index }}"
+                            x-on:dragend="from = null"
+                            class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center text-zinc-300 hover:text-zinc-500 active:cursor-grabbing"
+                            title="Arraste para reordenar"
+                        >
+                            <x-lucide-grip-vertical class="h-5 w-5" />
+                        </button>
+
+                        <div class="sm:w-44">
+                            <x-ui.select wire:model="form.links.{{ $index }}.platform" :error="$errors->first('form.links.'.$index.'.platform')">
+                                @foreach($this->socialPlatforms as $platform)
+                                    <option value="{{ $platform->value }}">{{ $platform->label }}</option>
+                                @endforeach
+                            </x-ui.select>
+                        </div>
+
+                        <div class="flex-1">
+                            <x-ui.input
+                                type="text"
+                                wire:model="form.links.{{ $index }}.url"
+                                placeholder="instagram.com/voce (o https:// é opcional)"
+                                :error="$errors->first('form.links.'.$index.'.url')"
+                            />
+                        </div>
+
+                        <button
+                            type="button"
+                            wire:click="removeLink({{ $index }})"
+                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 transition hover:border-red-300 hover:text-red-500 active:scale-95"
+                            title="Remover link"
+                        >
+                            <x-lucide-trash-2 class="h-4 w-4" />
+                        </button>
+                    </div>
+                @empty
+                    <p class="text-sm font-medium text-zinc-400">Nenhum link adicionado ainda.</p>
+                @endforelse
+
+                @if(count($form->links) < 8)
+                    <button
+                        type="button"
+                        wire:click="addLink"
+                        class="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 transition hover:border-indigo-400 hover:text-indigo-500 active:scale-[0.99]"
+                    >
+                        <x-lucide-plus class="h-4 w-4" /> Adicionar link
+                    </button>
+                @else
+                    <p class="text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">Limite de 8 links atingido</p>
+                @endif
+            </div>
+        </x-ui.section-card>
+
         {{-- Visual Identity Section --}}
         <x-ui.section-card title="{{ __('dashboard.profile.edit.style_section.title') }}" description="{{ __('dashboard.profile.edit.style_section.description') }}">
             <div class="space-y-10">

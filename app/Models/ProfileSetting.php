@@ -18,13 +18,11 @@ class ProfileSetting extends Model
         'secondary_color',
         'text_color',
         'background_color',
-        'show_badges',
         'show_subscriber_count',
         'show_view_count',
     ];
 
     protected $casts = [
-        'show_badges' => 'boolean',
         'show_subscriber_count' => 'boolean',
         'show_view_count' => 'boolean',
     ];

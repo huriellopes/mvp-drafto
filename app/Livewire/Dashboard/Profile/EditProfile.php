@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Livewire\Dashboard\Profile;
 
+use App\Actions\Profile\GetSocialPlatformsAction;
 use App\Actions\Profile\UpdateProfileMediaAction;
+use App\DTOs\SocialPlatformData;
 use App\Livewire\Forms\Dashboard\ProfileForm;
 use App\Services\IbgeService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -49,6 +52,17 @@ class EditProfile extends Component
     public function profile()
     {
         return auth()->user()->fresh(['profile', 'profile.settings', 'profile.seo'])->profile;
+    }
+
+    /**
+     * Plataformas disponíveis para os links do perfil (config → enum → DTO).
+     *
+     * @return Collection<int, SocialPlatformData>
+     */
+    #[Computed]
+    public function socialPlatforms(): Collection
+    {
+        return app(GetSocialPlatformsAction::class)->exec();
     }
 
     #[Computed]
@@ -139,6 +153,39 @@ class EditProfile extends Component
             $this->form->setUser(auth()->user());
             Toaster::success(__('dashboard.profile.edit.messages.cover_removed'));
         }
+    }
+
+    public function addLink(): void
+    {
+        if (count($this->form->links) >= 8) {
+            return;
+        }
+
+        $this->form->links[] = ['platform' => 'instagram', 'url' => ''];
+    }
+
+    public function removeLink(int $index): void
+    {
+        unset($this->form->links[$index]);
+        $this->form->links = array_values($this->form->links);
+    }
+
+    /**
+     * Reordena os links via drag-and-drop, movendo um item de uma posição
+     * para outra e reindexando o array.
+     */
+    public function reorderLinks(int $from, int $to): void
+    {
+        $links = $this->form->links;
+
+        if ($from === $to || !isset($links[$from]) || !isset($links[$to])) {
+            return;
+        }
+
+        $moved = array_splice($links, $from, 1);
+        array_splice($links, $to, 0, $moved);
+
+        $this->form->links = array_values($links);
     }
 
     public function save(): void

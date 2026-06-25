@@ -132,7 +132,7 @@
                             @if($this->user->profile->website_url)
                                 <a href="{{ $this->user->profile->website_url }}"
                                    target="_blank"
-                                   class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95"
+                                   class="inline-flex h-12 w-12 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95"
                                    title="Website"
                                 >
                                     <x-lucide-globe class="h-4 w-4 text-profile-primary" />
@@ -141,7 +141,7 @@
 
                             @if($this->user->profile->show_email_publicly && $this->user->profile->email)
                                 <a href="mailto:{{ $this->user->profile->email }}"
-                                   class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 transition hover:text-profile-primary dark:hover:text-profile-primary shadow-sm active:scale-95"
+                                   class="flex h-12 w-12 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 transition hover:text-profile-primary dark:hover:text-profile-primary shadow-sm active:scale-95"
                                    title="Enviar E-mail"
                                 >
                                     <x-lucide-mail class="h-5 w-5" />
@@ -158,6 +158,9 @@
                             @endif
                         </div>
                     </div>
+
+                    {{-- Redes sociais e links do perfil --}}
+                    <x-public.profile-links :profile="$this->user->profile" />
 
                     {{-- Info Grid --}}
                     <div @class([
@@ -186,7 +189,7 @@
 
                                 {{-- Location Badge --}}
                                 @if($this->user->profile->location)
-                                    <span class="flex items-center gap-1.5 text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                                    <span class="flex items-center gap-1.5 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">
                                         <span class="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
                                         <x-lucide-map-pin class="h-3.5 w-3.5 text-profile-primary" />
                                         {{ $this->user->profile->location }}
@@ -294,7 +297,7 @@
                             @foreach($this->publicCollections as $collection)
                                 <a href="{{ route('profile.collection', ['username' => $this->user->profile->username, 'collection' => $collection->slug]) }}"
                                    wire:navigate
-                                   class="group relative flex flex-col gap-3 p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-profile-primary hover:-translate-y-1 transition-all duration-500">
+                                   class="group relative flex flex-col gap-3 p-6 rounded-3xl bg-white dark:bg-zinc-900 {{ $cardClasses }} hover:border-profile-primary hover:-translate-y-1 transition-all duration-500">
                                     <div class="flex items-center gap-3">
                                         <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-profile-primary/10 text-profile-primary">
                                             <x-lucide-folder-tree class="h-5 w-5" />

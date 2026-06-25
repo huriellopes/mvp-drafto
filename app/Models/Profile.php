@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
@@ -59,6 +60,12 @@ class Profile extends Model implements Auditable
             'layout_type' => 'default',
             'font_family' => 'sans',
         ]);
+    }
+
+    /** @return HasMany<ProfileLink, $this> */
+    public function links(): HasMany
+    {
+        return $this->hasMany(ProfileLink::class)->orderBy('sort_order');
     }
 
     public function getColors(): object

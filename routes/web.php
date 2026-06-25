@@ -9,6 +9,7 @@ use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Public\AnalyticsController;
 use App\Http\Controllers\Public\ProfileBadgeController;
+use App\Http\Controllers\Public\ProfileQrCodeController;
 use App\Http\Controllers\ShortLinkController;
 use App\Http\Controllers\TemporaryFileDownloadController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
@@ -128,6 +129,10 @@ Route::livewire('/posts/{slug}', 'public.posts.show-post')
 Route::get('/badge/@{username}', [ProfileBadgeController::class, 'show'])
     ->name('public.profile.badge')
     ->middleware('allow.iframe');
+
+Route::get('/@{username}/qrcode', [ProfileQrCodeController::class, 'download'])
+    ->name('public.profile.qrcode')
+    ->where('username', '[a-z0-9._]+');
 
 Route::get('/newsletter/verify', VerifySubscriberController::class)
     ->name('newsletter.verify');
