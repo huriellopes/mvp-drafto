@@ -31,10 +31,16 @@ class ShowProfile extends Component
     {
         return Cache::tags(['profiles', "profile_{$this->username}"])
             ->remember("profile_view_data_{$this->username}", now()->addMinutes(60), function () {
+                // username é sempre persistido em minúsculas (mutator no Profile),
+                // então a igualdade direta usa o índice (sem LOWER()).
                 return User::query()
-                    ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
-                    ->with(['profile.settings', 'profile.links', 'followers', 'following'])
-                    ->withCount(['posts' => fn ($q) => $q->published()])
+                    ->whereHas('profile', fn ($q) => $q->where('username', $this->username))
+                    ->with(['profile.settings', 'profile.links'])
+                    ->withCount([
+                        'posts as published_posts_count' => fn ($q) => $q->published(),
+                        'followers',
+                        'following',
+                    ])
                     ->firstOrFail();
             });
     }
@@ -61,6 +67,7 @@ class ShowProfile extends Component
     public function posts()
     {
         return $this->user->posts()
+            ->with(['author.profile', 'category'])
             ->published()
             ->latest()
             ->paginate(12);

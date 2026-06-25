@@ -244,7 +244,7 @@
                                 @if($settings->show_subscriber_count)
                                 <span class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
                                     <x-lucide-users class="h-4 w-4 text-profile-primary" />
-                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->followers->count()) }}</span>
+                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->followers_count) }}</span>
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-70">seguidores</span>
                                 </span>
                                 @endif
@@ -261,7 +261,7 @@
                                 {{-- Posts Count --}}
                                 <span class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
                                     <x-lucide-pen-tool class="h-4 w-4 text-profile-primary" />
-                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->published_posts_count ?? $this->user->posts()->published()->count()) }}</span>
+                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->published_posts_count ?? 0) }}</span>
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-70">publicações</span>
                                 </span>
                             </div>

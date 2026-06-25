@@ -1,12 +1,23 @@
 @props(['user'])
 @use(App\Actions\Profile\GenerateProfileQrCodeAction)
 @php
-    $shareUrl = $user->getShareUrl();
     $username = $user->profile->username;
     $displayName = $user->display_name;
     $modalName = 'share-profile-' . $user->id;
 
-    $qrCodeSvg = app(GenerateProfileQrCodeAction::class)->svg($user);
+    // Cacheia a URL de compartilhamento (lookup/insert de short link) e o SVG do QR
+    // (render do BaconQrCode) por 60min, sob a mesma tag invalidada ao atualizar o perfil.
+    $cacheTags = ['profiles', 'profile_' . $username];
+    $shareUrl = cache()->tags($cacheTags)->remember(
+        "profile_share_url_{$username}",
+        now()->addMinutes(60),
+        fn () => $user->getShareUrl(),
+    );
+    $qrCodeSvg = cache()->tags($cacheTags)->remember(
+        "profile_qr_svg_{$username}",
+        now()->addMinutes(60),
+        fn () => app(GenerateProfileQrCodeAction::class)->svg($user),
+    );
     $qrDownloadUrl = route('public.profile.qrcode', $username);
 
     $whatsappText = rawurlencode(__('public.share.whatsapp_text', ['name' => $displayName, 'url' => $shareUrl]));

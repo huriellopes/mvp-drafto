@@ -27,6 +27,26 @@ return [
         'submit' => 'Entrar agora',
         'no_account' => 'Ainda não tem uma conta?',
         'register_link' => 'Criar conta gratuitamente',
+        'or' => 'ou',
+        'magic_link' => 'Entrar com link mágico',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Login por Link Mágico (sem senha)
+    |--------------------------------------------------------------------------
+    */
+    'magic_link' => [
+        'title' => 'Entrar sem senha',
+        'subtitle' => 'Informe seu e-mail e enviaremos um link de acesso instantâneo.',
+        'email_label' => 'E-mail',
+        'send_link' => 'Enviar link de acesso',
+        'back_to_login' => 'Voltar para o login',
+        'sent_title' => 'Verifique seu e-mail',
+        'sent_desc' => 'Se houver uma conta para :email, enviamos um link de acesso.',
+        'sent_help' => 'O link expira em alguns minutos. Não recebeu? Verifique a pasta de spam ou tente novamente.',
+        'sent_toast' => 'Pronto! Verifique sua caixa de entrada.',
+        'invalid' => 'Este link de acesso é inválido ou expirou. Solicite um novo.',
     ],
 
     /*

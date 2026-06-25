@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Forms\Auth;
 
-use App\Actions\Auth\SendPasswordResetLinkAction;
+use App\Actions\Auth\SendMagicLinkAction;
 use App\Traits\Auth\WithRateLimiting;
 use Livewire\Form;
 
-class ForgotPasswordForm extends Form
+class MagicLinkForm extends Form
 {
     use WithRateLimiting;
 
@@ -21,15 +21,7 @@ class ForgotPasswordForm extends Form
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'enotifications.required' => 'O endereço de e-mail é obrigatório para o acesso.',
-            'enotifications.email' => 'Por favor, insira um formato de e-mail válido.',
-        ];
-    }
-
-    public function save(): void
+    public function send(): void
     {
         $this->checkRateLimit($this->email, maxAttempts: 3, decaySeconds: 300);
 
@@ -39,9 +31,6 @@ class ForgotPasswordForm extends Form
         // contra abuso/e-mail bombing.
         $this->incrementAttempts($this->email, decaySeconds: 300);
 
-        app(SendPasswordResetLinkAction::class)
-            ->exec(
-                email: $this->email,
-            );
+        app(SendMagicLinkAction::class)->exec(email: $this->email);
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Actions\Auth\VerifyEmailAction;
+use App\Http\Controllers\Auth\MagicLinkLoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +13,12 @@ Route::middleware('guest')->group(function () {
     Route::livewire('/register', 'auth.register')->name('register');
     Route::livewire('/forgot-password', 'auth.forgot-password')->name('password.request');
     Route::livewire('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
+
+    // Login por link mágico (sem senha)
+    Route::livewire('/login/magic', 'auth.magic-link-request')->name('auth.magic.request');
+    Route::get('/login/magic/{token}', MagicLinkLoginController::class)
+        ->middleware('throttle:6,1')
+        ->name('auth.magic.verify');
 });
 
 Route::middleware('auth')->group(function () {

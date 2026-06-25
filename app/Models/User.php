@@ -109,6 +109,12 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $this->hasMany(Post::class);
     }
 
+    /** @return HasMany<MagicLoginToken, $this> */
+    public function magicLoginTokens(): HasMany
+    {
+        return $this->hasMany(MagicLoginToken::class);
+    }
+
     public function publishedPosts(): HasMany
     {
         return $this->posts()->where('status', PostStatusEnum::PUBLISHED);
