@@ -33,7 +33,7 @@ class UpdateProfileData extends Data
         public ?string $background_color = null,
         public bool $show_subscriber_count = true,
         public bool $show_view_count = false,
-        /** @var array<int, array{platform: string, url: string}> */
+        /** @var array<int, array{platform: string, url: string, visibility: string}> */
         public array $links = [],
         public ?string $seo_title = null,
         public ?string $seo_description = null,

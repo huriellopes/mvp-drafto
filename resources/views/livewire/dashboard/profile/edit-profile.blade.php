@@ -226,7 +226,7 @@
         </x-ui.section-card>
 
         {{-- Links & Redes Sociais Section --}}
-        <x-ui.section-card title="Redes Sociais e Links" description="Adicione suas redes sociais e links de páginas. Aparecem no seu perfil público.">
+        <x-ui.section-card :title="__('dashboard.profile.edit.links_section.title')" :description="__('dashboard.profile.edit.links_section.description')">
             <x-slot:title_extra>
                 <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-2" />
             </x-slot:title_extra>
@@ -247,7 +247,7 @@
                             x-on:dragstart="from = {{ $index }}"
                             x-on:dragend="from = null"
                             class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center text-zinc-300 hover:text-zinc-500 active:cursor-grabbing"
-                            title="Arraste para reordenar"
+                            title="{{ __('dashboard.profile.edit.links_section.reorder') }}"
                         >
                             <x-lucide-grip-vertical class="h-5 w-5" />
                         </button>
@@ -264,22 +264,30 @@
                             <x-ui.input
                                 type="text"
                                 wire:model="form.links.{{ $index }}.url"
-                                placeholder="instagram.com/voce (o https:// é opcional)"
+                                :placeholder="__('dashboard.profile.edit.links_section.url_placeholder')"
                                 :error="$errors->first('form.links.'.$index.'.url')"
                             />
+                        </div>
+
+                        <div class="sm:w-40">
+                            <x-ui.select wire:model="form.links.{{ $index }}.visibility" :error="$errors->first('form.links.'.$index.'.visibility')">
+                                @foreach(\App\Enums\LinkVisibilityEnum::cases() as $vis)
+                                    <option value="{{ $vis->value }}">{{ $vis->label() }}</option>
+                                @endforeach
+                            </x-ui.select>
                         </div>
 
                         <button
                             type="button"
                             wire:click="removeLink({{ $index }})"
                             class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 transition hover:border-red-300 hover:text-red-500 active:scale-95"
-                            title="Remover link"
+                            title="{{ __('dashboard.profile.edit.links_section.remove') }}"
                         >
                             <x-lucide-trash-2 class="h-4 w-4" />
                         </button>
                     </div>
                 @empty
-                    <p class="text-sm font-medium text-zinc-400">Nenhum link adicionado ainda.</p>
+                    <p class="text-sm font-medium text-zinc-400">{{ __('dashboard.profile.edit.links_section.empty') }}</p>
                 @endforelse
 
                 @if(count($form->links) < 8)
@@ -288,10 +296,10 @@
                         wire:click="addLink"
                         class="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 py-4 text-xs font-black uppercase tracking-widest text-zinc-500 transition hover:border-indigo-400 hover:text-indigo-500 active:scale-[0.99]"
                     >
-                        <x-lucide-plus class="h-4 w-4" /> Adicionar link
+                        <x-lucide-plus class="h-4 w-4" /> {{ __('dashboard.profile.edit.links_section.add') }}
                     </button>
                 @else
-                    <p class="text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">Limite de 8 links atingido</p>
+                    <p class="text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">{{ __('dashboard.profile.edit.links_section.limit_reached') }}</p>
                 @endif
             </div>
         </x-ui.section-card>

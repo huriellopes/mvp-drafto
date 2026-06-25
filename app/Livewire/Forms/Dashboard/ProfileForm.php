@@ -6,6 +6,7 @@ namespace App\Livewire\Forms\Dashboard;
 
 use App\Actions\Profile\UpdateProfileAction;
 use App\DTOs\UpdateProfileData;
+use App\Enums\LinkVisibilityEnum;
 use App\Enums\ProfileVisibilityEnum;
 use App\Enums\SocialPlatformEnum;
 use App\Enums\ThemePlatformEnum;
@@ -62,7 +63,7 @@ class ProfileForm extends Form
 
     public string $seo_description = '';
 
-    /** @var array<int, array{platform: string, url: string}> */
+    /** @var array<int, array{platform: string, url: string, visibility: string}> */
     public array $links = [];
 
     public $avatar;
@@ -111,6 +112,7 @@ class ProfileForm extends Form
             ->map(fn (ProfileLink $link): array => [
                 'platform' => $link->platformEnum()->value,
                 'url' => $link->url,
+                'visibility' => $link->visibilityEnum()->value,
             ])
             ->all();
     }
@@ -146,6 +148,7 @@ class ProfileForm extends Form
             'links' => ['array', 'max:8'],
             'links.*.platform' => ['required', Rule::enum(SocialPlatformEnum::class)],
             'links.*.url' => ['required', 'string', 'max:255', 'regex:#^https?://#i', 'url'],
+            'links.*.visibility' => ['required', Rule::enum(LinkVisibilityEnum::class)],
         ];
     }
 
@@ -219,6 +222,7 @@ class ProfileForm extends Form
             $clean[] = [
                 'platform' => $link['platform'] ?? 'website',
                 'url' => $url,
+                'visibility' => $link['visibility'] ?? LinkVisibilityEnum::PUBLIC->value,
             ];
         }
 

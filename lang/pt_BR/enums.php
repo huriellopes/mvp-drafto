@@ -18,6 +18,22 @@ return [
         'system' => 'Sistema',
     ],
 
+    'link_visibility' => [
+        'public' => 'Público',
+        'private' => 'Privado (inativo)',
+    ],
+
+    'social_platform' => [
+        'instagram' => 'Instagram',
+        'facebook' => 'Facebook',
+        'twitter' => 'X / Twitter',
+        'linkedin' => 'LinkedIn',
+        'youtube' => 'YouTube',
+        'github' => 'GitHub',
+        'tiktok' => 'TikTok',
+        'website' => 'Site / Outro',
+    ],
+
     'role' => [
         'super_admin' => 'Super Administrador',
         'writer' => 'Escritor',

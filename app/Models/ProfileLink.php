@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\LinkVisibilityEnum;
 use App\Enums\SocialPlatformEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class ProfileLink extends Model
         'profile_id',
         'platform',
         'url',
+        'visibility',
         'sort_order',
     ];
 
@@ -56,5 +58,21 @@ class ProfileLink extends Model
     public function label(): string
     {
         return $this->platformEnum()->label();
+    }
+
+    /**
+     * Visibilidade como enum, com fallback seguro para "public".
+     */
+    public function visibilityEnum(): LinkVisibilityEnum
+    {
+        return LinkVisibilityEnum::tryFrom((string) $this->visibility) ?? LinkVisibilityEnum::PUBLIC;
+    }
+
+    /**
+     * Indica se o link deve aparecer na página pública.
+     */
+    public function isPublic(): bool
+    {
+        return $this->visibilityEnum() === LinkVisibilityEnum::PUBLIC;
     }
 }

@@ -167,6 +167,16 @@ return [
                 'none' => 'Nenhuma',
                 'default' => 'Padrão',
             ],
+            'links_section' => [
+                'title' => 'Redes Sociais e Links',
+                'description' => 'Adicione suas redes sociais e links de páginas. Aparecem no seu perfil público.',
+                'url_placeholder' => 'instagram.com/voce (o https:// é opcional)',
+                'reorder' => 'Arraste para reordenar',
+                'remove' => 'Remover link',
+                'empty' => 'Nenhum link adicionado ainda.',
+                'add' => 'Adicionar link',
+                'limit_reached' => 'Limite de 8 links atingido',
+            ],
             'privacy_section' => [
                 'title' => 'Privacidade',
                 'description' => 'Controle quem pode encontrar e ver as informações do seu perfil.',

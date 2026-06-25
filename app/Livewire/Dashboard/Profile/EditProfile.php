@@ -7,6 +7,7 @@ namespace App\Livewire\Dashboard\Profile;
 use App\Actions\Profile\GetSocialPlatformsAction;
 use App\Actions\Profile\UpdateProfileMediaAction;
 use App\DTOs\SocialPlatformData;
+use App\Enums\LinkVisibilityEnum;
 use App\Livewire\Forms\Dashboard\ProfileForm;
 use App\Services\IbgeService;
 use Illuminate\Support\Collection;
@@ -161,7 +162,7 @@ class EditProfile extends Component
             return;
         }
 
-        $this->form->links[] = ['platform' => 'instagram', 'url' => ''];
+        $this->form->links[] = ['platform' => 'instagram', 'url' => '', 'visibility' => LinkVisibilityEnum::PUBLIC->value];
     }
 
     public function removeLink(int $index): void
