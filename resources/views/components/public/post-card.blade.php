@@ -5,8 +5,8 @@
     <div class="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative">
         @if($post->cover_image_url)
             {{-- Fundo desfocado da própria capa preenche a zona sem deixar faixas vazias.
-                 A escala maior empurra as bordas esmaecidas pelo blur para fora da área visível. --}}
-            <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover scale-150 blur-2xl opacity-60">
+                 Usa background-image (mesma URL já em cache do navegador) para não duplicar a requisição. --}}
+            <div aria-hidden="true" class="absolute inset-0 scale-150 bg-cover bg-center blur-2xl opacity-60" style="background-image: url('{{ $post->cover_image_url }}')"></div>
             {{-- Imagem completa, sem corte, centralizada sobre o fundo --}}
             <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" loading="lazy" decoding="async" class="relative z-10 h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105">
         @else

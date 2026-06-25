@@ -27,6 +27,26 @@ return [
         'submit' => 'Sign in now',
         'no_account' => 'Don\'t have an account yet?',
         'register_link' => 'Create a free account',
+        'or' => 'or',
+        'magic_link' => 'Sign in with a magic link',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Passwordless (Magic Link) Login
+    |--------------------------------------------------------------------------
+    */
+    'magic_link' => [
+        'title' => 'Sign in without a password',
+        'subtitle' => 'Enter your email and we will send you an instant access link.',
+        'email_label' => 'Email',
+        'send_link' => 'Send access link',
+        'back_to_login' => 'Back to login',
+        'sent_title' => 'Check your email',
+        'sent_desc' => 'If an account exists for :email, we have sent an access link.',
+        'sent_help' => 'The link expires in a few minutes. Did not receive it? Check your spam folder or try again.',
+        'sent_toast' => 'Done! Check your inbox.',
+        'invalid' => 'This access link is invalid or has expired. Please request a new one.',
     ],
 
     /*

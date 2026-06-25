@@ -64,7 +64,8 @@ it('resolves brand metadata from the model via the enum', function () {
     expect($link->platformEnum())->toBe(SocialPlatformEnum::GITHUB)
         ->and($link->icon())->toBe('github')
         ->and($link->brandColor())->toBe('#181717')
-        ->and($link->label())->toBe('GitHub');
+        ->and($link->label())->toBe('GitHub')
+        ->and($link->profile->is($profile))->toBeTrue(); // relação inversa
 });
 
 it('resolves a safe fallback when the stored platform is unknown', function () {

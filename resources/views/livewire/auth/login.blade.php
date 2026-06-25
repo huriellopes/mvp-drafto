@@ -8,6 +8,12 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <form wire:submit="login" class="space-y-5">
         <x-ui.input
             wire:model.blur="form.email"
@@ -47,6 +53,17 @@
         >
             {{ __('auth.login.submit') }}
         </x-ui.button>
+
+        <div class="relative py-1 text-center">
+            <span class="relative bg-white dark:bg-zinc-900 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400">{{ __('auth.login.or') }}</span>
+            <div class="absolute inset-x-0 top-1/2 -z-10 h-px bg-zinc-100 dark:bg-zinc-800"></div>
+        </div>
+
+        <a href="{{ route('auth.magic.request') }}" wire:navigate
+           class="flex w-full items-center justify-center gap-2 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-6 py-3 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95">
+            <x-lucide-wand-sparkles class="h-4 w-4 text-profile-primary" />
+            {{ __('auth.login.magic_link') }}
+        </a>
 
         <div class="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-6 text-center">
             <p class="text-sm text-zinc-600 dark:text-zinc-400">

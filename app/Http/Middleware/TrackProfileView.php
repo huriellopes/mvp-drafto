@@ -34,7 +34,7 @@ final class TrackProfileView
 
         // Busca o perfil de forma otimizada
         $profile = User::query()
-            ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$username]))
+            ->whereHas('profile', fn ($q) => $q->where('username', $username))
             ->first()?->profile;
 
         if ($profile && (!auth()->check() || auth()->id() !== $profile->user_id)) {

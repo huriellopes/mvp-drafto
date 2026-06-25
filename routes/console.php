@@ -8,6 +8,9 @@ Schedule::command('posts:publish-scheduled')
 Schedule::command('drafto:send-newsletter')
     ->dailyAt('08:00');
 
+Schedule::command('drafto:daily-summary')
+    ->dailyAt('08:05');
+
 Schedule::command('drafto:sync-views')
     ->hourly();
 
