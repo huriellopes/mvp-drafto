@@ -12,11 +12,6 @@
                 <p class="text-xs text-zinc-400">Última atualização: {{ now()->format('d/m/Y') }}</p>
             </header>
 
-            <div class="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                <strong>Modelo para revisão.</strong> Este é um texto-base que deve ser revisado por um(a) advogado(a)
-                antes da publicação definitiva.
-            </div>
-
             <div class="space-y-10 text-sm leading-7 text-zinc-600 dark:text-zinc-300">
 
                 <section class="space-y-2">
@@ -53,7 +48,7 @@
                 <section class="space-y-2">
                     <h2 class="text-lg font-bold text-zinc-900 dark:text-white">6. Contato</h2>
                     <p>Dúvidas sobre estes Termos? Fale conosco em
-                        <a href="mailto:contato@drafto.pro" class="font-semibold text-indigo-600 dark:text-indigo-400">contato@drafto.pro</a>.</p>
+                        <a href="mailto:support@drafto.pro" target="_blank" class="font-semibold text-indigo-600 dark:text-indigo-400">support@drafto.pro</a>.</p>
                 </section>
 
             </div>
