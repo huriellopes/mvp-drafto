@@ -33,7 +33,7 @@ class ShowProfile extends Component
             ->remember("profile_view_data_{$this->username}", now()->addMinutes(60), function () {
                 return User::query()
                     ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
-                    ->with(['profile.settings', 'followers', 'following'])
+                    ->with(['profile.settings', 'profile.links', 'followers', 'following'])
                     ->withCount(['posts' => fn ($q) => $q->published()])
                     ->firstOrFail();
             });

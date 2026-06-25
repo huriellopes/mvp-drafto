@@ -31,9 +31,10 @@ class UpdateProfileData extends Data
         public ?string $secondary_color = null,
         public ?string $text_color = null,
         public ?string $background_color = null,
-        public bool $show_badges = true,
         public bool $show_subscriber_count = true,
         public bool $show_view_count = false,
+        /** @var array<int, array{platform: string, url: string}> */
+        public array $links = [],
         public ?string $seo_title = null,
         public ?string $seo_description = null,
         public ?UploadedFile $avatar = null,

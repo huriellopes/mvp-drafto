@@ -10,17 +10,49 @@
     'title' => null,
     'seo' => null
 ])
+@php
+    // O Modo de Cor (Tema) tem prioridade sobre a Cor de Fundo da página:
+    // a cor de fundo só é aplicada quando o tema está em "system".
+    $effectiveBackground = $themeMode === 'system' ? $backgroundColor : null;
+
+    // Deriva claro/escuro da luminância da cor de fundo, para que o texto
+    // se adapte automaticamente (mesmo comportamento do dark mode).
+    $backgroundIsDark = false;
+    if (filled($effectiveBackground) && $effectiveBackground !== 'inherit') {
+        $bgHex = ltrim($effectiveBackground, '#');
+        if (strlen($bgHex) === 3) {
+            $bgHex = $bgHex[0] . $bgHex[0] . $bgHex[1] . $bgHex[1] . $bgHex[2] . $bgHex[2];
+        }
+        if (strlen($bgHex) === 6 && ctype_xdigit($bgHex)) {
+            $yiq = (hexdec(substr($bgHex, 0, 2)) * 299 + hexdec(substr($bgHex, 2, 2)) * 587 + hexdec(substr($bgHex, 4, 2)) * 114) / 1000;
+            $backgroundIsDark = $yiq < 128;
+        }
+    }
+
+    $forceDark = $themeMode === 'dark' || ($effectiveBackground && $backgroundIsDark);
+    $forceLight = $themeMode === 'light' || ($effectiveBackground && ! $backgroundIsDark);
+    $useDeviceTheme = $themeMode === 'system' && blank($effectiveBackground);
+@endphp
     <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      data-profile-theme="{{ $themeMode }}"
       @class([
-        'dark' => $themeMode === 'dark',
-        'light' => $themeMode === 'light',
+        'dark' => $forceDark,
+        'light' => $forceLight,
       ])
-      @if($themeMode === 'system')
+      @if($useDeviceTheme)
           x-data="{ deviceTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' }"
       :class="deviceTheme"
     @endif
 >
+@if($useDeviceTheme)
+    {{-- Pre-paint: aplica o tema do dispositivo antes da pintura para evitar flash (FOUC). --}}
+    <script>
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+@endif
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -47,7 +79,7 @@
             --profile-accent: {{ $accentColor }};
             --profile-secondary: {{ $secondaryColor ?? $accentColor }};
             --profile-text: {{ $textColor ?? 'inherit' }};
-            --profile-bg: {{ $backgroundColor ?? 'inherit' }};
+            --profile-bg: {{ $effectiveBackground ?? 'inherit' }};
             --profile-button-radius: {{ match($buttonStyle) {
                 'rounded-md' => '0.375rem',
                 'rounded-xl' => '0.75rem',

@@ -7,6 +7,7 @@ namespace App\Actions\Profile;
 use App\Actions\Posts\UploadCoverImageAction;
 use App\DTOs\UpdateProfileData;
 use App\Jobs\ProcessProfileMediaJob;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 
@@ -68,11 +69,13 @@ final class UpdateProfileAction
                 'secondary_color' => $data->secondary_color,
                 'text_color' => $data->text_color,
                 'background_color' => $data->background_color,
-                'show_badges' => $data->show_badges,
                 'show_subscriber_count' => $data->show_subscriber_count,
                 'show_view_count' => $data->show_view_count,
             ],
         );
+
+        // Sincroniza os links do perfil (redes sociais e páginas avulsas)
+        $this->syncLinks($profile, $data->links);
 
         // Sênior: Sincroniza o nome na model User para consistência
         if ($data->name && $user->name !== $data->name) {
@@ -87,6 +90,24 @@ final class UpdateProfileAction
                     'description' => $data->seo_description,
                 ],
             );
+        }
+    }
+
+    /**
+     * Recria os links do perfil a partir do array sanitizado, preservando a ordem.
+     *
+     * @param  array<int, array{platform: string, url: string}>  $links
+     */
+    private function syncLinks(Profile $profile, array $links): void
+    {
+        $profile->links()->delete();
+
+        foreach (array_values($links) as $index => $link) {
+            $profile->links()->create([
+                'platform' => $link['platform'],
+                'url' => $link['url'],
+                'sort_order' => $index,
+            ]);
         }
     }
 }

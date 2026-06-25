@@ -7,7 +7,9 @@ namespace App\Livewire\Forms\Dashboard;
 use App\Actions\Profile\UpdateProfileAction;
 use App\DTOs\UpdateProfileData;
 use App\Enums\ProfileVisibilityEnum;
+use App\Enums\SocialPlatformEnum;
 use App\Enums\ThemePlatformEnum;
+use App\Models\ProfileLink;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Livewire\Form;
@@ -52,8 +54,6 @@ class ProfileForm extends Form
 
     public ?string $background_color = null;
 
-    public bool $show_badges = true;
-
     public bool $show_subscriber_count = true;
 
     public bool $show_view_count = false;
@@ -61,6 +61,9 @@ class ProfileForm extends Form
     public string $seo_title = '';
 
     public string $seo_description = '';
+
+    /** @var array<int, array{platform: string, url: string}> */
+    public array $links = [];
 
     public $avatar;
 
@@ -98,12 +101,18 @@ class ProfileForm extends Form
         $this->secondary_color = $settings->secondary_color;
         $this->text_color = $settings->text_color;
         $this->background_color = $settings->background_color;
-        $this->show_badges = (bool) $settings->show_badges;
         $this->show_subscriber_count = (bool) $settings->show_subscriber_count;
         $this->show_view_count = (bool) $settings->show_view_count;
 
         $this->seo_title = $profile->seo?->title ?? '';
         $this->seo_description = $profile->seo?->description ?? '';
+
+        $this->links = $profile->links
+            ->map(fn (ProfileLink $link): array => [
+                'platform' => $link->platformEnum()->value,
+                'url' => $link->url,
+            ])
+            ->all();
     }
 
     public function rules(): array
@@ -128,13 +137,15 @@ class ProfileForm extends Form
             'secondary_color' => ['nullable', 'hex_color'],
             'text_color' => ['nullable', 'hex_color'],
             'background_color' => ['nullable', 'hex_color'],
-            'show_badges' => ['boolean'],
             'show_subscriber_count' => ['boolean'],
             'show_view_count' => ['boolean'],
             'seo_title' => ['nullable', 'string', 'max:60'],
             'seo_description' => ['nullable', 'string', 'max:160'],
             'avatar' => ['nullable', 'image', 'max:1024'],
             'cover' => ['nullable', 'image', 'max:2048'],
+            'links' => ['array', 'max:8'],
+            'links.*.platform' => ['required', Rule::enum(SocialPlatformEnum::class)],
+            'links.*.url' => ['required', 'string', 'max:255', 'regex:#^https?://#i', 'url'],
         ];
     }
 
@@ -153,6 +164,7 @@ class ProfileForm extends Form
     public function update(): void
     {
         $this->sanitizeWebsiteUrl();
+        $this->sanitizeLinks();
 
         $this->validate();
 
@@ -180,7 +192,6 @@ class ProfileForm extends Form
             $url = 'https://' . $url;
         }
 
-        // Sênior: Corrige casos de colagem duplicada (ex: https://https://dominio.com)
         $url = str_replace(
             ['https://https://', 'https://http://', 'http://https://', 'http://http://'],
             ['https://', 'http://', 'https://', 'http://'],
@@ -188,5 +199,29 @@ class ProfileForm extends Form
         );
 
         $this->website_url = $url;
+    }
+
+    private function sanitizeLinks(): void
+    {
+        $clean = [];
+
+        foreach ($this->links as $link) {
+            $url = mb_trim($link['url'] ?? '');
+
+            if ($url === '') {
+                continue; // ignora linhas sem URL
+            }
+
+            if (!preg_match('#^https?://#i', $url)) {
+                $url = 'https://' . mb_ltrim($url, '/');
+            }
+
+            $clean[] = [
+                'platform' => $link['platform'] ?? 'website',
+                'url' => $url,
+            ];
+        }
+
+        $this->links = $clean;
     }
 }
