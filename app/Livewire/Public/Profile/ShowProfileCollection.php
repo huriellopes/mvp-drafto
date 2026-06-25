@@ -33,7 +33,7 @@ class ShowProfileCollection extends Component
     public function user()
     {
         return User::query()
-            ->whereHas('profile', fn ($q) => $q->whereRaw('LOWER(username) = ?', [$this->username]))
+            ->whereHas('profile', fn ($q) => $q->where('username', $this->username))
             ->with(['profile.settings'])
             ->firstOrFail();
     }

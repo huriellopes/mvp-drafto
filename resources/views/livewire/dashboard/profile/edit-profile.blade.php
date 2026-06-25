@@ -231,21 +231,32 @@
                 <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-2" />
             </x-slot:title_extra>
 
-            <div class="space-y-4" x-data="{ from: null }">
+            <div class="space-y-4" x-data="{
+                from: null,
+                drop(event) {
+                    if (this.from === null) return;
+                    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-link-index]');
+                    const to = target ? Number(target.dataset.linkIndex) : null;
+                    const from = this.from;
+                    this.from = null;
+                    if (to !== null && to !== from) {
+                        $wire.reorderLinks(from, to);
+                    }
+                }
+            }">
                 @forelse($form->links as $index => $link)
                     <div
                         wire:key="profile-link-{{ $index }}"
-                        x-on:dragover.prevent
-                        x-on:drop.prevent="if (from !== null) { $wire.reorderLinks(from, {{ $index }}); } from = null"
-                        :class="from === {{ $index }} ? 'opacity-50' : ''"
+                        data-link-index="{{ $index }}"
+                        :class="from === {{ $index }} ? 'opacity-50 ring-2 ring-indigo-400' : ''"
                         class="flex flex-col gap-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 sm:flex-row sm:items-center"
                     >
-                        {{-- Alça de arrastar para reordenar --}}
+                        {{-- Alça de arrastar para reordenar (mouse e touch via pointer events) --}}
                         <button
                             type="button"
-                            draggable="true"
-                            x-on:dragstart="from = {{ $index }}"
-                            x-on:dragend="from = null"
+                            x-on:pointerdown.prevent="from = {{ $index }}; $event.target.setPointerCapture($event.pointerId)"
+                            x-on:pointerup="drop($event)"
+                            style="touch-action: none;"
                             class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center text-zinc-300 hover:text-zinc-500 active:cursor-grabbing"
                             title="{{ __('dashboard.profile.edit.links_section.reorder') }}"
                         >
