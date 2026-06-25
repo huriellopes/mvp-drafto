@@ -6,6 +6,7 @@ namespace App\Actions\Profile;
 
 use App\Actions\Posts\UploadCoverImageAction;
 use App\DTOs\UpdateProfileData;
+use App\Enums\LinkVisibilityEnum;
 use App\Jobs\ProcessProfileMediaJob;
 use App\Models\Profile;
 use App\Models\User;
@@ -96,7 +97,7 @@ final class UpdateProfileAction
     /**
      * Recria os links do perfil a partir do array sanitizado, preservando a ordem.
      *
-     * @param  array<int, array{platform: string, url: string}>  $links
+     * @param  array<int, array{platform: string, url: string, visibility: string}>  $links
      */
     private function syncLinks(Profile $profile, array $links): void
     {
@@ -106,6 +107,7 @@ final class UpdateProfileAction
             $profile->links()->create([
                 'platform' => $link['platform'],
                 'url' => $link['url'],
+                'visibility' => $link['visibility'] ?? LinkVisibilityEnum::PUBLIC->value,
                 'sort_order' => $index,
             ]);
         }

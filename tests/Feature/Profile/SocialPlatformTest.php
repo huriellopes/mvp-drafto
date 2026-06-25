@@ -20,14 +20,22 @@ it('keeps the config and the enum in sync (no drift)', function () {
         ->and(array_diff($enumValues, $configKeys))->toBeEmpty();
 });
 
-it('resolves label, icon and color from the config for every platform', function () {
+it('resolves icon and color from the config and label from the translations', function () {
     foreach (SocialPlatformEnum::cases() as $platform) {
         $meta = config("profile_links.platforms.{$platform->value}");
 
-        expect($platform->label())->toBe($meta['label'])
-            ->and($platform->icon())->toBe($meta['icon'])
-            ->and($platform->color())->toBe($meta['color']);
+        expect($platform->icon())->toBe($meta['icon'])
+            ->and($platform->color())->toBe($meta['color'])
+            ->and($platform->label())->toBe(__("enums.social_platform.{$platform->value}"));
     }
+});
+
+it('translates the generic website label per locale', function () {
+    app()->setLocale('pt_BR');
+    expect(SocialPlatformEnum::WEBSITE->label())->toBe('Site / Outro');
+
+    app()->setLocale('en');
+    expect(SocialPlatformEnum::WEBSITE->label())->toBe('Website / Other');
 });
 
 it('falls back to website for unknown platform values', function () {

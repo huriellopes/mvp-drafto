@@ -1,7 +1,8 @@
 @props(['profile'])
 
 @php
-    $links = $profile->links;
+    // Apenas links marcados como públicos aparecem na página pública.
+    $links = $profile->links->filter->isPublic();
 @endphp
 
 @if($links->isNotEmpty())

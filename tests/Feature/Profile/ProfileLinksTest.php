@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Profile;
 
+use App\Enums\LinkVisibilityEnum;
 use App\Enums\ProfileVisibilityEnum;
 use App\Enums\SocialPlatformEnum;
 use App\Livewire\Dashboard\Profile\EditProfile;
@@ -48,7 +49,53 @@ it('saves profile links and forces the https scheme', function () {
     expect($link)->not->toBeNull()
         ->and($link->platform)->toBe('instagram')
         ->and($link->platformEnum())->toBe(SocialPlatformEnum::INSTAGRAM)
-        ->and($link->url)->toBe('https://instagram.com/foo');
+        ->and($link->url)->toBe('https://instagram.com/foo')
+        ->and($link->visibilityEnum())->toBe(LinkVisibilityEnum::PUBLIC); // padrão
+});
+
+it('hides links marked as private from the public page', function () {
+    $writer = User::factory()->writer()->withProfile()->create();
+    $writer->profile->update(['visibility' => ProfileVisibilityEnum::PUBLIC]);
+
+    $writer->profile->links()->create([
+        'platform' => 'instagram',
+        'url' => 'https://instagram.com/publico',
+        'visibility' => 'public',
+        'sort_order' => 0,
+    ]);
+    $writer->profile->links()->create([
+        'platform' => 'facebook',
+        'url' => 'https://facebook.com/oculto',
+        'visibility' => 'private',
+        'sort_order' => 1,
+    ]);
+
+    $this->actingAs($writer)
+        ->get(route('profile.show', $writer->profile->username))
+        ->assertOk()
+        ->assertSee('https://instagram.com/publico', false)   // público aparece
+        ->assertDontSee('https://facebook.com/oculto', false); // privado/inativo fica oculto
+});
+
+it('saves the chosen link visibility from the editor', function () {
+    $user = User::factory()->create();
+    Profile::factory()->create(['user_id' => $user->id, 'username' => 'linkuser']);
+
+    $this->actingAs($user);
+
+    Livewire::test(EditProfile::class)
+        ->set('form.name', 'Link User')
+        ->set('form.username', 'linkuser')
+        ->set('form.email', 'link@example.com')
+        ->call('addLink')
+        ->set('form.links.0.platform', 'github')
+        ->set('form.links.0.url', 'https://github.com/foo')
+        ->set('form.links.0.visibility', 'private')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($user->refresh()->profile->links()->first()->visibilityEnum())
+        ->toBe(LinkVisibilityEnum::PRIVATE);
 });
 
 it('never stores a javascript: scheme url (xss protection)', function () {

@@ -148,6 +148,16 @@ return [
                 'accent_color' => 'Accent Color',
                 'theme_mode' => 'Color Mode (Theme)',
             ],
+            'links_section' => [
+                'title' => 'Social Networks & Links',
+                'description' => 'Add your social networks and page links. They appear on your public profile.',
+                'url_placeholder' => 'instagram.com/you (https:// is optional)',
+                'reorder' => 'Drag to reorder',
+                'remove' => 'Remove link',
+                'empty' => 'No links added yet.',
+                'add' => 'Add link',
+                'limit_reached' => '8-link limit reached',
+            ],
             'privacy_section' => [
                 'title' => 'Privacy',
                 'description' => 'Control who can find and see your profile information.',

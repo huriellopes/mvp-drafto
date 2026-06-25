@@ -20,7 +20,7 @@ enum SocialPlatformEnum: string
 
     public function label(): string
     {
-        return $this->meta('label');
+        return __("enums.social_platform.{$this->value}");
     }
 
     public function icon(): string
