@@ -45,8 +45,6 @@ article img {
     max-width: 100%;
     height: auto;
     display: block;
-    margin: 2rem auto;
-    border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -87,6 +85,20 @@ article img {
 .no-transitions,
 .no-transitions * {
     transition: none !important;
+}
+
+/* ---------------------------------------
+   Hide scrollbar (mantém a rolagem funcional)
+--------------------------------------- */
+.hide-scrollbar,
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE e Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari e Opera */
 }
 
 /* Initial state for expanded sidebar to prevent jumps */

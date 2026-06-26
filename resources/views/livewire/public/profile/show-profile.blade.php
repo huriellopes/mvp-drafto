@@ -151,9 +151,9 @@
                             @if (!$this->isOwner)
                                 <livewire:actions.follow-button :user="$this->user" :key="'follow-'.$this->user->id" />
                             @else
-                                <a href="{{ route('dashboard.profile') }}" wire:navigate class="inline-flex h-12 px-6 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95">
-                                    <x-lucide-settings class="mr-2 h-4 w-4 text-profile-primary" />
-                                    Configurar
+                                <a href="{{ route('dashboard.profile') }}" wire:navigate title="Configurar" class="inline-flex h-12 w-12 md:w-auto md:px-6 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95">
+                                    <x-lucide-settings class="h-4 w-4 md:mr-2 text-profile-primary" />
+                                    <span class="hidden md:inline">Configurar</span>
                                 </a>
                             @endif
                         </div>
