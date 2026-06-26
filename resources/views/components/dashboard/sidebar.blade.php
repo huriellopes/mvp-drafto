@@ -166,6 +166,11 @@
                     <x-slot:icon><x-lucide-clipboard-list class="h-5 w-5" /></x-slot:icon>
                     Auditoria
                 </x-ui.sidebar-link>
+
+                <x-ui.sidebar-link href="{{ route('dashboard.admin.system-logs.index') }}" :active="request()->routeIs('dashboard.admin.system-logs.*')" wire:navigate.hover>
+                    <x-slot:icon><x-lucide-triangle-alert class="h-5 w-5" /></x-slot:icon>
+                    Logs do Sistema
+                </x-ui.sidebar-link>
             </nav>
         </div>
     @endcan

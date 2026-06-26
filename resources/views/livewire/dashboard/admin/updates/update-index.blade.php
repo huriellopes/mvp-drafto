@@ -1,5 +1,7 @@
 @use(App\Enums\UpdateAudienceEnum)
 <div class="mx-auto w-full max-w-5xl px-4 pb-20">
+    {{ Breadcrumbs::render('admin.updates.index') }}
+
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {{-- Compositor --}}
         <div class="lg:col-span-7">

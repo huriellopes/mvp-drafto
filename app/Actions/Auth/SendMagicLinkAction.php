@@ -18,7 +18,7 @@ final class SendMagicLinkAction
      * Resposta neutra: nunca revela se o e-mail existe (proteção contra
      * enumeração de contas). Apenas contas existentes e não inativas recebem.
      */
-    public function exec(string $email): void
+    public function exec(string $email, bool $remember = false): void
     {
         $user = User::query()->where('email', $email)->first();
 
@@ -34,6 +34,7 @@ final class SendMagicLinkAction
         $user->magicLoginTokens()->create([
             'token' => MagicLoginToken::hashToken($plainToken),
             'expires_at' => MagicLoginToken::expiresAt(),
+            'remember' => $remember,
         ]);
 
         $user->notify(new MagicLinkNotification($plainToken));
