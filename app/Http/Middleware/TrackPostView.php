@@ -42,6 +42,11 @@ final class TrackPostView
             $post = Post::where('slug', $post)->first();
         }
 
+        // O autor não contabiliza views no próprio post.
+        if ($post && auth()->id() === $post->user_id) {
+            return;
+        }
+
         if ($post) {
             ProcessPostViewJob::dispatch(
                 $post->id,

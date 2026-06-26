@@ -41,6 +41,7 @@ return [
         'subtitle' => 'Informe seu e-mail e enviaremos um link de acesso instantâneo.',
         'email_label' => 'E-mail',
         'send_link' => 'Enviar link de acesso',
+        'remember' => 'Manter-me conectado neste dispositivo',
         'back_to_login' => 'Voltar para o login',
         'sent_title' => 'Verifique seu e-mail',
         'sent_desc' => 'Se houver uma conta para :email, enviamos um link de acesso.',

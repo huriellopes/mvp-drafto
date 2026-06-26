@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Requisição inválida')
+@section('code', '400')
+@section('message', 'Pedido truncado.')
+@section('description', 'A requisição chegou incompleta ou malformada. Verifique os dados e tente novamente.')

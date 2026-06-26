@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Exceptions\BrandedErrorRenderer;
+use App\Exceptions\TelegramErrorReporter;
 use App\Http\Middleware\AllowIframeMiddleware;
 use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\CheckEmailVerificationInterval;
@@ -17,6 +19,8 @@ use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -54,5 +58,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // O Laravel ignora erros HTTP (4xx) por padrão; reativamos para alertar TUDO.
+        $exceptions->stopIgnoring(HttpException::class);
+
+        // Lógica de reporte/render isolada em classes de responsabilidade única.
+        $exceptions->report(fn (Throwable $e) => app(TelegramErrorReporter::class)->report($e));
+        $exceptions->render(fn (Throwable $e, Request $request) => app(BrandedErrorRenderer::class)->render($e, $request));
     })->create();

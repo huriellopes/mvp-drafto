@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('title', 'Não autorizado')
+@section('code', '401')
+@section('message', 'Acesso reservado.')
+@section('description', 'Você precisa estar autenticado para acessar este conteúdo. Faça login e tente novamente.')

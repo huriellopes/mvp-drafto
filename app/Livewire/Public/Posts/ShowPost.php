@@ -35,10 +35,6 @@ class ShowPost extends Component
                 ->with(['author.profile', 'category', 'tags'])
                 ->firstOrFail(),
         );
-
-        if ($this->canReadContent && $this->shouldIncrementView()) {
-            $this->incrementViews();
-        }
     }
 
     #[Computed]
@@ -97,21 +93,6 @@ class ShowPost extends Component
                 'primaryColor' => $this->post->author->profile->primary_color,
                 'seo' => PostSeoGenerator::generate($this->post),
             ]);
-    }
-
-    private function shouldIncrementView(): bool
-    {
-        if (auth()->check() && auth()->id() === $this->post->user_id) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function incrementViews(): void
-    {
-        $this->post->timestamps = false;
-        $this->post->increment('views_count');
     }
 
     private function checkFollowerAccess(): bool

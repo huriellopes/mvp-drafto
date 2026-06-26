@@ -11,6 +11,10 @@ Schedule::command('drafto:send-newsletter')
 Schedule::command('drafto:daily-summary')
     ->dailyAt('08:05');
 
+Schedule::command('app:prune-logs')
+    ->dailyAt('04:00')
+    ->onOneServer();
+
 Schedule::command('drafto:sync-views')
     ->hourly();
 

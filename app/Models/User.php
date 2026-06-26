@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Actions\Modules\GenerateShortLinkAction;
-use App\Enums\ModuleEnum;
-use App\Enums\PostStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
-use App\Notifications\Auth\ResetPasswordNotification;
-use App\Notifications\Auth\VerifyEmailNotification;
+use App\Models\Concerns\HasModules;
+use App\Models\Concerns\HasRelationships;
+use App\Models\Concerns\HasTwoFactorAuthentication;
+use App\Models\Concerns\InteractsWithFollowers;
+use App\Models\Concerns\ManagesEmailVerification;
+use App\Models\Concerns\TracksActivity;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -58,10 +55,12 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
     /** @use HasFactory<UserFactory> */
     use HasFactory, KeepsDeletedModels, Notifiable, \OwenIt\Auditing\Auditable;
 
-    /**
-     * Flag para pular o envio do e-mail de verificação padrão (usado no WelcomeNotification).
-     */
-    public bool $skipVerificationEmail = false;
+    use HasModules;
+    use HasRelationships;
+    use HasTwoFactorAuthentication;
+    use InteractsWithFollowers;
+    use ManagesEmailVerification;
+    use TracksActivity;
 
     protected array $auditExclude = [
         'password',
@@ -71,11 +70,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         'ip_address',
         'last_login_at',
     ];
-
-    /**
-     * Cache em tempo de execução para os módulos disponíveis do usuário.
-     */
-    protected ?\Illuminate\Database\Eloquent\Collection $loadedModules = null;
 
     public function toSitemapTag(): Url|string|array
     {
@@ -90,125 +84,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
     }
 
     /**
-     * Determine if the user has two factor authentication enabled.
-     */
-    public function hasTwoFactorEnabled(): bool
-    {
-        return !is_null($this->two_factor_secret) &&
-               !is_null($this->two_factor_confirmed_at);
-    }
-
-    /** @return HasOne<Profile, $this> */
-    public function profile(): HasOne
-    {
-        return $this->hasOne(Profile::class);
-    }
-
-    public function posts(): HasMany
-    {
-        return $this->hasMany(Post::class);
-    }
-
-    /** @return HasMany<MagicLoginToken, $this> */
-    public function magicLoginTokens(): HasMany
-    {
-        return $this->hasMany(MagicLoginToken::class);
-    }
-
-    public function publishedPosts(): HasMany
-    {
-        return $this->posts()->where('status', PostStatusEnum::PUBLISHED);
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function following(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            self::class,
-            'followers',
-            'follower_id',
-            'followed_id',
-        )->withTimestamps();
-    }
-
-    public function followers(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            self::class,
-            'followers',
-            'followed_id',
-            'follower_id',
-        )->withTimestamps();
-    }
-
-    public function likedPosts(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Post::class,
-            'post_likes',
-            'user_id',
-            'post_id',
-        )->withTimestamps();
-    }
-
-    public function likedComments(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            Comment::class,
-            'comment_likes',
-            'user_id',
-            'comment_id',
-        )->withTimestamps();
-    }
-
-    public function collections(): HasMany
-    {
-        return $this->hasMany(Collection::class);
-    }
-
-    /**
-     * Coleções de obras criadas pelo escritor (séries, ensinamentos...).
-     *
-     * @return HasMany<PostCollection, $this>
-     */
-    public function postCollections(): HasMany
-    {
-        return $this->hasMany(PostCollection::class);
-    }
-
-    public function savedPosts(): BelongsToMany
-    {
-        return $this->belongsToMany(Post::class, 'saved_posts')
-            ->using(SavedPost::class)
-            ->withPivot('collection_id', 'id')
-            ->withTimestamps();
-    }
-
-    public function reports(): HasMany
-    {
-        return $this->hasMany(Report::class, 'reporter_id');
-    }
-
-    public function reviewedReports(): HasMany
-    {
-        return $this->hasMany(Report::class, 'reviewed_by');
-    }
-
-    public function postViews(): HasMany
-    {
-        return $this->hasMany(PostView::class);
-    }
-
-    public function shortLinks(): MorphMany
-    {
-        return $this->morphMany(ShortLink::class, 'shortable');
-    }
-
-    /**
      * Sênior: Retorna a URL de compartilhamento do perfil, encurtada se o módulo estiver ativo.
      */
     public function getShareUrl(): string
@@ -217,22 +92,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
             user: auth()->user() ?? $this,
             shortable: $this,
         );
-    }
-
-    public function modules(): BelongsToMany
-    {
-        return $this->belongsToMany(Module::class)
-            ->withPivot('is_enabled', 'settings')
-            ->withTimestamps();
-    }
-
-    public function scopeWithFollowStatus(Builder $query): Builder
-    {
-        return $query->when(auth()->check(), function ($q) {
-            $q->withExists(['followers as is_followed_by_auth_user' => function ($q) {
-                $q->where('follower_id', auth()->id());
-            }]);
-        });
     }
 
     public function isVerified(): bool
@@ -261,68 +120,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         return $this->status === UserStatusEnum::ACTIVE;
     }
 
-    /**
-     * Data da última atividade considerada para inatividade: o mais recente
-     * entre o último login, a última escrita (post) e a criação da conta.
-     * Usa `posts_max_created_at` se já vier carregado via subquery (evita N+1).
-     */
-    public function lastActivityAt(): Carbon
-    {
-        $lastPostAt = $this->getAttribute('posts_max_created_at')
-            ?? $this->posts()->max('created_at');
-
-        $dates = array_filter([
-            $this->last_login_at,
-            $lastPostAt ? Carbon::parse($lastPostAt) : null,
-            $this->created_at,
-        ]);
-
-        return empty($dates) ? now() : Carbon::parse(max($dates));
-    }
-
-    /**
-     * Quantos dias o usuário está inativo (sem logar e sem escrever).
-     */
-    public function inactiveDays(): int
-    {
-        return (int) $this->lastActivityAt()->diffInDays(now());
-    }
-
-    public function isFollowing(User $user): bool
-    {
-        return $this->following()
-            ->where('followed_id', $user->id)
-            ->exists();
-    }
-
-    public function hasVerificationExpired(): bool
-    {
-        if ($this->hasVerifiedEmail()) {
-            return false;
-        }
-
-        return $this->created_at->addDays(15)->isPast();
-    }
-
-    public function daysLeftToVerify(): int
-    {
-        return (int) max(0, now()->diffInDays($this->created_at->addDays(15), false));
-    }
-
-    public function sendEmailVerificationNotification(): void
-    {
-        if ($this->skipVerificationEmail) {
-            return;
-        }
-
-        $this->notify(new VerifyEmailNotification());
-    }
-
-    public function sendPasswordResetNotification($token): void
-    {
-        $this->notify(new ResetPasswordNotification($token));
-    }
-
     public function greeting(): string
     {
         $hour = Carbon::now()->hour;
@@ -332,72 +129,6 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
             $hour >= 12 && $hour < 18 => 'Boa tarde',
             default => 'Boa noite',
         };
-    }
-
-    public function isModuleAvailable(string|ModuleEnum $slug): bool
-    {
-        if ($slug instanceof ModuleEnum) {
-            $slug = $slug->value;
-        }
-
-        if ($this->hasRole(RoleEnum::SUPER_ADMIN)) {
-            return true;
-        }
-
-        // Sênior: Usamos cache em memória para evitar re-processamento da relação
-        if ($this->loadedModules === null) {
-            $this->loadedModules = $this->modules;
-        }
-
-        $module = $this->loadedModules->firstWhere('slug', $slug);
-
-        if (!$module) {
-            return false;
-        }
-
-        return $module->is_enabled && (bool) $module->pivot->is_enabled;
-    }
-
-    /**
-     * Sênior: Retorna uma configuração específica de um módulo para o usuário.
-     */
-    public function getModuleSetting(string|ModuleEnum $module, string $key, mixed $default = null): mixed
-    {
-        if ($module instanceof ModuleEnum) {
-            $module = $module->value;
-        }
-
-        if ($this->loadedModules === null) {
-            $this->loadedModules = $this->modules;
-        }
-
-        $userModule = $this->loadedModules->firstWhere('slug', $module);
-
-        if (!$userModule) {
-            return $default;
-        }
-
-        $settings = is_string($userModule->pivot->settings)
-            ? json_decode($userModule->pivot->settings, true)
-            : $userModule->pivot->settings;
-
-        return $settings[$key] ?? $default;
-    }
-
-    /**
-     * Sênior: Como a plataforma é gratuita, o slug do plano é sempre 'free'.
-     */
-    public function getPlanSlug(): string
-    {
-        return 'free';
-    }
-
-    /**
-     * Sênior: Nome amigável do plano (sempre Gratuito agora).
-     */
-    public function getPlanName(): string
-    {
-        return 'Gratuito';
     }
 
     protected function displayName(): Attribute

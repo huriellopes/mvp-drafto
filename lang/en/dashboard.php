@@ -7,6 +7,33 @@ return [
         'logout' => 'Logout',
     ],
 
+    'logs' => [
+        'title' => 'System Logs',
+        'subtitle' => 'Errors, jobs and application diagnostics',
+        'tab_errors' => 'Application Errors',
+        'tab_jobs' => 'Jobs',
+        'tab_debug' => 'Debug',
+        'file_label' => 'Log file',
+        'no_files' => 'No log files',
+        'refresh' => 'Refresh',
+        'details' => 'Details',
+        'hide' => 'Hide',
+        'empty_title' => 'No entries found',
+        'empty_desc' => 'There are no entries for this level in this log file.',
+        'jobs_empty_title' => 'No failed jobs',
+        'jobs_empty_desc' => 'All queued jobs were processed successfully.',
+        'col_job' => 'Job',
+        'col_queue' => 'Queue',
+        'col_failed_at' => 'Failed at',
+        'col_error' => 'Error',
+        'col_actions' => 'Actions',
+        'retry' => 'Retry',
+        'forget' => 'Discard',
+        'forget_confirm' => 'Permanently discard this failed job?',
+        'job_retried' => 'Job pushed back onto the queue for a retry.',
+        'job_forgotten' => 'Job removed from the failed list.',
+    ],
+
     'welcome' => [
         'title' => 'Welcome back',
         'greeting' => 'Hello, :name',
@@ -199,6 +226,29 @@ return [
     ],
 
     'admin' => [
+        'analytics' => [
+            'title' => 'Site Analytics',
+            'subtitle' => 'Platform metrics and engagement tracking.',
+            'period' => 'Period:',
+            'periods' => [
+                '7' => 'Last 7 days',
+                '30' => 'Last 30 days',
+                '90' => 'Last 90 days',
+                '365' => 'Last year',
+            ],
+            'stats' => [
+                'total_views' => 'Total Views',
+                'total_views_desc' => 'Total hits across all tracked pages',
+                'unique_visitors' => 'Unique Visitors',
+                'unique_visitors_desc' => 'Distinct sessions in the period',
+                'avg_duration' => 'Average Time on Page',
+                'avg_duration_desc' => 'Average engagement duration',
+            ],
+            'top_pages' => 'Top 10 Most Visited Pages',
+            'top_searches' => 'Top Search Terms',
+            'no_data' => 'No data available for this period.',
+            'no_searches' => 'No search queries recorded.',
+        ],
         'users' => [
             'title' => 'User Management',
             'subtitle' => 'Manage all profiles registered on the platform.',

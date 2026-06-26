@@ -29,6 +29,9 @@ Route::prefix('admin')
         Route::livewire('/logs', 'dashboard.admin.audit-log-index')
             ->name('logs.index');
 
+        Route::livewire('/logs-sistema', 'dashboard.admin.system.log-viewer-index')
+            ->name('system-logs.index');
+
         Route::get('/health', HealthCheckResultsController::class)
             ->name('health');
     });

@@ -41,6 +41,7 @@ return [
         'subtitle' => 'Enter your email and we will send you an instant access link.',
         'email_label' => 'Email',
         'send_link' => 'Send access link',
+        'remember' => 'Keep me signed in on this device',
         'back_to_login' => 'Back to login',
         'sent_title' => 'Check your email',
         'sent_desc' => 'If an account exists for :email, we have sent an access link.',

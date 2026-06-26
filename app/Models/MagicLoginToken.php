@@ -19,10 +19,12 @@ class MagicLoginToken extends Model
         'user_id',
         'token',
         'expires_at',
+        'remember',
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'remember' => 'boolean',
     ];
 
     /** @return BelongsTo<User, $this> */
