@@ -14,6 +14,11 @@
                 :error="$errors->first('form.email')"
             />
 
+            <label class="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400 cursor-pointer group">
+                <input wire:model="form.remember" type="checkbox" class="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500 transition cursor-pointer">
+                <span class="group-hover:text-zinc-900 dark:group-hover:text-white transition">{{ __('auth.magic_link.remember') }}</span>
+            </label>
+
             <x-ui.button
                 type="submit"
                 loading="sendLink"

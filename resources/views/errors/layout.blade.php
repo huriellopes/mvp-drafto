@@ -48,6 +48,15 @@
                 <p class="mx-auto max-w-lg text-base md:text-lg font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     @yield('description')
                 </p>
+
+                @isset($traceId)
+                    @if($traceId)
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-600">
+                            Código do erro:
+                            <code class="font-mono normal-case tracking-normal text-zinc-500 dark:text-zinc-400">{{ $traceId }}</code>
+                        </p>
+                    @endif
+                @endisset
             </div>
 
             {{-- Ações --}}

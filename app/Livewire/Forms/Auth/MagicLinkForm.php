@@ -14,10 +14,13 @@ class MagicLinkForm extends Form
 
     public string $email = '';
 
+    public bool $remember = false;
+
     public function rules(): array
     {
         return [
             'email' => ['required', 'email'],
+            'remember' => ['boolean'],
         ];
     }
 
@@ -31,6 +34,6 @@ class MagicLinkForm extends Form
         // contra abuso/e-mail bombing.
         $this->incrementAttempts($this->email, decaySeconds: 300);
 
-        app(SendMagicLinkAction::class)->exec(email: $this->email);
+        app(SendMagicLinkAction::class)->exec(email: $this->email, remember: $this->remember);
     }
 }

@@ -123,3 +123,23 @@ Breadcrumbs::for('admin.logs.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard.index');
     $trail->push('Auditoria do Sistema', route('dashboard.admin.logs.index'));
 });
+
+Breadcrumbs::for('admin.system-logs.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Logs do Sistema', route('dashboard.admin.system-logs.index'));
+});
+
+Breadcrumbs::for('admin.analytics.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Analytics do Site', route('dashboard.admin.analytics.index'));
+});
+
+Breadcrumbs::for('admin.updates.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Novidades', route('dashboard.admin.updates.index'));
+});
+
+Breadcrumbs::for('dashboard.collections.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard.index');
+    $trail->push('Coleções', route('dashboard.posts.collections.index'));
+});

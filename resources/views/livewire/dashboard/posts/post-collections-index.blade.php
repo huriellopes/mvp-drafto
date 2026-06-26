@@ -1,6 +1,8 @@
 @use(App\Enums\PostCollectionVisibilityEnum)
 @use(App\Enums\PostStatusEnum)
 <div class="space-y-6">
+    {{ Breadcrumbs::render('dashboard.collections.index') }}
+
     <div class="flex flex-col gap-1">
         <h1 class="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">Minhas Coleções</h1>
         <p class="text-sm text-zinc-500">Agrupe rascunhos e obras publicadas em séries, ensinamentos e temas.</p>

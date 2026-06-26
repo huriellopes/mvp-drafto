@@ -8,6 +8,7 @@ use App\Enums\UserStatusEnum;
 use App\Models\MagicLoginToken;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 final class LoginViaMagicLinkAction
 {
@@ -49,18 +50,28 @@ final class LoginViaMagicLinkAction
             return self::RESULT_INVALID;
         }
 
+        // Histórico/auditoria do uso do magic link. O token é single-use e já foi
+        // removido (não persistimos o token); registramos apenas o evento de login.
+        Log::channel('daily')->info('Login via magic link', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'ip' => request()->ip(),
+            'remember' => $record->remember,
+            'two_factor' => $user->hasTwoFactorEnabled(),
+        ]);
+
         // Se o usuário tem 2FA, o link mágico não pula a segunda etapa:
-        // preparamos a sessão e delegamos ao desafio existente.
+        // preparamos a sessão (preservando o "remember") e delegamos ao desafio.
         if ($user->hasTwoFactorEnabled()) {
             session([
                 'auth.2fa.id' => $user->id,
-                'auth.2fa.remember' => false,
+                'auth.2fa.remember' => $record->remember,
             ]);
 
             return self::RESULT_TWO_FACTOR;
         }
 
-        Auth::login($user);
+        Auth::login($user, $record->remember);
         session()->regenerate();
 
         $user->update([
