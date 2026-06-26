@@ -129,7 +129,7 @@ it('applies the centered layout classes when layout_type is centered', function 
     $this->actingAs($writer)
         ->get(route('profile.show', $writer->profile->username))
         ->assertOk()
-        ->assertSee('md:flex-col md:items-center md:text-center', false);
+        ->assertSee('flex-col items-center text-center', false);
 });
 
 it('marks the html with data-profile-theme so the chosen theme is not stripped by JS', function () {
