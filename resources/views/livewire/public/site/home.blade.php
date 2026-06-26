@@ -23,8 +23,51 @@
         @endphp
 
         <div class="relative w-full" x-data="{
+            isDown: false,
+            moved: false,
+            startX: 0,
+            scrollLeft: 0,
+            velocity: 0,
+            lastX: 0,
+            momentumId: null,
             next() { this.$refs.container.scrollBy({ left: 450, behavior: 'smooth' }) },
-            prev() { this.$refs.container.scrollBy({ left: -450, behavior: 'smooth' }) }
+            prev() { this.$refs.container.scrollBy({ left: -450, behavior: 'smooth' }) },
+            startDrag(e) {
+                cancelAnimationFrame(this.momentumId);
+                this.isDown = true;
+                this.moved = false;
+                this.velocity = 0;
+                this.startX = e.pageX - this.$refs.container.offsetLeft;
+                this.lastX = e.pageX;
+                this.scrollLeft = this.$refs.container.scrollLeft;
+            },
+            drag(e) {
+                if (!this.isDown) return;
+                e.preventDefault();
+                const x = e.pageX - this.$refs.container.offsetLeft;
+                const walk = x - this.startX;
+                if (Math.abs(walk) > 3) this.moved = true;
+                // Velocidade instantânea (px por frame) para a inércia ao soltar.
+                this.velocity = e.pageX - this.lastX;
+                this.lastX = e.pageX;
+                this.$refs.container.scrollLeft = this.scrollLeft - walk;
+            },
+            endDrag() {
+                if (!this.isDown) return;
+                this.isDown = false;
+                this.momentum();
+            },
+            momentum() {
+                // Deslize suave com desaceleração (mesmo feeling do scroll suave dos botões).
+                const friction = 0.92;
+                const step = () => {
+                    if (Math.abs(this.velocity) < 0.5) return;
+                    this.$refs.container.scrollLeft -= this.velocity;
+                    this.velocity *= friction;
+                    this.momentumId = requestAnimationFrame(step);
+                };
+                this.momentumId = requestAnimationFrame(step);
+            },
         }">
             @if($writersCount > 1)
                 <div class="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent z-20 pointer-events-none hidden lg:block"></div>
@@ -44,7 +87,15 @@
                 </div>
             @endif
 
-            <div x-ref="container" class="flex gap-8 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 lg:px-[calc((100vw-1280px)/2+1rem)] py-10 hide-scrollbar">
+            <div x-ref="container"
+                 @mousedown.prevent="startDrag"
+                 @mousemove="drag"
+                 @mouseup="endDrag"
+                 @mouseleave="endDrag"
+                 @dragstart.prevent
+                 @click.capture="if (moved) { $event.preventDefault(); $event.stopPropagation(); moved = false; }"
+                 :class="isDown ? 'cursor-grabbing' : 'cursor-grab'"
+                 class="flex gap-8 overflow-x-auto snap-x snap-mandatory px-4 lg:px-[calc((100vw-1280px)/2+1rem)] py-10 hide-scrollbar select-none">
                 @foreach($data->featuredWriters as $writer)
                     <x-public.writer-card 
                         :writer="$writer" 
@@ -115,15 +166,15 @@
                 </p>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 @foreach($data->categories as $category)
                     <a href="{{ route('posts.explore', ['category' => $category->slug]) }}"
                        wire:navigate
-                       class="group relative flex items-center gap-4 px-10 py-5 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1.5">
-                        <div class="h-2.5 w-2.5 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform duration-500"></div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-black text-zinc-900 dark:text-white">{{ $category->name }}</span>
-                            <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest italic">{{ $category->posts_count }} Publicações</span>
+                       class="group relative flex items-center gap-3 md:gap-4 px-5 py-4 md:px-10 md:py-5 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 transition-all hover:border-indigo-500 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1.5">
+                        <div class="h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform duration-500"></div>
+                        <div class="flex min-w-0 flex-col">
+                            <span class="truncate text-sm font-black text-zinc-900 dark:text-white">{{ $category->name }}</span>
+                            <span class="truncate text-[9px] font-bold text-zinc-400 uppercase tracking-widest italic">{{ $category->posts_count }} Publicações</span>
                         </div>
                     </a>
                 @endforeach

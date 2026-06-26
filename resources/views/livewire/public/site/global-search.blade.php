@@ -78,7 +78,12 @@
                                 @foreach($authors as $author)
                                     <a href="{{ route('profile.show', $author->profile->username) }}" @click="isOpen = false" wire:navigate class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
                                         <div class="relative">
-                                            <img src="{{ $author->profile->avatar_url }}" class="h-12 w-12 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                                            <x-ui.avatar
+                                                :src="$author->profile->avatar_path ? Storage::url($author->profile->avatar_path) : null"
+                                                :name="$author->display_name"
+                                                size="lg"
+                                                class="grayscale group-hover:grayscale-0 transition-all duration-500"
+                                            />
                                             <div class="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 bg-emerald-500"></div>
                                         </div>
                                         <div class="flex-1">
