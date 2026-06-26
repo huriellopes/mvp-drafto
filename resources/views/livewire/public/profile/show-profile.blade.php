@@ -25,31 +25,33 @@
         }
      }">
     @if($this->isOwner && !$this->isProfileComplete)
-        <div class="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-profile-button mb-12 shadow-sm animate-in fade-in slide-in-from-top-4 duration-700">
-            <div class="absolute top-0 right-0 p-4">
-                <div class="text-[40px] font-black text-zinc-50 dark:text-zinc-800/50 leading-none">
-                    {{ $this->user->profile->getCompletionPercentage() }}%
-                </div>
-            </div>
-
-            <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                        <x-lucide-sparkles class="h-6 w-6" />
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Perfil em Construção</h4>
-                        <p class="text-xs text-zinc-500 font-medium">Complete seu perfil para desbloquear todo o potencial da sua estante.</p>
+        <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
+            <div class="relative overflow-hidden bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-profile-button mb-12 shadow-sm animate-in fade-in slide-in-from-top-4 duration-700">
+                <div class="absolute top-0 right-0 p-4">
+                    <div class="text-[40px] font-black text-zinc-50 dark:text-zinc-800/50 leading-none">
+                        {{ $this->user->profile->getCompletionPercentage() }}%
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block w-32 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-indigo-600 transition-all duration-1000" style="width: {{ $this->user->profile->getCompletionPercentage() }}%"></div>
+                <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex items-center gap-4">
+                        <div class="h-12 w-12 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                            <x-lucide-sparkles class="h-6 w-6" />
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Perfil em Construção</h4>
+                            <p class="text-xs text-zinc-500 font-medium">Complete seu perfil para desbloquear todo o potencial da sua estante.</p>
+                        </div>
                     </div>
-                    <a href="{{ route('dashboard.profile') }}" wire:navigate class="px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded-profile-button hover:scale-105 transition-all shadow-xl shadow-zinc-900/10">
-                        Completar Perfil
-                    </a>
+
+                    <div class="flex items-center gap-4">
+                        <div class="hidden md:block w-32 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-600 transition-all duration-1000" style="width: {{ $this->user->profile->getCompletionPercentage() }}%"></div>
+                        </div>
+                        <a href="{{ route('dashboard.profile') }}" wire:navigate class="shrink-0 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded-profile-button hover:scale-105 transition-all shadow-xl shadow-zinc-900/10">
+                            Completar Perfil
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,14 +110,14 @@
             </div>
 
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="relative -mt-32 z-10">
+                <div class="relative -mt-20 sm:-mt-28 lg:-mt-32 z-10">
                     <div @class([
-                        'flex flex-col md:flex-row md:items-end md:justify-between md:gap-8',
-                        'md:flex-col md:items-center md:text-center' => $settings->layout_type === 'centered'
+                        'flex items-end justify-between gap-4 md:gap-8',
+                        'flex-col items-center text-center' => $settings->layout_type === 'centered'
                     ])>
 
                         {{-- Avatar --}}
-                        <div class="h-44 w-44 overflow-hidden rounded-[2.5rem] border-[6px] border-zinc-50 dark:border-zinc-950 bg-white dark:bg-zinc-900 shadow-2xl transition-transform hover:scale-105">
+                        <div class="h-32 w-32 shrink-0 overflow-hidden rounded-[2rem] border-[5px] border-zinc-50 dark:border-zinc-950 bg-white dark:bg-zinc-900 shadow-2xl transition-transform hover:scale-105 sm:h-40 sm:w-40 sm:rounded-[2.5rem] sm:border-[6px] lg:h-44 lg:w-44">
                             @if($this->user->profile->avatar_path)
                                 <img src="{{ Storage::url($this->user->profile->avatar_path) }}" class="h-full w-full object-cover" alt="{{ $this->user->display_name }}" />
                             @else
@@ -126,7 +128,7 @@
                         </div>
 
                         {{-- Actions --}}
-                        <div class="mt-8 flex items-center gap-3 md:mb-4">
+                        <div class="mt-8 mb-3 flex flex-wrap items-center gap-3 md:mb-5">
                             <x-ui.share-profile :user="$this->user" />
 
                             @if($this->user->profile->website_url)
@@ -149,7 +151,7 @@
                             @endif
 
                             @if (!$this->isOwner)
-                                <livewire:actions.follow-button :user="$this->user" :key="'follow-'.$this->user->id" />
+                                <livewire:actions.follow-button :user="$this->user" :inline="true" :key="'follow-'.$this->user->id" />
                             @else
                                 <a href="{{ route('dashboard.profile') }}" wire:navigate title="Configurar" class="inline-flex h-12 w-12 md:w-auto md:px-6 items-center justify-center rounded-profile-button bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95">
                                     <x-lucide-settings class="h-4 w-4 md:mr-2 text-profile-primary" />
@@ -172,10 +174,13 @@
                             'lg:col-span-2' => $settings->layout_type === 'default',
                             'flex flex-col items-center text-center' => $settings->layout_type === 'centered'
                         ])>
-                            <h1 class="text-5xl md:text-6xl font-black tracking-tighter text-zinc-900 dark:text-white italic flex items-center gap-3">
+                            <h1 @class([
+                                'text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-zinc-900 dark:text-white italic flex flex-wrap items-center gap-x-3 gap-y-1 break-words',
+                                'justify-center' => $settings->layout_type === 'centered',
+                            ])>
                                 {{ $this->user->display_name }}
                                 @if($this->user->isVerified())
-                                    <x-lucide-badge-check class="h-8 w-8 text-blue-500 fill-blue-500/10" />
+                                    <x-lucide-badge-check class="h-7 w-7 shrink-0 text-blue-500 fill-blue-500/10 sm:h-8 sm:w-8" />
                                 @endif
                             </h1>
 
