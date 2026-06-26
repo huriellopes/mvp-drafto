@@ -61,3 +61,47 @@ it('forgets a failed job', function () {
 
     expect(DB::table('failed_jobs')->where('uuid', 'uuid-bbb')->exists())->toBeFalse();
 });
+
+it('opens the discard confirmation and forgets the selected job', function () {
+    $admin = User::factory()->superAdmin()->create();
+    insertFailedJob('uuid-ccc');
+
+    $this->actingAs($admin);
+
+    Livewire::test(LogViewerIndex::class)
+        ->set('tab', 'jobs')
+        ->call('confirmForget', 'uuid-ccc')
+        ->assertSet('actingUuid', 'uuid-ccc')
+        ->assertDispatched('open-modal', name: 'confirm-forget-job')
+        // O modal confirma chamando forgetJob() sem argumento (usa o actingUuid).
+        ->call('forgetJob')
+        ->assertSet('actingUuid', null);
+
+    expect(DB::table('failed_jobs')->where('uuid', 'uuid-ccc')->exists())->toBeFalse();
+});
+
+it('opens the retry confirmation for the selected job', function () {
+    $admin = User::factory()->superAdmin()->create();
+    insertFailedJob('uuid-ddd');
+
+    $this->actingAs($admin);
+
+    Livewire::test(LogViewerIndex::class)
+        ->set('tab', 'jobs')
+        ->call('confirmRetry', 'uuid-ddd')
+        ->assertSet('actingUuid', 'uuid-ddd')
+        ->assertDispatched('open-modal', name: 'confirm-retry-job');
+});
+
+it('loads the error detail for a failed job', function () {
+    $admin = User::factory()->superAdmin()->create();
+    insertFailedJob('uuid-eee');
+
+    $this->actingAs($admin);
+
+    Livewire::test(LogViewerIndex::class)
+        ->set('tab', 'jobs')
+        ->call('showDetail', 'uuid-eee')
+        ->assertDispatched('open-modal', name: 'job-detail')
+        ->assertSee('boom');
+});
