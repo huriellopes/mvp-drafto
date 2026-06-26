@@ -33,21 +33,66 @@ class LogViewerIndex extends Component
     #[Url]
     public ?string $file = null;
 
+    /** UUID do job aguardando confirmação de reprocessar/descartar. */
+    public ?string $actingUuid = null;
+
+    /** Job selecionado para o modal de detalhe do erro. */
+    public ?array $detailJob = null;
+
     public function selectTab(string $tab): void
     {
         $this->tab = in_array($tab, ['errors', 'jobs', 'debug'], true) ? $tab : 'errors';
     }
 
-    public function retryJob(string $uuid): void
+    /** Abre o modal de confirmação de reprocessamento. */
+    public function confirmRetry(string $uuid): void
     {
+        $this->actingUuid = $uuid;
+        $this->dispatch('open-modal', name: 'confirm-retry-job');
+    }
+
+    /** Abre o modal de confirmação de descarte. */
+    public function confirmForget(string $uuid): void
+    {
+        $this->actingUuid = $uuid;
+        $this->dispatch('open-modal', name: 'confirm-forget-job');
+    }
+
+    /** Abre o modal com o erro detalhado do job. */
+    public function showDetail(string $uuid): void
+    {
+        $job = app(ReadLogEntriesAction::class)->failedJobs()->firstWhere('uuid', $uuid);
+        $this->detailJob = is_array($job) ? $job : null;
+
+        if ($this->detailJob !== null) {
+            $this->dispatch('open-modal', name: 'job-detail');
+        }
+    }
+
+    public function retryJob(?string $uuid = null): void
+    {
+        $uuid ??= $this->actingUuid;
+
+        if ($uuid === null) {
+            return;
+        }
+
         Artisan::call('queue:retry', ['id' => [$uuid]]);
+        $this->actingUuid = null;
 
         Toaster::success(__('dashboard.logs.job_retried'));
     }
 
-    public function forgetJob(string $uuid): void
+    public function forgetJob(?string $uuid = null): void
     {
+        $uuid ??= $this->actingUuid;
+
+        if ($uuid === null) {
+            return;
+        }
+
         Artisan::call('queue:forget', ['id' => $uuid]);
+        $this->actingUuid = null;
 
         Toaster::success(__('dashboard.logs.job_forgotten'));
     }
