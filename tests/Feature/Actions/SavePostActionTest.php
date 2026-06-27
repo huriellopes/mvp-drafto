@@ -12,10 +12,41 @@ use App\Events\Posts\PostSaved;
 use App\Models\PostCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
+use Mews\Purifier\Facades\Purifier;
 
 beforeEach(function () {
     $this->action = new SavePostAction();
 });
+
+/**
+ * Captura os warnings de "Style attribute ... is not supported" emitidos pelo
+ * HTMLPurifier durante a execução de $callback. O cache de definições é limpo
+ * antes para forçar o rebuild (os warnings só são emitidos no cache miss).
+ *
+ * @return array<int, string>
+ */
+function captureStyleWarnings(Closure $callback): array
+{
+    File::cleanDirectory(config('purifier.cachePath'));
+
+    $warnings = [];
+    set_error_handler(function (int $severity, string $message) use (&$warnings): bool {
+        if (str_contains($message, 'Style attribute') && str_contains($message, 'is not supported')) {
+            $warnings[] = $message;
+        }
+
+        return true; // suprime o handler padrão durante o bloco
+    }, E_USER_WARNING);
+
+    try {
+        $callback();
+    } finally {
+        restore_error_handler();
+    }
+
+    return $warnings;
+}
 
 it('creates a new draft post and dispatches media processing event', function () {
     Event::fake();
@@ -129,4 +160,69 @@ it('correctly saves a scheduled post with a specific published_at date', functio
 
     expect($post->status)->toBe(PostStatusEnum::SCHEDULED)
         ->and($post->published_at->format('Y-m-d H:i'))->toBe($scheduledDate);
+});
+
+it('does not emit "not supported" warnings for any allowed CSS property of the post_content profile', function () {
+    // setupConfigStuff() do HTMLPurifier percorre TODAS as propriedades de
+    // CSS.AllowedProperties e emite um warning para cada uma sem definição
+    // interna — independente do HTML de entrada. Logo, um único clean() em
+    // cache miss revela qualquer propriedade mal configurada no perfil.
+    $warnings = captureStyleWarnings(function () {
+        Purifier::clean('<p style="color:red">x</p>', 'post_content');
+    });
+
+    expect($warnings)->toBe([], 'Propriedade(s) CSS sem suporte no perfil post_content: ' . implode(', ', $warnings));
+});
+
+it('preserves border-radius styles when saving a draft without raising warnings', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+
+    $content = '<p style="border-radius:8px;aspect-ratio:16/9;width:100%;max-width:600px;">Conteúdo estilizado</p>';
+
+    $post = null;
+    $warnings = captureStyleWarnings(function () use ($user, $category, $content, &$post) {
+        $dto = new SavePostData(
+            title: 'Rascunho com estilo',
+            slug: 'rascunho-com-estilo',
+            category_id: $category->id,
+            content: $content,
+            status: PostStatusEnum::DRAFT,
+        );
+
+        $post = $this->action->exec($user, $dto);
+    });
+
+    expect($warnings)->toBe([])
+        ->and($post->status)->toBe(PostStatusEnum::DRAFT)
+        ->and($post->content)->toContain('border-radius')
+        ->and($post->content)->toContain('aspect-ratio');
+});
+
+it('preserves border-radius styles when publishing without raising warnings', function () {
+    Event::fake();
+
+    $user = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $category = PostCategory::factory()->create(['user_id' => $user->id]);
+
+    $content = '<p style="border-radius:12px;">Conteúdo publicado</p>';
+
+    $post = null;
+    $warnings = captureStyleWarnings(function () use ($user, $category, $content, &$post) {
+        $dto = new SavePostData(
+            title: 'Publicação com estilo',
+            slug: 'publicacao-com-estilo',
+            category_id: $category->id,
+            content: $content,
+            status: PostStatusEnum::PUBLISHED,
+        );
+
+        $post = $this->action->exec($user, $dto);
+    });
+
+    expect($warnings)->toBe([])
+        ->and($post->status)->toBe(PostStatusEnum::PUBLISHED)
+        ->and($post->content)->toContain('border-radius');
 });
