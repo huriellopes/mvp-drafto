@@ -125,6 +125,21 @@ it('serves a dynamic robots.txt pointing at the current host sitemap', function 
         ->not->toContain('drafto.test');
 });
 
+it('mirrors the content signals and AI-bot blocks from the platform itself', function () {
+    // A plataforma é a fonte da verdade: o robots.txt deve conter os content
+    // signals (opt-out de treino de IA) e os bloqueios por crawler que antes
+    // vinham do Cloudflare Managed robots.txt.
+    $body = $this->get('/robots.txt')->assertOk()->getContent();
+
+    expect($body)
+        ->toContain('Content-Signal: ' . config('robots.content_signal'))
+        ->toContain('DIRECTIVE 2019/790'); // preâmbulo de reserva de direitos (TDM)
+
+    foreach (config('robots.blocked_ai_bots') as $bot) {
+        expect($body)->toContain("User-agent: {$bot}");
+    }
+});
+
 it('serves a valid RFC 9116 security.txt instead of a 404', function () {
     $response = $this->get('/.well-known/security.txt')->assertOk();
 
