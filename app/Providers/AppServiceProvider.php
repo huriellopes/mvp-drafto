@@ -34,15 +34,18 @@ use App\Policies\ProfilePolicy;
 use App\Policies\ReportPolicy;
 use App\Services\SystemLogger;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -103,5 +106,21 @@ class AppServiceProvider extends ServiceProvider
             'post' => Post::class,
             'comment' => Comment::class,
         ]);
+
+        $this->configureRateLimiters();
+    }
+
+    /**
+     * Rate limiters para conteúdo público de leitura (perfis, posts, explorar).
+     *
+     * Limite por IP generoso o bastante para nunca afetar um humano navegando
+     * ou um crawler bem-comportado (Googlebot/Bing), mas que corta scrapers em
+     * loop apertado. Ao estourar, retorna 429 com Retry-After automaticamente.
+     */
+    private function configureRateLimiters(): void
+    {
+        RateLimiter::for('public-content', function (Request $request) {
+            return Limit::perMinute(120)->by($request->ip() ?? 'unknown');
+        });
     }
 }

@@ -113,25 +113,27 @@ Route::post('/analytics/duration', [AnalyticsController::class, 'updateDuration'
 Route::get('/health-check', HealthCheckJsonResultsController::class);
 
 Route::livewire('/@{username}', 'public.profile.show-profile')
-    ->middleware(['track.profile', EnsureUsernameHasAtPrefix::class])
+    ->middleware(['throttle:public-content', 'track.profile', EnsureUsernameHasAtPrefix::class])
     ->name('profile.show')
     ->where('username', '[a-z0-9._]+');
 
 Route::livewire('/@{username}/colecao/{collection}', 'public.profile.show-profile-collection')
+    ->middleware(['throttle:public-content'])
     ->name('profile.collection')
     ->where('username', '[a-z0-9._]+')
     ->where('collection', '[a-z0-9._-]+');
 
 Route::livewire('/posts/{slug}', 'public.posts.show-post')
-    ->middleware(['track.post'])
+    ->middleware(['throttle:public-content', 'track.post'])
     ->name('posts.show');
 
 Route::get('/badge/@{username}', [ProfileBadgeController::class, 'show'])
     ->name('public.profile.badge')
-    ->middleware('allow.iframe');
+    ->middleware(['throttle:public-content', 'allow.iframe']);
 
 Route::get('/@{username}/qrcode', [ProfileQrCodeController::class, 'download'])
     ->name('public.profile.qrcode')
+    ->middleware(['throttle:public-content'])
     ->where('username', '[a-z0-9._]+');
 
 Route::get('/newsletter/verify', VerifySubscriberController::class)
@@ -146,4 +148,5 @@ Route::get('/email/preferencias/{user}/{type}/cancelar', [EmailPreferencesContro
     ->middleware('signed');
 
 Route::get('/s/{code}', ShortLinkController::class)
+    ->middleware(['throttle:public-content'])
     ->name('shortlink.redirect');
