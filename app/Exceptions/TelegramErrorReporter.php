@@ -95,9 +95,9 @@ final class TelegramErrorReporter
             return false;
         }
 
-        $path = request()?->path();
+        $path = request()->path();
 
-        if (! is_string($path) || $path === '') {
+        if ($path === '') {
             return false;
         }
 

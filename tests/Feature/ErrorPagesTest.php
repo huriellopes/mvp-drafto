@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
@@ -107,7 +108,7 @@ it('registers a per-IP public-content rate limiter at 120/min', function () {
 
     expect($limiter)->not->toBeNull();
 
-    $request = \Illuminate\Http\Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.7']);
+    $request = Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.7']);
     $limit = $limiter($request);
 
     expect($limit->maxAttempts)->toBe(120)
