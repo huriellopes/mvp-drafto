@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
@@ -19,6 +21,10 @@ final class BrandedErrorRenderer
     public function render(Throwable $e, Request $request): ?Response
     {
         if ($request->expectsJson()) {
+            return null;
+        }
+
+        if ($e instanceof AuthenticationException || $e instanceof ValidationException) {
             return null;
         }
 

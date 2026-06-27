@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use RuntimeException;
 
@@ -26,6 +27,19 @@ it('serves the branded error page (not the native Laravel one) for common status
     '404' => [404, 'Caminho sem saída'],
     '429' => [429, 'Calma, escritor'],
 ]);
+
+it('redirects an unauthenticated request to login instead of rendering a 500', function () {
+    // Cenário real: a sessão foi invalidada (ex.: login em outra máquina via
+    // EnforceSingleSession) e o usuário acessa uma rota protegida. O middleware
+    // auth lança AuthenticationException — o handler nativo deve redirecionar para
+    // o login, e o BrandedErrorRenderer NÃO pode abafar isso como erro 500.
+    config(['app.debug' => false]);
+
+    Route::get('/__needs-auth', fn () => 'secret')->middleware(['web', 'auth']);
+
+    $this->get('/__needs-auth')
+        ->assertRedirect(route('login'));
+});
 
 it('serves the branded 404 for an unknown url', function () {
     $this->get('/esta-rota-nao-existe-' . uniqid())
@@ -85,7 +99,30 @@ it('does NOT alert Telegram for 404s from automated scanner paths', function (st
     'wp-login' => ['/wp-login.php'],
     'env file' => ['/.env'],
     'phpunit rce probe' => ['/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'],
+    'exchange owa probe' => ['/owa/auth/x.js'],
 ]);
+
+it('registers a per-IP public-content rate limiter at 120/min', function () {
+    $limiter = RateLimiter::limiter('public-content');
+
+    expect($limiter)->not->toBeNull();
+
+    $request = \Illuminate\Http\Request::create('/', 'GET', server: ['REMOTE_ADDR' => '203.0.113.7']);
+    $limit = $limiter($request);
+
+    expect($limit->maxAttempts)->toBe(120)
+        ->and($limit->key)->toBe('203.0.113.7');
+});
+
+it('serves a dynamic robots.txt pointing at the current host sitemap', function () {
+    $response = $this->get('/robots.txt')->assertOk();
+
+    $response->assertHeader('Content-Type', 'text/plain; charset=utf-8');
+    expect($response->getContent())
+        ->toContain('Sitemap: ' . url('/sitemap.xml'))
+        ->toContain('Disallow: /dashboard/')
+        ->not->toContain('drafto.test');
+});
 
 it('serves a valid RFC 9116 security.txt instead of a 404', function () {
     $response = $this->get('/.well-known/security.txt')->assertOk();

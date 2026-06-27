@@ -39,6 +39,7 @@ final class TelegramErrorReporter
         'boaform', 'setup.cgi', 'hnap1', 'solr/', 'actuator', 'jenkins',
         '.well-known/traffic-advice', '.well-known/pki-validation',
         '.sql', '.bak', '.old', '.backup',
+        'owa/', 'ecp/', 'mapi/', 'aspnet_client', 'exchange',
     ];
 
     /**
