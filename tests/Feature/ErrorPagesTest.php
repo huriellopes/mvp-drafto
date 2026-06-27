@@ -72,6 +72,30 @@ it('alerts Telegram for 404s as well', function () {
         && str_contains($request['text'] ?? '', 'Erro 404'));
 });
 
+it('does NOT alert Telegram for 404s from automated scanner paths', function (string $path) {
+    config(['services.telegram.token' => 'TEST_TOKEN', 'services.telegram.chat' => '1']);
+    Http::fake(['api.telegram.org/*' => Http::response(['ok' => true])]);
+
+    $this->get($path)->assertNotFound();
+
+    // Ruído de varredura de bot: registrado em arquivo, porém sem alerta em tempo real.
+    Http::assertNotSent(fn ($request) => str_contains($request->url(), 'api.telegram.org'));
+})->with([
+    'wordpress css' => ['/wp-includes/css/buttons.css'],
+    'wp-login' => ['/wp-login.php'],
+    'env file' => ['/.env'],
+    'phpunit rce probe' => ['/vendor/phpunit/phpunit/src/Util/PHP/eval-stdin.php'],
+]);
+
+it('serves a valid RFC 9116 security.txt instead of a 404', function () {
+    $response = $this->get('/.well-known/security.txt')->assertOk();
+
+    $response->assertHeader('Content-Type', 'text/plain; charset=utf-8');
+    expect($response->getContent())
+        ->toContain('Contact: mailto:' . config('support.email'))
+        ->toContain('Expires:');
+});
+
 it('throttles repeated alerts for the same error within the window', function () {
     config(['services.telegram.token' => 'TEST_TOKEN', 'services.telegram.chat' => '1']);
     Http::fake(['api.telegram.org/*' => Http::response(['ok' => true])]);

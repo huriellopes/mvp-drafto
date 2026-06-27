@@ -6,6 +6,7 @@ namespace App\Exceptions;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -22,6 +23,23 @@ final class TelegramErrorReporter
      * Janela de throttle: no máximo 1 alerta por assinatura de erro neste período.
      */
     private const THROTTLE_MINUTES = 5;
+
+    /**
+     * Trechos de path típicos de varredura automatizada de bots (WordPress, .env,
+     * phpMyAdmin, probes de RCE, etc.). 404s nesses caminhos são ruído de fundo da
+     * internet — não-direcionados e não-acionáveis — então não geram alerta no
+     * Telegram (seguem registrados no log em arquivo para auditoria/estatística).
+     */
+    private const SCANNER_NOISE = [
+        'wp-', 'wordpress', 'xmlrpc.php', 'wlwmanifest',
+        '.env', '.git', '.svn', '.htaccess', '.aws/',
+        'phpmyadmin', 'phpinfo', 'myadmin', 'mysqladmin', '/pma',
+        'vendor/phpunit', 'eval-stdin.php', 'cgi-bin', 'shellscript',
+        'autodiscover', '.aspx', '.asp', '.jsp', '.cgi',
+        'boaform', 'setup.cgi', 'hnap1', 'solr/', 'actuator', 'jenkins',
+        '.well-known/traffic-advice', '.well-known/pki-validation',
+        '.sql', '.bak', '.old', '.backup',
+    ];
 
     /**
      * @return false sempre — sinaliza ao handler padrão para não logar/alertar de novo.
@@ -53,6 +71,10 @@ final class TelegramErrorReporter
      */
     private function shouldAlert(Throwable $e, int $status): bool
     {
+        if ($this->isScannerNoise($status)) {
+            return false;
+        }
+
         $signature = $status . '|' . $e::class . '|' . $e->getFile() . ':' . $e->getLine();
 
         return Cache::add(
@@ -60,6 +82,25 @@ final class TelegramErrorReporter
             true,
             now()->addMinutes(self::THROTTLE_MINUTES),
         );
+    }
+
+    /**
+     * Um 404 cujo path bate com assinatura de varredura de bot é ruído: não alerta.
+     * Só se aplica a 404 — um 500 real continua sendo alertado mesmo na rota probada.
+     */
+    private function isScannerNoise(int $status): bool
+    {
+        if ($status !== 404) {
+            return false;
+        }
+
+        $path = request()?->path();
+
+        if (! is_string($path) || $path === '') {
+            return false;
+        }
+
+        return Str::contains(Str::lower($path), self::SCANNER_NOISE);
     }
 
     /**
