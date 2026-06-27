@@ -36,6 +36,7 @@ return [
             'HTML.Doctype' => 'HTML 4.01 Transitional',
             'HTML.Allowed' => 'h1,h2,h3,h4,blockquote,pre[class],code,div[class|style],b,strong,i,em,u,s,a[href|title|target],ul,ol,li,p[class|style],br,span[style],img[width|height|alt|src|class],iframe[src|width|height|frameborder|allowfullscreen|class|allow|style|referrerpolicy],video[src|width|height|poster|preload|controls|controlslist|playsinline|class],source[src|type]',
             'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align,width,height,aspect-ratio,max-width,border-radius',
+            'CSS.Proprietary' => true,
             'HTML.SafeIframe' => true,
             'URI.SafeIframeRegexp' => '%^(https?:)?//(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/)%',
             'AutoFormat.AutoParagraph' => true,
