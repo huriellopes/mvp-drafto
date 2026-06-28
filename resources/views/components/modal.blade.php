@@ -74,14 +74,16 @@ $maxWidth = [
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     >
         {{-- Botão de fechar --}}
-        <button
-            type="button"
-            x-on:click="show = false"
-            aria-label="Fechar"
-            class="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100"
-        >
-            <x-lucide-x class="h-5 w-5" />
-        </button>
+        <x-ui.tooltip text="Fechar" position="left" wrapper-class="absolute right-4 top-4 z-10">
+            <button
+                type="button"
+                x-on:click="show = false"
+                aria-label="Fechar"
+                class="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-700 dark:hover:text-gray-100"
+            >
+                <x-lucide-x class="h-5 w-5" />
+            </button>
+        </x-ui.tooltip>
 
         {{ $slot }}
     </div>

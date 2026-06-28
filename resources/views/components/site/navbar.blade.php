@@ -41,11 +41,13 @@
                 <livewire:public.site.global-search />
 
                 {{-- Theme Toggle --}}
-                <button @click="$store.theme.toggle()"
-                        class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-500 transition hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800">
-                    <x-lucide-sun x-show="!$store.theme.darkMode" class="h-5 w-5" />
-                    <x-lucide-moon x-show="$store.theme.darkMode" class="h-5 w-5" x-cloak />
-                </button>
+                <x-ui.tooltip text="Alternar tema" position="bottom">
+                    <button @click="$store.theme.toggle()"
+                            class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-500 transition hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800">
+                        <x-lucide-sun x-show="!$store.theme.darkMode" class="h-5 w-5" />
+                        <x-lucide-moon x-show="$store.theme.darkMode" class="h-5 w-5" x-cloak />
+                    </button>
+                </x-ui.tooltip>
 
                 <div class="h-6 w-px bg-zinc-200 dark:bg-zinc-800 hidden lg:block mx-2"></div>
 

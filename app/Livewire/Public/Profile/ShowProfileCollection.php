@@ -53,6 +53,7 @@ class ShowProfileCollection extends Component
     {
         return $this->postCollection
             ->posts()
+            ->with(['author.profile', 'category'])
             ->published()
             ->latest()
             ->paginate(12);

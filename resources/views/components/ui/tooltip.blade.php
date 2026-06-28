@@ -1,11 +1,14 @@
 @props([
     'text',
     'position' => 'top',
+    // Permite sobrescrever o wrapper (ex.: botões posicionados de forma absoluta,
+    // onde o `relative inline-block` padrão quebraria o layout).
+    'wrapperClass' => 'relative inline-block',
 ])
 
-<div 
-    x-data="{ 
-        show: false, 
+<div
+    x-data="{
+        tipShow: false,
         currentPosition: '{{ $position }}',
         calculatePosition() {
             this.currentPosition = '{{ $position }}';
@@ -28,15 +31,15 @@
             });
         }
     }" 
-    @mouseenter="show = true; calculatePosition()" 
-    @mouseleave="show = false"
-    class="relative inline-block"
+    @mouseenter="tipShow = true; calculatePosition()"
+    @mouseleave="tipShow = false"
+    class="{{ $wrapperClass }}"
 >
     {{ $slot }}
 
     <div 
         x-ref="tooltip"
-        x-show="show"
+        x-show="tipShow"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"

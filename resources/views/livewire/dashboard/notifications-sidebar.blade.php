@@ -48,9 +48,11 @@
                         >
                             Excluir todas
                         </button>
-                        <button @click="open = false" class="ml-2 text-zinc-400 hover:text-zinc-600 transition">
-                            <x-lucide-x class="h-5 w-5" />
-                        </button>
+                        <x-ui.tooltip text="Fechar" position="left">
+                            <button @click="open = false" class="ml-2 text-zinc-400 hover:text-zinc-600 transition">
+                                <x-lucide-x class="h-5 w-5" />
+                            </button>
+                        </x-ui.tooltip>
                     </div>
                 </div>
 

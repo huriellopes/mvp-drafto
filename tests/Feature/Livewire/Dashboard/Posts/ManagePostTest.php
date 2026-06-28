@@ -9,6 +9,7 @@ use App\Enums\RoleEnum;
 use App\Livewire\Dashboard\Posts\ManagePost;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\PostCollection;
 use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Livewire\Livewire;
@@ -71,4 +72,17 @@ it('autosaves an existing draft with border-radius styles without errors', funct
         ->assertHasNoErrors();
 
     expect($post->refresh()->content)->toContain('border-radius');
+});
+
+it('renders the contextual help tips in the editor', function () {
+    // Coleção disponível para que o campo (com seu help-tip) seja exibido.
+    PostCollection::factory()->create(['user_id' => $this->user->id]);
+
+    Livewire::test(ManagePost::class)
+        ->assertSee('Como salvar e publicar')      // help-tip dos botões de ação
+        ->assertSee('Tipo de conteúdo')            // help-tip Post vs Artigo
+        ->assertSee('conteúdo do dia a dia', false)
+        ->assertSee('material aprofundado', false) // texto de Artigo
+        ->assertSee('Coleções (séries)')           // help-tip de coleções
+        ->assertSee('Slug da URL');                // help-tip de slug
 });

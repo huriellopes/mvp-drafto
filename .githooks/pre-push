@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Bloqueia push direto para as branches protegidas (main, dev).
+# A integração nessas branches deve acontecer apenas via Pull Request aprovado.
+#
+# Emergência (use com consciência): ALLOW_DIRECT_PUSH=1 git push ...
+
+set -euo pipefail
+
+protected_regex='^refs/heads/(main|dev)$'
+
+# O git envia, por stdin, uma linha por ref a ser enviada:
+#   <local ref> <local sha> <remote ref> <remote sha>
+while read -r local_ref local_sha remote_ref remote_sha; do
+    if [[ "$remote_ref" =~ $protected_regex ]]; then
+        branch="${remote_ref#refs/heads/}"
+        if [ "${ALLOW_DIRECT_PUSH:-0}" != "1" ]; then
+            echo "✋  Push direto para '$branch' está bloqueado."
+            echo "    Envie sua branch de feature e abra um Pull Request aprovado:"
+            echo "        git push origin HEAD:refs/heads/feature/minha-mudanca"
+            echo ""
+            echo "    (emergência: ALLOW_DIRECT_PUSH=1 git push ...)"
+            exit 1
+        fi
+    fi
+done
+
+exit 0

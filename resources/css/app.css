@@ -27,6 +27,15 @@
     *, ::after, ::before {
         border-color: var(--color-zinc-200);
     }
+
+    /* O Tailwind v4 removeu o `cursor: pointer` padrão dos botões (Preflight).
+       Restauramos globalmente para todos os elementos clicáveis, exceto os
+       desabilitados — que mantêm o cursor definido via `disabled:cursor-*`. */
+    button:not(:disabled),
+    [role="button"]:not(:disabled),
+    summary {
+        cursor: pointer;
+    }
 }
 
 /* ---------------------------------------

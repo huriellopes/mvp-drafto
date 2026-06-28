@@ -9,7 +9,6 @@ use App\DTOs\Public\PostFilterData;
 use App\Models\PostCategory;
 use App\Models\Tag;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
@@ -64,7 +63,7 @@ class ExplorePosts extends Component
     #[Computed]
     public function categories(): Collection
     {
-        $cacheKey = 'explore_categories_' . Carbon::now()->timestamp;
+        $cacheKey = 'explore_categories_v1';
         $categories = Cache::remember($cacheKey, now()->addHours(1), function () {
             return PostCategory::withCount('posts')
                 ->orderBy('posts_count', 'desc')
@@ -84,7 +83,7 @@ class ExplorePosts extends Component
     #[Computed]
     public function tags(): Collection
     {
-        $cacheKey = 'explore_tags_' . Carbon::now()->timestamp;
+        $cacheKey = 'explore_tags_v1';
         $tags = Cache::remember($cacheKey, now()->addHours(1), function () {
             return Tag::query()
                 ->whereHas('posts')
