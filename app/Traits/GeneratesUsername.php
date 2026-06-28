@@ -16,11 +16,10 @@ trait GeneratesUsername
     {
         $base = Str::slug(Str::replace('@', '', $name));
         $username = $base . '-' . Str::lower(Str::random(4));
-        $profileExists = Profile::query()
-            ->where('username', $username)
-            ->exists();
 
-        while ($profileExists) {
+        // Reavalia a existência a cada iteração; caso contrário uma colisão no
+        // primeiro sorteio causaria loop infinito (a condição nunca mudaria).
+        while (Profile::query()->where('username', $username)->exists()) {
             $username = $base . '-' . Str::lower(Str::random(4));
         }
 

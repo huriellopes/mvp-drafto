@@ -57,10 +57,11 @@ final class HandleReportAction
     {
         $target = $report->reportable;
 
+        // Tanto Post quanto Comment expõem a relação `author` (apontando para o
+        // autor/comentarista), então ela cobre os dois tipos reportáveis.
         return match (true) {
             $target instanceof User => $target,
-            isset($target->author) => $target->author, // Caso de Posts
-            isset($target->user) => $target->user,     // Caso de Comentários
+            isset($target->author) => $target->author,
             default => null,
         };
     }

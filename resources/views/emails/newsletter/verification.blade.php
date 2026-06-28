@@ -24,18 +24,18 @@
         <div style="margin-bottom: 24px;">
             <img src="{{ asset('images/logo.png') }}" width="120" alt="{{ config('app.name') }}" style="height: auto; display: block; border: 0; outline: none; text-decoration: none;">
         </div>
-        <h2 style="color: #111827;">{{ __('mail.newsletter.verification.greeting') }}</h2>
-        <p>{!! __('mail.newsletter.verification.body1') !!}</p>
-        <p>{{ __('mail.newsletter.verification.body2') }}</p>
+        <h2 style="color: #111827;">{{ __('notifications.newsletter.verification.greeting') }}</h2>
+        <p>{!! __('notifications.newsletter.verification.body1') !!}</p>
+        <p>{{ __('notifications.newsletter.verification.body2') }}</p>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $verificationUrl }}" class="button" style="color: #ffffff;">{{ __('mail.newsletter.verification.action') }}</a>
+            <a href="{{ $verificationUrl }}" class="button" style="color: #ffffff;">{{ __('notifications.newsletter.verification.action') }}</a>
         </div>
         
-        <p style="font-size: 14px; color: #6B7280;">{{ __('mail.newsletter.verification.ignore') }}</p>
+        <p style="font-size: 14px; color: #6B7280;">{{ __('notifications.newsletter.verification.ignore') }}</p>
         
         <hr style="border: 0; border-top: 1px solid #E5E7EB; margin: 30px 0;">
-        <p style="font-size: 12px; color: #9CA3AF; text-align: center;">{{ __('mail.newsletter.verification.footer') }}</p>
+        <p style="font-size: 12px; color: #9CA3AF; text-align: center;">{{ __('notifications.newsletter.verification.footer') }}</p>
     </div>
 </body>
 </html>

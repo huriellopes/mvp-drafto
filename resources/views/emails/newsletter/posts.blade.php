@@ -38,37 +38,37 @@
         <tr>
             <td class="content">
                 @if($customMessage)
-                    <h1 class="title">{{ __('mail.newsletter.important_title') }}</h1>
+                    <h1 class="title">{{ __('notifications.newsletter.important_title') }}</h1>
                     <div class="text">
                         {!! nl2br(e($customMessage)) !!}
                     </div>
                 @elseif(count($posts) > 0)
-                    <h1 class="title">{{ __('mail.newsletter.news_title') }}</h1>
+                    <h1 class="title">{{ __('notifications.newsletter.news_title') }}</h1>
                     <p style="font-size: 13px; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; margin-bottom: 32px;">
-                        {{ __('mail.newsletter.category_label', ['category' => $categoryName]) }}
+                        {{ __('notifications.newsletter.category_label', ['category' => $categoryName]) }}
                     </p>
 
                     @foreach($posts as $post)
                         <div class="post-item">
                             <a href="{{ route('posts.show', $post['slug']) }}" class="post-title">{{ $post['title'] }}</a>
                             <p class="post-excerpt">{{ Str::limit($post['excerpt'] ?? '', 120) }}</p>
-                            <a href="{{ route('posts.show', $post['slug']) }}" class="post-link">{{ __('mail.newsletter.read_more') }}</a>
+                            <a href="{{ route('posts.show', $post['slug']) }}" class="post-link">{{ __('notifications.newsletter.read_more') }}</a>
                         </div>
                     @endforeach
                 @else
-                    <h1 class="title">{{ __('mail.newsletter.greeting_reader') }}</h1>
-                    <p class="text">{{ __('mail.newsletter.default_body') }}</p>
+                    <h1 class="title">{{ __('notifications.newsletter.greeting_reader') }}</h1>
+                    <p class="text">{{ __('notifications.newsletter.default_body') }}</p>
                 @endif
 
                 <div class="button-container">
-                    <a href="{{ config('app.url') }}" class="button">{{ __('mail.newsletter.action') }}</a>
+                    <a href="{{ config('app.url') }}" class="button">{{ __('notifications.newsletter.action') }}</a>
                 </div>
             </td>
         </tr>
         <tr>
             <td class="footer-area">
                 <p class="footer-text">
-                    {!! __('mail.newsletter.unsubscribe', ['url' => $unsubscribeUrl, 'year' => date('Y')]) !!}
+                    {!! __('notifications.newsletter.unsubscribe', ['url' => $unsubscribeUrl, 'year' => date('Y')]) !!}
                 </p>
             </td>
         </tr>
