@@ -142,12 +142,14 @@
                                     <x-lucide-download class="h-3 w-3" />
                                     Baixar Agora
                                 </a>
-                                <button 
-                                    wire:click="clearGeneratedFile"
-                                    class="p-1.5 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 rounded-lg transition-colors"
-                                >
-                                    <x-lucide-x class="h-3 w-3" />
-                                </button>
+                                <x-ui.tooltip text="Descartar arquivo">
+                                    <button
+                                        wire:click="clearGeneratedFile"
+                                        class="p-1.5 text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-500/10 rounded-lg transition-colors"
+                                    >
+                                        <x-lucide-x class="h-3 w-3" />
+                                    </button>
+                                </x-ui.tooltip>
                             </div>
                         </div>
                     @elseif($generatedPath)

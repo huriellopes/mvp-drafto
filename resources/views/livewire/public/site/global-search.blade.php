@@ -57,9 +57,11 @@
                        placeholder="Buscar por título, tag ou categoria..."
                        x-init="$el.focus()">
 
-                <button @click="isOpen = false" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
-                    <x-lucide-x class="h-5 w-5" />
-                </button>
+                <x-ui.tooltip text="Fechar">
+                    <button @click="isOpen = false" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
+                        <x-lucide-x class="h-5 w-5" />
+                    </button>
+                </x-ui.tooltip>
             </div>
 
             {{-- Resultados --}}

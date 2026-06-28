@@ -58,7 +58,12 @@
     }
 }" class="space-y-2">
     @if($label)
-        <label class="text-xs font-bold text-zinc-700 uppercase tracking-wider">{{ $label }}</label>
+        <label class="flex items-center gap-1 text-xs font-bold text-zinc-700 uppercase tracking-wider">
+            {{ $label }}
+            @if(isset($label_extra))
+                {{ $label_extra }}
+            @endif
+        </label>
     @endif
 
     <div class="relative">

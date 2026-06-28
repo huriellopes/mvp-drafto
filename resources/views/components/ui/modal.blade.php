@@ -37,14 +37,16 @@
                     class="relative w-full max-w-lg rounded-[2.5rem] bg-white p-6 shadow-2xl sm:p-10 border border-zinc-100"
                 >
                     {{-- Botão de fechar --}}
-                    <button
-                        type="button"
-                        x-on:click="show = false"
-                        aria-label="Fechar"
-                        class="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
-                    >
-                        <x-lucide-x class="h-5 w-5" />
-                    </button>
+                    <x-ui.tooltip text="Fechar" position="left" wrapper-class="absolute right-5 top-5">
+                        <button
+                            type="button"
+                            x-on:click="show = false"
+                            aria-label="Fechar"
+                            class="flex h-9 w-9 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900"
+                        >
+                            <x-lucide-x class="h-5 w-5" />
+                        </button>
+                    </x-ui.tooltip>
 
                     @if($title)
                         <div class="mb-6 pr-10">

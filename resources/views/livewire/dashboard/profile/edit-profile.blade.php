@@ -44,14 +44,15 @@
 
                 {{-- Delete Cover Button --}}
                 @if($this->profile?->cover_path)
-                    <button 
-                        type="button" 
-                        x-on:click="$dispatch('open-modal', { name: 'confirm-cover-deletion' })"
-                        class="absolute top-4 right-4 z-20 p-2.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 text-red-500 hover:text-red-600 hover:bg-white transition shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 backdrop-blur-sm"
-                        title="{{ __('dashboard.profile.edit.delete_cover.confirm') }}"
-                    >
-                        <x-lucide-trash-2 class="h-4 w-4" />
-                    </button>
+                    <x-ui.tooltip :text="__('dashboard.profile.edit.delete_cover.confirm')" wrapper-class="absolute top-4 right-4 z-20">
+                        <button
+                            type="button"
+                            x-on:click="$dispatch('open-modal', { name: 'confirm-cover-deletion' })"
+                            class="p-2.5 rounded-xl bg-white/90 dark:bg-zinc-900/90 text-red-500 hover:text-red-600 hover:bg-white transition shadow-sm border border-zinc-200/50 dark:border-zinc-700/50 backdrop-blur-sm"
+                        >
+                            <x-lucide-trash-2 class="h-4 w-4" />
+                        </button>
+                    </x-ui.tooltip>
                 @endif
             </div>
 
@@ -102,14 +103,15 @@
 
                     {{-- Delete Avatar Button --}}
                     @if($this->profile?->avatar_path)
-                        <button 
-                            type="button" 
-                            x-on:click="$dispatch('open-modal', { name: 'confirm-avatar-deletion' })"
-                            class="absolute -top-2 -left-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-red-500 shadow-md border border-zinc-100 dark:border-zinc-800 hover:text-red-600 transition group-hover:scale-110"
-                            title="{{ __('dashboard.profile.edit.delete_avatar.confirm') }}"
-                        >
-                            <x-lucide-trash-2 class="h-3.5 w-3.5" />
-                        </button>
+                        <x-ui.tooltip :text="__('dashboard.profile.edit.delete_avatar.confirm')" wrapper-class="absolute -top-2 -left-2 z-20">
+                            <button
+                                type="button"
+                                x-on:click="$dispatch('open-modal', { name: 'confirm-avatar-deletion' })"
+                                class="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-zinc-900 text-red-500 shadow-md border border-zinc-100 dark:border-zinc-800 hover:text-red-600 transition group-hover:scale-110"
+                            >
+                                <x-lucide-trash-2 class="h-3.5 w-3.5" />
+                            </button>
+                        </x-ui.tooltip>
                     @endif
 
                     {{-- Edit Button (Pencil) - Fully Clickable for triggers --}}
@@ -252,16 +254,17 @@
                         class="flex flex-col gap-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 sm:flex-row sm:items-center"
                     >
                         {{-- Alça de arrastar para reordenar (mouse e touch via pointer events) --}}
-                        <button
-                            type="button"
-                            x-on:pointerdown.prevent="from = {{ $index }}; $event.target.setPointerCapture($event.pointerId)"
-                            x-on:pointerup="drop($event)"
-                            style="touch-action: none;"
-                            class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center text-zinc-300 hover:text-zinc-500 active:cursor-grabbing"
-                            title="{{ __('dashboard.profile.edit.links_section.reorder') }}"
-                        >
-                            <x-lucide-grip-vertical class="h-5 w-5" />
-                        </button>
+                        <x-ui.tooltip :text="__('dashboard.profile.edit.links_section.reorder')" wrapper-class="relative inline-flex shrink-0">
+                            <button
+                                type="button"
+                                x-on:pointerdown.prevent="from = {{ $index }}; $event.target.setPointerCapture($event.pointerId)"
+                                x-on:pointerup="drop($event)"
+                                style="touch-action: none;"
+                                class="flex h-10 w-8 shrink-0 cursor-grab items-center justify-center text-zinc-300 hover:text-zinc-500 active:cursor-grabbing"
+                            >
+                                <x-lucide-grip-vertical class="h-5 w-5" />
+                            </button>
+                        </x-ui.tooltip>
 
                         <div class="sm:w-44">
                             <x-ui.select wire:model="form.links.{{ $index }}.platform" :error="$errors->first('form.links.'.$index.'.platform')">
@@ -288,14 +291,15 @@
                             </x-ui.select>
                         </div>
 
-                        <button
-                            type="button"
-                            wire:click="removeLink({{ $index }})"
-                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 transition hover:border-red-300 hover:text-red-500 active:scale-95"
-                            title="{{ __('dashboard.profile.edit.links_section.remove') }}"
-                        >
-                            <x-lucide-trash-2 class="h-4 w-4" />
-                        </button>
+                        <x-ui.tooltip :text="__('dashboard.profile.edit.links_section.remove')" position="left" wrapper-class="relative inline-flex shrink-0">
+                            <button
+                                type="button"
+                                wire:click="removeLink({{ $index }})"
+                                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-400 transition hover:border-red-300 hover:text-red-500 active:scale-95"
+                            >
+                                <x-lucide-trash-2 class="h-4 w-4" />
+                            </button>
+                        </x-ui.tooltip>
                     </div>
                 @empty
                     <p class="text-sm font-medium text-zinc-400">{{ __('dashboard.profile.edit.links_section.empty') }}</p>
@@ -619,15 +623,21 @@
 
             <div class="flex items-center justify-between gap-4 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-700">
                 <div class="flex items-center gap-2">
-                    <button type="button" @click="cropper.zoom(0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
-                        <x-lucide-zoom-in class="h-4 w-4" />
-                    </button>
-                    <button type="button" @click="cropper.zoom(-0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
-                        <x-lucide-zoom-out class="h-4 w-4" />
-                    </button>
-                    <button type="button" @click="cropper.reset()" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
-                        <x-lucide-rotate-ccw class="h-4 w-4" />
-                    </button>
+                    <x-ui.tooltip text="Aproximar">
+                        <button type="button" @click="cropper.zoom(0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                            <x-lucide-zoom-in class="h-4 w-4" />
+                        </button>
+                    </x-ui.tooltip>
+                    <x-ui.tooltip text="Afastar">
+                        <button type="button" @click="cropper.zoom(-0.1)" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                            <x-lucide-zoom-out class="h-4 w-4" />
+                        </button>
+                    </x-ui.tooltip>
+                    <x-ui.tooltip text="Redefinir">
+                        <button type="button" @click="cropper.reset()" class="p-2 rounded-lg bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 transition shadow-sm border border-zinc-200/50">
+                            <x-lucide-rotate-ccw class="h-4 w-4" />
+                        </button>
+                    </x-ui.tooltip>
                 </div>
 
                 <div class="flex items-center gap-3">

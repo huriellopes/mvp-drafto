@@ -57,9 +57,16 @@ class RecentActivity extends Component
             return collect();
         }
 
-        // 2. Buscamos os modelos reais com os relacionamentos necessários
+        // 2. Buscamos os modelos reais com os relacionamentos necessários.
+        // Para curtida/salvo, usamos withExists (booleano) em vez de carregar as
+        // coleções inteiras de usuários — um post popular hidrataria milhares de
+        // User models só para um contains().
         return Post::query()
-            ->with(['author.profile', 'category', 'likedByUsers', 'savedByUsers'])
+            ->with(['author.profile', 'category'])
+            ->withExists([
+                'likedByUsers as is_liked' => fn ($q) => $q->where('user_id', $user->id),
+                'savedByUsers as is_saved' => fn ($q) => $q->where('user_id', $user->id),
+            ])
             ->whereIn('id', $postIds)
             ->get()
             ->sortBy(fn ($post) => array_search($post->id, $postIds, true))

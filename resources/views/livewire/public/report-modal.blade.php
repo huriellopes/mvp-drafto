@@ -27,9 +27,11 @@
                 </h3>
                 <p class="text-xs text-zinc-500 font-medium italic">Sua mensagem ajuda a tornar a Drafto melhor.</p>
             </div>
-            <button @click="open = false" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition">
-                <x-lucide-x class="h-5 w-5"/>
-            </button>
+            <x-ui.tooltip text="Fechar">
+                <button @click="open = false" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition">
+                    <x-lucide-x class="h-5 w-5"/>
+                </button>
+            </x-ui.tooltip>
         </div>
 
         <form wire:submit.prevent="submit" class="space-y-6">

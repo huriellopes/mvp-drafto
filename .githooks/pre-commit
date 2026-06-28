@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#
+# Bloqueia commits diretos nas branches protegidas (main, dev).
+# O fluxo correto é: criar uma branch de feature e abrir um Pull Request aprovado.
+#
+# Emergência (use com consciência): ALLOW_DIRECT_COMMIT=1 git commit ...
+
+set -euo pipefail
+
+protected="main dev"
+branch="$(git symbolic-ref --short HEAD 2>/dev/null || echo '')"
+
+for p in $protected; do
+    if [ "$branch" = "$p" ]; then
+        if [ "${ALLOW_DIRECT_COMMIT:-0}" != "1" ]; then
+            echo "✋  Commit direto na branch '$branch' está bloqueado."
+            echo "    Crie uma branch de trabalho e abra um Pull Request:"
+            echo "        git switch -c feature/minha-mudanca"
+            echo ""
+            echo "    (emergência: ALLOW_DIRECT_COMMIT=1 git commit ...)"
+            exit 1
+        fi
+    fi
+done
+
+exit 0

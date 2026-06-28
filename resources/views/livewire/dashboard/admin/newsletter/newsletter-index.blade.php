@@ -44,9 +44,11 @@
                         <x-lucide-download class="h-3 w-3" />
                         Baixar
                     </a>
-                    <button wire:click="clearGeneratedFile" class="text-emerald-400 hover:text-emerald-600">
-                        <x-lucide-x class="h-4 w-4" />
-                    </button>
+                    <x-ui.tooltip text="Descartar arquivo">
+                        <button wire:click="clearGeneratedFile" class="text-emerald-400 hover:text-emerald-600">
+                            <x-lucide-x class="h-4 w-4" />
+                        </button>
+                    </x-ui.tooltip>
                 </div>
             @elseif($generatedPath)
                 <div wire:poll.1s class="flex items-center gap-3 px-4 py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 animate-pulse">

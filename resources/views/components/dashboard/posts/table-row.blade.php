@@ -26,25 +26,33 @@
 
     <td class="px-6 py-4 text-right">
         <div class="flex justify-end gap-1">
-            <a href="{{ route('posts.show', $post->slug) }}" target="_blank" title="Visualizar"
-               class="p-2 text-zinc-400 hover:text-zinc-900 transition rounded-xl hover:bg-zinc-100">
-                <x-lucide-eye class="h-4 w-4" />
-            </a>
+            <x-ui.tooltip text="Visualizar">
+                <a href="{{ route('posts.show', $post->slug) }}" target="_blank"
+                   class="block p-2 text-zinc-400 hover:text-zinc-900 transition rounded-xl hover:bg-zinc-100">
+                    <x-lucide-eye class="h-4 w-4" />
+                </a>
+            </x-ui.tooltip>
 
-            <a href="{{ route('dashboard.posts.edit', $post) }}" title="Editar"
-               class="p-2 text-zinc-400 hover:text-zinc-900 transition rounded-xl hover:bg-zinc-100">
-                <x-lucide-pencil class="h-4 w-4" />
-            </a>
+            <x-ui.tooltip text="Editar">
+                <a href="{{ route('dashboard.posts.edit', $post) }}"
+                   class="block p-2 text-zinc-400 hover:text-zinc-900 transition rounded-xl hover:bg-zinc-100">
+                    <x-lucide-pencil class="h-4 w-4" />
+                </a>
+            </x-ui.tooltip>
 
-            <button wire:click="openCollections({{ $post->id }})" title="Adicionar a coleção"
-                    class="p-2 text-zinc-400 hover:text-indigo-600 transition rounded-xl hover:bg-indigo-50">
-                <x-lucide-folder-plus class="h-4 w-4" />
-            </button>
+            <x-ui.tooltip text="Adicionar a coleção">
+                <button wire:click="openCollections({{ $post->id }})"
+                        class="p-2 text-zinc-400 hover:text-indigo-600 transition rounded-xl hover:bg-indigo-50">
+                    <x-lucide-folder-plus class="h-4 w-4" />
+                </button>
+            </x-ui.tooltip>
 
-            <button wire:click="confirmDelete({{ $post->id }})" title="Excluir"
-                    class="p-2 text-zinc-400 hover:text-red-600 transition rounded-xl hover:bg-red-50">
-                <x-lucide-trash-2 class="h-4 w-4" />
-            </button>
+            <x-ui.tooltip text="Excluir">
+                <button wire:click="confirmDelete({{ $post->id }})"
+                        class="p-2 text-zinc-400 hover:text-red-600 transition rounded-xl hover:bg-red-50">
+                    <x-lucide-trash-2 class="h-4 w-4" />
+                </button>
+            </x-ui.tooltip>
         </div>
     </td>
 </tr>
