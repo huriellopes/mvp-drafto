@@ -15,7 +15,9 @@ final class ListPublicPostsAction
     public function exec(PostFilterData $filters): LengthAwarePaginator
     {
         $query = Post::query()
-            ->with(['author' => fn ($q) => $q->withFollowStatus(), 'category', 'tags'])
+            // author.profile é acessado no post-card (avatar, username, isVerified()),
+            // então precisa ser eager-loaded para evitar N+1 na listagem pública.
+            ->with(['author' => fn ($q) => $q->withFollowStatus(), 'author.profile', 'category', 'tags'])
             ->published();
 
         // Filtro de Visibilidade Sênior (Lógica unificada)

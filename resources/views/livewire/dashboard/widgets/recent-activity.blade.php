@@ -65,12 +65,12 @@
                 {{-- Ações e Interações --}}
                 <div class="flex flex-col items-end gap-2 shrink-0">
                     <div class="flex items-center gap-1.5">
-                        @if($post && $post->likedByUsers->contains(auth()->id()))
+                        @if($post && $post->is_liked)
                             <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-50 text-red-500 dark:bg-red-900/20" title="Você curtiu">
                                 <x-lucide-heart class="h-3.5 w-3.5 fill-current" />
                             </div>
                         @endif
-                        @if($post && $post->savedByUsers->contains(auth()->id()))
+                        @if($post && $post->is_saved)
                             <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20" title="Você salvou">
                                 <x-lucide-bookmark class="h-3.5 w-3.5 fill-current" />
                             </div>

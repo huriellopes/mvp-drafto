@@ -94,12 +94,13 @@
                 </div>
 
                 {{-- Botão de Excluir (Sempre Visível) --}}
-                <button type="button" 
-                        x-on:click="$dispatch('open-modal', { name: 'confirm-cover-deletion' })"
-                        class="absolute top-4 right-4 z-30 flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-red-500 shadow-lg backdrop-blur-sm transition hover:bg-red-50 hover:text-red-600 active:scale-90"
-                        title="Excluir Capa">
-                    <x-lucide-trash-2 class="h-5 w-5" />
-                </button>
+                <x-ui.tooltip text="Excluir capa" wrapper-class="absolute top-4 right-4 z-30">
+                    <button type="button"
+                            x-on:click="$dispatch('open-modal', { name: 'confirm-cover-deletion' })"
+                            class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-red-500 shadow-lg backdrop-blur-sm transition hover:bg-red-50 hover:text-red-600 active:scale-90">
+                        <x-lucide-trash-2 class="h-5 w-5" />
+                    </button>
+                </x-ui.tooltip>
 
                 {{-- Overlay de Alterar --}}
                 <div class="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 backdrop-blur-[2px]">
@@ -154,9 +155,11 @@
                             <h3 class="text-xl font-black text-zinc-900 tracking-tight italic">Enquadrar <span class="text-indigo-600">Imagem</span></h3>
                             <p class="text-xs text-zinc-500 font-medium mt-0.5">Mova e redimensione a área de destaque.</p>
                         </div>
-                        <button type="button" @click="showModal = false" class="rounded-xl p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 transition">
-                            <x-lucide-x class="h-6 w-6" />
-                        </button>
+                        <x-ui.tooltip text="Fechar">
+                            <button type="button" @click="showModal = false" class="rounded-xl p-2 text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900 transition">
+                                <x-lucide-x class="h-6 w-6" />
+                            </button>
+                        </x-ui.tooltip>
                     </div>
 
                     <div class="bg-zinc-900 p-4 sm:p-8 space-y-6">

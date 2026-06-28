@@ -39,6 +39,12 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <x-ui.help-tip title="Como salvar e publicar" position="bottom" panel-class="w-80">
+                        <p><span class="font-semibold text-zinc-900 dark:text-white">Salvar Rascunho</span> — guarda o progresso em modo privado.</p>
+                        <p><span class="font-semibold text-zinc-900 dark:text-white">Agendar</span> — publica automaticamente em uma data futura.</p>
+                        <p><span class="font-semibold text-zinc-900 dark:text-white">Publicar</span> — torna visível para os leitores agora.</p>
+                    </x-ui.help-tip>
+
                     <x-ui.button type="submit" loading="save" class="!bg-white !text-zinc-900 border border-zinc-200 !w-auto px-6 shadow-sm">
                         Salvar Rascunho
                     </x-ui.button>
@@ -95,7 +101,14 @@
                     </div>
 
                     <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-6">
-                        <x-ui.input label="Slug da URL" wire:model.blur="form.slug" placeholder="link-do-artigo" :error="$errors->first('form.slug')" />
+                        <x-ui.input label="Slug da URL" wire:model.blur="form.slug" placeholder="link-do-artigo" :error="$errors->first('form.slug')">
+                            <x-slot:label_extra>
+                                <x-ui.help-tip title="Slug da URL" panel-class="w-72">
+                                    <p>É o endereço da publicação na web, como em <span class="font-semibold text-zinc-900 dark:text-white">/p/meu-artigo</span>.</p>
+                                    <p>Prefira palavras curtas, sem acentos. Deixe em branco para gerarmos a partir do título.</p>
+                                </x-ui.help-tip>
+                            </x-slot:label_extra>
+                        </x-ui.input>
 
                         <x-ui.suggestion-input
                             label="Categoria"
@@ -125,7 +138,14 @@
                                 multiple="true"
                                 createMessage="Crie coleções na página Coleções:"
                                 :error="$errors->first('form.collections')"
-                            />
+                            >
+                                <x-slot:label_extra>
+                                    <x-ui.help-tip title="Coleções (séries)" panel-class="w-72">
+                                        <p>Reúna publicações em uma sequência, como capítulos de uma série ou de um curso.</p>
+                                        <p>Os leitores navegam de uma parte para a próxima dentro da coleção.</p>
+                                    </x-ui.help-tip>
+                                </x-slot:label_extra>
+                            </x-ui.suggestion-input>
                         @else
                             <div class="rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100 text-xs text-zinc-500 leading-relaxed">
                                 <x-lucide-library class="h-3.5 w-3.5 inline mr-0.5" />
@@ -135,12 +155,25 @@
                         @endif
 
                         <x-ui.select label="Tipo de conteúdo" wire:model.live="form.type">
+                            <x-slot:label_extra>
+                                <x-ui.help-tip title="Tipo de conteúdo" panel-class="w-80">
+                                    <p><span class="font-semibold text-zinc-900 dark:text-white">Post</span> — conteúdo do dia a dia: ideias, dicas, tutoriais e guias de ajuda.</p>
+                                    <p><span class="font-semibold text-zinc-900 dark:text-white">Artigo</span> — material aprofundado: textos acadêmicos e pesquisas científicas.</p>
+                                </x-ui.help-tip>
+                            </x-slot:label_extra>
                             @foreach(PostTypeEnum::cases() as $type)
                                 <option value="{{ $type->value }}">{{ $type->label() }}</option>
                             @endforeach
                         </x-ui.select>
 
-                        <x-ui.textarea label="Resumo (SEO)" wire:model.blur="form.excerpt" rows="3" :error="$errors->first('form.excerpt')" />
+                        <x-ui.textarea label="Resumo (SEO)" wire:model.blur="form.excerpt" rows="3" :error="$errors->first('form.excerpt')">
+                            <x-slot:label_extra>
+                                <x-ui.help-tip title="Resumo (SEO)" panel-class="w-80">
+                                    <p>Breve descrição exibida nas listagens, na busca e ao compartilhar a publicação.</p>
+                                    <p>Se ficar em branco, criamos um resumo a partir do início do conteúdo.</p>
+                                </x-ui.help-tip>
+                            </x-slot:label_extra>
+                        </x-ui.textarea>
 
                         <div class="flex items-center justify-between rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-100">
                             <span class="text-xs font-bold text-zinc-700 uppercase tracking-wider">Comentários</span>
@@ -152,7 +185,13 @@
                     @if(auth()->user()->getModuleSetting(ModuleEnum::MY_POSTS, 'enable_seo', true))
                         <div class="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-sm font-bold text-zinc-900 leading-none italic">Otimização (SEO)</h3>
+                                <div class="flex items-center gap-1.5">
+                                    <h3 class="text-sm font-bold text-zinc-900 leading-none italic">Otimização (SEO)</h3>
+                                    <x-ui.help-tip title="Otimização (SEO)" panel-class="w-72">
+                                        <p>Melhora como sua publicação aparece no Google e nas redes sociais.</p>
+                                        <p>Com os campos em branco, usamos o título e o resumo automaticamente.</p>
+                                    </x-ui.help-tip>
+                                </div>
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" wire:model.live="form.seo_enabled" class="h-5 w-5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900 transition">
                                 </div>

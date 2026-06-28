@@ -107,15 +107,17 @@
                 </div>
 
                 {{-- Desktop Toggle --}}
-                <button
-                    x-show="!sidebarCollapsed"
-                    x-transition
-                    type="button"
-                    class="hidden h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 lg:flex active:scale-90"
-                    @click.stop="sidebarCollapsed = !sidebarCollapsed"
-                >
-                    <x-lucide-panel-left-close class="h-4 w-4" />
-                </button>
+                <x-ui.tooltip text="Recolher menu" position="right" wrapper-class="relative hidden lg:inline-flex">
+                    <button
+                        x-show="!sidebarCollapsed"
+                        x-transition
+                        type="button"
+                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 active:scale-90"
+                        @click.stop="sidebarCollapsed = !sidebarCollapsed"
+                    >
+                        <x-lucide-panel-left-close class="h-4 w-4" />
+                    </button>
+                </x-ui.tooltip>
 
                 {{-- Mobile Close --}}
                 <button

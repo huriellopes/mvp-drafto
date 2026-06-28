@@ -28,22 +28,26 @@
                     {{ $this->profileUrl }}
                 </div>
                 
-                <button 
-                    @click="copy()"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all"
-                    :class="copied ? 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400' : 'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200'"
-                >
-                    <template x-if="!copied">
-                        <x-lucide-copy class="h-4 w-4" />
-                    </template>
-                    <template x-if="copied">
-                        <x-lucide-check class="h-4 w-4" />
-                    </template>
-                </button>
+                <x-ui.tooltip text="Copiar link">
+                    <button
+                        @click="copy()"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all"
+                        :class="copied ? 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400' : 'bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200'"
+                    >
+                        <template x-if="!copied">
+                            <x-lucide-copy class="h-4 w-4" />
+                        </template>
+                        <template x-if="copied">
+                            <x-lucide-check class="h-4 w-4" />
+                        </template>
+                    </button>
+                </x-ui.tooltip>
 
-                <a href="{{ $this->profileUrl }}" target="_blank" class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
-                    <x-lucide-external-link class="h-4 w-4" />
-                </a>
+                <x-ui.tooltip text="Abrir perfil">
+                    <a href="{{ $this->profileUrl }}" target="_blank" class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition">
+                        <x-lucide-external-link class="h-4 w-4" />
+                    </a>
+                </x-ui.tooltip>
             </div>
         </div>
     </div>

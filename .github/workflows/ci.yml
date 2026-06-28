@@ -57,7 +57,7 @@ jobs:
         with:
           php-version: '8.4'
           extensions: mbstring, dom, fileinfo, sqlite3, pdo_sqlite, gd, intl, bcmath
-          coverage: none
+          coverage: pcov
           tools: composer:v2
 
       - name: Cache Composer dependencies
@@ -75,8 +75,8 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: Run tests
-        run: php artisan test --testsuite=Unit,Feature
+      - name: Run tests (with coverage gate)
+        run: php artisan test --testsuite=Unit,Feature --coverage --min=98
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'

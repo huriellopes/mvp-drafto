@@ -25,12 +25,13 @@
         }
     }
 }">
-    <button
-        @click="share"
-        type="button"
-        title="Compartilhar Artigo"
-        class="group flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-profile-primary hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-profile-primary dark:hover:bg-zinc-800"
-    >
-        <x-lucide-share-2 class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-profile-primary dark:text-zinc-400" />
-    </button>
+    <x-ui.tooltip text="Compartilhar artigo">
+        <button
+            @click="share"
+            type="button"
+            class="group flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all hover:border-profile-primary hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-profile-primary dark:hover:bg-zinc-800"
+        >
+            <x-lucide-share-2 class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-profile-primary dark:text-zinc-400" />
+        </button>
+    </x-ui.tooltip>
 </div>
