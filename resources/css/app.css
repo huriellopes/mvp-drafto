@@ -122,3 +122,13 @@ article img {
         padding-left: 18rem !important; /* lg:pl-72 */
     }
 }
+
+/* Evita o "flash" dos rótulos quando a página carrega com a sidebar recolhida:
+   os textos (controlados por x-show no Alpine) ficam ocultos até o Alpine
+   assumir. O marcador .is-sidebar-collapsed é removido no x-init, devolvendo
+   o controle ao Alpine. */
+:root.is-sidebar-collapsed aside [x-show*="sidebarCollapsed"] {
+    @media (min-width: 1024px) {
+        display: none !important;
+    }
+}
