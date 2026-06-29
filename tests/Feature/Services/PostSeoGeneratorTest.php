@@ -33,6 +33,12 @@ it('builds an indexable payload using the post excerpt as description', function
         ->and($seo->description)->toBe('Resumo objetivo do artigo.');
 });
 
+it('uses a valid Open Graph type (article)', function () {
+    $post = Post::factory()->create(['seo_enabled' => true]);
+
+    expect(PostSeoGenerator::generate($post)->type)->toBe('article');
+});
+
 it('falls back to a stripped, truncated content excerpt when none is provided', function () {
     $post = Post::factory()->create([
         'seo_enabled' => true,

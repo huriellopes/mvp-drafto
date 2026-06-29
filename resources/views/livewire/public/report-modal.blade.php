@@ -13,10 +13,11 @@
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"></div>
 
-    <div class="relative w-full max-w-lg rounded-[2.5rem] bg-white dark:bg-zinc-900 p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+    <div role="dialog" aria-modal="true" aria-labelledby="report-modal-title"
+         class="relative w-full max-w-lg rounded-[2.5rem] bg-white dark:bg-zinc-900 p-8 shadow-2xl animate-in zoom-in-95 duration-200">
         <div class="flex items-center justify-between mb-8">
             <div class="space-y-1">
-                <h3 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter">
+                <h3 id="report-modal-title" class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter">
                     @if(in_array($form->reason, [ReportReasonEnum::PRAISE->value, ReportReasonEnum::SUGGESTION->value]))
                         Enviar <span class="text-profile-primary">Feedback</span>
                     @elseif($form->reason === ReportReasonEnum::BUG->value)
@@ -28,8 +29,8 @@
                 <p class="text-xs text-zinc-500 font-medium italic">Sua mensagem ajuda a tornar a Drafto melhor.</p>
             </div>
             <x-ui.tooltip text="Fechar">
-                <button @click="open = false" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition">
-                    <x-lucide-x class="h-5 w-5"/>
+                <button @click="open = false" type="button" aria-label="Fechar" class="h-10 w-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition">
+                    <x-lucide-x class="h-5 w-5" aria-hidden="true"/>
                 </button>
             </x-ui.tooltip>
         </div>

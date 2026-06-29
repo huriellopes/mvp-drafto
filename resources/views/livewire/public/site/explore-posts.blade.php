@@ -74,7 +74,7 @@
             {{-- Header da Listagem --}}
             <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-zinc-100 dark:border-zinc-800/50 pb-8 gap-6">
                 <div>
-                    <h2 class="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Biblioteca.</h2>
+                    <h1 class="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Biblioteca.</h1>
                     <div class="mt-2 flex items-center gap-3">
                         <div class="h-1.5 w-12 bg-indigo-500 rounded-full"></div>
                         <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">

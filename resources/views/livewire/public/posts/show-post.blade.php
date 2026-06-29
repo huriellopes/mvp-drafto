@@ -82,7 +82,8 @@
             @if($this->post->cover_image_path)
                 <div class="relative mb-20 overflow-hidden rounded-[3.5rem] shadow-2xl border border-zinc-100 dark:border-zinc-800">
                     <img src="{{ $this->post->cover_image_url }}"
-                         loading="lazy" decoding="async"
+                         alt="{{ $this->post->title }}"
+                         loading="eager" fetchpriority="high" decoding="async"
                          class="w-full object-cover max-h-[600px] hover:scale-[1.02] transition-transform duration-1000">
                 </div>
             @else
@@ -119,6 +120,8 @@
                                        class="relative aspect-video overflow-hidden rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
                                         @if($related->cover_image_url)
                                             <img src="{{ $related->cover_image_url }}"
+                                                 alt="{{ $related->title }}"
+                                                 loading="lazy"
                                                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
                                         @else
                                             <span class="text-4xl font-black text-indigo-500/10 tracking-tighter uppercase select-none">

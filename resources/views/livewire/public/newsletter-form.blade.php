@@ -19,6 +19,8 @@
                 <input type="email"
                        wire:model="email"
                        placeholder="seu@email.com"
+                       aria-label="Seu e-mail"
+                       @error('email') aria-invalid="true" @enderror
                        class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-[1.5rem] px-6 py-4 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 outline-none focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all">
 
                 @error('email')

@@ -64,6 +64,17 @@ class ShowProfileCollection extends Component
         $profile = $this->user->profile;
         $settings = $profile->settings;
 
+        // Reaproveita a lógica de indexação/imagem do perfil, mas com SEO próprio
+        // da coleção (título, descrição e canonical apontando para a coleção).
+        $seo = ProfileSeoGenerator::generate($profile);
+        $seo->title = $this->postCollection->name . ' (@' . $profile->username . ') | ' . config('app.name');
+        $seo->description = 'Coleção "' . $this->postCollection->name . '" de ' . ($profile->name ?? $profile->username) . ' na ' . config('app.name') . '.';
+        $seo->type = 'website';
+        $seo->canonical_url = route('profile.collection', [
+            'username' => $profile->username,
+            'collection' => $this->postCollection->slug,
+        ]);
+
         return view('livewire.public.profile.show-profile-collection')
             ->layoutData([
                 'themeMode' => $profile->theme_mode->value ?? 'light',
@@ -75,7 +86,7 @@ class ShowProfileCollection extends Component
                 'buttonStyle' => $settings->button_style,
                 'fontFamily' => $settings->font_family,
                 'title' => $this->postCollection->name . ' — @' . $profile->username,
-                'seo' => ProfileSeoGenerator::generate($profile),
+                'seo' => $seo,
             ]);
     }
 }

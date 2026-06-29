@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- Área autenticada: nunca deve ser indexada. --}}
+    <meta name="robots" content="noindex, nofollow">
     <title>{{ $title ?? config('app.name') }}</title>
 
     <x-layouts.tracking />
@@ -63,6 +65,10 @@
     "
     class="min-h-full bg-zinc-50 text-zinc-900 antialiased no-transitions"
 >
+<a href="#main-content"
+   class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:shadow-xl">
+    Pular para o conteúdo
+</a>
 <livewire:dashboard.impersonation-banner />
 <div class="livewire-progressive-bar" :style="loading ? 'width: 100%; opacity: 1;' : 'width: 0%; opacity: 0; transition: none;'"></div>
 <div class="min-h-screen">
@@ -214,7 +220,7 @@
                 </div>
             </header>
 
-            <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+            <main id="main-content" class="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
                 <div class="mx-auto w-full max-w-none">
                     {{ $slot }}
                 </div>
