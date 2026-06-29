@@ -12,13 +12,21 @@ use Throwable;
 final class PlatformVersion
 {
     /**
+     * Chave de cache versionada: ao mudar a lógica, basta incrementar o sufixo
+     * para que valores antigos (ex.: 'dev' cacheado por código anterior) sejam
+     * ignorados automaticamente após o deploy — sem precisar limpar cache.
+     */
+    private const CACHE_KEY = 'platform_version_v2';
+
+    /**
      * Versão atual da plataforma.
      *
      * Ordem de resolução:
      *  1. config('app.version') (APP_VERSION) — override manual opcional;
      *  2. última tag git local (rápido, sem rede);
-     *  3. última release publicada no GitHub (apenas fora de local/testing),
-     *     para que produção reflita a release automaticamente sem editar .env;
+     *  3. última release publicada no GitHub (em qualquer ambiente exceto
+     *     local), para que produção reflita a release sozinha — sem editar .env
+     *     e sem depender de APP_ENV ser exatamente "production";
      *  4. 'dev'.
      *
      * O resultado é cacheado: ~1h em caso de sucesso (a release nova aparece
@@ -32,7 +40,7 @@ final class PlatformVersion
             return $configured;
         }
 
-        $cached = Cache::get('platform_version');
+        $cached = Cache::get(self::CACHE_KEY);
 
         if (is_string($cached) && $cached !== '') {
             return $cached;
@@ -41,7 +49,7 @@ final class PlatformVersion
         $resolved = self::fromGitTag() ?? self::fromGitHub();
 
         Cache::put(
-            'platform_version',
+            self::CACHE_KEY,
             $resolved ?? 'dev',
             $resolved !== null ? now()->addHour() : now()->addMinutes(5),
         );
@@ -75,11 +83,12 @@ final class PlatformVersion
 
     /**
      * Última release publicada no GitHub (repositório público).
-     * Não roda em local/testing para evitar chamadas de rede.
+     * Não roda em ambiente local (evita chamadas de rede em dev); roda em
+     * produção/staging/qualquer outro ambiente.
      */
     private static function fromGitHub(): ?string
     {
-        if (app()->environment(['local', 'testing'])) {
+        if (app()->isLocal()) {
             return null;
         }
 

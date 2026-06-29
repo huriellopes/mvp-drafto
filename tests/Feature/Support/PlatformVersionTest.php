@@ -17,10 +17,11 @@ it('returns the configured version (APP_VERSION) when set', function () {
         ->and(platform_version())->toBe('v2.3.4');
 });
 
-it('falls back to "dev" when not configured and no git tag is available', function () {
+it('falls back to "dev" when there is no git tag and no GitHub release', function () {
     config()->set('app.version', 'dev');
     Cache::flush();
-    Process::fake(['*' => Process::result(exitCode: 128)]);
+    Process::fake(['*' => Process::result(exitCode: 128)]);        // git sem tag
+    Http::fake(['api.github.com/*' => Http::response(status: 404)]); // sem release
 
     expect(PlatformVersion::current())->toBe('dev');
 });
@@ -33,13 +34,10 @@ it('uses the latest git tag when not configured', function () {
     expect(PlatformVersion::current())->toBe('v3.1.4');
 })->skip(!is_dir(__DIR__ . '/../../../.git'), 'Requer repositório git.');
 
-it('resolves the version from the latest GitHub release in production', function () {
+it('resolves the version from the latest GitHub release when not local', function () {
     config()->set('app.version', 'dev');
     config()->set('app.github_repo', 'huriellopes/mvp-drafto');
     Cache::flush();
-
-    // Fora de local/testing para habilitar a consulta remota.
-    $this->app->detectEnvironment(fn () => 'production');
 
     Process::fake(['*' => Process::result(exitCode: 128)]); // git sem tag
     Http::fake([
@@ -50,9 +48,11 @@ it('resolves the version from the latest GitHub release in production', function
     Http::assertSent(fn ($request) => str_contains($request->url(), 'releases/latest'));
 });
 
-it('does not call GitHub outside production (no network in local/testing)', function () {
+it('does not call GitHub in the local environment (no network in dev)', function () {
     config()->set('app.version', 'dev');
     Cache::flush();
+    $this->app->detectEnvironment(fn () => 'local');
+
     Process::fake(['*' => Process::result(exitCode: 128)]);
     Http::fake();
 
