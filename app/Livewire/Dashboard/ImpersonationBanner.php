@@ -12,7 +12,7 @@ class ImpersonationBanner extends Component
 {
     public function leave(): void
     {
-        if (app(LeaveImpersonationAction::class)->exec()) {
+        if (resolve(LeaveImpersonationAction::class)->exec()) {
             Toaster::success('Você voltou para sua conta de administrador.');
             $this->redirect(route('dashboard.admin.users.index'));
         }

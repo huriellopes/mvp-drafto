@@ -114,7 +114,7 @@ class UpdateIndex extends Component
             return;
         }
 
-        $count = app(SendProductUpdateAction::class)->exec($update);
+        $count = resolve(SendProductUpdateAction::class)->exec($update);
 
         Toaster::success("Comunicado enviado para {$count} usuário(s).");
 

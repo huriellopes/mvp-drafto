@@ -8,8 +8,8 @@ use App\DTOs\AuthenticateData;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Validation\ValidationException;
 
 final class AuthenticateUserAction
@@ -58,14 +58,18 @@ final class AuthenticateUserAction
             throw ValidationException::withMessages(['email' => "Acesso suspenso por mais {$days} dias."]);
         }
 
-        if (!empty($data->password)) {
+        // Sessão única apenas quando o usuário NÃO pediu para ser lembrado:
+        // um login sem "lembrar-me" encerra as sessões dos outros dispositivos.
+        // Com "lembrar-me", preservamos os demais dispositivos (multi-device
+        // persistente) e mantemos este login ativo entre sessões.
+        if (!$data->remember && $data->password !== '' && $data->password !== '0') {
             Auth::logoutOtherDevices($data->password);
         }
 
         session()->regenerate();
 
         $loggedUser->update([
-            'last_login_at' => Carbon::now(),
+            'last_login_at' => Date::now(),
             'ip_address' => request()->ip(),
             // O usuário voltou: zera o ciclo de e-mails de retorno para que ele
             // possa ser reengajado de novo caso fique inativo no futuro.

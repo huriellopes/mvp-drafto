@@ -68,7 +68,7 @@ class SocialInteractionNotification extends Notification implements ShouldQueue
                 'follow' => $this->causer?->profile?->username ? route('profile.show', $this->causer->profile->username) : '#',
                 default => '#',
             };
-        } catch (Exception $e) {
+        } catch (Exception) {
             return '#';
         }
     }

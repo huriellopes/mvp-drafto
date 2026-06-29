@@ -43,7 +43,7 @@ class ResetPasswordForm extends Form
     {
         $this->validate();
 
-        app(ResetPasswordAction::class)->exec(
+        resolve(ResetPasswordAction::class)->exec(
             data: ResetPasswordData::from([
                 'token' => $this->token,
                 'email' => $this->email,

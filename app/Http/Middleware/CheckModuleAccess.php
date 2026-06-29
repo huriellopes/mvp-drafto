@@ -29,7 +29,7 @@ final class CheckModuleAccess
 
             Toaster::warning('Este recurso não está disponível para sua conta.');
 
-            return redirect()->route('dashboard.index');
+            return to_route('dashboard.index');
         }
 
         return $next($request);

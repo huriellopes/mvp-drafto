@@ -70,7 +70,7 @@ class FollowIndex extends Component
     #[Computed]
     public function follows()
     {
-        return app(ListFollowsAction::class)->exec(
+        return resolve(ListFollowsAction::class)->exec(
             user: auth()->user(),
             filters: FollowersFilterData::from(['search' => $this->search]),
             type: $this->tab,

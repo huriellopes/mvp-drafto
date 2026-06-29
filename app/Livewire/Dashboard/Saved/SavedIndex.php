@@ -98,7 +98,7 @@ class SavedIndex extends Component
             $this->collection = null;
         }
 
-        app(DeleteCollectionAction::class)
+        resolve(DeleteCollectionAction::class)
             ->exec(
                 collection: $collection,
             );
@@ -116,7 +116,7 @@ class SavedIndex extends Component
          * removemos da coleção ou se removemos dos salvos completamente.
          * Usar empty() ou o método resolver garante que "" (string vazia da URL) seja tratada como null.
          */
-        $this->isRemovingFromCollection = !empty($this->collection);
+        $this->isRemovingFromCollection = !in_array($this->collection, [null, '', '0'], true);
 
         $this->dispatch('open-modal', name: 'confirm-unsave-post');
     }
@@ -132,7 +132,7 @@ class SavedIndex extends Component
 
         if ($this->isRemovingFromCollection) {
             // Sênior: Remove apenas o vínculo com a coleção atual
-            app(MoveToCollectionAction::class)->exec(
+            resolve(MoveToCollectionAction::class)->exec(
                 user: $user,
                 postId: $post->id,
                 collectionId: null,
@@ -163,7 +163,7 @@ class SavedIndex extends Component
             return;
         }
 
-        app(MoveToCollectionAction::class)
+        resolve(MoveToCollectionAction::class)
             ->exec(
                 user: auth()->user(),
                 postId: $this->postIdBeingMoved,
@@ -197,7 +197,7 @@ class SavedIndex extends Component
     #[Computed]
     public function savedPosts()
     {
-        return app(ListSavedPostsAction::class)->exec(
+        return resolve(ListSavedPostsAction::class)->exec(
             user: auth()->user(),
             filters: SavedPostsFilterData::from([
                 'search' => $this->search,

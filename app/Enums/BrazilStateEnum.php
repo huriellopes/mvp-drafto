@@ -31,7 +31,7 @@ enum BrazilStateEnum: int
             'id' => $state->value,
             'sigla' => $state->name,
             'nome' => $state->label(),
-        ])->toArray();
+        ])->all();
     }
     case AC = 12;
     case AL = 27;

@@ -8,6 +8,7 @@ use App\Enums\SupportStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Override;
 
 final class Support extends Model
 {
@@ -33,6 +34,7 @@ final class Support extends Model
         return $this->belongsTo(User::class, 'responded_by');
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

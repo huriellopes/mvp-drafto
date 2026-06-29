@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Concerns;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 /**
  * Cálculo de atividade/inatividade do usuário (para reengajamento).
@@ -23,11 +24,11 @@ trait TracksActivity
 
         $dates = array_filter([
             $this->last_login_at,
-            $lastPostAt ? Carbon::parse($lastPostAt) : null,
+            $lastPostAt ? Date::parse($lastPostAt) : null,
             $this->created_at,
         ]);
 
-        return empty($dates) ? now() : Carbon::parse(max($dates));
+        return $dates === [] ? now() : Date::parse(max($dates));
     }
 
     /**

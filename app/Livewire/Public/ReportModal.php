@@ -40,7 +40,7 @@ class ReportModal extends Component
     {
         $this->validate();
 
-        app(StoreReportAction::class)->exec(
+        resolve(StoreReportAction::class)->exec(
             StoreReportData::from($this->form->getData()),
         );
 

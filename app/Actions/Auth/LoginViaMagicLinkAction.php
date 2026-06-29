@@ -6,17 +6,17 @@ namespace App\Actions\Auth;
 
 use App\Enums\UserStatusEnum;
 use App\Models\MagicLoginToken;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
 
 final class LoginViaMagicLinkAction
 {
-    public const RESULT_INVALID = 'invalid';
+    public const string RESULT_INVALID = 'invalid';
 
-    public const RESULT_TWO_FACTOR = 'two-factor';
+    public const string RESULT_TWO_FACTOR = 'two-factor';
 
-    public const RESULT_SUCCESS = 'success';
+    public const string RESULT_SUCCESS = 'success';
 
     /**
      * Consome um token de link mágico e procede com o login.
@@ -75,7 +75,7 @@ final class LoginViaMagicLinkAction
         session()->regenerate();
 
         $user->update([
-            'last_login_at' => Carbon::now(),
+            'last_login_at' => Date::now(),
             'ip_address' => request()->ip(),
             'reengagement_stage' => null,
             'reengagement_sent_at' => null,

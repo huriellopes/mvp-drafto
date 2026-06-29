@@ -29,7 +29,7 @@ class CommentPolicy
 
     public function create(?User $user): bool
     {
-        return $user ? $user->isActive() : true;
+        return $user instanceof User ? $user->isActive() : true;
     }
 
     public function reply(?User $user, Comment $parentComment): bool
@@ -39,7 +39,7 @@ class CommentPolicy
         }
 
         $postAuthor = $parentComment->post->author;
-        $maxDepth = $postAuthor->getModuleSetting(ModuleEnum::COMMENTS, 'max_depth', 3);
+        $postAuthor->getModuleSetting(ModuleEnum::COMMENTS, 'max_depth', 3);
 
         // Se depth não existir, assumimos que pode (ou implementamos lógica simples)
         // Como o sistema parece usar 3 níveis no withRelations, vamos limitar a 3 se depth existisse

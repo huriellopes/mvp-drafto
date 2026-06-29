@@ -58,11 +58,7 @@ class AuditLogIndex extends Component
         $fileName = 'auditoria-' . now()->format('Y-m-d-His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            AuditsExport::class,
-            ['filters' => $this->filters],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(AuditsExport::class, ['filters' => $this->filters], $fileName));
 
         Toaster::info('O relatório de auditoria está sendo gerado...');
     }

@@ -7,7 +7,6 @@ namespace App\Services\Profile;
 use App\Enums\ModuleEnum;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Storage;
-use RalphJSmit\Laravel\SEO\Schema\CustomSchema;
 use RalphJSmit\Laravel\SEO\SchemaCollection;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
 
@@ -38,16 +37,7 @@ final class ProfileSeoGenerator
 
         // Sênior: Se o plano permitir SEO E o usuário permitir indexação, adicionamos Dados Estruturados (Schema.org)
         if ($canIndex && $profile->user->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', false)) {
-            $seoData->schema = SchemaCollection::initialize([
-                new CustomSchema([
-                    '@context' => 'https://schema.org',
-                    '@type' => 'Person',
-                    'name' => $displayName,
-                    'description' => $profile->bio,
-                    'url' => route('profile.show', $profile->username),
-                    'image' => $profile->avatar_path ? Storage::url($profile->avatar_path) : null,
-                ]),
-            ]);
+            $seoData->schema = SchemaCollection::initialize();
         }
 
         return $seoData;

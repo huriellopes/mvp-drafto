@@ -12,6 +12,7 @@ use App\Models\Post;
 use App\Models\Report;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 
 final class GenerateDailySummaryAction
@@ -21,7 +22,7 @@ final class GenerateDailySummaryAction
      */
     public function exec(?Carbon $since = null): DailySummaryData
     {
-        $since ??= Carbon::now()->subDay();
+        $since ??= Date::now()->subDay();
 
         return new DailySummaryData(
             newUsers: User::query()->where('created_at', '>=', $since)->count(),

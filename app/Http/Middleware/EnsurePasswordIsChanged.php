@@ -18,7 +18,7 @@ class EnsurePasswordIsChanged
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && auth()->user()->must_change_password && !$request->routeIs('dashboard.force-password-change')) {
-            return redirect()->route('dashboard.force-password-change');
+            return to_route('dashboard.force-password-change');
         }
 
         return $next($request);

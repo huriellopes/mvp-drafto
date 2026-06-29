@@ -45,9 +45,7 @@ final class GetAuditsAction
      */
     public function getUniqueEvents(): Collection
     {
-        return collect(Cache::remember('audit_unique_events_v3', now()->addHour(), function () {
-            return Audit::query()->distinct()->pluck('event')->toArray();
-        }));
+        return collect(Cache::remember('audit_unique_events_v3', now()->addHour(), fn () => Audit::query()->distinct()->pluck('event')->toArray()));
     }
 
     /**
@@ -56,18 +54,16 @@ final class GetAuditsAction
      */
     public function getUniqueTypes(): Collection
     {
-        return collect(Cache::remember('audit_unique_types_v3', now()->addHour(), function () {
-            return Audit::query()
-                ->distinct()
-                ->pluck('auditable_type')
-                ->filter()
-                ->map(fn ($type) => [
-                    'value' => $type,
-                    'label' => str_replace('App\\Models\\', '', (string) $type),
-                ])
-                ->values()
-                ->toArray();
-        }));
+        return collect(Cache::remember('audit_unique_types_v3', now()->addHour(), fn () => Audit::query()
+            ->distinct()
+            ->pluck('auditable_type')
+            ->filter()
+            ->map(fn ($type) => [
+                'value' => $type,
+                'label' => str_replace('App\\Models\\', '', (string) $type),
+            ])
+            ->values()
+            ->all()));
     }
 
     /**
@@ -75,16 +71,14 @@ final class GetAuditsAction
      */
     public function getAvailableUsers(): Collection
     {
-        return collect(Cache::remember('audit_available_users_v3', now()->addHour(), function () {
-            return User::query()
-                ->whereExists(function ($query) {
-                    $query->select(DB::raw(1))
-                        ->from('audits')
-                        ->whereColumn('audits.user_id', 'users.id');
-                })
-                ->orderBy('name')
-                ->get(['id', 'name'])
-                ->toArray();
-        }));
+        return collect(Cache::remember('audit_available_users_v3', now()->addHour(), fn () => User::query()
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('audits')
+                    ->whereColumn('audits.user_id', 'users.id');
+            })
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->toArray()));
     }
 }

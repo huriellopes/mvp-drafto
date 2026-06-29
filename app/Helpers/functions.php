@@ -8,11 +8,11 @@ if (!function_exists('format_display_name')) {
      */
     function format_display_name(?string $name): string
     {
-        if (empty($name)) {
+        if (in_array($name, [null, '', '0'], true)) {
             return 'Usuário';
         }
 
-        $parts = array_filter(explode(' ', mb_trim((string) $name)));
+        $parts = array_filter(explode(' ', mb_trim($name)));
 
         if (count($parts) === 0) {
             return 'Usuário';
@@ -42,11 +42,11 @@ if (!function_exists('get_initials')) {
      */
     function get_initials(?string $name): string
     {
-        if (empty($name)) {
+        if (in_array($name, [null, '', '0'], true)) {
             return 'DR';
         }
 
-        $words = array_filter(explode(' ', mb_trim((string) $name)));
+        $words = array_filter(explode(' ', mb_trim($name)));
         $initials = '';
 
         foreach ($words as $word) {

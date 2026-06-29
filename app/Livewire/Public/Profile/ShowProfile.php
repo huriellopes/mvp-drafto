@@ -30,10 +30,10 @@ class ShowProfile extends Component
     public function user()
     {
         return Cache::tags(['profiles', "profile_{$this->username}"])
-            ->remember("profile_view_data_{$this->username}", now()->addMinutes(60), function () {
+            ->remember("profile_view_data_{$this->username}", now()->addMinutes(60),
                 // username é sempre persistido em minúsculas (mutator no Profile),
                 // então a igualdade direta usa o índice (sem LOWER()).
-                return User::query()
+                fn () => User::query()
                     ->whereHas('profile', fn ($q) => $q->where('username', $this->username))
                     ->with(['profile.settings', 'profile.links'])
                     ->withCount([
@@ -41,8 +41,7 @@ class ShowProfile extends Component
                         'followers',
                         'following',
                     ])
-                    ->firstOrFail();
-            });
+                    ->firstOrFail());
     }
 
     #[Computed]

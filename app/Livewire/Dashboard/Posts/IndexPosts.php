@@ -76,7 +76,7 @@ class IndexPosts extends Component
     #[Computed]
     public function posts()
     {
-        return app(ListPostsAction::class)->exec(
+        return resolve(ListPostsAction::class)->exec(
             new PostFiltersData(
                 search: $this->search,
                 status: PostStatusEnum::tryFrom($this->status),

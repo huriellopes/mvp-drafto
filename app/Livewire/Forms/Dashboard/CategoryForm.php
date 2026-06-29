@@ -61,7 +61,7 @@ class CategoryForm extends Form
                 ->find($this->editingCategoryId)
             : null;
 
-        return app(SaveCategoryAction::class)
+        return resolve(SaveCategoryAction::class)
             ->exec(
                 data: new SaveCategoryData(
                     user_id: auth()->id(),

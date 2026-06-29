@@ -47,6 +47,6 @@ final class TrackSiteView
             duration: 0,
         );
 
-        ProcessSiteViewJob::dispatch($data);
+        dispatch(new ProcessSiteViewJob($data));
     }
 }

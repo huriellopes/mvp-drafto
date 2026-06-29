@@ -102,7 +102,7 @@ class CommentIndex extends Component
     #[Computed]
     public function comments()
     {
-        return app(ListCommentsAction::class)->exec(
+        return resolve(ListCommentsAction::class)->exec(
             user: auth()->user(),
             filters: CommentFilterData::from([
                 'search' => $this->search,

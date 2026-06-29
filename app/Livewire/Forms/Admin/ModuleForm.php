@@ -9,7 +9,7 @@ use Livewire\Form;
 
 class ModuleForm extends Form
 {
-    public ?Module $module;
+    public ?Module $module = null;
 
     public bool $is_enabled = false;
 

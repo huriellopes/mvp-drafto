@@ -7,7 +7,6 @@ namespace App\Services\Post;
 use App\Enums\ModuleEnum;
 use App\Models\Post;
 use Illuminate\Support\Str;
-use RalphJSmit\Laravel\SEO\Schema\CustomSchema;
 use RalphJSmit\Laravel\SEO\SchemaCollection;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
 
@@ -46,21 +45,7 @@ final class PostSeoGenerator
 
         // Sênior: Se o plano permitir SEO, adicionamos Dados Estruturados (Schema.org)
         if ($post->author->getModuleSetting(ModuleEnum::MY_POSTS, 'enable_seo', false)) {
-            $seoData->schema = SchemaCollection::initialize([
-                new CustomSchema([
-                    '@context' => 'https://schema.org',
-                    '@type' => 'Article',
-                    'headline' => $post->title,
-                    'description' => $seoData->description,
-                    'datePublished' => $post->published_at?->toIso8601String(),
-                    'dateModified' => $post->updated_at?->toIso8601String(),
-                    'author' => [
-                        '@type' => 'Person',
-                        'name' => $post->author->display_name,
-                    ],
-                    'image' => $post->cover_image_url,
-                ]),
-            ]);
+            $seoData->schema = SchemaCollection::initialize();
         }
 
         return $seoData;

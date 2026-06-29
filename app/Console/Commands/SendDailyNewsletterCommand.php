@@ -54,15 +54,11 @@ class SendDailyNewsletterCommand extends Command
                     }
 
                     if ($postsToSend->isNotEmpty()) {
-                        SendNewsletterJob::dispatch(
-                            $subscriber,
-                            $postsToSend->map(fn ($post) => [
-                                'title' => $post->title,
-                                'excerpt' => $post->excerpt,
-                                'slug' => $post->slug,
-                            ])->toArray(),
-                            $subscriber->categories->isEmpty() ? 'Geral' : 'Seus Interesses',
-                        );
+                        dispatch(new SendNewsletterJob($subscriber, $postsToSend->map(fn ($post) => [
+                            'title' => $post->title,
+                            'excerpt' => $post->excerpt,
+                            'slug' => $post->slug,
+                        ])->toArray(), $subscriber->categories->isEmpty() ? 'Geral' : 'Seus Interesses'));
                     }
                 }
             });

@@ -21,7 +21,7 @@ final class SaveCategoryAction
             'description' => $data->description,
         ];
 
-        if ($category) {
+        if ($category instanceof PostCategory) {
             $category->update($payload);
 
             return $category->fresh();

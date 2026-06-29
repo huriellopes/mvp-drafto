@@ -14,22 +14,13 @@ use Throwable;
 
 final class TelegramLoggerHandler extends AbstractProcessingHandler
 {
-    protected string $token;
-
-    protected string $chatId;
-
-    protected ?string $threadId;
-
     public function __construct(
-        string $token,
-        string $chatId,
-        ?string $threadId = null,
+        protected string $token,
+        protected string $chatId,
+        protected ?string $threadId = null,
         $level = Level::Error,
     ) {
         parent::__construct($level);
-        $this->token = $token;
-        $this->chatId = $chatId;
-        $this->threadId = $threadId;
     }
 
     protected function write(LogRecord $record): void
@@ -82,7 +73,7 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
         };
 
         $levelName = mb_strtoupper($record->level->name);
-        $env = mb_strtoupper(config('app.env'));
+        $env = mb_strtoupper((string) config('app.env'));
 
         $isConsole = app()->runningInConsole();
 
@@ -112,7 +103,7 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
         $exception = $record->context['exception'] ?? null;
 
         if ($exception instanceof Throwable) {
-            $message .= '<b>❌ Erro:</b> <code>' . get_class($exception) . "</code>\n";
+            $message .= '<b>❌ Erro:</b> <code>' . $exception::class . "</code>\n";
             $message .= '<b>📂 Arquivo:</b> <code>' . basename($exception->getFile()) . "</code> (Linha: {$exception->getLine()})\n\n";
         }
 
@@ -122,7 +113,7 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
         $context = $record->context;
         unset($context['exception']);
 
-        if (!empty($context)) {
+        if ($context !== []) {
             $jsonContext = json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             $message .= "<b>📦 Contexto:</b>\n<pre>{$jsonContext}</pre>\n\n";
         }
@@ -137,8 +128,6 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
             }
         }
 
-        $message .= '<i>⏰ Gerado em: ' . now()->format('d/m/Y H:i:s') . '</i>';
-
-        return $message;
+        return $message . ('<i>⏰ Gerado em: ' . now()->format('d/m/Y H:i:s') . '</i>');
     }
 }

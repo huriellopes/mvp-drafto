@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable(
@@ -38,6 +39,7 @@ class PostCollection extends Model implements Auditable
             ->withTimestamps();
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

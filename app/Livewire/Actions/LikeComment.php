@@ -15,7 +15,7 @@ class LikeComment extends Component
 
     public function toggle()
     {
-        app(ToggleCommentLikeAction::class)->exec(auth()->user(), $this->comment, request()->ip());
+        resolve(ToggleCommentLikeAction::class)->exec(auth()->user(), $this->comment, request()->ip());
     }
 
     public function render()

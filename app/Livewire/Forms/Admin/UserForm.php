@@ -34,7 +34,7 @@ class UserForm extends Form
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($this->user?->id)],
-            'password' => [$this->user ? 'nullable' : 'required', 'string', 'min:8'],
+            'password' => [$this->user instanceof User ? 'nullable' : 'required', 'string', 'min:8'],
             'role' => ['required', Rule::enum(RoleEnum::class)],
             'status' => ['required', Rule::enum(UserStatusEnum::class)],
         ];
@@ -57,8 +57,8 @@ class UserForm extends Form
     {
         $this->validate();
 
-        if ($this->user) {
-            app(UpdateUserAction::class)
+        if ($this->user instanceof User) {
+            resolve(UpdateUserAction::class)
                 ->exec(
                     user: $this->user,
                     data: UpdateUserData::from($this->except('user')),
@@ -67,7 +67,7 @@ class UserForm extends Form
             return;
         }
 
-        app(StoreUserAction::class)
+        resolve(StoreUserAction::class)
             ->exec(
                 data: SaveUserData::from([
                     ...$this->all(),

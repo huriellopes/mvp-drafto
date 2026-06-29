@@ -63,7 +63,7 @@ class EditProfile extends Component
     #[Computed]
     public function socialPlatforms(): Collection
     {
-        return app(GetSocialPlatformsAction::class)->exec();
+        return resolve(GetSocialPlatformsAction::class)->exec();
     }
 
     #[Computed]
@@ -73,7 +73,7 @@ class EditProfile extends Component
             return [];
         }
 
-        return app(IbgeService::class)->getMunicipios($this->selectedUf);
+        return resolve(IbgeService::class)->getMunicipios($this->selectedUf);
     }
 
     public function updatedSelectedUf(): void
@@ -88,7 +88,7 @@ class EditProfile extends Component
     {
         $this->validateOnly('form.avatar');
 
-        app(UpdateProfileMediaAction::class)->updateAvatar(auth()->user(), $this->form->avatar);
+        resolve(UpdateProfileMediaAction::class)->updateAvatar(auth()->user(), $this->form->avatar);
 
         $this->form->avatar = null;
         auth()->user()->refresh();
@@ -112,7 +112,7 @@ class EditProfile extends Component
      */
     public function saveCrop(array $data): void
     {
-        app(UpdateProfileMediaAction::class)->updateCover(auth()->user(), $this->form->cover, $data);
+        resolve(UpdateProfileMediaAction::class)->updateCover(auth()->user(), $this->form->cover, $data);
 
         $this->form->cover = null;
         $this->isCoverCropped = true;
@@ -192,10 +192,8 @@ class EditProfile extends Component
     public function save(): void
     {
         try {
-            if ($this->selectedUf && $this->form->location) {
-                if (!str_contains($this->form->location, ',')) {
-                    $this->form->location = "{$this->form->location}, {$this->selectedUf}";
-                }
+            if ($this->selectedUf && $this->form->location && !str_contains($this->form->location, ',')) {
+                $this->form->location = "{$this->form->location}, {$this->selectedUf}";
             }
 
             $this->form->update();

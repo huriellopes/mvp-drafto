@@ -24,7 +24,7 @@ class NewsletterForm extends Component
     {
         $this->validate();
 
-        app(SubscribeNewsletterAction::class)->exec(
+        resolve(SubscribeNewsletterAction::class)->exec(
             new NewsletterData(email: $this->email, categoryId: $this->categoryId),
         );
 

@@ -16,9 +16,7 @@ final class CheckModuleStatus
      */
     public function handle(Request $request, Closure $next, string $slug): mixed
     {
-        if (!is_module_enabled($slug)) {
-            abort(404, 'Funcionalidade temporariamente indisponível.');
-        }
+        abort_unless(is_module_enabled($slug), 404, 'Funcionalidade temporariamente indisponível.');
 
         return $next($request);
     }

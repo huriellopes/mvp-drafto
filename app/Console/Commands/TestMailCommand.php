@@ -15,7 +15,7 @@ use Throwable;
 #[Description('Envia um e-mail de teste (síncrono) para validar a configuração SMTP em produção.')]
 final class TestMailCommand extends Command
 {
-    private const ALLOWED_MAILERS = ['smtp', 'contact', 'support'];
+    private const array ALLOWED_MAILERS = ['smtp', 'contact', 'support'];
 
     public function handle(): int
     {

@@ -86,11 +86,7 @@ final class ShortLinkIndex extends Component
         $fileName = 'links-encurtados-drafto-' . now()->format('Y-m-d-His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            ShortLinksExport::class,
-            ['filters' => $filters],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(ShortLinksExport::class, ['filters' => $filters], $fileName));
 
         Toaster::info('A exportação dos links foi iniciada...');
     }
@@ -107,7 +103,7 @@ final class ShortLinkIndex extends Component
     #[Computed]
     public function links()
     {
-        return app(ListShortLinksAction::class)->exec(
+        return resolve(ListShortLinksAction::class)->exec(
             filters: new ShortLinkFilterData(
                 search: $this->search,
                 sort: $this->sort,

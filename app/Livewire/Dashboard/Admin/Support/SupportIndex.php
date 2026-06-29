@@ -53,7 +53,7 @@ final class SupportIndex extends Component
 
         $support = Support::findOrFail($this->selectedSupportId);
 
-        app(UpdateSupportAction::class)->exec(
+        resolve(UpdateSupportAction::class)->exec(
             auth()->user(),
             $support,
             SupportData::from([

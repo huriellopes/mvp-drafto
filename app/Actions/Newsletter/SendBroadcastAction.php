@@ -19,12 +19,13 @@ final class SendBroadcastAction
             ->where('receive_platform_updates', true)
             ->chunk(100, function ($subscribers) use ($message, $subject) {
                 foreach ($subscribers as $subscriber) {
-                    SendNewsletterJob::dispatch(
+                    dispatch(new SendNewsletterJob(
                         $subscriber,
-                        [], // Sem posts específicos
+                        [],
+                        // Sem posts específicos
                         $subject,
                         $message,
-                    );
+                    ));
                 }
             });
     }

@@ -40,7 +40,7 @@ final class SavePostAction
             // Sênior: Gera resumo automático se estiver publicando e estiver vazio
             $excerpt = $dto->excerpt;
 
-            if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && empty(mb_trim((string) $excerpt))) {
+            if (($dto->status === PostStatusEnum::PUBLISHED || $dto->status === PostStatusEnum::SCHEDULED) && in_array(mb_trim((string) $excerpt), ['', '0'], true)) {
                 // Para resumos automáticos, usamos texto puro derivado do conteúdo já limpo
                 $sanitizedExcerpt = Str::limit(strip_tags($sanitizedContent), 160);
             } else {
@@ -60,7 +60,7 @@ final class SavePostAction
                 $data['published_at'] = $dto->published_at;
             }
 
-            if ($post) {
+            if ($post instanceof Post) {
                 $post->update($data);
             } else {
                 /** @var Post $post */
@@ -72,7 +72,7 @@ final class SavePostAction
             $post->tags()->sync($processedTags);
 
             // Sincroniza as coleções de obras do autor (apenas as que são dele).
-            app(SyncPostCollectionsAction::class)->exec($post, $dto->collections);
+            resolve(SyncPostCollectionsAction::class)->exec($post, $dto->collections);
 
             // Sênior: Despacha evento para hooks externos (SEO, Imagem, Notificações)
             event(new PostSaved($post, [
@@ -101,9 +101,7 @@ final class SavePostAction
         if (is_numeric($category)) {
             $existing = PostCategory::find($category);
 
-            if ($existing && $existing->user_id !== null && $existing->user_id !== $user->id) {
-                throw new Exception('A categoria selecionada é inválida.');
-            }
+            throw_if($existing && $existing->user_id !== null && $existing->user_id !== $user->id, Exception::class, 'A categoria selecionada é inválida.');
 
             return (int) $category;
         }

@@ -34,6 +34,6 @@ class MagicLinkForm extends Form
         // contra abuso/e-mail bombing.
         $this->incrementAttempts($this->email, decaySeconds: 300);
 
-        app(SendMagicLinkAction::class)->exec(email: $this->email, remember: $this->remember);
+        resolve(SendMagicLinkAction::class)->exec(email: $this->email, remember: $this->remember);
     }
 }

@@ -7,10 +7,10 @@ namespace App\Actions\Auth;
 use App\Models\User;
 use PragmaRX\Google2FALaravel\Google2FA;
 
-final class ConfirmTwoFactorAuthAction
+final readonly class ConfirmTwoFactorAuthAction
 {
     public function __construct(
-        private readonly Google2FA $google2fa,
+        private Google2FA $google2fa,
     ) {}
 
     public function exec(User $user, string $code): bool

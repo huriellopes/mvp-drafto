@@ -13,7 +13,7 @@ final class SendReengagementEmailAction
     /**
      * Faixas (em dias) do e-mail escalonado de retorno.
      */
-    public const STAGES = [15, 30, 60];
+    public const array STAGES = [15, 30, 60];
 
     /**
      * Envia (enfileira) o e-mail de retorno para um usuário.

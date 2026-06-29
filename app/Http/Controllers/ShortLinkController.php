@@ -18,9 +18,7 @@ final class ShortLinkController extends Controller
     {
         $url = $resolveAction->exec($code);
 
-        if (!$url) {
-            abort(404);
-        }
+        abort_unless($url !== null, 404);
 
         // Incremento assíncrono de cliques (via query direta para performance)
         ShortLink::where('code', $code)->increment('clicks');

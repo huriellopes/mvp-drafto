@@ -48,13 +48,7 @@ final class TrackPostView
         }
 
         if ($post) {
-            ProcessPostViewJob::dispatch(
-                $post->id,
-                auth()->id(),
-                session()->getId(),
-                md5($request->ip() ?? 'unknown'),
-                $request->userAgent() ?? 'unknown',
-            );
+            dispatch(new ProcessPostViewJob($post->id, auth()->id(), session()->getId(), md5($request->ip() ?? 'unknown'), $request->userAgent() ?? 'unknown'));
         }
     }
 }
