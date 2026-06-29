@@ -15,7 +15,7 @@ final class CheckEmailVerificationInterval
         $user = $request->user();
 
         if ($user && !$user->hasVerifiedEmail() && $user->hasVerificationExpired()) {
-            return redirect()->route('verification.notice')
+            return to_route('verification.notice')
                 ->with('error', 'Seu prazo de 15 dias para verificação expirou.');
         }
 

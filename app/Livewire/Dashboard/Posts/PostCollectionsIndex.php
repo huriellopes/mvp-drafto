@@ -104,7 +104,7 @@ class PostCollectionsIndex extends Component
             $this->collection = null;
         }
 
-        app(DeletePostCollectionAction::class)->exec($collection);
+        resolve(DeletePostCollectionAction::class)->exec($collection);
 
         $this->reset('collectionIdBeingDeleted');
         Toaster::success('Coleção removida. Suas obras foram mantidas.');

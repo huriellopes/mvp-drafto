@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
@@ -31,6 +32,7 @@ class NewsletterSubscriber extends Model implements Auditable
         return !is_null($this->verified_at);
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

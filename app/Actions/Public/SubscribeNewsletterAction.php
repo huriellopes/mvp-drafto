@@ -12,10 +12,10 @@ use App\Models\NewsletterSubscriber;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
-final class SubscribeNewsletterAction
+final readonly class SubscribeNewsletterAction
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
+        private LoggerInterface $logger,
     ) {}
 
     public function exec(NewsletterData $data): void

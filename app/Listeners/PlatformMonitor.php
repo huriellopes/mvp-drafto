@@ -26,7 +26,7 @@ final class PlatformMonitor
     /**
      * Cron de altíssima frequência cujo "concluído" não vale a pena logar.
      */
-    private const NOISY_EXPRESSION = '* * * * *';
+    private const string NOISY_EXPRESSION = '* * * * *';
 
     public function commandFinished(CommandFinished $event): void
     {

@@ -39,7 +39,7 @@ class ForgotPasswordForm extends Form
         // contra abuso/e-mail bombing.
         $this->incrementAttempts($this->email, decaySeconds: 300);
 
-        app(SendPasswordResetLinkAction::class)
+        resolve(SendPasswordResetLinkAction::class)
             ->exec(
                 email: $this->email,
             );

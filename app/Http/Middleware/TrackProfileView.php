@@ -38,11 +38,7 @@ final class TrackProfileView
             ->first()?->profile;
 
         if ($profile && (!auth()->check() || auth()->id() !== $profile->user_id)) {
-            ProcessProfileViewJob::dispatch(
-                $profile->id,
-                auth()->id(),
-                md5($request->ip() ?? 'unknown'),
-            );
+            dispatch(new ProcessProfileViewJob($profile->id, auth()->id(), md5($request->ip() ?? 'unknown')));
         }
     }
 }

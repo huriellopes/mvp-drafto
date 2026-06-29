@@ -30,17 +30,17 @@ final class SeedFakeAnalyticsCommand extends Command
         // Last 45 days
         for ($i = 0; $i < 45; $i++) {
             $date = now()->subDays($i);
-            $count = rand(5, 20);
+            $count = random_int(5, 20);
 
             for ($j = 0; $j < $count; $j++) {
                 SiteView::create([
                     'url' => $urls[array_rand($urls)],
-                    'ip_address' => '127.0.0.' . rand(1, 255),
-                    'session_id' => 'session_' . rand(1, 100),
-                    'user_id' => rand(0, 1) ? 1 : null,
-                    'search_query' => rand(0, 10) > 7 ? $searches[array_rand($searches)] : null,
-                    'duration' => rand(10, 300),
-                    'viewed_at' => $date->copy()->subMinutes(rand(0, 1440)),
+                    'ip_address' => '127.0.0.' . random_int(1, 255),
+                    'session_id' => 'session_' . random_int(1, 100),
+                    'user_id' => random_int(0, 1) !== 0 ? 1 : null,
+                    'search_query' => random_int(0, 10) > 7 ? $searches[array_rand($searches)] : null,
+                    'duration' => random_int(10, 300),
+                    'viewed_at' => $date->copy()->subMinutes(random_int(0, 1440)),
                 ]);
             }
         }

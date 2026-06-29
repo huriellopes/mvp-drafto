@@ -22,7 +22,7 @@ final class TelegramErrorReporter
     /**
      * Janela de throttle: no máximo 1 alerta por assinatura de erro neste período.
      */
-    private const THROTTLE_MINUTES = 5;
+    private const int THROTTLE_MINUTES = 5;
 
     /**
      * Trechos de path típicos de varredura automatizada de bots (WordPress, .env,
@@ -30,7 +30,7 @@ final class TelegramErrorReporter
      * internet — não-direcionados e não-acionáveis — então não geram alerta no
      * Telegram (seguem registrados no log em arquivo para auditoria/estatística).
      */
-    private const SCANNER_NOISE = [
+    private const array SCANNER_NOISE = [
         'wp-', 'wordpress', 'xmlrpc.php', 'wlwmanifest',
         '.env', '.git', '.svn', '.htaccess', '.aws/',
         'phpmyadmin', 'phpinfo', 'myadmin', 'mysqladmin', '/pma',

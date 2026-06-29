@@ -52,7 +52,7 @@ class CoverUpload extends Component
         $this->validate(['image' => 'required|image']);
 
         try {
-            $path = app(UploadCoverImageAction::class)->exec(
+            $path = resolve(UploadCoverImageAction::class)->exec(
                 $this->image,
                 $data,
             );
@@ -67,7 +67,7 @@ class CoverUpload extends Component
 
             $this->dispatch('cover-prepared', coverPath: $path);
             Toaster::info('Capa preparada!');
-        } catch (Exception $e) {
+        } catch (Exception) {
             Toaster::error('Falha ao processar imagem.');
         }
     }
@@ -87,13 +87,13 @@ class CoverUpload extends Component
             $this->currentCoverPath = null;
             $this->isCropped = false;
 
-            if ($this->post) {
+            if ($this->post instanceof Post) {
                 $this->post->update(['cover_image_path' => null]);
             }
 
             $this->dispatch('cover-prepared', coverPath: null);
             Toaster::info('Capa removida com sucesso.');
-        } catch (Exception $e) {
+        } catch (Exception) {
             Toaster::error('Falha ao remover a imagem.');
         }
     }

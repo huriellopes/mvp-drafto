@@ -13,12 +13,12 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-final class AuditsExport implements FromQuery, WithChunkReading, WithHeadings, WithMapping
+final readonly class AuditsExport implements FromQuery, WithChunkReading, WithHeadings, WithMapping
 {
     use Exportable;
 
     public function __construct(
-        private readonly AuditFilterData $filters,
+        private AuditFilterData $filters,
     ) {}
 
     public function query(): Builder

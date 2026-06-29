@@ -6,7 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\Response;
 
 final class CheckBanned
@@ -15,12 +15,12 @@ final class CheckBanned
     {
         if (auth()->check() && auth()->user()->banned_until && now()->lessThan(auth()->user()->banned_until)) {
             $user = auth()->user();
-            $banned_days = Carbon::now()->diffInDays($user->banned_until);
+            $banned_days = Date::now()->diffInDays($user->banned_until);
             $reason = $user->ban_reason;
 
             auth()->logout();
 
-            return redirect()->route('login')->withErrors([
+            return to_route('login')->withErrors([
                 'email' => "Sua conta está suspensa por mais {$banned_days} dias. Motivo: {$reason}",
             ]);
         }

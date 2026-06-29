@@ -40,7 +40,7 @@ final class IbgeService
                         ])
                         ->sortBy('nome')
                         ->values()
-                        ->toArray();
+                        ->all();
                 }
 
                 Log::warning('API do IBGE retornou erro ao buscar municípios', [
@@ -77,7 +77,7 @@ final class IbgeService
                         ])
                         ->sortBy('sigla')
                         ->values()
-                        ->toArray();
+                        ->all();
                 }
 
                 Log::warning('API do IBGE retornou erro ao buscar UFs', [
@@ -149,6 +149,6 @@ final class IbgeService
         return collect($cities)->map(fn ($nome, $index) => [
             'id' => $index,
             'nome' => $nome,
-        ])->toArray();
+        ])->all();
     }
 }

@@ -38,7 +38,7 @@ final class LinkShortenerDashboard extends Component
 
     public function updatedEnableForProfile($value): void
     {
-        app(UpdateModuleSettingAction::class)->exec(
+        resolve(UpdateModuleSettingAction::class)->exec(
             user: auth()->user(),
             module: ModuleEnum::LINK_SHORTENER,
             key: 'enable_for_profile',
@@ -49,7 +49,7 @@ final class LinkShortenerDashboard extends Component
 
     public function updatedEnableForPosts($value): void
     {
-        app(UpdateModuleSettingAction::class)->exec(
+        resolve(UpdateModuleSettingAction::class)->exec(
             user: auth()->user(),
             module: ModuleEnum::LINK_SHORTENER,
             key: 'enable_for_posts',
@@ -66,8 +66,7 @@ final class LinkShortenerDashboard extends Component
             ->with('shortable')
             ->when($this->search, function ($query) {
                 $query->where('code', 'like', "%{$this->search}%");
-            })
-            ->orderBy('created_at', 'desc')
+            })->latest()
             ->paginate(10);
     }
 

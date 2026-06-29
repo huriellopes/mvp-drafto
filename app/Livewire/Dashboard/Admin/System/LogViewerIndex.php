@@ -20,7 +20,7 @@ use Masmerise\Toaster\Toaster;
 #[Title('Logs do Sistema')]
 class LogViewerIndex extends Component
 {
-    private const LEVELS = [
+    private const array LEVELS = [
         'errors' => ['emergency', 'alert', 'critical', 'error'],
         'debug' => ['debug', 'info', 'notice', 'warning'],
     ];
@@ -61,7 +61,7 @@ class LogViewerIndex extends Component
     /** Abre o modal com o erro detalhado do job. */
     public function showDetail(string $uuid): void
     {
-        $job = app(ReadLogEntriesAction::class)->failedJobs()->firstWhere('uuid', $uuid);
+        $job = resolve(ReadLogEntriesAction::class)->failedJobs()->firstWhere('uuid', $uuid);
         $this->detailJob = is_array($job) ? $job : null;
 
         if ($this->detailJob !== null) {
@@ -99,7 +99,7 @@ class LogViewerIndex extends Component
 
     public function render(): View
     {
-        $action = app(ReadLogEntriesAction::class);
+        $action = resolve(ReadLogEntriesAction::class);
 
         $entries = collect();
         $failedJobs = collect();

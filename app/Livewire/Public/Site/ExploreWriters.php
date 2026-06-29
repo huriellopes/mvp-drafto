@@ -42,7 +42,7 @@ class ExploreWriters extends Component
     #[Computed]
     public function writers()
     {
-        return app(ListExploreWritersAction::class)
+        return resolve(ListExploreWritersAction::class)
             ->exec(
                 data: new ExploreWritersFilterData(search: $this->search),
             );

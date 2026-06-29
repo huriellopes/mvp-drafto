@@ -68,7 +68,7 @@ class PostForm extends Form
                         if (!$category || ($category->user_id !== null && $category->user_id !== auth()->id())) {
                             $fail('A categoria selecionada é inválida.');
                         }
-                    } elseif (!is_string($value) || empty(mb_trim($value))) {
+                    } elseif (!is_string($value) || in_array(mb_trim($value), ['', '0'], true)) {
                         $fail('A categoria é obrigatória.');
                     }
                 },

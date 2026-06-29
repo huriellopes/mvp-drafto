@@ -17,14 +17,10 @@ final class TemporaryFileDownloadController extends Controller
     {
         $path = $request->query('path');
 
-        if (!$path || !Storage::disk('local')->exists($path)) {
-            abort(404);
-        }
+        abort_if(!$path || !Storage::disk('local')->exists($path), 404);
 
         // Segurança: Apenas arquivos dentro da pasta temp/
-        if (!str_starts_with($path, 'temp/')) {
-            abort(403);
-        }
+        abort_unless(str_starts_with($path, 'temp/'), 403);
 
         $fullPath = Storage::disk('local')->path($path);
 

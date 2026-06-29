@@ -53,7 +53,7 @@ final class ProcessPostMediaAndSeoJob implements ShouldQueue
         if ($this->oldImagePath && $this->post->cover_image_path !== $this->oldImagePath) {
             try {
                 Storage::disk('public')->delete($this->oldImagePath);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 // Sênior: Logamos mas não falhamos o job por erro de cleanup (evita loop infinito se arquivo sumiu)
                 Log::warning('Erro ao deletar imagem antiga: ' . $this->oldImagePath);
             }

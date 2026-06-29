@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 
@@ -54,27 +55,6 @@ class Comment extends Model implements Auditable
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function scopeRoot(Builder $query): Builder
-    {
-        return $query->whereNull('parent_id');
-    }
-
-    public function scopeVisible(Builder $query): Builder
-    {
-        return $query->where('status', CommentStatusEnum::VISIBLE);
-    }
-
-    public function scopeWithRelations(Builder $query): Builder
-    {
-        return $query->with([
-            'user.profile',
-            'replies.user.profile',
-            'replies.replies.user.profile',
-        ])
-            ->withCount('likedByUsers')
-            ->when(auth()->check(), fn ($q) => $q->withExists(['likedByUsers as is_liked' => fn ($q) => $q->where('user_id', auth()->id())]));
-    }
-
     public function likedByUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'comment_likes', 'comment_id', 'user_id')
@@ -86,6 +66,28 @@ class Comment extends Model implements Auditable
         return $this->morphMany(Report::class, 'reportable');
     }
 
+    protected function scopeRoot(Builder $query): Builder
+    {
+        return $query->whereNull('parent_id');
+    }
+
+    protected function scopeVisible(Builder $query): Builder
+    {
+        return $query->where('status', CommentStatusEnum::VISIBLE);
+    }
+
+    protected function scopeWithRelations(Builder $query): Builder
+    {
+        return $query->with([
+            'user.profile',
+            'replies.user.profile',
+            'replies.replies.user.profile',
+        ])
+            ->withCount('likedByUsers')
+            ->when(auth()->check(), fn ($q) => $q->withExists(['likedByUsers as is_liked' => fn ($q) => $q->where('user_id', auth()->id())]));
+    }
+
+    #[Override]
     protected function casts(): array
     {
         return [

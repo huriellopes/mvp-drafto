@@ -37,7 +37,7 @@ final class SiteAnalytics extends Component
     #[Computed]
     public function analytics()
     {
-        return app(GetSiteAnalyticsAction::class)
+        return resolve(GetSiteAnalyticsAction::class)
             ->handle(
                 $this->days,
                 $this->startDate,
@@ -50,15 +50,11 @@ final class SiteAnalytics extends Component
         $fileName = 'site-analytics-' . now()->format('Y-m-d-His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            SiteAnalyticsExport::class,
-            [
-                'days' => $this->days,
-                'startDate' => $this->startDate,
-                'endDate' => $this->endDate,
-            ],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(SiteAnalyticsExport::class, [
+            'days' => $this->days,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
+        ], $fileName));
 
         Toaster::info('O relatório de analytics está sendo gerado...');
     }

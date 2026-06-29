@@ -164,14 +164,43 @@
         </div>
     </x-ui.section-card>
 
-    <x-ui.confirm-modal
-        name="confirm-delete-account"
-        title="Deletar conta"
-        content="Tem certeza que deseja deletar sua conta? Todos os seus dados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos permanentemente. Esta ação não pode ser desfeita."
-        buttonText="Sim, deletar minha conta"
-        variant="danger"
-        action="deleteAccount"
-    />
+    <x-ui.modal name="confirm-delete-account" title="Deletar conta">
+        <p class="text-sm leading-6 text-zinc-600 dark:text-zinc-300">
+            Tem certeza que deseja deletar sua conta? Todos os seus dados (perfil, posts, comentários, coleções, curtidas e seguidores) serão removidos permanentemente. Esta ação não pode ser desfeita.
+        </p>
+
+        <div class="mt-6">
+            <x-ui.input
+                type="password"
+                label="Confirme sua senha"
+                wire:model="deletePassword"
+                placeholder="Digite sua senha atual"
+                autocomplete="current-password"
+                :error="$errors->first('deletePassword')"
+                wire:keydown.enter="deleteAccount"
+            />
+        </div>
+
+        <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button
+                type="button"
+                x-on:click="$dispatch('close-modal', { name: 'confirm-delete-account' })"
+                class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="button"
+                wire:click="deleteAccount"
+                wire:loading.attr="disabled"
+                wire:target="deleteAccount"
+                class="inline-flex items-center justify-center rounded-2xl bg-red-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-red-700 disabled:opacity-60"
+            >
+                Sim, deletar minha conta
+            </button>
+        </div>
+    </x-ui.modal>
 
     <x-ui.confirm-modal
         name="confirm-become-writer"

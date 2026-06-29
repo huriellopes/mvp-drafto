@@ -21,7 +21,8 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
 use Spatie\Sitemap\Contracts\Sitemapable;
@@ -88,7 +89,7 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
      */
     public function getShareUrl(): string
     {
-        return app(GenerateShortLinkAction::class)->exec(
+        return resolve(GenerateShortLinkAction::class)->exec(
             user: auth()->user() ?? $this,
             shortable: $this,
         );
@@ -122,7 +123,7 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
 
     public function greeting(): string
     {
-        $hour = Carbon::now()->hour;
+        $hour = Date::now()->hour;
 
         return match (true) {
             $hour >= 5 && $hour < 12 => 'Bom dia',
@@ -143,6 +144,7 @@ class User extends Authenticatable implements Auditable, MustVerifyEmail, Sitema
         });
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

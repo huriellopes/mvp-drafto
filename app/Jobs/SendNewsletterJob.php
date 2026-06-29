@@ -49,7 +49,7 @@ class SendNewsletterJob implements ShouldQueue
                 ),
             );
         } catch (Exception $e) {
-            app(LoggerInterface::class)->error("Falha ao enviar newsletter para {$this->subscriber->email}", LogCategoryEnum::QUEUE, [
+            resolve(LoggerInterface::class)->error("Falha ao enviar newsletter para {$this->subscriber->email}", LogCategoryEnum::QUEUE, [
                 'exception' => $e->getMessage(),
             ]);
 

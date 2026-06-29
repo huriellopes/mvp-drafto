@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Admin;
 
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 /**
  * Remove arquivos de log antigos, mantendo apenas os dos últimos N dias.
@@ -19,7 +19,7 @@ final class PruneLogFilesAction
     public function exec(int $keepDays, ?string $directory = null): int
     {
         $directory ??= storage_path('logs');
-        $cutoff = Carbon::now()->subDays(max(1, $keepDays))->getTimestamp();
+        $cutoff = Date::now()->subDays(max(1, $keepDays))->getTimestamp();
 
         $deleted = 0;
 

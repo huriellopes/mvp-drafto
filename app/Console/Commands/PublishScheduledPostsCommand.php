@@ -25,7 +25,7 @@ class PublishScheduledPostsCommand extends Command
 
         $this->info('Iniciando publicação de posts agendados...');
 
-        $count = app(PublishScheduledPostsAction::class)
+        $count = resolve(PublishScheduledPostsAction::class)
             ->exec();
 
         $this->info("Sucesso! {$count} posts foram publicados.");

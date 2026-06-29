@@ -55,7 +55,7 @@ class ManagePost extends Component
     public function updated($property): void
     {
         // Só faz autosave se o post já existir e for um campo do formulário
-        if ($this->post && str_starts_with($property, 'form.')) {
+        if ($this->post && str_starts_with((string) $property, 'form.')) {
             $this->save(isAutosave: true);
         }
     }
@@ -82,7 +82,7 @@ class ManagePost extends Component
                     $status = $this->post?->status ?? PostStatusEnum::DRAFT;
                     $dto = $this->form->toDTO($this->updatedCoverPath, $status);
 
-                    $this->post = app(SavePostAction::class)->exec(
+                    $this->post = resolve(SavePostAction::class)->exec(
                         auth()->user(),
                         $dto,
                         $this->post,
@@ -132,7 +132,7 @@ class ManagePost extends Component
                 function () {
                     $dto = $this->form->toDTO($this->updatedCoverPath, PostStatusEnum::PUBLISHED);
 
-                    $this->post = app(SavePostAction::class)->exec(
+                    $this->post = resolve(SavePostAction::class)->exec(
                         auth()->user(),
                         $dto,
                         $this->post,
@@ -186,7 +186,7 @@ class ManagePost extends Component
                 function () {
                     $dto = $this->form->toDTO($this->updatedCoverPath, PostStatusEnum::SCHEDULED);
 
-                    $this->post = app(SavePostAction::class)->exec(
+                    $this->post = resolve(SavePostAction::class)->exec(
                         auth()->user(),
                         $dto,
                         $this->post,
@@ -239,7 +239,7 @@ class ManagePost extends Component
             'availableTags' => $tags,
             'availableCollections' => $collections,
         ])->layout('layouts.app', [
-            'heading' => $this->post ? 'Editando: ' . $this->post->title : 'Nova Publicação',
+            'heading' => $this->post instanceof Post ? 'Editando: ' . $this->post->title : 'Nova Publicação',
         ]);
     }
 }

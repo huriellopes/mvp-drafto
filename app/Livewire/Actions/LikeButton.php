@@ -16,7 +16,7 @@ class LikeButton extends Component
 
     public function toggle()
     {
-        app(ToggleLikeAction::class)
+        resolve(ToggleLikeAction::class)
             ->exec(auth()->user(), $this->post, request()->ip());
 
         $this->post->refresh();

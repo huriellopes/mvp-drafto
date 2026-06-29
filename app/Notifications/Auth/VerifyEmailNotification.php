@@ -9,11 +9,13 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Queue\SerializesModels;
+use Override;
 
 class VerifyEmailNotification extends VerifyEmail implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    #[Override]
     public function toMail($notifiable): MailMessage
     {
         $verificationUrl = $this->verificationUrl($notifiable);

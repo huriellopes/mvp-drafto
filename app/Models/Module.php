@@ -8,6 +8,7 @@ use App\Enums\ModuleEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable([
@@ -26,11 +27,10 @@ class Module extends Model implements Auditable
     {
         $value = $slug instanceof ModuleEnum ? $slug->value : $slug;
 
-        return (bool) Cache::remember("module_status_{$value}_v3", now()->addDay(), function () use ($value) {
-            return self::where('slug', $value)->where('is_enabled', true)->exists();
-        });
+        return (bool) Cache::remember("module_status_{$value}_v3", now()->addDay(), fn () => self::where('slug', $value)->where('is_enabled', true)->exists());
     }
 
+    #[Override]
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -41,6 +41,7 @@ class Module extends Model implements Auditable
         return data_get($this->settings, $key, $default);
     }
 
+    #[Override]
     protected static function booted(): void
     {
         // Limpa o cache sempre que o módulo for alterado
@@ -58,6 +59,7 @@ class Module extends Model implements Auditable
         static::deleted($clearCache);
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

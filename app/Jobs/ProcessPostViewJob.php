@@ -69,7 +69,7 @@ final class ProcessPostViewJob implements ShouldQueue
         try {
             Redis::incr("post_views_buffer:{$this->postId}");
         } catch (Exception $e) {
-            app(LoggerInterface::class)->error("Redis falhou ao incrementar view para o Post #{$this->postId}", LogCategoryEnum::QUEUE, [
+            resolve(LoggerInterface::class)->error("Redis falhou ao incrementar view para o Post #{$this->postId}", LogCategoryEnum::QUEUE, [
                 'exception' => $e->getMessage(),
             ]);
         }
@@ -80,7 +80,7 @@ final class ProcessPostViewJob implements ShouldQueue
      */
     public function failed(Throwable $exception): void
     {
-        app(LoggerInterface::class)->error("Job ProcessPostViewJob falhou definitivamente para o Post #{$this->postId}", LogCategoryEnum::QUEUE, [
+        resolve(LoggerInterface::class)->error("Job ProcessPostViewJob falhou definitivamente para o Post #{$this->postId}", LogCategoryEnum::QUEUE, [
             'exception' => $exception->getMessage(),
         ]);
     }

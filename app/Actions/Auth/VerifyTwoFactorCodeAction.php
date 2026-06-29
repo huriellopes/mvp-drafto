@@ -8,10 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use PragmaRX\Google2FALaravel\Google2FA;
 
-final class VerifyTwoFactorCodeAction
+final readonly class VerifyTwoFactorCodeAction
 {
     public function __construct(
-        private readonly Google2FA $google2fa,
+        private Google2FA $google2fa,
     ) {}
 
     public function exec(User $user, string $code): bool

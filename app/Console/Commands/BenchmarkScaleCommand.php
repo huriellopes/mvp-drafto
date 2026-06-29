@@ -35,12 +35,12 @@ final class BenchmarkScaleCommand extends Command
         for ($i = 0; $i < $likeCount; $i++) {
             try {
                 $user = $users->random();
-                app(ToggleLikeAction::class)
+                resolve(ToggleLikeAction::class)
                     ->exec(
                         user: $user,
                         post: $post,
                     );
-            } catch (Throwable $e) {
+            } catch (Throwable) {
                 $errors++;
             }
             $bar->advance();

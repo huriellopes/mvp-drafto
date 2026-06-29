@@ -21,11 +21,9 @@ final class ProfileQrCodeController extends Controller
 
         $user = $profile->user;
 
-        if (!$user instanceof User) {
-            abort(404);
-        }
+        abort_unless($user instanceof User, 404);
 
-        $png = app(GenerateProfileQrCodeAction::class)
+        $png = resolve(GenerateProfileQrCodeAction::class)
             ->exec(
                 user: $user,
             );

@@ -69,15 +69,11 @@ class PostComments extends Component
             // Sênior: Detecção robusta de imagens via Regex (Case Insensitive)
             $hasImages = preg_match('/<(img|object|embed|iframe)/i', $this->form->content);
 
-            if ($hasImages && auth()->check() && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images', true)) {
-                throw new Exception('Sua conta não tem permissão para o envio de mídia nos comentários.');
-            }
+            throw_if($hasImages && auth()->check() && !auth()->user()->getModuleSetting(ModuleEnum::COMMENTS, 'allow_images', true), Exception::class, 'Sua conta não tem permissão para o envio de mídia nos comentários.');
 
-            if ($hasImages && auth()->guest()) {
-                throw new Exception('Visitantes não podem enviar mídia nos comentários.');
-            }
+            throw_if($hasImages && auth()->guest(), Exception::class, 'Visitantes não podem enviar mídia nos comentários.');
 
-            app(StoreCommentAction::class)->exec(
+            resolve(StoreCommentAction::class)->exec(
                 auth()->user(),
                 $this->post,
                 SaveCommentData::from($this->form->all()),
@@ -112,7 +108,7 @@ class PostComments extends Component
             'replyContent' => 'required|string|min:3|max:1000',
         ]);
 
-        app(StoreCommentAction::class)->exec(
+        resolve(StoreCommentAction::class)->exec(
             auth()->user(),
             $this->post,
             SaveCommentData::from([

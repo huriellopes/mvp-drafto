@@ -20,7 +20,7 @@ class GlobalSearch extends Component
 
     public function render()
     {
-        $results = app(GlobalSearchAction::class)->exec($this->search);
+        $results = resolve(GlobalSearchAction::class)->exec($this->search);
 
         return view('livewire.public.site.global-search', [
             'posts' => $results['posts'],

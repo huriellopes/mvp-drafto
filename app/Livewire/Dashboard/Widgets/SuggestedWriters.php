@@ -38,7 +38,7 @@ class SuggestedWriters extends Component
                     return [];
                 }
 
-                return app(GetSuggestedWritersAction::class)
+                return resolve(GetSuggestedWritersAction::class)
                     ->exec($user)
                     ->pluck('id')
                     ->toArray();
