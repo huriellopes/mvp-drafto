@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Notifications\Auth\WelcomeNotification;
 use App\Traits\GeneratesUsername;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -36,7 +36,7 @@ final class RegisterUserAction
                 'role' => $role,
                 'status' => UserStatusEnum::ACTIVE,
                 'ip_address' => request()->ip(),
-                'last_login_at' => Carbon::now(),
+                'last_login_at' => Date::now(),
             ]);
 
             if ($isWriter) {

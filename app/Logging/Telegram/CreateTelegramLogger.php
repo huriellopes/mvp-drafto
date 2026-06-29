@@ -27,7 +27,7 @@ final class CreateTelegramLogger
         $handler = new TelegramLoggerHandler(
             token: (string) config('services.telegram.token'),
             chatId: (string) config('services.telegram.chat'),
-            threadId: $threadId ? (string) $threadId : null,
+            threadId: $threadId ?: null,
             level: $level,
         );
 

@@ -6,8 +6,8 @@ namespace App\Livewire\Auth;
 
 use App\Actions\Auth\VerifyTwoFactorCodeAction;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Masmerise\Toaster\Toaster;
@@ -38,7 +38,7 @@ class TwoFactorChallenge extends Component
             session()->regenerate();
 
             $user->update([
-                'last_login_at' => Carbon::now(),
+                'last_login_at' => Date::now(),
                 'ip_address' => request()->ip(),
             ]);
 

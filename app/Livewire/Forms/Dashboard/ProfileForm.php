@@ -173,7 +173,7 @@ class ProfileForm extends Form
 
         $dto = UpdateProfileData::from($this->all());
 
-        app(UpdateProfileAction::class)->exec(
+        resolve(UpdateProfileAction::class)->exec(
             user: auth()->user(),
             data: $dto,
         );
@@ -184,7 +184,7 @@ class ProfileForm extends Form
         $url = mb_trim($this->website_url ?? '');
 
         // Sênior: Se o campo estiver vazio ou for apenas o prefixo, limpamos para null
-        if (empty($url) || in_array($url, ['https://', 'http://', 'https:/', 'http:/'], true)) {
+        if ($url === '' || $url === '0' || in_array($url, ['https://', 'http://', 'https:/', 'http:/'], true)) {
             $this->website_url = null;
 
             return;

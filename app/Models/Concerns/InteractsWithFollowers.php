@@ -40,7 +40,7 @@ trait InteractsWithFollowers
             ->exists();
     }
 
-    public function scopeWithFollowStatus(Builder $query): Builder
+    protected function scopeWithFollowStatus(Builder $query): Builder
     {
         return $query->when(auth()->check(), function ($q): void {
             $q->withExists(['followers as is_followed_by_auth_user' => function ($q): void {

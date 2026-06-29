@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 
@@ -141,7 +142,7 @@ class Profile extends Model implements Auditable
      */
     public function isComplete(): bool
     {
-        return empty($this->getMissingFields());
+        return $this->getMissingFields() === [];
     }
 
     /**
@@ -149,6 +150,7 @@ class Profile extends Model implements Auditable
      * evitando UrlGenerationException em rotas que dependem do username.
      * O usuário pode atualizá-lo depois em Editar Perfil.
      */
+    #[Override]
     protected static function booted(): void
     {
         static::creating(function (Profile $profile): void {
@@ -187,6 +189,7 @@ class Profile extends Model implements Auditable
         );
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

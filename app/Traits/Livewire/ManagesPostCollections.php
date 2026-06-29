@@ -45,7 +45,7 @@ trait ManagesPostCollections
             ->where('user_id', auth()->id())
             ->findOrFail($collectionId);
 
-        $attached = app(TogglePostInCollectionAction::class)->exec($collection, $post);
+        $attached = resolve(TogglePostInCollectionAction::class)->exec($collection, $post);
 
         unset($this->quickCollections);
 

@@ -20,7 +20,7 @@ final class SyncPostCollectionsAction
     {
         $ownedIds = $post->user
             ->postCollections()
-            ->whereIn('id', array_map('intval', $collectionIds))
+            ->whereIn('id', array_map(intval(...), $collectionIds))
             ->pluck('id')
             ->all();
 

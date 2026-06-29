@@ -45,7 +45,7 @@ class RegisterForm extends Form
 
         $this->validate();
 
-        $user = app(RegisterUserAction::class)
+        $user = resolve(RegisterUserAction::class)
             ->exec(
                 data: RegisterUserData::from($this->all()),
             );

@@ -18,7 +18,7 @@ class SaveButton extends Component
             return $this->redirect(route('login'), navigate: true);
         }
 
-        app(ToggleSaveAction::class)->exec(auth()->user(), $this->post);
+        resolve(ToggleSaveAction::class)->exec(auth()->user(), $this->post);
     }
 
     public function render()

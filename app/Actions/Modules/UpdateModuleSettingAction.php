@@ -6,8 +6,8 @@ namespace App\Actions\Modules;
 
 use App\Enums\ModuleEnum;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 
 final class UpdateModuleSettingAction
 {
@@ -27,7 +27,7 @@ final class UpdateModuleSettingAction
 
         $user->modules()->updateExistingPivot($userModule->id, [
             'settings' => $settings,
-            'updated_at' => Carbon::now(),
+            'updated_at' => Date::now(),
         ]);
 
         Cache::forget("user_{$user->id}_module_{$module->value}");

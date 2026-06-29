@@ -9,12 +9,12 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-final class SiteAnalyticsExport implements FromQuery, WithHeadings, WithMapping
+final readonly class SiteAnalyticsExport implements FromQuery, WithHeadings, WithMapping
 {
     public function __construct(
-        private readonly int $days,
-        private readonly ?string $startDate = null,
-        private readonly ?string $endDate = null,
+        private int $days,
+        private ?string $startDate = null,
+        private ?string $endDate = null,
     ) {}
 
     public function query()
@@ -29,7 +29,7 @@ final class SiteAnalyticsExport implements FromQuery, WithHeadings, WithMapping
 
         return SiteView::query()
             ->whereBetween('viewed_at', [$start, $end])
-            ->orderByDesc('viewed_at');
+            ->latest('viewed_at');
     }
 
     public function headings(): array

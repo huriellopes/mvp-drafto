@@ -50,7 +50,7 @@ class ShowPost extends Component
     #[Computed]
     public function relatedPosts()
     {
-        return app(GetRelatedPostsAction::class)->exec(post: $this->post)->posts;
+        return resolve(GetRelatedPostsAction::class)->exec(post: $this->post)->posts;
     }
 
     #[Computed]

@@ -50,7 +50,7 @@ final class ProcessProfileViewJob implements ShouldQueue
 
     public function failed(Throwable $exception): void
     {
-        app(LoggerInterface::class)->error("Job ProcessProfileViewJob falhou para o Perfil #{$this->profileId}", LogCategoryEnum::QUEUE, [
+        resolve(LoggerInterface::class)->error("Job ProcessProfileViewJob falhou para o Perfil #{$this->profileId}", LogCategoryEnum::QUEUE, [
             'exception' => $exception->getMessage(),
         ]);
     }

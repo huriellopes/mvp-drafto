@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 class MagicLoginToken extends Model
 {
@@ -48,6 +49,6 @@ class MagicLoginToken extends Model
 
     public static function expiresAt(): Carbon
     {
-        return Carbon::now()->addMinutes(self::EXPIRES_MINUTES);
+        return Date::now()->addMinutes(self::EXPIRES_MINUTES);
     }
 }

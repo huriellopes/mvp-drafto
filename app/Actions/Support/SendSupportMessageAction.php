@@ -15,6 +15,6 @@ class SendSupportMessageAction
      */
     public function exec(SupportContactData $data): void
     {
-        ProcessSupportMessageJob::dispatch($data);
+        dispatch(new ProcessSupportMessageJob($data));
     }
 }

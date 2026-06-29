@@ -57,7 +57,7 @@ class CollectionForm extends Form
     {
         $this->validate();
 
-        app(CreateCollectionAction::class)
+        resolve(CreateCollectionAction::class)
             ->exec(
                 user: auth()->user(),
                 data: new CollectionData(
@@ -74,7 +74,7 @@ class CollectionForm extends Form
     {
         $this->validate();
 
-        app(UpdateCollectionAction::class)->exec(
+        resolve(UpdateCollectionAction::class)->exec(
             collection: $this->collection,
             data: new CollectionData(
                 name: $this->name,

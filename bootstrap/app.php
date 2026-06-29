@@ -20,6 +20,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\AuthenticateSession;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -52,6 +53,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            // Faz o "deslogar outros dispositivos" (Auth::logoutOtherDevices)
+            // realmente encerrar as outras sessões. Convive com o "lembrar-me":
+            // sessões recordadas com hash de senha válido permanecem ativas.
+            AuthenticateSession::class,
             LogContextMiddleware::class,
             CheckBanned::class,
             TrackSiteView::class,

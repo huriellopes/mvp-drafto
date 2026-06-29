@@ -15,10 +15,6 @@ final class HandlePostMediaAndSeo implements ShouldQueue
      */
     public function handle(PostSaved $event): void
     {
-        ProcessPostMediaAndSeoJob::dispatch(
-            $event->post,
-            $event->seoData,
-            $event->oldImagePath,
-        );
+        dispatch(new ProcessPostMediaAndSeoJob($event->post, $event->seoData, $event->oldImagePath));
     }
 }

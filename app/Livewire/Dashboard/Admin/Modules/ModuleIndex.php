@@ -66,7 +66,7 @@ class ModuleIndex extends Component
 
         $limit = $limit > 0 ? $limit : 10;
 
-        return app(ListModulesAction::class)->exec(
+        return resolve(ListModulesAction::class)->exec(
             dto: new ModuleFilterData(
                 search: $this->search,
                 sortField: 'name',

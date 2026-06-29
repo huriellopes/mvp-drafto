@@ -34,7 +34,7 @@ class PostPolicy
             return true;
         }
 
-        if (!$user) {
+        if (!$user instanceof User) {
             return false;
         }
 
@@ -50,16 +50,10 @@ class PostPolicy
             return true;
         }
 
-        if (
-            $post->status === PostStatusEnum::PUBLISHED &&
-            $post->visibility === PostVisibilityEnum::FOLLOWERS_ONLY &&
-            $post->author instanceof User &&
-            $user->isFollowing($post->author)
-        ) {
-            return true;
-        }
-
-        return false;
+        return $post->status === PostStatusEnum::PUBLISHED &&
+        $post->visibility === PostVisibilityEnum::FOLLOWERS_ONLY &&
+        $post->author instanceof User &&
+        $user->isFollowing($post->author);
     }
 
     /**

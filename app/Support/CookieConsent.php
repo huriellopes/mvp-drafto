@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
  */
 final class CookieConsent
 {
-    public const COOKIE = 'drafto_consent';
+    public const string COOKIE = 'drafto_consent';
 
     /**
      * Verifica se o usuário consentiu com uma categoria (ex.: 'analytics', 'marketing').

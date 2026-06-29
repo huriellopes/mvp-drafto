@@ -36,16 +36,14 @@ class Home extends Component
     #[Computed]
     public function featuredWriters()
     {
-        $writers = Cache::remember('home_featured_writers_v2', now()->addMinutes(30), function () {
-            return User::query()
-                ->whereHas('posts')
-                ->with(['profile'])
-                ->withCount('publishedPosts')
-                ->withCount('followers')
-                ->latest()
-                ->take(12)
-                ->get();
-        });
+        $writers = Cache::remember('home_featured_writers_v2', now()->addMinutes(30), fn () => User::query()
+            ->whereHas('posts')
+            ->with(['profile'])
+            ->withCount('publishedPosts')
+            ->withCount('followers')
+            ->latest()
+            ->take(12)
+            ->get());
 
         if (!$writers instanceof Collection) {
             Cache::forget('home_featured_writers_v2');
@@ -65,13 +63,11 @@ class Home extends Component
     #[Computed]
     public function categories()
     {
-        return Cache::remember('home_categories_v2', now()->addMinutes(60), function () {
-            return PostCategory::query()
-                ->withCount('posts')
-                ->orderBy('posts_count', 'desc')
-                ->take(8)
-                ->get();
-        });
+        return Cache::remember('home_categories_v2', now()->addMinutes(60), fn () => PostCategory::query()
+            ->withCount('posts')
+            ->orderBy('posts_count', 'desc')
+            ->take(8)
+            ->get());
     }
 
     public function render(): View
@@ -90,7 +86,7 @@ class Home extends Component
             $categories = $this->categories();
         }
 
-        $posts = app(ListPublicPostsAction::class)
+        $posts = resolve(ListPublicPostsAction::class)
             ->exec(PostFilterData::from([
                 'per_page' => 6,
             ]));

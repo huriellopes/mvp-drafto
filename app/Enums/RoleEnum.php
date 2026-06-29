@@ -33,7 +33,7 @@ enum RoleEnum: string
         return collect(self::options())
             ->reject(fn ($option) => $option['value'] === self::SUPER_ADMIN->value)
             ->values()
-            ->toArray();
+            ->all();
     }
 
     case SUPER_ADMIN = 'super_admin';

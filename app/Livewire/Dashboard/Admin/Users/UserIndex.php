@@ -81,11 +81,11 @@ class UserIndex extends Component
 
     public function resetPassword(): void
     {
-        if (!$this->selectedUserForPasswordReset) {
+        if (!$this->selectedUserForPasswordReset instanceof User) {
             return;
         }
 
-        app(ResetUserPasswordAction::class)->exec(
+        resolve(ResetUserPasswordAction::class)->exec(
             new AdminResetPasswordData(
                 userId: $this->selectedUserForPasswordReset->id,
                 password: $this->defaultPassword,
@@ -108,7 +108,7 @@ class UserIndex extends Component
     {
         $user = $this->selectedUserForReengagement;
 
-        if (!$user) {
+        if (!$user instanceof User) {
             return;
         }
 
@@ -120,7 +120,7 @@ class UserIndex extends Component
             Toaster::warning("{$user->name} está com acesso suspenso.");
         } else {
             // force: envio manual ignora cooldown/faixa e não exige e-mail verificado.
-            app(SendReengagementEmailAction::class)->exec($user, force: true);
+            resolve(SendReengagementEmailAction::class)->exec($user, force: true);
             Toaster::success("E-mail de retorno enviado para {$user->name}.");
         }
 
@@ -130,11 +130,11 @@ class UserIndex extends Component
 
     public function impersonate(): void
     {
-        if (!$this->selectedUserForImpersonation) {
+        if (!$this->selectedUserForImpersonation instanceof User) {
             return;
         }
 
-        if (app(ImpersonateUserAction::class)->exec($this->selectedUserForImpersonation)) {
+        if (resolve(ImpersonateUserAction::class)->exec($this->selectedUserForImpersonation)) {
             Toaster::success("Agora você está logado como {$this->selectedUserForImpersonation->name}");
             $this->redirect(route('dashboard.index'));
         } else {
@@ -152,7 +152,7 @@ class UserIndex extends Component
 
     public function toggleUserModule(int $moduleId): void
     {
-        if (!$this->selectedUserForModules) {
+        if (!$this->selectedUserForModules instanceof User) {
             return;
         }
 
@@ -189,7 +189,7 @@ class UserIndex extends Component
     #[Computed]
     public function users()
     {
-        $paginator = app(ListUsersAction::class)->exec(
+        $paginator = resolve(ListUsersAction::class)->exec(
             filters: UserFilterData::from([
                 'search' => $this->search,
                 'role' => $this->role,
@@ -234,7 +234,7 @@ class UserIndex extends Component
 
         $targetStatus = $statusValue ? UserStatusEnum::from($statusValue) : null;
 
-        app(ToggleUserStatusAction::class)->exec(
+        resolve(ToggleUserStatusAction::class)->exec(
             user: $user,
             targetStatus: $targetStatus,
         );
@@ -267,7 +267,7 @@ class UserIndex extends Component
 
         $user = User::find($this->userIdBeingDeleted);
 
-        if ($user && app(DeleteUserAction::class)->exec($user)) {
+        if ($user && resolve(DeleteUserAction::class)->exec($user)) {
             $this->clearUserCache();
             Toaster::success('Usuário removido com sucesso.');
         }
@@ -299,11 +299,7 @@ class UserIndex extends Component
         $fileName = 'usuarios-drafto-' . now()->format('Y-m-d-His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            UsersExport::class,
-            ['filters' => $filters],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(UsersExport::class, ['filters' => $filters], $fileName));
 
         Toaster::info('A lista de usuários está sendo exportada...');
     }

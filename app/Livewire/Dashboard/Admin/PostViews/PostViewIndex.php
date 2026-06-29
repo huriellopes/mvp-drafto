@@ -48,11 +48,7 @@ class PostViewIndex extends Component
         $fileName = 'analytics_posts_' . now()->format('Ymd_His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            PostViewsExport::class,
-            ['filters' => $filters],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(PostViewsExport::class, ['filters' => $filters], $fileName));
 
         Toaster::info('O relatório de visualizações está sendo gerado...');
     }
@@ -74,7 +70,7 @@ class PostViewIndex extends Component
     #[Computed]
     public function views()
     {
-        return app(ListPostViewsAction::class)
+        return resolve(ListPostViewsAction::class)
             ->exec(
                 PostViewFilterData::from($this->all()),
             );

@@ -23,7 +23,7 @@ final class SavePostCollectionAction
             'visibility' => $data->visibility,
         ];
 
-        if ($collection) {
+        if ($collection instanceof PostCollection) {
             $collection->update($attributes);
 
             return $collection;

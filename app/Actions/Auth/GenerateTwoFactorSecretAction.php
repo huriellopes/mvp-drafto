@@ -9,10 +9,10 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FALaravel\Google2FA;
 
-final class GenerateTwoFactorSecretAction
+final readonly class GenerateTwoFactorSecretAction
 {
     public function __construct(
-        private readonly Google2FA $google2fa,
+        private Google2FA $google2fa,
     ) {}
 
     public function exec(User $user): void
@@ -26,6 +26,6 @@ final class GenerateTwoFactorSecretAction
     private function generateRecoveryCodes(): array
     {
         return Collection::times(8, fn () => Str::random(10) . '-' . Str::random(10))
-            ->toArray();
+            ->all();
     }
 }

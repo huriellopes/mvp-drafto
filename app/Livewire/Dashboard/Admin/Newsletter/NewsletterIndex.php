@@ -75,11 +75,7 @@ class NewsletterIndex extends Component
         $fileName = 'inscritos-newsletter-' . now()->format('Y-m-d-His') . '.xlsx';
         $this->generatedPath = 'temp/' . $fileName;
 
-        ExportDataJob::dispatch(
-            SubscribersExport::class,
-            ['filters' => $filters],
-            $fileName,
-        );
+        dispatch(new ExportDataJob(SubscribersExport::class, ['filters' => $filters], $fileName));
 
         Toaster::info('A lista de inscritos está sendo exportada...');
     }
@@ -111,12 +107,7 @@ class NewsletterIndex extends Component
 
         $query->chunk(100, function ($subscribers) use ($message) {
             foreach ($subscribers as $subscriber) {
-                SendNewsletterJob::dispatch(
-                    subscriber: $subscriber,
-                    posts: [],
-                    categoryName: 'Informativo',
-                    customMessage: $message,
-                );
+                dispatch(new SendNewsletterJob(subscriber: $subscriber, posts: [], categoryName: 'Informativo', customMessage: $message));
             }
         });
 
@@ -136,7 +127,7 @@ class NewsletterIndex extends Component
     #[Computed]
     public function subscribers()
     {
-        return app(ListSubscribersAction::class)
+        return resolve(ListSubscribersAction::class)
             ->exec(
                 filters: NewsletterFilterData::from($this->filters->all()),
             );

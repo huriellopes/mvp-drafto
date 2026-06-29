@@ -29,7 +29,7 @@ class GenerateRecoveryCodesJob implements ShouldQueue
     {
         $codes = (array) ($this->user->two_factor_recovery_codes ?? []);
 
-        if (empty($codes)) {
+        if ($codes === []) {
             return;
         }
 

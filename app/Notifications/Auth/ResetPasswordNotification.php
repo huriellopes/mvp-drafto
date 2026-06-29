@@ -9,11 +9,13 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Queue\SerializesModels;
+use Override;
 
 class ResetPasswordNotification extends ResetPassword implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    #[Override]
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage())

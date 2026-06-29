@@ -105,7 +105,7 @@ class ReportIndex extends Component
             'banDays' => 30,
         ]);
 
-        app(HandleReportAction::class)
+        resolve(HandleReportAction::class)
             ->exec(
                 data: $data,
                 reviewer: auth()->user(),

@@ -23,6 +23,8 @@ class AccountSettings extends Component
 {
     public UserSettingsForm $form;
 
+    public string $deletePassword = '';
+
     public function mount(): void
     {
         $this->form->setUser(auth()->user());
@@ -44,7 +46,7 @@ class AccountSettings extends Component
             return;
         }
 
-        app(UpgradeToWriterAction::class)
+        resolve(UpgradeToWriterAction::class)
             ->exec(
                 user: $user,
             );
@@ -58,6 +60,10 @@ class AccountSettings extends Component
 
     public function openDeleteAccountModal(): void
     {
+        // Limpa estado anterior para não reabrir o modal com senha/erro antigos.
+        $this->reset('deletePassword');
+        $this->resetErrorBag('deletePassword');
+
         $this->dispatch('open-modal', name: 'confirm-delete-account');
     }
 
@@ -66,11 +72,20 @@ class AccountSettings extends Component
      */
     public function deleteAccount(): void
     {
+        // Exige a confirmação da senha atual antes de excluir a conta.
+        $this->validate(
+            ['deletePassword' => ['required', 'current_password']],
+            [
+                'deletePassword.required' => 'Informe sua senha para confirmar a exclusão.',
+                'deletePassword.current_password' => 'A senha informada está incorreta.',
+            ],
+        );
+
         $user = auth()->user();
 
         auth()->logout();
 
-        app(DeleteMyAccountAction::class)->exec($user);
+        resolve(DeleteMyAccountAction::class)->exec($user);
 
         session()->invalidate();
         session()->regenerateToken();
@@ -82,7 +97,7 @@ class AccountSettings extends Component
 
     public function exportData(): StreamedResponse
     {
-        $data = app(ExportUserDataAction::class)->exec(auth()->user());
+        $data = resolve(ExportUserDataAction::class)->exec(auth()->user());
 
         $filename = 'drafto-meus-dados-' . now()->format('Y-m-d') . '.json';
 

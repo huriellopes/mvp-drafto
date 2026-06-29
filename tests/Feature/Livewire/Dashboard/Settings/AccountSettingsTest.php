@@ -78,13 +78,15 @@ it('can export the own data as a json download', function () {
         ->assertFileDownloaded('drafto-meus-dados-' . now()->format('Y-m-d') . '.json');
 });
 
-it('can delete the own account', function () {
-    $user = User::factory()->create();
+it('can delete the own account when the password is confirmed', function () {
+    $user = User::factory()->create(['password' => Hash::make('senha-correta')]);
 
     $this->actingAs($user);
 
     Livewire::test(AccountSettings::class)
+        ->set('deletePassword', 'senha-correta')
         ->call('deleteAccount')
+        ->assertHasNoErrors()
         ->assertRedirect(route('home'));
 
     expect(auth()->check())->toBeFalse()
@@ -94,4 +96,30 @@ it('can delete the own account', function () {
         'key' => $user->id,
         'model' => $user->getMorphClass(),
     ]);
+});
+
+it('does not delete the account when the password is wrong', function () {
+    $user = User::factory()->create(['password' => Hash::make('senha-correta')]);
+
+    $this->actingAs($user);
+
+    Livewire::test(AccountSettings::class)
+        ->set('deletePassword', 'senha-errada')
+        ->call('deleteAccount')
+        ->assertHasErrors(['deletePassword' => 'current_password']);
+
+    expect(auth()->check())->toBeTrue()
+        ->and(User::query()->whereKey($user->id)->exists())->toBeTrue();
+});
+
+it('requires the password to delete the account', function () {
+    $user = User::factory()->create(['password' => Hash::make('senha-correta')]);
+
+    $this->actingAs($user);
+
+    Livewire::test(AccountSettings::class)
+        ->call('deleteAccount')
+        ->assertHasErrors(['deletePassword' => 'required']);
+
+    expect(User::query()->whereKey($user->id)->exists())->toBeTrue();
 });

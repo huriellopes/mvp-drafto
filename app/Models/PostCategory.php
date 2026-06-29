@@ -37,7 +37,7 @@ class PostCategory extends Model implements Auditable
     /**
      * Scope to get global categories (Admin) or categories from a specific user.
      */
-    public function scopeForUser($query, ?int $userId = null)
+    protected function scopeForUser($query, ?int $userId = null)
     {
         return $query->whereNull('user_id')
             ->when($userId, fn ($q) => $q->orWhere('user_id', $userId));

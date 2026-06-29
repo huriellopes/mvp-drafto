@@ -62,7 +62,7 @@ class PostCollectionForm extends Form
     {
         $this->validate();
 
-        $collection = app(SavePostCollectionAction::class)->exec(
+        $collection = resolve(SavePostCollectionAction::class)->exec(
             user: auth()->user(),
             data: $this->toData(),
         );
@@ -76,7 +76,7 @@ class PostCollectionForm extends Form
     {
         $this->validate();
 
-        $collection = app(SavePostCollectionAction::class)->exec(
+        $collection = resolve(SavePostCollectionAction::class)->exec(
             user: auth()->user(),
             data: $this->toData(),
             collection: $this->collection,

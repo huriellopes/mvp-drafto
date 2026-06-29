@@ -29,7 +29,7 @@ final class UpdateProfileMediaAction
         $profile = $user->profile;
 
         if ($profile) {
-            ProcessProfileMediaJob::dispatch($profile, $oldPath, null);
+            dispatch(new ProcessProfileMediaJob($profile, $oldPath));
         }
 
         return $path;
@@ -70,7 +70,7 @@ final class UpdateProfileMediaAction
         $profile = $user->profile;
 
         if ($profile) {
-            ProcessProfileMediaJob::dispatch($profile, null, $oldPath);
+            dispatch(new ProcessProfileMediaJob($profile, null, $oldPath));
         }
 
         return $path;

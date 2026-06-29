@@ -8,6 +8,7 @@ use App\Enums\UpdateAudienceEnum;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Override;
 
 #[Fillable([
     'title',
@@ -29,6 +30,7 @@ class PlatformUpdate extends Model
         return $this->sent_at !== null;
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

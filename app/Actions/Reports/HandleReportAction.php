@@ -38,7 +38,7 @@ final class HandleReportAction
             if ($data->shouldBanUser) {
                 $offender = $this->resolveReportedUser($report);
 
-                if ($offender) {
+                if ($offender instanceof User) {
                     $bannedUntil = $data->banDays > 0 ? now()->addDays($data->banDays) : null;
 
                     $offender->update([

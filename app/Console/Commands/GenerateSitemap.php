@@ -20,7 +20,7 @@ class GenerateSitemap extends Command
     {
         $this->info('Generating sitemap...');
 
-        app(GenerateSitemapAction::class)
+        resolve(GenerateSitemapAction::class)
             ->exec();
 
         $this->info('Sitemap generated successfully at public/sitemap.xml');

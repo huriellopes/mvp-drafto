@@ -51,7 +51,7 @@ class UserSettingsForm extends Form
     {
         $this->validate();
 
-        app(UpdateUserSettingsAction::class)->exec(
+        resolve(UpdateUserSettingsAction::class)->exec(
             user: auth()->user(),
             data: UpdateUserSettingsData::from($this->all()),
         );

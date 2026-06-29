@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 
 #[Fillable([
@@ -45,6 +46,7 @@ class Report extends Model implements Auditable
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

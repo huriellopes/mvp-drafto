@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Override;
 use OwenIt\Auditing\Contracts\Auditable;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\DeletedModels\Models\Concerns\KeepsDeletedModels;
@@ -138,35 +139,10 @@ class Post extends Model implements Auditable, Sitemapable
         /** @var User $user */
         $user = auth()->user() ?? $this->author;
 
-        return app(GenerateShortLinkAction::class)->exec(
+        return resolve(GenerateShortLinkAction::class)->exec(
             user: $user,
             shortable: $this,
         );
-    }
-
-    public function scopePublished(Builder $query): Builder
-    {
-        return $query->where('status', PostStatusEnum::PUBLISHED);
-    }
-
-    public function scopeScheduled(Builder $query): Builder
-    {
-        return $query->where('status', PostStatusEnum::SCHEDULED);
-    }
-
-    public function scopePublic(Builder $query): Builder
-    {
-        return $query->where('visibility', PostVisibilityEnum::PUBLIC);
-    }
-
-    public function scopeArticles(Builder $query): Builder
-    {
-        return $query->where('type', PostTypeEnum::ARTICLE);
-    }
-
-    public function scopeRegularPosts(Builder $query): Builder
-    {
-        return $query->where('type', PostTypeEnum::POST);
     }
 
     public function isPublished(): bool
@@ -189,6 +165,31 @@ class Post extends Model implements Auditable, Sitemapable
         return $this->type === PostTypeEnum::POST;
     }
 
+    protected function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', PostStatusEnum::PUBLISHED);
+    }
+
+    protected function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('status', PostStatusEnum::SCHEDULED);
+    }
+
+    protected function scopePublic(Builder $query): Builder
+    {
+        return $query->where('visibility', PostVisibilityEnum::PUBLIC);
+    }
+
+    protected function scopeArticles(Builder $query): Builder
+    {
+        return $query->where('type', PostTypeEnum::ARTICLE);
+    }
+
+    protected function scopeRegularPosts(Builder $query): Builder
+    {
+        return $query->where('type', PostTypeEnum::POST);
+    }
+
     protected function coverImageUrl(): Attribute
     {
         return Attribute::get(function () {
@@ -204,6 +205,7 @@ class Post extends Model implements Auditable, Sitemapable
         });
     }
 
+    #[Override]
     protected static function booted(): void
     {
         static::saving(function (Post $post) {
@@ -213,6 +215,7 @@ class Post extends Model implements Auditable, Sitemapable
         });
     }
 
+    #[Override]
     protected function casts(): array
     {
         return [

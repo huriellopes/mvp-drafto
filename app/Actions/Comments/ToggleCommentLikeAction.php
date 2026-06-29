@@ -17,7 +17,7 @@ final class ToggleCommentLikeAction
             $query = DB::table('comment_likes')
                 ->where('comment_id', $comment->id);
 
-            if ($user) {
+            if ($user instanceof User) {
                 $query->where('user_id', $user->id);
             } else {
                 $query->whereNull('user_id')->where('ip_address', $ipAddress);
@@ -34,7 +34,7 @@ final class ToggleCommentLikeAction
             DB::table('comment_likes')->insert([
                 'comment_id' => $comment->id,
                 'user_id' => $user?->id,
-                'ip_address' => $user ? null : $ipAddress,
+                'ip_address' => $user instanceof User ? null : $ipAddress,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

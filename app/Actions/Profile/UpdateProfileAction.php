@@ -10,6 +10,7 @@ use App\Enums\LinkVisibilityEnum;
 use App\Jobs\ProcessProfileMediaJob;
 use App\Models\Profile;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 
 final class UpdateProfileAction
@@ -34,13 +35,13 @@ final class UpdateProfileAction
         $oldAvatarPath = $user->profile?->avatar_path;
         $oldCoverPath = $user->profile?->cover_path;
 
-        if ($data->avatar) {
+        if ($data->avatar instanceof UploadedFile) {
             $profileData['avatar_path'] = $data->avatar->store('avatars', 'public');
         }
 
-        if ($data->cover) {
+        if ($data->cover instanceof UploadedFile) {
             if ($coverCropData) {
-                $profileData['cover_path'] = app(UploadCoverImageAction::class)->exec($data->cover, $coverCropData);
+                $profileData['cover_path'] = resolve(UploadCoverImageAction::class)->exec($data->cover, $coverCropData);
             } else {
                 $profileData['cover_path'] = $data->cover->store('covers', 'public');
             }
@@ -53,7 +54,7 @@ final class UpdateProfileAction
 
         // Despacha o processamento de mídia apenas se houver novas imagens
         if ($data->avatar || $data->cover) {
-            ProcessProfileMediaJob::dispatch($profile, $oldAvatarPath, $oldCoverPath);
+            dispatch(new ProcessProfileMediaJob($profile, $oldAvatarPath, $oldCoverPath));
         }
 
         // Sênior: Limpa o cache do perfil público e da listagem de escritores

@@ -91,7 +91,7 @@ class TwoFactorManager extends Component
         $filename = "drafto-{$username}-{$timestamp}";
         $this->generatedPath = "temp/{$filename}.{$format}";
 
-        GenerateRecoveryCodesJob::dispatch($user, $format, $timestamp);
+        dispatch(new GenerateRecoveryCodesJob($user, $format, $timestamp));
 
         Toaster::info('Seu arquivo está sendo gerado em segundo plano...');
     }

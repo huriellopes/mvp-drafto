@@ -64,12 +64,10 @@ class ExplorePosts extends Component
     public function categories(): Collection
     {
         $cacheKey = 'explore_categories_v1';
-        $categories = Cache::remember($cacheKey, now()->addHours(1), function () {
-            return PostCategory::withCount('posts')
-                ->orderBy('posts_count', 'desc')
-                ->take(10)
-                ->get();
-        });
+        $categories = Cache::remember($cacheKey, now()->addHours(1), fn () => PostCategory::withCount('posts')
+            ->orderBy('posts_count', 'desc')
+            ->take(10)
+            ->get());
 
         if (!($categories instanceof Collection)) {
             Cache::forget($cacheKey);
@@ -84,14 +82,12 @@ class ExplorePosts extends Component
     public function tags(): Collection
     {
         $cacheKey = 'explore_tags_v1';
-        $tags = Cache::remember($cacheKey, now()->addHours(1), function () {
-            return Tag::query()
-                ->whereHas('posts')
-                ->withCount('posts')
-                ->orderByDesc('posts_count')
-                ->take(15)
-                ->get();
-        });
+        $tags = Cache::remember($cacheKey, now()->addHours(1), fn () => Tag::query()
+            ->whereHas('posts')
+            ->withCount('posts')
+            ->orderByDesc('posts_count')
+            ->take(15)
+            ->get());
 
         if (!($tags instanceof Collection)) {
             Cache::forget($cacheKey);
@@ -111,7 +107,7 @@ class ExplorePosts extends Component
 
     public function render(): View
     {
-        $posts = app(ListPublicPostsAction::class)->exec(
+        $posts = resolve(ListPublicPostsAction::class)->exec(
             PostFilterData::from([
                 'search' => $this->search,
                 'category' => $this->category,

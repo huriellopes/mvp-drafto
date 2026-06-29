@@ -50,10 +50,10 @@ class LoginForm extends Form
         $dto = AuthenticateData::from([
             'email' => $this->email,
             'password' => $this->password,
-            'remember' => (bool) $this->remember,
+            'remember' => $this->remember,
         ]);
 
-        $result = app(AuthenticateUserAction::class)
+        $result = resolve(AuthenticateUserAction::class)
             ->exec($dto);
 
         if ($result === false) {

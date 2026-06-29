@@ -47,12 +47,14 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
+    #[Override]
     public function register(): void
     {
         $this->app->singleton(LoggerInterface::class, SystemLogger::class);
@@ -97,9 +99,7 @@ class AppServiceProvider extends ServiceProvider
             return is_module_enabled($slug);
         });
 
-        Gate::define('admin', function (User $user) {
-            return $user->hasRole(RoleEnum::SUPER_ADMIN);
-        });
+        Gate::define('admin', fn (User $user) => $user->hasRole(RoleEnum::SUPER_ADMIN));
 
         Relation::morphMap([
             'user' => User::class,
@@ -119,8 +119,6 @@ class AppServiceProvider extends ServiceProvider
      */
     private function configureRateLimiters(): void
     {
-        RateLimiter::for('public-content', function (Request $request) {
-            return Limit::perMinute(120)->by($request->ip() ?? 'unknown');
-        });
+        RateLimiter::for('public-content', fn (Request $request) => Limit::perMinute(120)->by($request->ip() ?? 'unknown'));
     }
 }

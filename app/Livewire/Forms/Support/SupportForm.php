@@ -21,7 +21,7 @@ final class SupportForm extends Form
     {
         $this->validate();
 
-        app(StoreSupportAction::class)->exec(
+        resolve(StoreSupportAction::class)->exec(
             auth()->user(),
             SupportData::from($this->all()),
         );

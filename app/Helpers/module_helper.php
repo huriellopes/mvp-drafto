@@ -21,7 +21,7 @@ if (!function_exists('is_module_enabled')) {
         }
 
         $moduleSlug = $slug instanceof ModuleEnum ? $slug->value : $slug;
-        $moduleEnum = $slug instanceof ModuleEnum ? $slug : ModuleEnum::tryFrom((string) $slug);
+        $moduleEnum = $slug instanceof ModuleEnum ? $slug : ModuleEnum::tryFrom($slug);
 
         if (!$moduleEnum) {
             return false;

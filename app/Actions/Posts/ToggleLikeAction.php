@@ -17,7 +17,7 @@ final class ToggleLikeAction
             $query = DB::table('post_likes')
                 ->where('post_id', $post->id);
 
-            if ($user) {
+            if ($user instanceof User) {
                 $query->where('user_id', $user->id);
             } else {
                 $query->whereNull('user_id')->where('ip_address', $ipAddress);
@@ -36,7 +36,7 @@ final class ToggleLikeAction
             DB::table('post_likes')->insert([
                 'post_id' => $post->id,
                 'user_id' => $user?->id,
-                'ip_address' => $user ? null : $ipAddress,
+                'ip_address' => $user instanceof User ? null : $ipAddress,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

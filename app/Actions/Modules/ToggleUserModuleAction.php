@@ -6,8 +6,8 @@ namespace App\Actions\Modules;
 
 use App\Models\Module;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 
 final class ToggleUserModuleAction
 {
@@ -20,7 +20,7 @@ final class ToggleUserModuleAction
         $user->modules()->syncWithoutDetaching([
             $module->id => [
                 'is_enabled' => $newStatus,
-                'updated_at' => Carbon::now(),
+                'updated_at' => Date::now(),
             ],
         ]);
 

@@ -33,7 +33,7 @@ class FollowButton extends Component
             return;
         }
 
-        app(ToggleFollowAction::class)->exec(auth()->user(), $this->user);
+        resolve(ToggleFollowAction::class)->exec(auth()->user(), $this->user);
         $this->checkStatus();
 
         $this->dispatch('follow-updated');

@@ -71,7 +71,7 @@ final class SystemLogger implements LoggerInterface
             LogCategoryEnum::SECURITY => 'security',
             LogCategoryEnum::PAYMENT => 'payments',
             LogCategoryEnum::QUEUE => 'jobs',
-            default => config('logging.default') ?? 'stack',
+            default => config('logging.default', 'stack'),
         };
     }
 }

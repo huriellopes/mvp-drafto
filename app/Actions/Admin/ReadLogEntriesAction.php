@@ -17,9 +17,9 @@ final class ReadLogEntriesAction
     /**
      * Lê no máximo os últimos bytes do arquivo para não estourar memória em logs grandes.
      */
-    private const MAX_BYTES = 2_000_000; // ~2 MB
+    private const int MAX_BYTES = 2_000_000; // ~2 MB
 
-    private const MAX_ENTRIES = 300;
+    private const int MAX_ENTRIES = 300;
 
     /**
      * Arquivos de log disponíveis (mais recentes primeiro), apenas os nomes.
@@ -32,7 +32,7 @@ final class ReadLogEntriesAction
 
         usort($files, fn (string $a, string $b): int => filemtime($b) <=> filemtime($a));
 
-        return array_map('basename', $files);
+        return array_map(basename(...), $files);
     }
 
     /**
@@ -81,7 +81,7 @@ final class ReadLogEntriesAction
     public function failedJobs(): Collection
     {
         return DB::table('failed_jobs')
-            ->orderByDesc('failed_at')
+            ->latest('failed_at')
             ->limit(100)
             ->get()
             ->map(fn (object $row): array => [
