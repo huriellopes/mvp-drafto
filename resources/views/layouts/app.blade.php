@@ -15,6 +15,8 @@
             document.documentElement.classList.remove('dark');
             if (localStorage.getItem('sidebar-collapsed') === 'false') {
                 document.documentElement.classList.add('is-sidebar-expanded');
+            } else {
+                document.documentElement.classList.add('is-sidebar-collapsed');
             }
         })();
     </script>
@@ -56,7 +58,7 @@
     x-on:livewire:navigated.window="loading = false"
     x-init="
         setTimeout(() => $el.classList.remove('no-transitions'), 100);
-        document.documentElement.classList.remove('is-sidebar-expanded');
+        document.documentElement.classList.remove('is-sidebar-expanded', 'is-sidebar-collapsed');
         $watch('sidebarCollapsed', value => localStorage.setItem('sidebar-collapsed', value));
     "
     class="min-h-full bg-zinc-50 text-zinc-900 antialiased no-transitions"
@@ -82,9 +84,22 @@
             }"
         >
             <div class="flex h-20 items-center justify-between border-b border-zinc-200 px-4">
-                <div 
+                <div
                     class="flex min-w-0 items-center gap-3 cursor-pointer group"
                     @click="sidebarCollapsed = false"
+                    x-data="{
+                        tipShow: false,
+                        tipX: 0,
+                        tipY: 0,
+                        showTip(event) {
+                            const rect = event.currentTarget.getBoundingClientRect();
+                            this.tipX = rect.right + 12;
+                            this.tipY = rect.top + (rect.height / 2);
+                            this.tipShow = true;
+                        },
+                    }"
+                    @mouseenter="if (sidebarCollapsed && ! sidebarOpen) showTip($event)"
+                    @mouseleave="tipShow = false"
                 >
                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 overflow-hidden transition-transform group-hover:scale-105 active:scale-95">
                         <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" alt="Drafto Logo" class="w-8 h-auto" />
@@ -104,20 +119,31 @@
                             Plataforma para escritores
                         </p>
                     </div>
+
+                    {{-- Tooltip apenas com a sidebar recolhida (teleportado, fixed, z alto). --}}
+                    <template x-teleport="body">
+                        <span
+                            x-show="tipShow"
+                            x-cloak
+                            x-transition.opacity.duration.150ms
+                            :style="`left: ${tipX}px; top: ${tipY}px;`"
+                            class="pointer-events-none fixed z-[100] -translate-y-1/2 whitespace-nowrap rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-medium text-white shadow-xl dark:bg-zinc-800"
+                        >
+                            Expandir menu
+                        </span>
+                    </template>
                 </div>
 
-                {{-- Desktop Toggle --}}
-                <x-ui.tooltip text="Recolher menu" position="right" wrapper-class="relative hidden lg:inline-flex">
-                    <button
-                        x-show="!sidebarCollapsed"
-                        x-transition
-                        type="button"
-                        class="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 active:scale-90"
-                        @click.stop="sidebarCollapsed = !sidebarCollapsed"
-                    >
-                        <x-lucide-panel-left-close class="h-4 w-4" />
-                    </button>
-                </x-ui.tooltip>
+                {{-- Desktop Toggle (sem tooltip quando a sidebar está aberta) --}}
+                <button
+                    x-show="!sidebarCollapsed"
+                    x-transition
+                    type="button"
+                    class="hidden h-9 w-9 lg:flex items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-500 transition-all hover:bg-zinc-50 hover:text-zinc-900 active:scale-90"
+                    @click.stop="sidebarCollapsed = !sidebarCollapsed"
+                >
+                    <x-lucide-panel-left-close class="h-4 w-4" />
+                </button>
 
                 {{-- Mobile Close --}}
                 <button
