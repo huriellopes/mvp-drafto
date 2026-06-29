@@ -19,6 +19,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | Versão da plataforma exibida no dashboard e útil para correlacionar
+    | erros/logs. Defina APP_VERSION no deploy a partir da tag de release
+    | (ex.: v1.0.0). Sem isso, cai para a última tag git (dev local) ou 'dev'.
+    |
+    */
+
+    'version' => env('APP_VERSION', 'dev'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

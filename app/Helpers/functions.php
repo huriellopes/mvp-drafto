@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use App\Support\PlatformVersion;
 
 if (!function_exists('format_display_name')) {
     /**
@@ -58,5 +59,15 @@ if (!function_exists('get_initials')) {
         }
 
         return mb_strtoupper($initials);
+    }
+}
+
+if (!function_exists('platform_version')) {
+    /**
+     * Versão atual da plataforma (ex.: v1.0.0), para exibição/logs.
+     */
+    function platform_version(): string
+    {
+        return PlatformVersion::current();
     }
 }

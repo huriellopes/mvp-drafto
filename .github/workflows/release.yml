@@ -1,0 +1,97 @@
+name: Release
+
+# Releases são criadas manualmente a partir da branch main (produção).
+# Cria uma tag anotada SemVer (vX.Y.Z) e uma GitHub Release com notas
+# geradas automaticamente a partir dos Pull Requests desde a última tag.
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Incremento SemVer (ignorado se "version" for preenchido)'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: minor
+      version:
+        description: 'Versão explícita, ex.: v1.0.0 (deixe vazio para autobump)'
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Tag & GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Garante execução a partir da main
+        run: |
+          if [ "${{ github.ref_name }}" != "main" ]; then
+            echo "::error::Releases devem ser criadas a partir da branch main (rodando em ${{ github.ref_name }})."
+            exit 1
+          fi
+
+      - name: Determinar a próxima versão
+        id: ver
+        run: |
+          set -euo pipefail
+          INPUT="${{ inputs.version }}"
+
+          if [ -n "$INPUT" ]; then
+            NEXT="$INPUT"
+            case "$NEXT" in v*) ;; *) NEXT="v$NEXT" ;; esac
+          else
+            LATEST="$(git tag --list 'v*' --sort=-v:refname | head -n1)"
+            if [ -z "$LATEST" ]; then
+              NEXT="v1.0.0"
+            else
+              CUR="${LATEST#v}"
+              CUR="${CUR%%-*}"
+              IFS='.' read -r MAJOR MINOR PATCH <<< "$CUR"
+              case "${{ inputs.bump }}" in
+                major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+                minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+                patch) PATCH=$((PATCH + 1)) ;;
+              esac
+              NEXT="v${MAJOR}.${MINOR}.${PATCH}"
+            fi
+          fi
+
+          if ! printf '%s' "$NEXT" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Versão inválida: '$NEXT' (esperado vX.Y.Z)."
+            exit 1
+          fi
+
+          if git rev-parse "$NEXT" >/dev/null 2>&1; then
+            echo "::error::A tag $NEXT já existe."
+            exit 1
+          fi
+
+          echo "tag=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Próxima versão: $NEXT"
+
+      - name: Criar e enviar a tag anotada
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.ver.outputs.tag }}" -m "Release ${{ steps.ver.outputs.tag }}"
+          git push origin "${{ steps.ver.outputs.tag }}"
+
+      - name: Criar GitHub Release (notas automáticas dos PRs)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true

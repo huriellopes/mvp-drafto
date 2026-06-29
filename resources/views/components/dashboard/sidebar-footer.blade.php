@@ -28,5 +28,13 @@
         <div class="px-1 flex flex-col gap-2">
             <livewire:auth.logout wire:key="logout-component-sidebar" />
         </div>
+
+        <p
+            x-show="!sidebarCollapsed || sidebarOpen"
+            class="pt-1 text-center text-[10px] font-medium text-zinc-400"
+            title="Versão da plataforma"
+        >
+            {{ config('app.name') }} <span class="font-semibold text-zinc-500">{{ platform_version() }}</span>
+        </p>
     </div>
 @endif
