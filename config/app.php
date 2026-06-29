@@ -32,6 +32,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | GitHub Repository (slug "owner/repo")
+    |--------------------------------------------------------------------------
+    |
+    | Usado para resolver automaticamente a versão da plataforma a partir da
+    | última release publicada (quando APP_VERSION não está definido e não há
+    | tag git no servidor).
+    |
+    */
+
+    'github_repo' => env('GITHUB_REPO', 'huriellopes/mvp-drafto'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
