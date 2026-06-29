@@ -6,7 +6,7 @@
     'align' => 'left'
 ])
 
-<th {{ $attributes->merge(['class' => 'px-6 py-4 transition']) }}>
+<th scope="col" {{ $attributes->merge(['class' => 'px-6 py-4 transition']) }}>
     @if($column)
         <button
             wire:click="sortBy('{{ $column }}')"

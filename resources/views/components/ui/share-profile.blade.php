@@ -29,9 +29,10 @@
         <button
             @click="$dispatch('open-modal', { name: '{{ $modalName }}' })"
             type="button"
+            aria-label="{{ __('public.share.title') }}"
             class="flex h-12 w-12 items-center justify-center rounded-profile-button border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-profile-primary shadow-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-800 active:scale-95"
         >
-            <x-lucide-share-2 class="h-5 w-5 text-profile-primary" />
+            <x-lucide-share-2 class="h-5 w-5 text-profile-primary" aria-hidden="true" />
         </button>
     </x-ui.tooltip>
 

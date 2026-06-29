@@ -33,6 +33,7 @@
                 'spellcheck' => 'false',
                 'class' => 'block w-full bg-transparent px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none placeholder:text-zinc-400 focus:placeholder:opacity-50 transition-all'
             ]) }}
+            @if($error) aria-invalid="true" aria-describedby="{{ $id }}-error" @endif
             @if($isPassword)
                 :type="show ? 'text' : 'password'"
             @endif
@@ -56,6 +57,6 @@
     </div>
 
     @if($error)
-        <p class="mt-2 text-sm text-red-600">{{ $error }}</p>
+        <p id="{{ $id }}-error" class="mt-2 text-sm text-red-600">{{ $error }}</p>
     @endif
 </div>

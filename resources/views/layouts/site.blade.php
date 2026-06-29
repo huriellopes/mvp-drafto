@@ -33,6 +33,8 @@
         <title>{{ $title ?? config('app.name') }}</title>
     @endif
 
+    <x-seo.structured-data />
+
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet" />
@@ -81,13 +83,18 @@
     class="font-sans antialiased bg-white text-zinc-900 selection:bg-profile-primary/30 dark:bg-zinc-950 dark:text-white transition-colors duration-300 no-transitions"
 >
 
+<a href="#main-content"
+   class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-zinc-900 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:shadow-xl">
+    Pular para o conteúdo
+</a>
+
 <x-toaster-hub />
 <livewire:public.report-modal />
 
 {{-- Navbar --}}
 <x-site.navbar />
 
-<main class="pt-20">
+<main id="main-content" class="pt-20">
     {{ $slot }}
 </main>
 

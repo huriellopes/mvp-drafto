@@ -93,14 +93,15 @@
                 </template>
             @endif
             
-            <input 
-                type="text" 
-                x-model="text" 
+            <input
+                type="text"
+                x-model="text"
                 x-show="{{ $multiple ? 'true' : '!selected' }}"
                 @keydown.enter.prevent="if(text.length > 0) select(text)"
                 @keydown.escape="open = false"
                 @focus="open = true"
                 placeholder="{{ $placeholder }}"
+                aria-label="{{ $label ?? $placeholder }}"
                 class="flex-1 bg-transparent border-none p-1 text-xs focus:ring-0 min-w-[120px]"
             />
         </div>
