@@ -24,6 +24,21 @@ it('shows the published posts of a public collection', function () {
         ->assertDontSee($draft->title);
 });
 
+it('sets the canonical URL to the collection page (not the profile)', function () {
+    $writer = User::factory()->writer()->withProfile()->create();
+    $collection = PostCollection::factory()->public()->for($writer)->create();
+
+    $url = route('profile.collection', [
+        'username' => $writer->profile->username,
+        'collection' => $collection->slug,
+    ]);
+
+    $this->get($url)
+        ->assertOk()
+        ->assertSee('rel="canonical"', false)
+        ->assertSee($url, false);
+});
+
 it('returns 404 for a private collection', function () {
     $writer = User::factory()->writer()->withProfile()->create();
     $collection = PostCollection::factory()->for($writer)->create();

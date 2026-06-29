@@ -13,6 +13,7 @@
         <form wire:submit.prevent="save" class="mb-12 space-y-4">
             <x-ui.textarea
                 wire:model="form.content"
+                aria-label="Seu comentário"
                 @keydown.cmd.enter.stop="$wire.save()"
                 @keydown.ctrl.enter.stop="$wire.save()"
                 placeholder="O que você achou deste conteúdo?..."

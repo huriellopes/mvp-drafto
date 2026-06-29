@@ -25,19 +25,37 @@ final class ProfileSeoGenerator
             $profile->user?->isActive() &&
             !$profile->user?->banned_until;
 
+        $url = route('profile.show', $profile->username);
+        $image = $profile->avatar_path ? Storage::url($profile->avatar_path) : null;
+        $description = $profile->bio ?? "Explore as publicações e o perfil de {$displayName} na Drafto.";
+
         $seoData = new SEOData(
             title: "{$displayName} (@{$profile->username}) | Drafto",
-            description: $profile->bio ?? "Explore as publicações e o perfil de {$displayName} na Drafto.",
+            description: $description,
             author: $profile->name,
-            image: $profile->avatar_path ? Storage::url($profile->avatar_path) : null,
+            image: $image,
             type: 'profile',
+            url: $url,
             robots: $canIndex ? 'index, follow' : 'noindex, nofollow',
-            canonical_url: route('profile.show', $profile->username),
+            canonical_url: $url,
         );
 
-        // Sênior: Se o plano permitir SEO E o usuário permitir indexação, adicionamos Dados Estruturados (Schema.org)
+        // Sênior: Se o plano permitir SEO E o usuário permitir indexação, adicionamos
+        // Dados Estruturados (Schema.org) reais — ProfilePage com a entidade Person.
         if ($canIndex && $profile->user->getModuleSetting(ModuleEnum::PROFILE, 'enable_seo', false)) {
-            $seoData->schema = SchemaCollection::initialize();
+            $seoData->schema = SchemaCollection::initialize()
+                ->push(fn (): array => array_filter([
+                    '@context' => 'https://schema.org',
+                    '@type' => 'ProfilePage',
+                    'mainEntity' => array_filter([
+                        '@type' => 'Person',
+                        'name' => $displayName,
+                        'alternateName' => '@' . $profile->username,
+                        'description' => $description,
+                        'image' => $image,
+                        'url' => $url,
+                    ]),
+                ]));
         }
 
         return $seoData;

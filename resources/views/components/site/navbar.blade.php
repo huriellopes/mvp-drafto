@@ -43,9 +43,11 @@
                 {{-- Theme Toggle --}}
                 <x-ui.tooltip text="Alternar tema" position="bottom">
                     <button @click="$store.theme.toggle()"
+                            type="button"
+                            aria-label="Alternar tema"
                             class="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-500 transition hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800">
-                        <x-lucide-sun x-show="!$store.theme.darkMode" class="h-5 w-5" />
-                        <x-lucide-moon x-show="$store.theme.darkMode" class="h-5 w-5" x-cloak />
+                        <x-lucide-sun x-show="!$store.theme.darkMode" class="h-5 w-5" aria-hidden="true" />
+                        <x-lucide-moon x-show="$store.theme.darkMode" class="h-5 w-5" x-cloak aria-hidden="true" />
                     </button>
                 </x-ui.tooltip>
 
@@ -65,10 +67,13 @@
                 {{-- Botão Hamburguer Mobile --}}
                 <button
                     @click="mobileMenuOpen = !mobileMenuOpen"
+                    type="button"
+                    aria-label="Menu"
+                    :aria-expanded="mobileMenuOpen"
                     class="flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-100 bg-zinc-50 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white lg:hidden transition-all active:scale-90"
                 >
-                    <x-lucide-menu x-show="!mobileMenuOpen" class="h-5 w-5" />
-                    <x-lucide-x x-show="mobileMenuOpen" class="h-5 w-5" x-cloak />
+                    <x-lucide-menu x-show="!mobileMenuOpen" class="h-5 w-5" aria-hidden="true" />
+                    <x-lucide-x x-show="mobileMenuOpen" class="h-5 w-5" x-cloak aria-hidden="true" />
                 </button>
             </div>
         </div>

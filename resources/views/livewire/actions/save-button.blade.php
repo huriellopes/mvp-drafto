@@ -1,5 +1,8 @@
 <button
     wire:click="toggle"
+    type="button"
+    aria-pressed="{{ $isSaved ? 'true' : 'false' }}"
+    aria-label="{{ $isSaved ? 'Remover dos salvos' : 'Salvar para ler depois' }}"
     @class([
         'flex h-10 w-10 items-center justify-center rounded-xl border transition shadow-sm active:scale-95',
         'border-profile-primary/20 bg-profile-primary/10 text-profile-primary' => $isSaved,
@@ -7,5 +10,5 @@
     ])
     title="Salvar para ler depois"
 >
-    <x-lucide-bookmark @class(['h-5 w-5', 'fill-current' => $isSaved]) />
+    <x-lucide-bookmark @class(['h-5 w-5', 'fill-current' => $isSaved]) aria-hidden="true" />
 </button>

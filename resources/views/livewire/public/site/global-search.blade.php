@@ -22,9 +22,11 @@
 
     {{-- Trigger na Navbar --}}
     <button @click="isOpen = true"
+            type="button"
+            aria-label="Pesquisar"
             class="flex items-center justify-center lg:justify-start gap-3 h-10 w-10 lg:w-auto lg:px-4 lg:py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 group"
     >
-        <x-lucide-search class="h-5 w-5 lg:h-4 lg:w-4 group-hover:scale-110 transition-transform" />
+        <x-lucide-search class="h-5 w-5 lg:h-4 lg:w-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
         <span class="hidden lg:inline text-sm font-bold">Pesquisar...</span>
         <kbd class="hidden xl:inline-flex h-5 items-center gap-1 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-1.5 font-mono text-[10px] font-medium text-zinc-400 opacity-100 ml-2">
             <span class="text-xs">⌘</span>K
@@ -38,6 +40,9 @@
          style="display: none;">
 
         <div @click.away="isOpen = false"
+             role="dialog"
+             aria-modal="true"
+             aria-label="Busca"
              class="mx-auto max-w-2xl transform overflow-hidden rounded-[2.5rem] bg-white dark:bg-zinc-900 shadow-2xl ring-1 ring-black/5 transition-all">
 
             {{-- Header de Busca com Loading --}}
@@ -53,13 +58,14 @@
                 <input type="text"
                        x-ref="searchInput"
                        wire:model.live.debounce.400ms="search"
+                       aria-label="Buscar por título, tag ou categoria"
                        class="ml-4 flex-1 bg-transparent border-none text-lg text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-0 outline-none"
                        placeholder="Buscar por título, tag ou categoria..."
                        x-init="$el.focus()">
 
                 <x-ui.tooltip text="Fechar">
-                    <button @click="isOpen = false" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
-                        <x-lucide-x class="h-5 w-5" />
+                    <button @click="isOpen = false" type="button" aria-label="Fechar" class="p-2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors">
+                        <x-lucide-x class="h-5 w-5" aria-hidden="true" />
                     </button>
                 </x-ui.tooltip>
             </div>

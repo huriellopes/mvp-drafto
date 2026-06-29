@@ -32,6 +32,7 @@
                 'id' => $id,
                 'class' => $baseClasses
             ]) }}
+            @if($error) aria-invalid="true" aria-describedby="{{ $id }}-error" @endif
         >
             {{ $slot }}
         </select>
@@ -43,7 +44,7 @@
     </div>
 
         @if($error)
-            <p class="mt-2 text-[10px] font-black uppercase tracking-widest text-red-600 animate-in fade-in slide-in-from-top-1">
+            <p id="{{ $id }}-error" class="mt-2 text-[10px] font-black uppercase tracking-widest text-red-600 animate-in fade-in slide-in-from-top-1">
                 {{ $error }}
             </p>
         @endif
