@@ -34,6 +34,10 @@ Schedule::command('app:generate-missing-excerpts')
     ->cron('0 0 */3 * *')
     ->onOneServer();
 
+Schedule::command('seo:generate-sitemap')
+    ->dailyAt('02:00')
+    ->onOneServer();
+
 Schedule::command('users:reengage')
     ->dailyAt('09:00')
     ->onOneServer();
