@@ -31,12 +31,32 @@ final class GenerateProfileQrCodeAction
 
     public function svg(User $user): string
     {
-        return $this->writer(new SvgImageBackEnd())->writeString($user->getShareUrl());
+        return $this->svgFromUrl($user->getShareUrl());
     }
 
     public function exec(User $user): string
     {
-        return $this->compose($user->getShareUrl(), $user->profile->username);
+        return $this->pngFromUrl($user->getShareUrl(), '@' . $user->profile->username);
+    }
+
+    /**
+     * Gera o SVG do QR Code para qualquer URL de compartilhamento.
+     */
+    public function svgFromUrl(string $url): string
+    {
+        return $this->writer(new SvgImageBackEnd())->writeString($url);
+    }
+
+    /**
+     * Gera o PNG (com logo e legenda) do QR Code para qualquer URL de compartilhamento.
+     *
+     * @throws DriverException
+     * @throws ImageDecoderException
+     * @throws InvalidArgumentException
+     */
+    public function pngFromUrl(string $url, string $label): string
+    {
+        return $this->compose($url, $label);
     }
 
     /**
@@ -44,7 +64,7 @@ final class GenerateProfileQrCodeAction
      * @throws ImageDecoderException
      * @throws InvalidArgumentException
      */
-    private function compose(string $shareUrl, string $username): string
+    private function compose(string $shareUrl, string $label): string
     {
         $manager = new ImageManager(new Driver());
 
@@ -57,8 +77,8 @@ final class GenerateProfileQrCodeAction
         // Alturas para o layout vertical centralizado.
         $logoTop = self::PADDING;
         $qrTop = $logoTop + $logo->height() + 40;
-        $usernameTop = $qrTop + self::QR_SIZE + 48;
-        $canvasHeight = $usernameTop + 56 + self::PADDING;
+        $labelTop = $qrTop + self::QR_SIZE + 48;
+        $canvasHeight = $labelTop + 56 + self::PADDING;
 
         $canvas = $manager->createImage(self::CANVAS_WIDTH, $canvasHeight)->fill('ffffff');
 
@@ -66,7 +86,7 @@ final class GenerateProfileQrCodeAction
         $canvas->insert($logo, 0, $logoTop, 'top');
         $canvas->insert($qr, 0, $qrTop, 'top');
 
-        $canvas->text('@' . $username, intdiv(self::CANVAS_WIDTH, 2), $usernameTop, function (FontFactory $font): void {
+        $canvas->text($label, intdiv(self::CANVAS_WIDTH, 2), $labelTop, function (FontFactory $font): void {
             $font->filename(resource_path('fonts/DejaVuSans-Bold.ttf'));
             $font->size(38);
             $font->color('18181b');
