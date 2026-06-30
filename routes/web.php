@@ -8,6 +8,7 @@ use App\Http\Controllers\EmailPreferencesController;
 use App\Http\Controllers\Newsletter\UnsubscribeController;
 use App\Http\Controllers\Newsletter\VerifySubscriberController;
 use App\Http\Controllers\Public\AnalyticsController;
+use App\Http\Controllers\Public\PostQrCodeController;
 use App\Http\Controllers\Public\ProfileBadgeController;
 use App\Http\Controllers\Public\ProfileQrCodeController;
 use App\Http\Controllers\ShortLinkController;
@@ -135,6 +136,10 @@ Route::get('/@{username}/qrcode', [ProfileQrCodeController::class, 'download'])
     ->name('public.profile.qrcode')
     ->middleware(['throttle:public-content'])
     ->where('username', '[a-z0-9._]+');
+
+Route::get('/posts/{slug}/qrcode', [PostQrCodeController::class, 'download'])
+    ->name('public.posts.qrcode')
+    ->middleware(['throttle:public-content']);
 
 Route::get('/newsletter/verify', VerifySubscriberController::class)
     ->name('newsletter.verify');
