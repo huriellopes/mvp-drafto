@@ -78,7 +78,7 @@
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-20">
-        <main class="lg:col-span-8">
+        <main class="lg:col-span-8 min-w-0">
             @if($this->post->cover_image_path)
                 <div class="relative mb-20 overflow-hidden rounded-[3.5rem] shadow-2xl border border-zinc-100 dark:border-zinc-800">
                     <img src="{{ $this->post->cover_image_url }}"
@@ -95,10 +95,11 @@
             @endif
 
             @if($this->canReadContent)
-                <article class="prose prose-zinc prose-lg lg:prose-xl dark:prose-invert max-w-none
+                <article class="prose prose-zinc prose-lg lg:prose-xl dark:prose-invert max-w-none min-w-0 break-words
                                 prose-headings:font-black prose-headings:tracking-tighter
                                 prose-p:leading-relaxed prose-p:text-zinc-600 dark:prose-p:text-zinc-400
-                                prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline">
+                                prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
+                                prose-img:max-w-full prose-pre:overflow-x-auto prose-pre:max-w-full">
                     {!! $this->renderedContent !!}
                 </article>
 
