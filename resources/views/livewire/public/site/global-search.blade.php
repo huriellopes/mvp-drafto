@@ -23,14 +23,11 @@
     {{-- Trigger na Navbar --}}
     <button @click="isOpen = true"
             type="button"
-            aria-label="Pesquisar"
-            class="flex items-center justify-center lg:justify-start gap-3 h-10 w-10 lg:w-auto lg:px-4 lg:py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 group"
+            aria-label="Pesquisar..."
+            class="flex items-center justify-center lg:justify-start gap-3 h-10 w-10 lg:w-auto lg:px-4 lg:py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 group"
     >
         <x-lucide-search class="h-5 w-5 lg:h-4 lg:w-4 group-hover:scale-110 transition-transform" aria-hidden="true" />
         <span class="hidden lg:inline text-sm font-bold">Pesquisar...</span>
-        <kbd class="hidden xl:inline-flex h-5 items-center gap-1 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-1.5 font-mono text-[10px] font-medium text-zinc-400 opacity-100 ml-2">
-            <span class="text-xs">⌘</span>K
-        </kbd>
     </button>
 
     {{-- Modal Overlay --}}
@@ -114,7 +111,7 @@
                                     <a href="{{ route('posts.show', $post->slug) }}" @click="isOpen = false" wire:navigate class="flex items-center gap-4 p-4 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all group">
                                         <div class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-800">
                                             @if($post->cover_image_url)
-                                                <img src="{{ $post->cover_image_url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                                <img src="{{ $post->cover_image_url }}" width="56" height="56" alt="{{ $post->title }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
                                             @else
                                                 <div class="flex h-full w-full items-center justify-center">
                                                     <x-lucide-file-text class="h-5 w-5 text-zinc-300" />

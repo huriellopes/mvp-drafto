@@ -23,3 +23,19 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Compressão de resposta (Apache). Ignorado com segurança se o módulo não existir.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css \
+        text/javascript application/javascript application/json application/xml \
+        image/svg+xml font/ttf font/otf font/woff font/woff2
+</IfModule>
+
+# Cache de longa duração para assets estáticos.
+# Seguro: os bundles do Vite (/build) são versionados por hash e os uploads em
+# /storage usam nomes de arquivo únicos — uma nova versão gera um novo arquivo.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|mjs|woff2?|ttf|otf|webp|avif|png|jpe?g|gif|svg|ico)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
