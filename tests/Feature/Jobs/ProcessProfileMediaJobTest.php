@@ -8,6 +8,8 @@ use App\Jobs\ProcessProfileMediaJob;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 beforeEach(function (): void {
     Storage::fake('public');
@@ -61,7 +63,7 @@ it('downsizes an oversized webp avatar to the target dimensions', function (): v
     $profile->refresh();
     expect($profile->avatar_path)->toBe('avatars/big.webp');
 
-    $manager = \Intervention\Image\ImageManager::usingDriver(new \Intervention\Image\Drivers\Gd\Driver());
+    $manager = ImageManager::usingDriver(new Driver());
     $image = $manager->decodePath(Storage::disk('public')->path($profile->avatar_path));
 
     expect($image->width())->toBeLessThanOrEqual(400)
