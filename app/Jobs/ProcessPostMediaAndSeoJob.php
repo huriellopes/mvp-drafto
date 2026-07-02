@@ -44,8 +44,10 @@ final class ProcessPostMediaAndSeoJob implements ShouldQueue
             return;
         }
 
-        // 1. Processamento de Imagem (Conversão para WebP)
-        if ($this->post->cover_image_path && !$this->isWebp($this->post->cover_image_path)) {
+        // 1. Processamento de Imagem (WebP + teto de resolução).
+        //    Roda mesmo já sendo WebP: capas chegam em alta resolução e precisam
+        //    ser reduzidas ao tamanho de exibição para não pesar no carregamento.
+        if ($this->post->cover_image_path) {
             $this->optimizeImage();
         }
 
@@ -97,6 +99,19 @@ final class ProcessPostMediaAndSeoJob implements ShouldQueue
 
             $imageManager = ImageManager::usingDriver(new Driver());
             $image = $imageManager->decodePath($path);
+
+            $maxWidth = 1200;
+
+            // Idempotente: já é WebP e já está dentro do teto → não reprocessa.
+            if ($this->isWebp($coverPath) && $image->width() <= $maxWidth) {
+                return;
+            }
+
+            // Reduz apenas para baixo, preservando a proporção original
+            // (o recorte visual 16/10 é feito via CSS object-cover no card).
+            if ($image->width() > $maxWidth) {
+                $image->scaleDown(width: $maxWidth);
+            }
 
             $newPath = 'posts/' . pathinfo($coverPath, PATHINFO_FILENAME) . '.webp';
 
