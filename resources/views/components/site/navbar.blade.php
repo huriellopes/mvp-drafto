@@ -8,7 +8,7 @@
             {{-- Lado Esquerdo: Logo e Nav Desktop --}}
             <div class="flex items-center gap-8">
                 <a href="/" wire:navigate class="flex items-center gap-2 group shrink-0">
-                    <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" class="h-10 w-auto group-hover:rotate-6 transition-transform" alt="Drafto Logo">
+                    <img src="{{ asset('images/favicon/android-chrome-192x192.png') }}" width="40" height="40" class="h-10 w-auto group-hover:rotate-6 transition-transform" alt="Drafto Logo">
                 </a>
 
                 {{-- Nav Desktop --}}

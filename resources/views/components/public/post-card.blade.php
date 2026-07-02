@@ -8,6 +8,7 @@
             <img
                 src="{{ $post->cover_image_url }}"
                 alt="{{ $post->title }}"
+                width="1200" height="750"
                 loading="lazy"
                 decoding="async"
                 class="block aspect-[16/10] w-full rounded-t-3xl rounded-b-none object-cover shadow-none transition-transform duration-700 ease-out group-hover:scale-[1.06]"
@@ -35,8 +36,8 @@
 
             <span @class([
                 'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border transition-all',
-                'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' => $post->isArticle(),
-                'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' => $post->isRegularPost(),
+                'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' => $post->isArticle(),
+                'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20' => $post->isRegularPost(),
             ])>
                 @if($post->isArticle()) <x-lucide-scroll class="h-3 w-3" /> @else <x-lucide-file-text class="h-3 w-3" /> @endif
                 {{ $post->type->label() }}
@@ -69,13 +70,13 @@
                         @endif
                     </span>
                     @if($post->author->profile?->username)
-                        <span class="truncate text-[10px] font-medium text-zinc-400">{{ '@' . $post->author->profile->username }}</span>
+                        <span class="truncate text-[10px] font-medium text-zinc-600 dark:text-zinc-400">{{ '@' . $post->author->profile->username }}</span>
                     @endif
                 </div>
             </div>
 
             @if($post->reading_time)
-                <span class="flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                <span class="flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
                     <x-lucide-clock class="h-3 w-3" /> {{ $post->reading_time }} min
                 </span>
             @endif

@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Lazy;
 use Livewire\Component;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
 
@@ -25,14 +24,8 @@ use RalphJSmit\Laravel\SEO\Support\SEOData;
         description: 'A plataforma onde grandes ideias ganham vida. Conecte-se e inspire.',
     ),
 ])]
-#[Lazy]
 class Home extends Component
 {
-    public function placeholder(): View
-    {
-        return view('livewire.public.site.placeholders.home');
-    }
-
     #[Computed]
     public function featuredWriters()
     {
