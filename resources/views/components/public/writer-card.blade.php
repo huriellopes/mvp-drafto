@@ -8,6 +8,7 @@
             <div class="relative h-full w-full overflow-hidden rounded-[2rem] bg-zinc-100 ring-4 ring-white dark:ring-zinc-900 shadow-sm">
                 <img
                     src="{{ $writer->profile?->avatar_path ? Storage::url($writer->profile?->avatar_path) : 'https://ui-avatars.com/api/?name='.$writer->display_name }}"
+                    width="96" height="96"
                     loading="lazy" decoding="async"
                     class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt="{{ $writer->display_name }}">
@@ -22,9 +23,11 @@
                     <x-lucide-badge-check class="h-4 w-4 text-blue-500 fill-blue-500/10" />
                 @endif
             </h3>
-            <p class="text-profile-primary text-xs font-bold italic tracking-wide">
-                {{ "@".$writer->profile?->username }}
-            </p>
+            @if($writer->profile?->username)
+                <p class="text-profile-primary text-xs font-bold italic tracking-wide">
+                    {{ '@'.$writer->profile->username }}
+                </p>
+            @endif
         </div>
 
         {{-- Bio --}}
@@ -38,12 +41,12 @@
         <div class="mt-6 flex items-center justify-around py-4 border-t border-zinc-50 dark:border-zinc-800">
             <div class="text-center">
                 <p class="text-sm font-black text-zinc-900 dark:text-white">{{ number_format($writer->published_posts_count) }}</p>
-                <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Obras</p>
+                <p class="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Obras</p>
             </div>
             <div class="h-6 w-px bg-zinc-100 dark:bg-zinc-800"></div>
             <div class="text-center">
                 <p class="text-sm font-black text-zinc-900 dark:text-white">{{ number_format($writer->followers_count) }}</p>
-                <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Leitores</p>
+                <p class="text-[9px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest">Leitores</p>
             </div>
         </div>
     </div>
@@ -53,7 +56,7 @@
         <div class="mt-6">
             {{ $actions }}
         </div>
-    @else
-        <a href="{{ route('profile.show', $writer->profile?->username) }}" wire:navigate class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
+    @elseif($writer->profile?->username)
+        <a href="{{ route('profile.show', $writer->profile->username) }}" wire:navigate class="absolute inset-0 z-10" aria-label="Ver perfil"></a>
     @endif
 </div>

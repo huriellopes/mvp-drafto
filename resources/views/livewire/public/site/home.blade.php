@@ -22,6 +22,8 @@
             $writersCount = count($data->featuredWriters ?? []);
         @endphp
 
+        <h2 class="sr-only">Escritores em destaque</h2>
+
         <div class="relative w-full" x-data="{
             isDown: false,
             moved: false,
@@ -78,13 +80,13 @@
                 <div class="max-w-7xl mx-auto px-4 relative">
                     <div class="flex items-center gap-3 absolute -top-12 right-4 z-30">
                         <x-ui.tooltip text="Anterior">
-                            <button @click="prev" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                                <x-lucide-chevron-left class="h-5 w-5" />
+                            <button @click="prev" type="button" aria-label="Anterior" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                                <x-lucide-chevron-left class="h-5 w-5" aria-hidden="true" />
                             </button>
                         </x-ui.tooltip>
                         <x-ui.tooltip text="Próximo">
-                            <button @click="next" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                                <x-lucide-chevron-right class="h-5 w-5" />
+                            <button @click="next" type="button" aria-label="Próximo" class="h-12 w-12 flex items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                                <x-lucide-chevron-right class="h-5 w-5" aria-hidden="true" />
                             </button>
                         </x-ui.tooltip>
                     </div>
@@ -145,7 +147,7 @@
                 </div>
                 <h2 class="text-5xl md:text-6xl font-black text-zinc-900 dark:text-zinc-100 tracking-tighter italic">Destaques <span class="text-indigo-600 dark:text-indigo-400">Recentes.</span></h2>
             </div>
-            <a href="{{ route('posts.explore') }}" wire:navigate class="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
+            <a href="{{ route('posts.explore') }}" wire:navigate class="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-all">
                 Ver todo o acervo
                 <div class="h-10 w-10 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800 group-hover:border-zinc-900 dark:group-hover:border-white transition-colors">
                     <x-lucide-chevron-right class="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -178,7 +180,7 @@
                         <div class="h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform duration-500"></div>
                         <div class="flex min-w-0 flex-col">
                             <span class="truncate text-sm font-black text-zinc-900 dark:text-white">{{ $category->name }}</span>
-                            <span class="truncate text-[9px] font-bold text-zinc-400 uppercase tracking-widest italic">{{ $category->posts_count }} Publicações</span>
+                            <span class="truncate text-[9px] font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-widest italic">{{ $category->posts_count }} Publicações</span>
                         </div>
                     </a>
                 @endforeach
