@@ -37,13 +37,14 @@ final class ProcessProfileMediaJob implements ShouldQueue
             return;
         }
 
-        // 1. Otimizar Avatar
-        if ($this->profile->avatar_path && !$this->isWebp($this->profile->avatar_path)) {
+        // 1. Otimizar Avatar (mesmo já sendo WebP: uploads/crops chegam em alta
+        //    resolução — ex.: 1440x1440 — e precisam ser reduzidos ao tamanho de uso).
+        if ($this->profile->avatar_path) {
             $this->profile->avatar_path = $this->optimizeImage($this->profile->avatar_path, 'avatars', 400, 400);
         }
 
-        // 2. Otimizar Capa (Apenas se não for WebP já, ex: uploads diretos sem crop)
-        if ($this->profile->cover_path && !$this->isWebp($this->profile->cover_path)) {
+        // 2. Otimizar Capa
+        if ($this->profile->cover_path) {
             $this->profile->cover_path = $this->optimizeImage($this->profile->cover_path, 'covers', 1200, 400);
         }
 
@@ -77,6 +78,12 @@ final class ProcessProfileMediaJob implements ShouldQueue
 
             $imageManager = ImageManager::usingDriver(new Driver());
             $image = $imageManager->decodePath($fullPath);
+
+            // Idempotente: se já é WebP e já está dentro do alvo, não reprocessa
+            // (evita reencodar repetidamente e perder qualidade a cada save).
+            if ($this->isWebp($currentPath) && $image->width() <= $width && $image->height() <= $height) {
+                return $currentPath;
+            }
 
             // Redimensionamento inteligente (cover/fit)
             $image->cover($width, $height);

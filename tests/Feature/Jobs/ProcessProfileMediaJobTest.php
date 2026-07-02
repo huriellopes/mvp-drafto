@@ -48,6 +48,26 @@ it('leaves webp images untouched', function (): void {
     Storage::disk('public')->assertExists($avatar);
 });
 
+it('downsizes an oversized webp avatar to the target dimensions', function (): void {
+    $user = User::factory()->withProfile()->create();
+    $profile = $user->profile;
+
+    // Simula o cenário real: crop entrega WebP em alta resolução (1440x1440).
+    $avatar = UploadedFile::fake()->image('big.webp', 1440, 1440)->storeAs('avatars', 'big.webp', 'public');
+    $profile->update(['avatar_path' => $avatar, 'cover_path' => null]);
+
+    app()->call([new ProcessProfileMediaJob($profile), 'handle']);
+
+    $profile->refresh();
+    expect($profile->avatar_path)->toBe('avatars/big.webp');
+
+    $manager = \Intervention\Image\ImageManager::usingDriver(new \Intervention\Image\Drivers\Gd\Driver());
+    $image = $manager->decodePath(Storage::disk('public')->path($profile->avatar_path));
+
+    expect($image->width())->toBeLessThanOrEqual(400)
+        ->and($image->height())->toBeLessThanOrEqual(400);
+});
+
 it('cleans up the old avatar file when a new one was processed', function (): void {
     $user = User::factory()->withProfile()->create();
     $profile = $user->profile;
