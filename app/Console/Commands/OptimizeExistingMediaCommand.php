@@ -23,7 +23,8 @@ final class OptimizeExistingMediaCommand extends Command
     protected $signature = 'media:optimize
         {--queue : Enfileira os jobs em vez de processar de forma síncrona}
         {--profiles : Processa apenas perfis (avatar/capa)}
-        {--posts : Processa apenas capas de post}';
+        {--posts : Processa apenas capas de post}
+        {--no-cache-clear : Não limpa o cache da aplicação ao final}';
 
     protected $description = 'Reotimiza (redimensiona + WebP) as mídias já existentes de perfis e posts.';
 
@@ -45,9 +46,34 @@ final class OptimizeExistingMediaCommand extends Command
             $this->processPosts($useQueue);
         }
 
+        $this->afterProcessing($useQueue);
+
         $this->info('Concluído.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Reprocessar pode alterar caminhos de mídia (ex.: .jpg → .webp), tornando
+     * obsoletas as listas cacheadas (home, exploradores, etc.). Limpamos o cache
+     * da aplicação e lembramos do purge de CDN (nomes de arquivo são estáveis).
+     */
+    private function afterProcessing(bool $useQueue): void
+    {
+        if ($useQueue) {
+            $this->newLine();
+            $this->warn('Jobs enfileirados. Após a fila drenar, rode `php artisan cache:clear` e faça o purge do CDN/Cloudflare.');
+
+            return;
+        }
+
+        if (!$this->option('no-cache-clear')) {
+            $this->call('cache:clear');
+            $this->info('Cache da aplicação limpo (caminhos de mídia atualizados).');
+        }
+
+        $this->newLine();
+        $this->warn('Se as mídias são servidas via CDN/Cloudflare, faça o purge do cache: as imagens reprocessadas mantêm o mesmo nome de arquivo e continuarão sendo servidas em versão antiga até o purge.');
     }
 
     private function processProfiles(bool $useQueue): void
