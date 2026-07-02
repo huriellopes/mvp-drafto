@@ -2,14 +2,14 @@
     $data = $data ?? null;
 @endphp
 
-<div class="space-y-32 pb-20 transition-colors duration-500 bg-white dark:bg-zinc-950 animate-in fade-in duration-1000">
+<div class="space-y-32 pb-20 transition-colors duration-500 bg-white dark:bg-zinc-950">
     {{-- 1. HERO & MODERN SLIDER --}}
     <section class="relative pt-32 pb-44 overflow-hidden">
         <div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none"></div>
         <div class="absolute bottom-0 left-0 translate-y-1/4 -translate-x-1/4 w-[600px] h-[600px] bg-zinc-100/50 dark:bg-zinc-900/20 blur-[100px] rounded-full pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 relative z-10 text-center mb-24">
-            <h1 class="text-6xl md:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter mb-8 leading-[0.85] animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <h1 class="text-6xl md:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter mb-8 leading-[0.85]">
                 Escreva seu <br>
                 <span class="relative inline-block italic text-indigo-600 dark:text-indigo-400">Legado.</span>
             </h1>
