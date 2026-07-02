@@ -37,6 +37,25 @@ Opções:
 O comando é **idempotente**: rodar de novo não degrada imagens já otimizadas
 (pula reencode quando a imagem já é WebP dentro do tamanho-alvo).
 
+### ⚠️ Duas camadas de cache precisam ser invalidadas depois
+
+Reprocessar mídia altera o arquivo **sem mudar o nome** (WebP) ou muda a
+extensão (`.jpg` → `.webp`). Isso deixa dois caches obsoletos:
+
+1. **Cache da aplicação (Laravel/Redis)** — listas como a home
+   (`home_featured_writers_v2`) guardam os caminhos antigos. O `media:optimize`
+   **já roda `cache:clear` automaticamente** no modo síncrono (use
+   `--no-cache-clear` para pular; no modo `--queue`, rode manualmente após a
+   fila drenar).
+2. **Cache do CDN/Cloudflare** — como o nome do arquivo WebP não muda, o
+   Cloudflare continua servindo a **versão antiga** (HIT) por até 1 ano.
+   **É obrigatório fazer o purge** após reprocessar:
+   - Cloudflare → **Caching → Configuration → Purge Everything**
+   - ou purge por prefixo `https://drafto.pro/storage/`
+
+> Uploads **novos** de usuários recebem nome único → não precisam de purge.
+> O purge só é necessário após o `media:optimize` em massa.
+
 **Validação:**
 
 ```bash
@@ -128,6 +147,7 @@ curl -sI "https://drafto.pro${CSS}" | grep -i "cache-control\|cf-cache-status"
 ## 5. Checklist após um deploy relevante
 
 1. [ ] Deploy concluído (Cloud Prime).
-2. [ ] `php artisan media:optimize` (se houver mídias antigas não otimizadas).
-3. [ ] Cache Rule do Cloudflare ativa (validar com `cf-cache-status: HIT`).
-4. [ ] Re-medir o PageSpeed (mobile **e** desktop).
+2. [ ] `php artisan media:optimize` (se houver mídias antigas não otimizadas) — já limpa o cache da app.
+3. [ ] **Purge do Cloudflare** (obrigatório após o `media:optimize` — imagens de mesmo nome ficam em cache antigo).
+4. [ ] Cache Rule do Cloudflare ativa (validar com `cf-cache-status: HIT`).
+5. [ ] Re-medir o PageSpeed (mobile **e** desktop).
