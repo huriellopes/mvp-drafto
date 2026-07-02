@@ -35,10 +35,11 @@
 
     <x-seo.structured-data />
 
-    {{-- Fonts --}}
+    {{-- Fonts (assíncronas: não bloqueiam a renderização; display=swap usa fallback até carregar) --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
-    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800&display=swap"></noscript>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
