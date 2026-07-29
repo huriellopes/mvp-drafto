@@ -20,11 +20,16 @@ class ProfileSetting extends Model
         'background_color',
         'show_subscriber_count',
         'show_view_count',
+        'avatar_shape',
+        'cover_position',
+        'density',
+        'translucent_background',
     ];
 
     protected $casts = [
         'show_subscriber_count' => 'boolean',
         'show_view_count' => 'boolean',
+        'translucent_background' => 'boolean',
     ];
 
     public function profile(): BelongsTo
