@@ -281,74 +281,97 @@
             {{-- ==================== ABA: APARÊNCIA & CORES ==================== --}}
             <div x-show="tab === 'aparencia'" x-cloak class="space-y-10">
                 <x-ui.section-card title="{{ __('dashboard.profile.edit.style_section.title') }}" description="{{ __('dashboard.profile.edit.style_section.description') }}">
-                    <div class="space-y-10">
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            <div>
-                                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                                    {{ __('dashboard.profile.edit.style_section.primary_color') }}
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </label>
-                                <div class="flex items-center gap-4">
-                                    <input type="color" wire:model.live="form.primary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
-                                    <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                        {{ $form->primary_color }}
-                                    </span>
+                    <div class="space-y-9">
+                        {{-- Grupo: Paleta de Cores --}}
+                        <div>
+                            <div class="mb-5 flex items-center gap-2">
+                                <x-lucide-palette class="h-4 w-4 text-zinc-400" />
+                                <h4 class="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Paleta de Cores</h4>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <div>
+                                    <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                                        {{ __('dashboard.profile.edit.style_section.primary_color') }}
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </label>
+                                    <div class="flex items-center gap-4">
+                                        <input type="color" wire:model.live="form.primary_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                                        <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                            {{ $form->primary_color }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                                        {{ __('dashboard.profile.edit.style_section.accent_color') }}
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </label>
+                                    <div class="flex items-center gap-4">
+                                        <input type="color" wire:model.live="form.accent_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                                        <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                            {{ $form->accent_color }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                                    {{ __('dashboard.profile.edit.style_section.accent_color') }}
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </label>
-                                <div class="flex items-center gap-4">
-                                    <input type="color" wire:model.live="form.accent_color" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
-                                    <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                        {{ $form->accent_color }}
-                                    </span>
+                            <div class="mt-6 border-t border-dashed border-zinc-200 dark:border-zinc-800 pt-6">
+                                <p class="mb-4 text-[11px] font-semibold text-zinc-400 dark:text-zinc-500">
+                                    Sobrescritas opcionais — deixe em branco para usar o padrão calculado a partir do tema.
+                                </p>
+                                <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                                    <div>
+                                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                                            {{ __('dashboard.profile.edit.style_section.secondary_color') }}
+                                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <input type="color" value="{{ $form->secondary_color ?? '#000000' }}" x-on:change="$wire.set('form.secondary_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                                {{ $form->secondary_color ?? __('dashboard.profile.edit.style_section.none') }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                                            {{ __('dashboard.profile.edit.style_section.text_color') }}
+                                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <input type="color" value="{{ $form->text_color ?? '#000000' }}" x-on:change="$wire.set('form.text_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                                {{ $form->text_color ?? __('dashboard.profile.edit.style_section.default') }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
+                                            {{ __('dashboard.profile.edit.style_section.background_color') }}
+                                            <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                        </label>
+                                        <div class="flex items-center gap-4">
+                                            <input type="color" value="{{ $form->background_color ?? '#000000' }}" x-on:change="$wire.set('form.background_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
+                                            <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
+                                                {{ $form->background_color ?? __('dashboard.profile.edit.style_section.default') }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div>
-                                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                                    {{ __('dashboard.profile.edit.style_section.secondary_color') }}
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </label>
-                                <div class="flex items-center gap-4">
-                                    <input type="color" value="{{ $form->secondary_color ?? '#000000' }}" x-on:change="$wire.set('form.secondary_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
-                                    <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                        {{ $form->secondary_color ?? __('dashboard.profile.edit.style_section.none') }}
-                                    </span>
-                                </div>
+                        {{-- Grupo: Tema --}}
+                        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+                            <div class="mb-5 flex items-center gap-2">
+                                <x-lucide-sun-moon class="h-4 w-4 text-zinc-400" />
+                                <h4 class="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Tema</h4>
                             </div>
 
-                            <div>
-                                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                                    {{ __('dashboard.profile.edit.style_section.text_color') }}
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </label>
-                                <div class="flex items-center gap-4">
-                                    <input type="color" value="{{ $form->text_color ?? '#000000' }}" x-on:change="$wire.set('form.text_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
-                                    <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                        {{ $form->text_color ?? __('dashboard.profile.edit.style_section.default') }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="mb-3 block text-xs font-black uppercase tracking-widest text-zinc-500">
-                                    {{ __('dashboard.profile.edit.style_section.background_color') }}
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </label>
-                                <div class="flex items-center gap-4">
-                                    <input type="color" value="{{ $form->background_color ?? '#000000' }}" x-on:change="$wire.set('form.background_color', $event.target.value)" class="h-12 w-12 cursor-pointer rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-sm">
-                                    <span class="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-lg border border-zinc-200 uppercase">
-                                        {{ $form->background_color ?? __('dashboard.profile.edit.style_section.default') }}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div>
+                            <div class="max-w-xs">
                                 <x-ui.select wire:model="form.theme_mode" label="{{ __('dashboard.profile.edit.style_section.theme_mode') }}">
                                     <x-slot:label_extra>
                                         <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
@@ -360,102 +383,125 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                            <x-ui.select wire:model="form.layout_type" label="{{ __('dashboard.profile.edit.style_section.layout_type') }}">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="default">Layout Padrão (Sidebar)</option>
-                                <option value="centered">Centralizado (Foco no Autor)</option>
-                                <option value="grid">Grade (Foco em Posts)</option>
-                            </x-ui.select>
+                        {{-- Grupo: Tipografia & Formas --}}
+                        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+                            <div class="mb-5 flex items-center gap-2">
+                                <x-lucide-shapes class="h-4 w-4 text-zinc-400" />
+                                <h4 class="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Tipografia &amp; Formas</h4>
+                            </div>
 
-                            <x-ui.select wire:model="form.button_style" label="{{ __('dashboard.profile.edit.style_section.button_style') }}">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="rounded-md">Arredondado Leve</option>
-                                <option value="rounded-xl">Arredondado Médio</option>
-                                <option value="rounded-full">Pílula (Full)</option>
-                                <option value="square">Quadrado</option>
-                            </x-ui.select>
+                            <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                                <x-ui.select wire:model="form.font_family" label="{{ __('dashboard.profile.edit.style_section.font_family') }}">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="sans">Sans Serif (Padrão)</option>
+                                    <option value="serif">Serifado (Clássico)</option>
+                                    <option value="mono">Monospaced (Moderno)</option>
+                                </x-ui.select>
 
-                            <x-ui.select wire:model="form.card_style" label="{{ __('dashboard.profile.edit.style_section.card_style') }}">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="bordered">Com Bordas</option>
-                                <option value="shadow">Com Sombra</option>
-                                <option value="flat">Flat (Fundo Cinza)</option>
-                            </x-ui.select>
+                                <x-ui.select wire:model="form.button_style" label="{{ __('dashboard.profile.edit.style_section.button_style') }}">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="rounded-md">Arredondado Leve</option>
+                                    <option value="rounded-xl">Arredondado Médio</option>
+                                    <option value="rounded-full">Pílula (Full)</option>
+                                    <option value="square">Quadrado</option>
+                                </x-ui.select>
 
-                            <x-ui.select wire:model="form.font_family" label="{{ __('dashboard.profile.edit.style_section.font_family') }}">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="sans">Sans Serif (Padrão)</option>
-                                <option value="serif">Serifado (Clássico)</option>
-                                <option value="mono">Monospaced (Moderno)</option>
-                            </x-ui.select>
+                                <x-ui.select wire:model="form.card_style" label="{{ __('dashboard.profile.edit.style_section.card_style') }}">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="bordered">Com Bordas</option>
+                                    <option value="shadow">Com Sombra</option>
+                                    <option value="flat">Flat (Fundo Cinza)</option>
+                                </x-ui.select>
+
+                                <x-ui.select wire:model="form.avatar_shape" label="Formato do Avatar" :error="$errors->first('form.avatar_shape')">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="rounded">Arredondado (Padrão)</option>
+                                    <option value="circle">Círculo</option>
+                                    <option value="square">Quadrado</option>
+                                </x-ui.select>
+                            </div>
                         </div>
 
-                        {{-- Novos campos: forma do avatar, posição da capa, densidade e fundo translúcido --}}
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                            <x-ui.select wire:model="form.avatar_shape" label="Formato do Avatar" :error="$errors->first('form.avatar_shape')">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="rounded">Arredondado (Padrão)</option>
-                                <option value="circle">Círculo</option>
-                                <option value="square">Quadrado</option>
-                            </x-ui.select>
+                        {{-- Grupo: Layout da Página --}}
+                        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+                            <div class="mb-5 flex items-center gap-2">
+                                <x-lucide-layout-grid class="h-4 w-4 text-zinc-400" />
+                                <h4 class="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Layout da Página</h4>
+                            </div>
 
-                            <x-ui.select wire:model="form.cover_position" label="Posição da Capa" :error="$errors->first('form.cover_position')">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="top">Topo</option>
-                                <option value="center">Centro (Padrão)</option>
-                                <option value="bottom">Base</option>
-                            </x-ui.select>
+                            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                <x-ui.select wire:model="form.layout_type" label="{{ __('dashboard.profile.edit.style_section.layout_type') }}">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="default">Layout Padrão (Sidebar)</option>
+                                    <option value="centered">Centralizado (Foco no Autor)</option>
+                                    <option value="grid">Grade (Foco em Posts)</option>
+                                </x-ui.select>
 
-                            <x-ui.select wire:model="form.density" label="Densidade do Layout" :error="$errors->first('form.density')">
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
-                                </x-slot:label_extra>
-                                <option value="comfortable">Confortável (Padrão)</option>
-                                <option value="compact">Compacta</option>
-                            </x-ui.select>
+                                <x-ui.select wire:model="form.cover_position" label="Posição da Capa" :error="$errors->first('form.cover_position')">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="top">Topo</option>
+                                    <option value="center">Centro (Padrão)</option>
+                                    <option value="bottom">Base</option>
+                                </x-ui.select>
+
+                                <x-ui.select wire:model="form.density" label="Densidade do Layout" :error="$errors->first('form.density')">
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.required_field') ?? 'Obrigatório' }}" color="red" class="ml-1" />
+                                    </x-slot:label_extra>
+                                    <option value="comfortable">Confortável (Padrão)</option>
+                                    <option value="compact">Compacta</option>
+                                </x-ui.select>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-                            <x-ui.checkbox
-                                wire:model="form.translucent_background"
-                                label="Fundo translúcido"
-                                description="Cartões e chips do seu perfil ganham um efeito de vidro fosco (blur) sobre a capa/fundo, em vez de cor sólida."
-                            >
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </x-slot:label_extra>
-                            </x-ui.checkbox>
-                            <x-ui.checkbox
-                                wire:model="form.show_subscriber_count"
-                                label="{{ __('dashboard.profile.edit.style_section.show_followers') }}"
-                                description="{{ __('dashboard.profile.edit.style_section.show_followers_desc') }}"
-                            >
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </x-slot:label_extra>
-                            </x-ui.checkbox>
-                            <x-ui.checkbox
-                                wire:model="form.show_view_count"
-                                label="{{ __('dashboard.profile.edit.style_section.show_views') }}"
-                                description="{{ __('dashboard.profile.edit.style_section.show_views_desc') }}"
-                            >
-                                <x-slot:label_extra>
-                                    <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
-                                </x-slot:label_extra>
-                            </x-ui.checkbox>
+                        {{-- Grupo: Exibição --}}
+                        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-8">
+                            <div class="mb-5 flex items-center gap-2">
+                                <x-lucide-eye class="h-4 w-4 text-zinc-400" />
+                                <h4 class="text-xs font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Exibição</h4>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                <x-ui.checkbox
+                                    wire:model="form.translucent_background"
+                                    label="Fundo translúcido"
+                                    description="Cartões e chips do seu perfil ganham um efeito de vidro fosco (blur) sobre a capa/fundo, em vez de cor sólida."
+                                >
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                    </x-slot:label_extra>
+                                </x-ui.checkbox>
+                                <x-ui.checkbox
+                                    wire:model="form.show_subscriber_count"
+                                    label="{{ __('dashboard.profile.edit.style_section.show_followers') }}"
+                                    description="{{ __('dashboard.profile.edit.style_section.show_followers_desc') }}"
+                                >
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                    </x-slot:label_extra>
+                                </x-ui.checkbox>
+                                <x-ui.checkbox
+                                    wire:model="form.show_view_count"
+                                    label="{{ __('dashboard.profile.edit.style_section.show_views') }}"
+                                    description="{{ __('dashboard.profile.edit.style_section.show_views_desc') }}"
+                                >
+                                    <x-slot:label_extra>
+                                        <x-ui.badge label="{{ __('validation.optional_field') ?? 'Opcional' }}" color="zinc" class="ml-1" />
+                                    </x-slot:label_extra>
+                                </x-ui.checkbox>
+                            </div>
                         </div>
                     </div>
                 </x-ui.section-card>
