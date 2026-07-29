@@ -5,15 +5,37 @@
 
 @php
     $settings = $this->user->profile->settings;
-    $cardClasses = match($settings->card_style) {
-        'shadow' => 'shadow-xl shadow-zinc-900/5 border-0',
-        'flat' => 'border-0 bg-zinc-100/50 dark:bg-zinc-900/50',
-        default => 'border border-zinc-200 dark:border-zinc-800'
+    $translucent = (bool) $settings->translucent_background;
+
+    // Fundo translúcido (padrão): vidro fosco com blur. Sólido: bloco opaco.
+    $cardClasses = match(true) {
+        $settings->card_style === 'shadow' && $translucent => 'shadow-xl shadow-zinc-900/5 border-0 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl',
+        $settings->card_style === 'shadow' => 'shadow-xl shadow-zinc-900/5 border-0 bg-white dark:bg-zinc-900',
+        $settings->card_style === 'flat' && $translucent => 'border-0 bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl',
+        $settings->card_style === 'flat' => 'border-0 bg-zinc-100/50 dark:bg-zinc-900/50',
+        $translucent => 'border border-zinc-200/70 dark:border-zinc-800/70 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl',
+        default => 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900',
     };
+
     $layoutClasses = match($settings->layout_type) {
         'centered' => 'flex flex-col items-center text-center',
         default => ''
     };
+
+    $avatarShapeClasses = match($settings->avatar_shape) {
+        'circle' => 'rounded-full',
+        'square' => 'rounded-2xl',
+        default => 'rounded-[2rem] sm:rounded-[2.5rem]',
+    };
+
+    $coverPositionClass = match($settings->cover_position) {
+        'top' => 'object-top',
+        'bottom' => 'object-bottom',
+        default => 'object-center',
+    };
+
+    $isCompact = $settings->density === 'compact';
+    $sectionSpacing = $isCompact ? 'mt-16 space-y-8' : 'mt-32 space-y-12';
 @endphp
 
 <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950"
@@ -35,18 +57,18 @@
 
                 <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div class="flex items-center gap-4">
-                        <div class="h-12 w-12 shrink-0 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                        <div class="h-12 w-12 shrink-0 rounded-2xl bg-profile-primary/10 flex items-center justify-center text-profile-primary">
                             <x-lucide-sparkles class="h-6 w-6" />
                         </div>
                         <div>
-                            <h4 class="text-sm font-black uppercase tracking-tighter text-zinc-900 dark:text-white">Perfil em Construção</h4>
+                            <h4 class="text-sm font-black uppercase tracking-tighter text-profile-text">Perfil em Construção</h4>
                             <p class="text-xs text-zinc-500 font-medium">Complete seu perfil para desbloquear todo o potencial da sua estante.</p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-4">
                         <div class="hidden md:block w-32 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-indigo-600 transition-all duration-1000" style="width: {{ $this->user->profile->getCompletionPercentage() }}%"></div>
+                            <div class="h-full bg-profile-primary transition-all duration-1000" style="width: {{ $this->user->profile->getCompletionPercentage() }}%"></div>
                         </div>
                         <a href="{{ route('dashboard.profile') }}" wire:navigate class="shrink-0 px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest rounded-profile-button hover:scale-105 transition-all shadow-xl shadow-zinc-900/10">
                             Completar Perfil
@@ -63,9 +85,9 @@
             <div class="h-24 w-24 bg-zinc-100 dark:bg-zinc-900 rounded-[2.5rem] flex items-center justify-center mb-8">
                 <x-lucide-lock class="h-10 w-10 text-zinc-300 dark:text-zinc-700" />
             </div>
-            <h1 class="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Privacidade <span class="text-indigo-600">Absoluta.</span></h1>
+            <h1 class="text-5xl font-black text-profile-text tracking-tighter italic">Privacidade <span class="text-profile-primary">Absoluta.</span></h1>
             <p class="mt-4 text-zinc-500 font-medium max-w-sm">Este escritor optou por manter sua estante privada no momento.</p>
-            <a href="/" wire:navigate class="mt-8 px-8 py-3 rounded-2xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl">Voltar ao Início</a>
+            <a href="/" wire:navigate class="mt-8 px-8 py-3 rounded-2xl bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-profile-primary transition-all shadow-xl">Voltar ao Início</a>
         </div>
 
     @elseif(!$this->isProfileEssentialComplete && !$this->isOwner)
@@ -100,7 +122,7 @@
                 @if($this->user->profile->cover_path)
                     <img
                         src="{{ Storage::url($this->user->profile->cover_path) }}"
-                        class="h-full w-full object-cover"
+                        class="h-full w-full object-cover {{ $coverPositionClass }}"
                         alt="Capa {{ $this->user->display_name }}"
                     />
                 @else
@@ -117,11 +139,11 @@
                     ])>
 
                         {{-- Avatar --}}
-                        <div class="h-32 w-32 shrink-0 overflow-hidden rounded-[2rem] border-[5px] border-zinc-50 dark:border-zinc-950 bg-white dark:bg-zinc-900 shadow-2xl transition-transform hover:scale-105 sm:h-40 sm:w-40 sm:rounded-[2.5rem] sm:border-[6px] lg:h-44 lg:w-44">
+                        <div class="h-32 w-32 shrink-0 overflow-hidden {{ $avatarShapeClasses }} border-[5px] border-zinc-50 dark:border-zinc-950 bg-white dark:bg-zinc-900 shadow-2xl transition-transform hover:scale-105 sm:h-40 sm:w-40 sm:border-[6px] lg:h-44 lg:w-44">
                             @if($this->user->profile->avatar_path)
                                 <img src="{{ Storage::url($this->user->profile->avatar_path) }}" class="h-full w-full object-cover" alt="{{ $this->user->display_name }}" />
                             @else
-                                <div class="flex h-full items-center justify-center bg-zinc-100 dark:bg-zinc-800 text-5xl font-bold text-zinc-300">
+                                <div class="flex h-full items-center justify-center bg-profile-primary/10 text-5xl font-bold text-profile-primary">
                                     {{ substr($this->user->display_name, 0, 1) }}
                                 </div>
                             @endif
@@ -175,7 +197,7 @@
                             'flex flex-col items-center text-center' => $settings->layout_type === 'centered'
                         ])>
                             <h1 @class([
-                                'text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-zinc-900 dark:text-white italic flex flex-wrap items-center gap-x-3 gap-y-1 break-words',
+                                'text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter text-profile-text italic flex flex-wrap items-center gap-x-3 gap-y-1 break-words',
                                 'justify-center' => $settings->layout_type === 'centered',
                             ])>
                                 {{ $this->user->display_name }}
@@ -222,7 +244,7 @@
 
                                     <p x-ref="bioText"
                                        :class="expanded ? '' : 'line-clamp-3'"
-                                       class="text-lg leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium transition-all duration-500 whitespace-pre-line">
+                                       class="text-lg leading-relaxed text-profile-text/70 font-medium transition-all duration-500 whitespace-pre-line">
                                         {{ $this->user->profile->bio }}
                                     </p>
 
@@ -247,26 +269,26 @@
                             ])>
                                 {{-- Followers Count --}}
                                 @if($settings->show_subscriber_count)
-                                <span class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
+                                <span class="flex items-center gap-2 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
                                     <x-lucide-users class="h-4 w-4 text-profile-primary" />
-                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->followers_count) }}</span>
+                                    <span class="font-bold text-profile-text">{{ number_format($this->user->followers_count) }}</span>
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-70">seguidores</span>
                                 </span>
                                 @endif
 
                                 {{-- Views Count --}}
                                 @if($settings->show_view_count)
-                                <span class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
+                                <span class="flex items-center gap-2 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
                                     <x-lucide-eye class="h-4 w-4 text-profile-primary" />
-                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->profile->profile_views) }}</span>
+                                    <span class="font-bold text-profile-text">{{ number_format($this->user->profile->profile_views) }}</span>
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-70">visitas</span>
                                 </span>
                                 @endif
 
                                 {{-- Posts Count --}}
-                                <span class="flex items-center gap-2 bg-white dark:bg-zinc-900 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
+                                <span class="flex items-center gap-2 px-4 py-2 rounded-profile-button {{ $cardClasses }} shadow-sm transition-all hover:shadow-md">
                                     <x-lucide-pen-tool class="h-4 w-4 text-profile-primary" />
-                                    <span class="font-bold text-zinc-900 dark:text-white">{{ number_format($this->user->published_posts_count ?? 0) }}</span>
+                                    <span class="font-bold text-profile-text">{{ number_format($this->user->published_posts_count ?? 0) }}</span>
                                     <span class="text-[10px] font-black uppercase tracking-widest opacity-70">publicações</span>
                                 </span>
                             </div>
@@ -274,10 +296,10 @@
 
                         @if($settings->layout_type === 'default')
                         <aside class="hidden lg:block animate-in fade-in slide-in-from-right-8 duration-1000 delay-300">
-                            <div class="rounded-3xl {{ $cardClasses }} bg-white dark:bg-zinc-900 p-8 shadow-sm sticky top-32">
-                                <h3 class="font-bold text-zinc-900 dark:text-white mb-4 italic tracking-tighter text-xl">Sobre o autor</h3>
+                            <div class="rounded-3xl {{ $cardClasses }} p-8 shadow-sm sticky top-32">
+                                <h3 class="font-bold text-profile-text mb-4 italic tracking-tighter text-xl">Sobre o autor</h3>
                                 <p class="text-sm text-zinc-500 leading-relaxed font-medium">
-                                    Membro desde <span class="text-zinc-900 dark:text-zinc-200">{{ $this->user->created_at->translatedFormat('F Y') }}</span>.
+                                    Membro desde <span class="text-profile-text">{{ $this->user->created_at->translatedFormat('F Y') }}</span>.
                                 </p>
                             </div>
                         </aside>
@@ -287,12 +309,12 @@
 
                 {{-- Coleções públicas --}}
                 @if($this->publicCollections->isNotEmpty())
-                    <div class="mt-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+                    <div class="{{ $sectionSpacing }} animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
                         <div @class([
                             'flex items-center gap-6',
                             'flex-col text-center' => $settings->layout_type === 'grid'
                         ])>
-                            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic"><span class="text-profile-primary">Coleções.</span></h2>
+                            <h2 class="text-3xl font-black text-profile-text tracking-tighter italic"><span class="text-profile-primary">Coleções.</span></h2>
                             @if($settings->layout_type !== 'grid')
                                 <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
                             @endif
@@ -302,7 +324,7 @@
                             @foreach($this->publicCollections as $collection)
                                 <a href="{{ route('profile.collection', ['username' => $this->user->profile->username, 'collection' => $collection->slug]) }}"
                                    wire:navigate
-                                   class="group relative flex flex-col gap-3 p-6 rounded-3xl bg-white dark:bg-zinc-900 {{ $cardClasses }} hover:border-profile-primary hover:-translate-y-1 transition-all duration-500">
+                                   class="group relative flex flex-col gap-3 p-6 rounded-3xl {{ $cardClasses }} hover:border-profile-primary hover:-translate-y-1 transition-all duration-500">
                                     <div class="flex items-center gap-3">
                                         <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-profile-primary/10 text-profile-primary">
                                             <x-lucide-folder-tree class="h-5 w-5" />
@@ -311,7 +333,7 @@
                                             {{ $collection->published_posts_count }} {{ \Illuminate\Support\Str::plural('obra', $collection->published_posts_count) }}
                                         </span>
                                     </div>
-                                    <h3 class="text-lg font-black text-zinc-900 dark:text-white tracking-tight group-hover:text-profile-primary transition-colors">{{ $collection->name }}</h3>
+                                    <h3 class="text-lg font-black text-profile-text tracking-tight group-hover:text-profile-primary transition-colors">{{ $collection->name }}</h3>
                                     @if($collection->description)
                                         <p class="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2">{{ $collection->description }}</p>
                                     @endif
@@ -322,12 +344,12 @@
                 @endif
 
                 {{-- Posts Grid --}}
-                <div class="mt-32 space-y-12 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+                <div class="{{ $sectionSpacing }} animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
                     <div @class([
                         'flex items-center gap-6',
                         'flex-col text-center' => $settings->layout_type === 'grid'
                     ])>
-                        <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic">Publicações <span class="text-profile-primary">Recentes.</span></h2>
+                        <h2 class="text-3xl font-black text-profile-text tracking-tighter italic">Publicações <span class="text-profile-primary">Recentes.</span></h2>
                         @if($settings->layout_type !== 'grid')
                             <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
                         @endif

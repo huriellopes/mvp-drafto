@@ -22,7 +22,7 @@
                 </span>
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Coleção de {{ $profile->display_name }}</p>
-                    <h1 class="text-4xl sm:text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic">{{ $collection->name }}</h1>
+                    <h1 class="text-4xl sm:text-5xl font-black text-profile-text tracking-tighter italic">{{ $collection->name }}</h1>
                 </div>
             </div>
 
