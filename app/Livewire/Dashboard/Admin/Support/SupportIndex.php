@@ -10,6 +10,7 @@ use App\Models\Support;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Masmerise\Toaster\Toaster;
@@ -23,8 +24,10 @@ final class SupportIndex extends Component
 {
     use WithPagination;
 
+    #[Url]
     public string $search = '';
 
+    #[Url]
     public string $status = '';
 
     public ?int $selectedSupportId = null;
@@ -32,8 +35,6 @@ final class SupportIndex extends Component
     public string $adminResponse = '';
 
     public string $newStatus = '';
-
-    protected $queryString = ['search', 'status'];
 
     public function selectSupport(int $id): void
     {
