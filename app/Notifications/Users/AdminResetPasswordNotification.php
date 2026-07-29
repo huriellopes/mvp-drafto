@@ -24,7 +24,7 @@ final class AdminResetPasswordNotification extends Notification implements Shoul
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('contact')
             ->subject(__('notifications.admin.password_reset.subject'))
             ->greeting(__('notifications.admin.password_reset.greeting', ['name' => $notifiable->name]))

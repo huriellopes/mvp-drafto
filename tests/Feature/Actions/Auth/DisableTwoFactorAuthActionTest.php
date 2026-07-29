@@ -6,7 +6,7 @@ use App\Actions\Auth\DisableTwoFactorAuthAction;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->action = new DisableTwoFactorAuthAction();
+    $this->action = new DisableTwoFactorAuthAction;
 });
 
 it('clears the two factor authentication columns', function () {

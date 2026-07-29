@@ -25,7 +25,7 @@ class PostPublishedNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->subject('🎉 Seu post foi publicado!')
             ->greeting("Olá, {$notifiable->name}!")
             ->line("Temos o prazer de informar que o seu post \"{$this->post->title}\" que estava agendado, acaba de ser publicado com sucesso.")

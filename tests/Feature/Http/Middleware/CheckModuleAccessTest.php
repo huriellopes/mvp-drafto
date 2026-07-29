@@ -19,7 +19,7 @@ function runModuleAccess(?User $user, string $slug, bool $json = false)
         $request->headers->set('Accept', 'application/json');
     }
 
-    return (new CheckModuleAccess())->handle(
+    return (new CheckModuleAccess)->handle(
         $request,
         fn () => response('ok'),
         $slug,

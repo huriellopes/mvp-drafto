@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 beforeEach(function () {
-    $this->action = new ListPostsAction();
+    $this->action = new ListPostsAction;
 });
 
 it('lists only the authenticated user posts', function () {
@@ -22,7 +22,7 @@ it('lists only the authenticated user posts', function () {
 
     $this->actingAs($user);
 
-    $result = $this->action->exec(new PostFiltersData());
+    $result = $this->action->exec(new PostFiltersData);
 
     expect($result)->toBeInstanceOf(LengthAwarePaginator::class)
         ->and($result->total())->toBe(3);

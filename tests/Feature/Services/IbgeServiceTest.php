@@ -22,7 +22,7 @@ it('returns sorted municipios on a successful response for a uf', function () {
         ], 200),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getMunicipios('SP');
 
@@ -41,7 +41,7 @@ it('uses the national municipios endpoint when no uf is provided', function () {
         ], 200),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getMunicipios();
 
@@ -57,7 +57,7 @@ it('caches the municipios result so the api is only called once', function () {
         '*' => Http::response([['id' => 1, 'nome' => 'Recife']], 200),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $service->getMunicipios('PE');
     $service->getMunicipios('PE');
@@ -70,7 +70,7 @@ it('falls back to capital cities when the municipios api returns a non-2xx statu
         '*' => Http::response('error', 500),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getMunicipios('SP');
 
@@ -82,7 +82,7 @@ it('falls back to capital cities when the municipios request throws (timeout)', 
         throw new ConnectionException('timeout');
     });
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getMunicipios('RJ');
 
@@ -92,7 +92,7 @@ it('falls back to capital cities when the municipios request throws (timeout)', 
 it('falls back to the default city for an unknown uf', function () {
     Http::fake(['*' => Http::response('error', 503)]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getMunicipios('ZZ');
 
@@ -102,7 +102,7 @@ it('falls back to the default city for an unknown uf', function () {
 it('returns an empty array fallback for municipios when uf is null and the api fails', function () {
     Http::fake(['*' => Http::response('error', 500)]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     expect($service->getMunicipios())->toBe([]);
 });
@@ -115,7 +115,7 @@ it('returns sorted ufs on a successful response', function () {
         ], 200),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $result = $service->getUfs();
 
@@ -128,7 +128,7 @@ it('caches the ufs result so the api is only called once', function () {
         '*' => Http::response([['id' => 35, 'sigla' => 'SP', 'nome' => 'São Paulo']], 200),
     ]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     $service->getUfs();
     $service->getUfs();
@@ -139,7 +139,7 @@ it('caches the ufs result so the api is only called once', function () {
 it('falls back to the BrazilStateEnum mock when the ufs api returns a non-2xx status', function () {
     Http::fake(['*' => Http::response('error', 500)]);
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     expect($service->getUfs())->toBe(BrazilStateEnum::forIbgeMock());
 });
@@ -149,7 +149,7 @@ it('falls back to the BrazilStateEnum mock when the ufs request throws', functio
         throw new ConnectionException('timeout');
     });
 
-    $service = new IbgeService();
+    $service = new IbgeService;
 
     expect($service->getUfs())->toBe(BrazilStateEnum::forIbgeMock());
 });

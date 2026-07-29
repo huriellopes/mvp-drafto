@@ -18,7 +18,7 @@ beforeEach(function () {
  * guest in production.
  */
 it('returns an empty collection for a guest', function () {
-    $component = new RecentActivity();
+    $component = new RecentActivity;
 
     expect($component->items())->toBeEmpty();
 });

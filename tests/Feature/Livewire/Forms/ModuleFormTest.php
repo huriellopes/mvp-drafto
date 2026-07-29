@@ -36,7 +36,7 @@ it('hydrates the form state from a module via setModule', function () {
 
     $this->actingAs($admin);
 
-    $form = new ModuleForm(new ModuleIndex(), 'form');
+    $form = new ModuleForm(new ModuleIndex, 'form');
     $form->setModule($module);
 
     expect($form->is_enabled)->toBeTrue();

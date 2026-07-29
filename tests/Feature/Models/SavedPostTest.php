@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 it('is an incrementing pivot using the saved_posts table', function () {
-    $savedPost = new SavedPost();
+    $savedPost = new SavedPost;
 
     expect($savedPost)->toBeInstanceOf(Pivot::class)
         ->and($savedPost->incrementing)->toBeTrue()

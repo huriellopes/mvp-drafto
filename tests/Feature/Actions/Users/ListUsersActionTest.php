@@ -14,7 +14,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 it('paginates users and eager loads the profile relation', function () {
     User::factory()->count(3)->create();
 
-    $result = app(ListUsersAction::class)->exec(new UserFilterData());
+    $result = app(ListUsersAction::class)->exec(new UserFilterData);
 
     expect($result)->toBeInstanceOf(LengthAwarePaginator::class)
         ->and($result->total())->toBeGreaterThanOrEqual(3)

@@ -44,7 +44,7 @@ final class GenerateProfileQrCodeAction
      */
     public function svgFromUrl(string $url): string
     {
-        return $this->writer(new SvgImageBackEnd())->writeString($url);
+        return $this->writer(new SvgImageBackEnd)->writeString($url);
     }
 
     /**
@@ -66,9 +66,9 @@ final class GenerateProfileQrCodeAction
      */
     private function compose(string $shareUrl, string $label): string
     {
-        $manager = new ImageManager(new Driver());
+        $manager = new ImageManager(new Driver);
 
-        $qrPng = $this->writer(new ImagickImageBackEnd())->writeString($shareUrl);
+        $qrPng = $this->writer(new ImagickImageBackEnd)->writeString($shareUrl);
 
         $qr = $manager->decodeBinary($qrPng)->resize(self::QR_SIZE, self::QR_SIZE);
 
@@ -93,7 +93,7 @@ final class GenerateProfileQrCodeAction
             $font->align('center');
         });
 
-        return (string) $canvas->encode(new PngEncoder());
+        return (string) $canvas->encode(new PngEncoder);
     }
 
     private function writer(ImageBackEndInterface $backEnd): Writer

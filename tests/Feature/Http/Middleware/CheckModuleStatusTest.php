@@ -14,7 +14,7 @@ it('aborts with 404 when the module is globally disabled', function () {
     Module::where('slug', ModuleEnum::LINK_SHORTENER->value)
         ->update(['is_enabled' => false]);
 
-    $middleware = new CheckModuleStatus();
+    $middleware = new CheckModuleStatus;
 
     $middleware->handle(
         Request::create('/dashboard/encurtador'),
@@ -24,7 +24,7 @@ it('aborts with 404 when the module is globally disabled', function () {
 })->throws(HttpException::class);
 
 it('passes the request through when the module is enabled', function () {
-    $middleware = new CheckModuleStatus();
+    $middleware = new CheckModuleStatus;
 
     $response = $middleware->handle(
         Request::create('/dashboard/encurtador'),

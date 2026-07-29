@@ -21,7 +21,7 @@ final class UploadCoverImageAction
         $path = 'covers/' . $fileName;
 
         // Sênior: A versão instalada utiliza decodePath e encodeUsingFileExtension
-        $manager = ImageManager::usingDriver(new Driver());
+        $manager = ImageManager::usingDriver(new Driver);
         $image = $manager->decodePath($file->getRealPath());
 
         // Realizando o crop baseado nas coordenadas do CropperJS

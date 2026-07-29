@@ -15,7 +15,7 @@ use Masmerise\Toaster\Toaster;
  */
 function standardResponsesHost(): Component
 {
-    return new class() extends Component
+    return new class extends Component
     {
         use HasStandardResponses;
 

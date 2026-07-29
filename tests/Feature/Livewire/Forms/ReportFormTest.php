@@ -56,7 +56,7 @@ it('redirects guests to login when opening the modal', function () {
 });
 
 it('maps a friendly target type to the model class', function () {
-    $form = new ReportForm(new ReportModal(), 'form');
+    $form = new ReportForm(new ReportModal, 'form');
     $form->setTarget('user', 42);
 
     expect($form->reportable_type)->toBe(User::class)
@@ -67,7 +67,7 @@ it('exposes the report payload via getData', function () {
     $reporter = User::factory()->active()->create();
     $this->actingAs($reporter);
 
-    $form = new ReportForm(new ReportModal(), 'form');
+    $form = new ReportForm(new ReportModal, 'form');
     $form->setTarget('post', 7);
     $form->reason = 'abuse';
     $form->description = '  conteúdo abusivo  ';

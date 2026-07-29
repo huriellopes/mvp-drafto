@@ -29,7 +29,7 @@ final class WelcomeNotification extends VerifyEmail implements ShouldQueue
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('contact')
             ->subject(__('Bem-vindo à Drafto!'))
             ->view('emails.auth.welcome', [

@@ -26,7 +26,7 @@ it('sorts newsletter subscribers and toggles the direction', function () {
 });
 
 it('resets the newsletter filter form to its defaults', function () {
-    $form = new NewsletterFilterForm(new NewsletterIndex(), 'filters');
+    $form = new NewsletterFilterForm(new NewsletterIndex, 'filters');
     $form->search = 'algo';
     $form->category_id = 5;
     $form->sort = 'email';
@@ -66,7 +66,7 @@ it('toggles the report sort direction', function () {
 });
 
 it('resets the report filter form to its defaults', function () {
-    $form = new ReportFilterForm(new ReportIndex(), 'filters');
+    $form = new ReportFilterForm(new ReportIndex, 'filters');
     $form->search = 'x';
     $form->status = 'pending';
     $form->reason = 'spam';

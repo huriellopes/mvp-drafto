@@ -14,7 +14,7 @@ use Mockery;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 it('exposes the expected headings', function () {
-    $export = new ShortLinksExport(new ShortLinkFilterData());
+    $export = new ShortLinksExport(new ShortLinkFilterData);
 
     expect($export->headings())->toBe([
         'ID',
@@ -30,7 +30,7 @@ it('exposes the expected headings', function () {
 });
 
 it('bolds the header row in styles', function () {
-    $export = new ShortLinksExport(new ShortLinkFilterData());
+    $export = new ShortLinksExport(new ShortLinkFilterData);
     $styles = $export->styles(Mockery::mock(Worksheet::class));
 
     expect($styles)->toBe([1 => ['font' => ['bold' => true]]]);
@@ -43,7 +43,7 @@ it('builds a query returning seeded rows', function () {
         'shortable_id' => $post->id,
     ]);
 
-    expect((new ShortLinksExport(new ShortLinkFilterData()))->query()->count())->toBe(1);
+    expect((new ShortLinksExport(new ShortLinkFilterData))->query()->count())->toBe(1);
 });
 
 it('filters by code', function () {
@@ -73,7 +73,7 @@ it('maps a row pointing to a post', function () {
         'shortable_id' => $post->id,
     ]);
 
-    $export = new ShortLinksExport(new ShortLinkFilterData());
+    $export = new ShortLinksExport(new ShortLinkFilterData);
     $row = $export->map($export->query()->first());
 
     expect($row)->toHaveCount(9)
@@ -97,7 +97,7 @@ it('maps a row pointing to a user profile', function () {
         'shortable_id' => $target->id,
     ]);
 
-    $export = new ShortLinksExport(new ShortLinkFilterData());
+    $export = new ShortLinksExport(new ShortLinkFilterData);
     $row = $export->map($export->query()->first());
 
     expect($row[5])->toBe('Perfil')

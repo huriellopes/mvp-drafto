@@ -33,13 +33,13 @@ function telegramSentContaining(string $needle): Closure
 }
 
 it('alerts the Telegram channel when a command finishes with an error', function () {
-    event(new CommandFinished('drafto:foo', new ArrayInput([]), new BufferedOutput(), 1));
+    event(new CommandFinished('drafto:foo', new ArrayInput([]), new BufferedOutput, 1));
 
     Http::assertSent(telegramSentContaining('drafto:foo'));
 });
 
 it('stays silent when a command finishes successfully', function () {
-    event(new CommandFinished('drafto:foo', new ArrayInput([]), new BufferedOutput(), 0));
+    event(new CommandFinished('drafto:foo', new ArrayInput([]), new BufferedOutput, 0));
 
     Http::assertNothingSent();
 });

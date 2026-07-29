@@ -26,7 +26,7 @@ class MagicLinkNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('contact')
             ->subject(__('mail.auth.magic_link.subject'))
             ->view('emails.auth.magic-link', [

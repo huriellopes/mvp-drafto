@@ -78,7 +78,7 @@ it('treats content as nullable for a non-author moderator', function () {
 
     $this->actingAs($admin);
 
-    $form = new CommentForm(new CommentIndex(), 'form');
+    $form = new CommentForm(new CommentIndex, 'form');
     $form->setComment($comment);
     $form->content = '';
 

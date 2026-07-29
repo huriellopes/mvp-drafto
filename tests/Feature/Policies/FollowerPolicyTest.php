@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Policies\FollowerPolicy;
 
 beforeEach(function (): void {
-    $this->policy = new FollowerPolicy();
+    $this->policy = new FollowerPolicy;
 });
 
 it('before grants everything to super admin', function (): void {

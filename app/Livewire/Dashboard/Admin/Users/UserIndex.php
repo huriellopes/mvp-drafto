@@ -162,7 +162,7 @@ class UserIndex extends Component
             return;
         }
 
-        $action = new ToggleUserModuleAction();
+        $action = new ToggleUserModuleAction;
         $action->exec($this->selectedUserForModules, $module);
 
         $this->selectedUserForModules->load('modules');

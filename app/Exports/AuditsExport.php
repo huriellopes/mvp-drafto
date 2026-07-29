@@ -23,7 +23,7 @@ final readonly class AuditsExport implements FromQuery, WithChunkReading, WithHe
 
     public function query(): Builder
     {
-        return (new GetAuditsAction())->query($this->filters);
+        return (new GetAuditsAction)->query($this->filters);
     }
 
     public function headings(): array

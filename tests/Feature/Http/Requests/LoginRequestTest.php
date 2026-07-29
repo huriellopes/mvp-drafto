@@ -19,11 +19,11 @@ function makeLoginRequest(array $data): LoginRequest
 }
 
 it('authorizes the request', function () {
-    expect((new LoginRequest())->authorize())->toBeTrue();
+    expect((new LoginRequest)->authorize())->toBeTrue();
 });
 
 it('requires email and password', function () {
-    $validator = Validator::make([], (new LoginRequest())->rules());
+    $validator = Validator::make([], (new LoginRequest)->rules());
 
     expect($validator->fails())->toBeTrue()
         ->and($validator->errors()->keys())->toContain('email', 'password');
@@ -32,7 +32,7 @@ it('requires email and password', function () {
 it('rejects an invalid email format', function () {
     $validator = Validator::make(
         ['email' => 'not-an-email', 'password' => 'secret'],
-        (new LoginRequest())->rules(),
+        (new LoginRequest)->rules(),
     );
 
     expect($validator->errors()->has('email'))->toBeTrue();

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use OwenIt\Auditing\Models\Audit;
 
 it('exposes the expected headings', function () {
-    $export = new AuditsExport(new AuditFilterData());
+    $export = new AuditsExport(new AuditFilterData);
 
     expect($export->headings())
         ->toBeArray()
@@ -30,13 +30,13 @@ it('exposes the expected headings', function () {
 });
 
 it('returns a builder query', function () {
-    $export = new AuditsExport(new AuditFilterData());
+    $export = new AuditsExport(new AuditFilterData);
 
     expect($export->query())->toBeInstanceOf(Builder::class);
 });
 
 it('uses a sane chunk size', function () {
-    $export = new AuditsExport(new AuditFilterData());
+    $export = new AuditsExport(new AuditFilterData);
 
     expect($export->chunkSize())->toBe(1000);
 });
@@ -57,7 +57,7 @@ it('maps an audit row with a user', function () {
         'user_agent' => 'Mozilla',
     ]);
 
-    $export = new AuditsExport(new AuditFilterData());
+    $export = new AuditsExport(new AuditFilterData);
     $audit = $export->query()->first();
 
     $row = $export->map($audit);
@@ -84,7 +84,7 @@ it('falls back to "Sistema" when the audit has no user', function () {
         'user_agent' => 'Mozilla',
     ]);
 
-    $export = new AuditsExport(new AuditFilterData());
+    $export = new AuditsExport(new AuditFilterData);
     $audit = $export->query()->first();
 
     expect($export->map($audit)[1])->toBe('Sistema');

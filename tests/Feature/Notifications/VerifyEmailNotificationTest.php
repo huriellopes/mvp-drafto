@@ -11,7 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 it('builds the verify email mail message', function () {
     $user = User::factory()->withProfile()->create();
 
-    $notification = new VerifyEmailNotification();
+    $notification = new VerifyEmailNotification;
     $mail = $notification->toMail($user);
 
     expect($mail)->toBeInstanceOf(MailMessage::class)
