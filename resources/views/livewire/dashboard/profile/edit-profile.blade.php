@@ -10,9 +10,11 @@
         x-data="{
             tab: 'identidade',
             tabs: ['identidade', 'aparencia', 'links', 'privacidade'],
+            navCollapsed: localStorage.getItem('draftoProfileNavCollapsed') === 'true',
         }"
         x-init="
             $watch('tab', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+            $watch('navCollapsed', (v) => localStorage.setItem('draftoProfileNavCollapsed', v));
             Livewire.hook('request', ({ fail }) => {
                 fail(({ status, content }) => {
                     if (status !== 422) return;
@@ -24,10 +26,11 @@
                 });
             });
         "
-        class="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] lg:items-start lg:gap-10"
+        class="lg:grid lg:items-start lg:gap-6 transition-[grid-template-columns] duration-300"
+        :class="navCollapsed ? 'lg:grid-cols-[76px_minmax(0,1fr)]' : 'lg:grid-cols-[248px_minmax(0,1fr)]'"
     >
-        {{-- Navegação lateral das seções --}}
-        <nav class="mb-8 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-24 lg:mb-0 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:pb-0">
+        {{-- Navegação lateral das seções (retrátil em telas lg+) --}}
+        <nav class="relative mb-8 flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-24 lg:mb-0 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:pb-0">
             @php
                 $navItems = [
                     'identidade' => ['label' => 'Identidade', 'icon' => 'user-round', 'errors' => ['form.name', 'form.email', 'form.username', 'form.website_url', 'form.bio', 'form.location']],
@@ -42,15 +45,39 @@
                     type="button"
                     @click="tab = '{{ $key }}'"
                     :class="tab === '{{ $key }}' ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-sm' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'"
-                    class="flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition whitespace-nowrap"
+                    class="relative flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-colors whitespace-nowrap lg:transition-[padding]"
+                    x-bind:class="navCollapsed && 'lg:justify-center lg:px-0'"
+                    :title="navCollapsed ? '{{ $item['label'] }}' : null"
                 >
-                    <x-dynamic-component :component="'lucide-' . $item['icon']" class="h-4 w-4 shrink-0" />
-                    {{ $item['label'] }}
+                    <span class="relative shrink-0">
+                        <x-dynamic-component :component="'lucide-' . $item['icon']" class="h-4 w-4 shrink-0" />
+                        @if($errors->hasAny($item['errors']))
+                            <span
+                                x-show="navCollapsed"
+                                class="absolute -right-1 -top-1 hidden h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-zinc-900 lg:block"
+                                title="Há campos com erro nesta seção"
+                            ></span>
+                        @endif
+                    </span>
+                    <span x-show="!navCollapsed" x-transition.opacity.duration.150ms>{{ $item['label'] }}</span>
                     @if($errors->hasAny($item['errors']))
-                        <span class="ml-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" title="Há campos com erro nesta seção"></span>
+                        <span x-show="!navCollapsed" class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" title="Há campos com erro nesta seção"></span>
                     @endif
                 </button>
             @endforeach
+
+            {{-- Botão de retrair/expandir — só em telas lg+ --}}
+            <button
+                type="button"
+                @click="navCollapsed = !navCollapsed"
+                class="mt-2 hidden shrink-0 items-center gap-3 rounded-2xl px-4 py-2.5 text-xs font-bold text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300 lg:flex"
+                x-bind:class="navCollapsed && 'lg:justify-center lg:px-0'"
+                :title="navCollapsed ? 'Expandir menu' : 'Retrair menu'"
+            >
+                <x-lucide-panel-left-close class="h-4 w-4 shrink-0" x-show="!navCollapsed" />
+                <x-lucide-panel-left-open class="h-4 w-4 shrink-0" x-show="navCollapsed" />
+                <span x-show="!navCollapsed" x-transition.opacity.duration.150ms>Retrair menu</span>
+            </button>
         </nav>
 
         <div class="min-w-0 space-y-10">
@@ -717,8 +744,10 @@
             </div>
         </div>
 
-        {{-- Barra fixa de salvar: cola no fim da tela ao rolar, sem precisar descer a página toda. --}}
-        <x-ui.sticky-bar>
+        {{-- Barra fixa de salvar: cola no fim da tela ao rolar, sem precisar descer a página toda.
+             lg:col-span-2: a barra é filha direta do <form> (grid nav + conteúdo) — sem isso, o
+             grid a encaixa só na 1ª coluna (nav), espremendo o botão quando a nav está retraída. --}}
+        <x-ui.sticky-bar class="lg:col-span-2">
             <x-ui.button
                 type="submit"
                 loading="save"

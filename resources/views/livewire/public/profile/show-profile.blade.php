@@ -8,12 +8,21 @@
     $translucent = (bool) $settings->translucent_background;
 
     // Fundo translúcido (padrão): vidro fosco com blur. Sólido: bloco opaco.
+    //
+    // No escuro usamos um tingimento BRANCO bem sutil (bg-white/[0.07]), não
+    // outro cinza — testado visualmente e confirmado: qualquer tom de zinc
+    // sobre a página (que já é zinc-950) fica quase idêntico ao fundo,
+    // "sumindo" mesmo com blur (não há nada colorido atrás pra desfocar).
+    // Um tingimento claro sobre o escuro é o padrão real de glass do
+    // iOS/macOS em dark mode e se destaca por si só, sem depender do que
+    // está por trás. O ring substitui a borda nas variantes translúcidas
+    // pelo mesmo motivo — contorno visível independente do fundo.
     $cardClasses = match(true) {
-        $settings->card_style === 'shadow' && $translucent => 'shadow-xl shadow-zinc-900/5 border-0 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl',
+        $settings->card_style === 'shadow' && $translucent => 'shadow-xl shadow-black/10 dark:shadow-black/50 border-0 ring-1 ring-black/10 dark:ring-white/25 bg-white/70 dark:bg-white/[0.14] backdrop-blur-xl',
         $settings->card_style === 'shadow' => 'shadow-xl shadow-zinc-900/5 border-0 bg-white dark:bg-zinc-900',
-        $settings->card_style === 'flat' && $translucent => 'border-0 bg-zinc-100/40 dark:bg-zinc-900/40 backdrop-blur-xl',
+        $settings->card_style === 'flat' && $translucent => 'border-0 ring-1 ring-black/10 dark:ring-white/20 bg-white/50 dark:bg-white/10 backdrop-blur-xl',
         $settings->card_style === 'flat' => 'border-0 bg-zinc-100/50 dark:bg-zinc-900/50',
-        $translucent => 'border border-zinc-200/70 dark:border-zinc-800/70 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl',
+        $translucent => 'border border-black/10 dark:border-white/25 bg-white/70 dark:bg-white/[0.14] backdrop-blur-xl',
         default => 'border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900',
     };
 
