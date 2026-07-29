@@ -60,6 +60,10 @@ class Profile extends Model implements Auditable
             'card_style' => 'bordered',
             'layout_type' => 'default',
             'font_family' => 'sans',
+            'avatar_shape' => 'rounded',
+            'cover_position' => 'center',
+            'density' => 'comfortable',
+            'translucent_background' => true,
         ]);
     }
 

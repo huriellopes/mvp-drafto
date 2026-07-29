@@ -73,6 +73,10 @@ final class UpdateProfileAction
                 'background_color' => $data->background_color,
                 'show_subscriber_count' => $data->show_subscriber_count,
                 'show_view_count' => $data->show_view_count,
+                'avatar_shape' => $data->avatar_shape,
+                'cover_position' => $data->cover_position,
+                'density' => $data->density,
+                'translucent_background' => $data->translucent_background,
             ],
         );
 

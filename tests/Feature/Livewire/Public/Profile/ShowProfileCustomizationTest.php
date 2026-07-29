@@ -203,7 +203,9 @@ it('prioritizes the chosen theme over the background color', function () {
 
 it('applies the selected card_style to collection cards', function () {
     // card_style "flat" deve chegar até os cards de coleção (regressão do fix).
-    $writer = makeCustomProfile([], ['card_style' => 'flat']);
+    // translucent_background: false isola o teste do efeito de vidro fosco (default),
+    // que já é coberto em teste próprio.
+    $writer = makeCustomProfile([], ['card_style' => 'flat', 'translucent_background' => false]);
 
     $collection = PostCollection::factory()->public()->for($writer)->create();
     $post = Post::factory()->published()->for($writer)->create();

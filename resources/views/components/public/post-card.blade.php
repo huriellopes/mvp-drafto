@@ -2,7 +2,7 @@
 @use(App\Enums\PostVisibilityEnum)
 @use(Illuminate\Support\Str)
 
-<article class="group relative flex flex-col overflow-hidden rounded-3xl border border-zinc-200/70 bg-white transition-all duration-500 hover:-translate-y-1 hover:border-indigo-300 hover:shadow-2xl hover:shadow-indigo-500/10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-indigo-500/40">
+<article class="group relative flex flex-col overflow-hidden rounded-3xl border border-zinc-200/70 bg-white transition-all duration-500 hover:-translate-y-1 hover:border-profile-primary/40 hover:shadow-2xl hover:shadow-profile-primary/10 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-profile-primary/60">
     <div class="relative overflow-hidden bg-zinc-100 dark:bg-zinc-800">
         @if($post->cover_image_url)
             <img
@@ -30,7 +30,7 @@
 
     <div class="flex flex-1 flex-col p-6 sm:p-8">
         <div class="mb-4 flex items-center justify-between">
-            <span class="rounded-lg border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-indigo-600 dark:border-indigo-500/20 dark:bg-indigo-500/10 dark:text-indigo-400">
+            <span class="rounded-lg border border-profile-primary/10 bg-profile-primary/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-profile-primary">
                 {{ $post->category->name }}
             </span>
 
@@ -44,7 +44,7 @@
             </span>
         </div>
 
-        <h3 class="mb-3 text-xl font-black leading-tight tracking-tighter text-zinc-900 transition-colors group-hover:text-indigo-600 dark:text-white dark:group-hover:text-indigo-400">
+        <h3 class="mb-3 text-xl font-black leading-tight tracking-tighter text-zinc-900 transition-colors group-hover:text-profile-primary dark:text-white">
             <a href="{{ route('posts.show', $post->slug) }}" wire:navigate class="after:absolute after:inset-0 focus:outline-none">
                 {{ $post->title }}
             </a>
