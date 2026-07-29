@@ -28,7 +28,6 @@ parameters:
         - '#Access to an undefined property App\\Models\\Profile::\$username#'
         - '#Access to an undefined property App\\Models\\Collection::\$is_public#'
         - '#Access to an undefined property App\\Models\\Comment::\$depth#'
-        - '#Access to an undefined property Laravel\\Cashier\\Checkout::\$url#'
         - '#Access to an undefined property App\\Models\\Post::\$cover_image_url#'
         - '#Call to function is_array\(\) with \*NEVER\* will always evaluate to true#'
         - '#Offset mixed on \*NEVER\* on left side of \?\? always exists and is not nullable#'
