@@ -90,8 +90,8 @@ final class OptimizeExistingMediaCommand extends Command
         $query->chunkById(100, function ($profiles) use ($useQueue, $bar): void {
             foreach ($profiles as $profile) {
                 $useQueue
-                    ? ProcessProfileMediaJob::dispatch($profile)
-                    : ProcessProfileMediaJob::dispatchSync($profile);
+                    ? dispatch(new ProcessProfileMediaJob($profile))
+                    : dispatch_sync(new ProcessProfileMediaJob($profile));
                 $bar->advance();
             }
         });
@@ -113,8 +113,8 @@ final class OptimizeExistingMediaCommand extends Command
         $query->chunkById(100, function ($posts) use ($useQueue, $bar): void {
             foreach ($posts as $post) {
                 $useQueue
-                    ? ProcessPostMediaAndSeoJob::dispatch($post)
-                    : ProcessPostMediaAndSeoJob::dispatchSync($post);
+                    ? dispatch(new ProcessPostMediaAndSeoJob($post))
+                    : dispatch_sync(new ProcessPostMediaAndSeoJob($post));
                 $bar->advance();
             }
         });

@@ -16,7 +16,7 @@ final class PlatformVersion
      * para que valores antigos (ex.: 'dev' cacheado por código anterior) sejam
      * ignorados automaticamente após o deploy — sem precisar limpar cache.
      */
-    private const CACHE_KEY = 'platform_version_v2';
+    private const string CACHE_KEY = 'platform_version_v2';
 
     /**
      * Versão atual da plataforma.
@@ -34,7 +34,7 @@ final class PlatformVersion
      */
     public static function current(): string
     {
-        $configured = (string) (config('app.version') ?? '');
+        $configured = (string) (config('app.version', ''));
 
         if ($configured !== '' && $configured !== 'dev') {
             return $configured;

@@ -34,8 +34,8 @@ final class ProfileSeoGenerator
             description: $description,
             author: $profile->name,
             image: $image,
-            type: 'profile',
             url: $url,
+            type: 'profile',
             robots: $canIndex ? 'index, follow' : 'noindex, nofollow',
             canonical_url: $url,
         );
