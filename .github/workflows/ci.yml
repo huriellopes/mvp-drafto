@@ -45,6 +45,9 @@ jobs:
       - name: Static analysis (PHPStan / Larastan)
         run: vendor/bin/phpstan analyze --no-progress --memory-limit=512M
 
+      - name: Check for pending refactors (Rector)
+        run: vendor/bin/rector process --dry-run --no-progress-bar
+
   tests:
     name: Tests (Pest)
     runs-on: ubuntu-latest
