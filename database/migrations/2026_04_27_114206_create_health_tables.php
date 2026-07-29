@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Schema;
 use Spatie\Health\Models\HealthCheckResultHistoryItem;
 use Spatie\Health\ResultStores\EloquentHealthResultStore;
 
-return new class() extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        $connection = (new HealthCheckResultHistoryItem())->getConnectionName();
+        $connection = (new HealthCheckResultHistoryItem)->getConnectionName();
         $tableName = EloquentHealthResultStore::getHistoryItemInstance()->getTable();
 
         Schema::connection($connection)->create($tableName, function (Blueprint $table) {
@@ -38,7 +38,7 @@ return new class() extends Migration
 
     public function down(): void
     {
-        $connection = (new HealthCheckResultHistoryItem())->getConnectionName();
+        $connection = (new HealthCheckResultHistoryItem)->getConnectionName();
         $tableName = EloquentHealthResultStore::getHistoryItemInstance()->getTable();
 
         Schema::connection($connection)->dropIfExists($tableName);

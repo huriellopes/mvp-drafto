@@ -16,7 +16,7 @@ use Livewire\Livewire;
  */
 function categoryFormHost(): Component
 {
-    return new class() extends Component
+    return new class extends Component
     {
         public CategoryForm $form;
 

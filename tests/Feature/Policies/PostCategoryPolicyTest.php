@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Policies\PostCategoryPolicy;
 
 beforeEach(function (): void {
-    $this->policy = new PostCategoryPolicy();
+    $this->policy = new PostCategoryPolicy;
 });
 
 it('before grants everything to super admin', function (): void {

@@ -9,7 +9,7 @@ use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
 beforeEach(function () {
-    $this->action = new UploadCoverImageAction();
+    $this->action = new UploadCoverImageAction;
     Storage::fake('public');
 });
 
@@ -37,7 +37,7 @@ it('scales the stored image to the requested target width', function () {
 
     $stored = Storage::disk('public')->get($path);
 
-    $image = ImageManager::usingDriver(new Driver())
+    $image = ImageManager::usingDriver(new Driver)
         ->decode($stored);
 
     expect($image->width())->toBe(600);

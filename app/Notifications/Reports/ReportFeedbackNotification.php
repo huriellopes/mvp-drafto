@@ -26,7 +26,7 @@ final class ReportFeedbackNotification extends Notification implements ShouldQue
 
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('support')
             ->subject(__('notifications.report.feedback.subject', ['app' => config('app.name')]))
             ->greeting(__('notifications.report.feedback.greeting', ['name' => $notifiable->name]))

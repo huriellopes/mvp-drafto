@@ -22,7 +22,7 @@ it('casts slug to the enum, is_enabled to bool and settings to array', function 
 });
 
 it('uses the slug as the route key', function () {
-    expect((new Module())->getRouteKeyName())->toBe('slug');
+    expect((new Module)->getRouteKeyName())->toBe('slug');
 });
 
 it('reads a setting via getSetting with a default fallback', function () {

@@ -17,7 +17,7 @@ it('routes security logs to the security channel with structured context', funct
         $captured = ['message' => $message, 'context' => $context];
     });
 
-    (new SystemLogger())->error('breach', LogCategoryEnum::SECURITY, ['extra' => 'value']);
+    (new SystemLogger)->error('breach', LogCategoryEnum::SECURITY, ['extra' => 'value']);
 
     expect($captured['message'])->toContain('[Segurança] breach')
         ->and($captured['context']['category'])->toBe('security')
@@ -31,7 +31,7 @@ it('routes payment logs to the payments channel', function () {
         fn ($message, $context) => str_contains($message, '[Pagamentos] charge failed'),
     );
 
-    (new SystemLogger())->warning('charge failed', LogCategoryEnum::PAYMENT);
+    (new SystemLogger)->warning('charge failed', LogCategoryEnum::PAYMENT);
 
     expect(true)->toBeTrue();
 });
@@ -42,7 +42,7 @@ it('routes queue logs to the jobs channel', function () {
         fn ($message, $context) => str_contains($message, '[Filas/Jobs] job ran'),
     );
 
-    (new SystemLogger())->info('job ran', LogCategoryEnum::QUEUE);
+    (new SystemLogger)->info('job ran', LogCategoryEnum::QUEUE);
 
     expect(true)->toBeTrue();
 });
@@ -55,7 +55,7 @@ it('routes other categories to the default channel', function () {
         fn ($message, $context) => str_contains($message, '[Sistema] system message'),
     );
 
-    (new SystemLogger())->info('system message', LogCategoryEnum::SYSTEM);
+    (new SystemLogger)->info('system message', LogCategoryEnum::SYSTEM);
 
     expect(true)->toBeTrue();
 });
@@ -69,7 +69,7 @@ it('defaults the category to system when none is supplied', function () {
         $captured = $context;
     });
 
-    (new SystemLogger())->info('no category');
+    (new SystemLogger)->info('no category');
 
     expect($captured['category'])->toBe('system');
 });

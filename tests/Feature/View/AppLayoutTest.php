@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\View\View;
 
 it('points the app layout component to the layouts.app view', function () {
-    $view = (new AppLayout())->render();
+    $view = (new AppLayout)->render();
 
     expect($view)->toBeInstanceOf(View::class)
         ->and($view->name())->toBe('layouts.app');

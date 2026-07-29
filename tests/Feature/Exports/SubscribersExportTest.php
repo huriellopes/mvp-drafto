@@ -10,7 +10,7 @@ use App\Models\NewsletterSubscriber;
 use App\Models\PostCategory;
 
 it('exposes the expected headings', function () {
-    $export = new SubscribersExport(new NewsletterFilterData());
+    $export = new SubscribersExport(new NewsletterFilterData);
 
     expect($export->headings())->toBe(['ID', 'E-mail', 'Categorias de Interesse', 'Data de Inscrição']);
 });
@@ -18,7 +18,7 @@ it('exposes the expected headings', function () {
 it('builds a query returning seeded rows', function () {
     NewsletterSubscriber::factory()->count(2)->create();
 
-    expect((new SubscribersExport(new NewsletterFilterData()))->query()->count())->toBe(2);
+    expect((new SubscribersExport(new NewsletterFilterData))->query()->count())->toBe(2);
 });
 
 it('filters by email search', function () {
@@ -44,7 +44,7 @@ it('maps a subscriber with categories', function () {
     $subscriber = NewsletterSubscriber::factory()->create(['email' => 'sub@example.com']);
     $subscriber->categories()->attach($category);
 
-    $export = new SubscribersExport(new NewsletterFilterData());
+    $export = new SubscribersExport(new NewsletterFilterData);
     $row = $export->map($export->query()->first());
 
     expect($row)->toHaveCount(4)
@@ -55,7 +55,7 @@ it('maps a subscriber with categories', function () {
 it('falls back to "Geral" when the subscriber has no categories', function () {
     NewsletterSubscriber::factory()->create();
 
-    $export = new SubscribersExport(new NewsletterFilterData());
+    $export = new SubscribersExport(new NewsletterFilterData);
 
     expect($export->map($export->query()->first())[2])->toBe('Geral');
 });

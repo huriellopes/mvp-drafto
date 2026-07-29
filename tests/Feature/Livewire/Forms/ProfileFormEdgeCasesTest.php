@@ -19,7 +19,7 @@ it('returns early from setUser when the user has no profile', function () {
 
     $this->actingAs($user);
 
-    $form = new ProfileForm(new EditProfile(), 'form');
+    $form = new ProfileForm(new EditProfile, 'form');
     $form->setUser($user);
 
     // Sem perfil, nenhum campo é preenchido — username permanece vazio (default).

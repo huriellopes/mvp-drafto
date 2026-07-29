@@ -27,7 +27,7 @@ beforeEach(function () {
 });
 
 it('builds a monolog logger with a telegram handler from config', function () {
-    $logger = (new CreateTelegramLogger())(['level' => 'error']);
+    $logger = (new CreateTelegramLogger)(['level' => 'error']);
 
     expect($logger)->toBeInstanceOf(Logger::class)
         ->and($logger->getName())->toBe('telegram')
@@ -35,13 +35,13 @@ it('builds a monolog logger with a telegram handler from config', function () {
 });
 
 it('uses the explicit numeric thread from the config array', function () {
-    $logger = (new CreateTelegramLogger())(['thread' => 42, 'level' => 'warning']);
+    $logger = (new CreateTelegramLogger)(['thread' => 42, 'level' => 'warning']);
 
     expect($logger->getHandlers()[0])->toBeInstanceOf(TelegramLoggerHandler::class);
 });
 
 it('ignores a non-numeric thread value', function () {
-    $logger = (new CreateTelegramLogger())(['thread' => 'not-a-number', 'level' => 'critical']);
+    $logger = (new CreateTelegramLogger)(['thread' => 'not-a-number', 'level' => 'critical']);
 
     expect($logger->getHandlers()[0])->toBeInstanceOf(TelegramLoggerHandler::class);
 });
@@ -49,7 +49,7 @@ it('ignores a non-numeric thread value', function () {
 it('falls back to the configured thread when none is passed in the array', function () {
     config(['services.telegram.thread' => 99]);
 
-    $logger = (new CreateTelegramLogger())(['level' => 'error']);
+    $logger = (new CreateTelegramLogger)(['level' => 'error']);
 
     expect($logger->getHandlers()[0])->toBeInstanceOf(TelegramLoggerHandler::class);
 });

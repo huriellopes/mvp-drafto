@@ -9,7 +9,7 @@ use App\Traits\GeneratesUsername;
 
 function usernameGenerator(): object
 {
-    return new class()
+    return new class
     {
         use GeneratesUsername;
 

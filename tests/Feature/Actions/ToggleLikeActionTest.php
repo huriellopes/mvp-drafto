@@ -9,7 +9,7 @@ use App\Notifications\SocialInteractionNotification;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
-    $this->action = new ToggleLikeAction();
+    $this->action = new ToggleLikeAction;
 });
 
 it('attaches a like and increments likes_count', function () {

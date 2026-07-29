@@ -16,7 +16,7 @@ beforeEach(function () {
 it('paginates post views with eager loaded relations', function () {
     PostView::factory()->count(3)->create();
 
-    $result = $this->action->exec(new PostViewFilterData());
+    $result = $this->action->exec(new PostViewFilterData);
 
     expect($result->total())->toBe(3)
         ->and($result->first()->relationLoaded('post'))->toBeTrue();
@@ -45,7 +45,7 @@ it('filters by ip hash', function () {
 it('honors the per page argument', function () {
     PostView::factory()->count(5)->create();
 
-    $result = $this->action->exec(new PostViewFilterData(), perPage: 2);
+    $result = $this->action->exec(new PostViewFilterData, perPage: 2);
 
     expect($result->perPage())->toBe(2)
         ->and($result->items())->toHaveCount(2);

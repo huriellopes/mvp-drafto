@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 function rateLimiter(): object
 {
-    return new class()
+    return new class
     {
         use WithRateLimiting;
 

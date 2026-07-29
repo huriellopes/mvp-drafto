@@ -7,7 +7,7 @@ use App\Models\Post;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->action = new ToggleSaveAction();
+    $this->action = new ToggleSaveAction;
 });
 
 it('saves a post when not previously saved', function () {

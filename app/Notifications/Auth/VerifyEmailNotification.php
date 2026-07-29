@@ -20,7 +20,7 @@ class VerifyEmailNotification extends VerifyEmail implements ShouldQueue
     {
         $verificationUrl = $this->verificationUrl($notifiable);
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('contact')
             ->subject(__('Confirme seu e-mail na Drafto'))
             ->view('emails.auth.verify-email', [

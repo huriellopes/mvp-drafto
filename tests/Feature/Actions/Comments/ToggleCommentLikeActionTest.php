@@ -9,7 +9,7 @@ use App\Notifications\SocialInteractionNotification;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
-    $this->action = new ToggleCommentLikeAction();
+    $this->action = new ToggleCommentLikeAction;
 });
 
 it('adds a like for an authenticated user', function () {

@@ -10,12 +10,12 @@ use App\Policies\CollectionPolicy;
 use Illuminate\Support\Str;
 
 beforeEach(function (): void {
-    $this->policy = new CollectionPolicy();
+    $this->policy = new CollectionPolicy;
 });
 
 function makeCollection(User $owner, bool $isPublic): Collection
 {
-    $collection = new Collection();
+    $collection = new Collection;
     $collection->user_id = $owner->id;
     $collection->name = 'My Collection';
     $collection->slug = 'my-collection-' . Str::lower(Str::random(6));

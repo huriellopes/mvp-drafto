@@ -24,7 +24,7 @@ it('lists only the published public posts saved by the user', function () {
     $user->savedPosts()->attach($mine->id);
     $other->savedPosts()->attach($someoneElses->id);
 
-    $result = $this->action->exec($user, new SavedPostsFilterData());
+    $result = $this->action->exec($user, new SavedPostsFilterData);
 
     expect($result->total())->toBe(1)
         ->and($result->first()->id)->toBe($mine->id);
@@ -36,7 +36,7 @@ it('excludes unpublished posts from the saved list', function () {
 
     $user->savedPosts()->attach($draft->id);
 
-    $result = $this->action->exec($user, new SavedPostsFilterData());
+    $result = $this->action->exec($user, new SavedPostsFilterData);
 
     expect($result->total())->toBe(0);
 });

@@ -20,7 +20,7 @@ it('returns only the comments belonging to a non-admin user', function () {
     $own = Comment::factory()->byUser($user)->create();
     Comment::factory()->byUser($other)->create();
 
-    $result = $this->action->exec($user, new CommentFilterData());
+    $result = $this->action->exec($user, new CommentFilterData);
 
     expect($result)->toBeInstanceOf(LengthAwarePaginator::class)
         ->and($result->total())->toBe(1)
@@ -34,7 +34,7 @@ it('includes replies made to a non-admin users comments', function () {
     $parent = Comment::factory()->byUser($user)->create();
     $reply = Comment::factory()->byUser($other)->replyTo($parent)->create();
 
-    $result = $this->action->exec($user, new CommentFilterData());
+    $result = $this->action->exec($user, new CommentFilterData);
 
     $ids = collect($result->items())->pluck('id');
 
@@ -50,7 +50,7 @@ it('returns every comment for an admin user', function () {
     Comment::factory()->byUser($userA)->create();
     Comment::factory()->byUser($userB)->create();
 
-    $result = $this->action->exec($admin, new CommentFilterData());
+    $result = $this->action->exec($admin, new CommentFilterData);
 
     expect($result->total())->toBe(2);
 });

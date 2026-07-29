@@ -47,7 +47,7 @@ final class UpdateProfileMediaAction
         $fileName = hexdec(uniqid()) . '.webp';
         $path = 'covers/' . $fileName;
 
-        $manager = ImageManager::usingDriver(new Driver());
+        $manager = ImageManager::usingDriver(new Driver);
         $image = $manager->decodePath($file->getRealPath());
 
         // Perform crop based on CropperJS coordinates

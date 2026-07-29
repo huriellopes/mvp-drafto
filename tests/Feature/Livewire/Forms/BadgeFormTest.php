@@ -37,7 +37,7 @@ it('exposes the chosen badge options on the host component', function () {
 });
 
 it('builds a BadgeData DTO from the form state', function () {
-    $form = new BadgeForm(new ProfileBadgeGenerator(), 'form');
+    $form = new BadgeForm(new ProfileBadgeGenerator, 'form');
     $form->theme = 'light';
     $form->showStats = false;
     $form->showBio = false;

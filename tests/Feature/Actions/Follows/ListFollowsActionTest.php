@@ -19,7 +19,7 @@ it('lists the followers of a user', function () {
 
     $user->followers()->attach([$followerA->id, $followerB->id]);
 
-    $result = $this->action->exec($user, new FollowersFilterData(), type: 'followers');
+    $result = $this->action->exec($user, new FollowersFilterData, type: 'followers');
 
     expect($result->total())->toBe(2)
         ->and($result->pluck('id')->all())->toContain($followerA->id, $followerB->id);
@@ -31,7 +31,7 @@ it('lists who the user is following', function () {
 
     $user->following()->attach($followed->id);
 
-    $result = $this->action->exec($user, new FollowersFilterData(), type: 'following');
+    $result = $this->action->exec($user, new FollowersFilterData, type: 'following');
 
     expect($result->total())->toBe(1)
         ->and($result->first()->id)->toBe($followed->id);

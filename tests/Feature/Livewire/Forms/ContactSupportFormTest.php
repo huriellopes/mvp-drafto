@@ -15,7 +15,7 @@ use Livewire\Livewire;
  */
 function contactSupportHost(): Component
 {
-    return new class() extends Component
+    return new class extends Component
     {
         public SupportForm $form;
 

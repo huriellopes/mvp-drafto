@@ -21,7 +21,7 @@ it('regenerates the username on collision and terminates', function () {
     $owner = User::factory()->create();
     Profile::factory()->create(['user_id' => $owner->id, 'username' => 'john-aaaa']);
 
-    $generator = new class()
+    $generator = new class
     {
         use GeneratesUsername;
 

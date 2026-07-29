@@ -12,7 +12,7 @@ use App\Models\User;
 use App\Policies\CommentPolicy;
 
 beforeEach(function (): void {
-    $this->policy = new CommentPolicy();
+    $this->policy = new CommentPolicy;
 });
 
 function attachCommentsModule(User $user, array $settings): void

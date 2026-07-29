@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\File;
 use Mews\Purifier\Facades\Purifier;
 
 beforeEach(function () {
-    $this->action = new SavePostAction();
+    $this->action = new SavePostAction;
 });
 
 /**

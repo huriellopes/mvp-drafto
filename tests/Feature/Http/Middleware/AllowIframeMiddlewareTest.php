@@ -8,7 +8,7 @@ use App\Http\Middleware\AllowIframeMiddleware;
 use Illuminate\Http\Request;
 
 it('removes x-frame-options and sets a permissive csp header', function () {
-    $middleware = new AllowIframeMiddleware();
+    $middleware = new AllowIframeMiddleware;
 
     $response = $middleware->handle(Request::create('/badge/@joe'), function () {
         $resp = response('ok');

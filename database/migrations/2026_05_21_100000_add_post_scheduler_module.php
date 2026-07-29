@@ -6,7 +6,7 @@ use App\Enums\ModuleEnum;
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-return new class() extends Migration
+return new class extends Migration
 {
     public function up(): void
     {
