@@ -63,7 +63,7 @@ it('downsizes an oversized webp avatar to the target dimensions', function (): v
     $profile->refresh();
     expect($profile->avatar_path)->toBe('avatars/big.webp');
 
-    $manager = ImageManager::usingDriver(new Driver());
+    $manager = ImageManager::usingDriver(new Driver);
     $image = $manager->decodePath(Storage::disk('public')->path($profile->avatar_path));
 
     expect($image->width())->toBeLessThanOrEqual(400)

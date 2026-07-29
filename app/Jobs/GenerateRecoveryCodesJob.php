@@ -48,7 +48,7 @@ class GenerateRecoveryCodesJob implements ShouldQueue
 
             Storage::disk('local')->put($path, $content);
         } else {
-            $manager = ImageManager::usingDriver(new Driver());
+            $manager = ImageManager::usingDriver(new Driver);
             $width = 400;
             $height = 600;
 

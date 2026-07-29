@@ -84,7 +84,7 @@ class AuditLogIndex extends Component
      */
     public function render(): View
     {
-        $action = new GetAuditsAction();
+        $action = new GetAuditsAction;
 
         return view('livewire.dashboard.admin.audit-log-index', [
             'audits' => $action->exec($this->filters),

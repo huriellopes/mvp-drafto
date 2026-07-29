@@ -19,7 +19,6 @@ O Drafto foi construído sobre o **TALL Stack** moderno, priorizando tipagem est
 - **Styling:** Tailwind CSS 4+ (Engine de alta performance e CSS-first).
 - **Persistence:** MySQL 8.4 (Otimizado com índices estratégicos e suporte a JSON).
 - **Infrastructure:** Docker (Laravel Sail), Redis (Caching & High-speed Queues).
-- **Financial:** Laravel Cashier (Integração robusta com Stripe para assinaturas).
 
 ---
 

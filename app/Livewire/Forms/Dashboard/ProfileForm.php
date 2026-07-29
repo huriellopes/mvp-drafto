@@ -59,6 +59,14 @@ class ProfileForm extends Form
 
     public bool $show_view_count = false;
 
+    public string $avatar_shape = 'rounded';
+
+    public string $cover_position = 'center';
+
+    public string $density = 'comfortable';
+
+    public bool $translucent_background = true;
+
     public string $seo_title = '';
 
     public string $seo_description = '';
@@ -104,6 +112,10 @@ class ProfileForm extends Form
         $this->background_color = $settings->background_color;
         $this->show_subscriber_count = (bool) $settings->show_subscriber_count;
         $this->show_view_count = (bool) $settings->show_view_count;
+        $this->avatar_shape = $settings->avatar_shape;
+        $this->cover_position = $settings->cover_position;
+        $this->density = $settings->density;
+        $this->translucent_background = (bool) $settings->translucent_background;
 
         $this->seo_title = $profile->seo?->title ?? '';
         $this->seo_description = $profile->seo?->description ?? '';
@@ -141,6 +153,10 @@ class ProfileForm extends Form
             'background_color' => ['nullable', 'hex_color'],
             'show_subscriber_count' => ['boolean'],
             'show_view_count' => ['boolean'],
+            'avatar_shape' => ['required', 'string', Rule::in(['circle', 'rounded', 'square'])],
+            'cover_position' => ['required', 'string', Rule::in(['top', 'center', 'bottom'])],
+            'density' => ['required', 'string', Rule::in(['compact', 'comfortable'])],
+            'translucent_background' => ['boolean'],
             'seo_title' => ['nullable', 'string', 'max:60'],
             'seo_description' => ['nullable', 'string', 'max:160'],
             'avatar' => ['nullable', 'image', 'max:1024'],

@@ -23,7 +23,7 @@ it('does not alert for scanner-noise 404 paths', function () {
     Log::shouldReceive('channel')->with('daily')->andReturnSelf();
     Log::shouldReceive('error')->andReturnNull();
 
-    $reporter = new TelegramErrorReporter();
+    $reporter = new TelegramErrorReporter;
 
     expect($reporter->report(new NotFoundHttpException('not found')))->toBeFalse();
 
@@ -42,7 +42,7 @@ it('routes a 500 error to the critical telegram channel', function () {
     });
     Log::shouldReceive('error')->andReturnNull();
 
-    $reporter = new TelegramErrorReporter();
+    $reporter = new TelegramErrorReporter;
 
     expect($reporter->report(new RuntimeException('explosion')))->toBeFalse()
         ->and($channels)->toContain('telegram_alerts');
@@ -59,7 +59,7 @@ it('routes a non-noise 404 to the debug telegram channel', function () {
     });
     Log::shouldReceive('error')->andReturnNull();
 
-    $reporter = new TelegramErrorReporter();
+    $reporter = new TelegramErrorReporter;
 
     $reporter->report(new NotFoundHttpException('missing'));
 

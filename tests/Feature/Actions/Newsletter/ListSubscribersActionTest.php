@@ -16,7 +16,7 @@ beforeEach(function () {
 it('paginates subscribers with categories eager loaded', function () {
     NewsletterSubscriber::factory()->count(3)->create();
 
-    $result = $this->action->exec(new NewsletterFilterData());
+    $result = $this->action->exec(new NewsletterFilterData);
 
     expect($result->total())->toBe(3)
         ->and($result->first()->relationLoaded('categories'))->toBeTrue();

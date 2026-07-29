@@ -18,7 +18,7 @@ beforeEach(function () {
 it('paginates reports with relations eager loaded', function () {
     Report::factory()->count(3)->create();
 
-    $result = $this->action->exec(new ReportFilterData());
+    $result = $this->action->exec(new ReportFilterData);
 
     expect($result->total())->toBe(3)
         ->and($result->first()->relationLoaded('reporter'))->toBeTrue();

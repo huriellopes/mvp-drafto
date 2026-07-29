@@ -11,7 +11,7 @@ use App\Models\PostView;
 use App\Models\User;
 
 it('exposes the expected headings', function () {
-    $export = new PostViewsExport(new PostViewFilterData());
+    $export = new PostViewsExport(new PostViewFilterData);
 
     expect($export->headings())->toBe([
         'ID Registro',
@@ -24,13 +24,13 @@ it('exposes the expected headings', function () {
 });
 
 it('uses a sane chunk size', function () {
-    expect((new PostViewsExport(new PostViewFilterData()))->chunkSize())->toBe(1000);
+    expect((new PostViewsExport(new PostViewFilterData))->chunkSize())->toBe(1000);
 });
 
 it('builds a query returning seeded rows', function () {
     PostView::factory()->count(2)->create();
 
-    $export = new PostViewsExport(new PostViewFilterData());
+    $export = new PostViewsExport(new PostViewFilterData);
 
     expect($export->query()->count())->toBe(2);
 });
@@ -53,7 +53,7 @@ it('maps a row with an authenticated reader', function () {
         'user_agent' => 'TestAgent',
     ]);
 
-    $export = new PostViewsExport(new PostViewFilterData());
+    $export = new PostViewsExport(new PostViewFilterData);
     $row = $export->map($export->query()->first());
 
     expect($row)->toHaveCount(6)
@@ -66,7 +66,7 @@ it('maps a row with an authenticated reader', function () {
 it('maps a row for an anonymous visitor', function () {
     PostView::factory()->anonymous()->create();
 
-    $export = new PostViewsExport(new PostViewFilterData());
+    $export = new PostViewsExport(new PostViewFilterData);
 
     expect($export->map($export->query()->first())[2])->toBe('Visitante Anônimo');
 });

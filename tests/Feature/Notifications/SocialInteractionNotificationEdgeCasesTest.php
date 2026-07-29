@@ -43,7 +43,7 @@ it('returns a hash link when route generation throws inside getLink', function (
 
     // A model whose slug accessor throws forces the try/catch (lines 71-72) to
     // fall back to "#".
-    $explodingModel = new class()
+    $explodingModel = new class
     {
         public function __get($name)
         {

@@ -35,7 +35,7 @@ function terminateTrackProfileView(string $username, int $status, array $cookies
 
     $response = response('ok', $status);
 
-    (new TrackProfileView())->terminate($request, $response);
+    (new TrackProfileView)->terminate($request, $response);
 }
 
 it('dispatches a profile view job for a visitor with analytics consent', function () {

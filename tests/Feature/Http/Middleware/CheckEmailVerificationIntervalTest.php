@@ -13,7 +13,7 @@ function runVerificationIntervalMiddleware(?User $user)
     $request = Request::create('/dashboard');
     $request->setUserResolver(fn () => $user);
 
-    return (new CheckEmailVerificationInterval())->handle(
+    return (new CheckEmailVerificationInterval)->handle(
         $request,
         fn () => response('ok'),
     );

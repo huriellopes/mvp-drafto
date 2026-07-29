@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Policies\ReportPolicy;
 
 beforeEach(function (): void {
-    $this->policy = new ReportPolicy();
+    $this->policy = new ReportPolicy;
 });
 
 it('before grants everything to super admin', function (): void {

@@ -6,6 +6,7 @@ namespace App\Livewire\Dashboard;
 
 use App\Enums\ProfileVisibilityEnum;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class ProfileStatus extends Component
@@ -13,7 +14,8 @@ class ProfileStatus extends Component
     /**
      * Get the original public profile URL.
      */
-    public function getProfileUrlProperty(): string
+    #[Computed]
+    public function profileUrl(): string
     {
         $username = Auth::user()->profile?->username;
 
@@ -23,7 +25,8 @@ class ProfileStatus extends Component
     /**
      * Get the shareable profile URL (shortened if module is active).
      */
-    public function getShareUrlProperty(): string
+    #[Computed]
+    public function shareUrl(): string
     {
         return Auth::user()->getShareUrl();
     }
@@ -31,7 +34,8 @@ class ProfileStatus extends Component
     /**
      * Get the profile visibility status enum.
      */
-    public function getProfileStatusProperty(): ProfileVisibilityEnum
+    #[Computed]
+    public function profileStatus(): ProfileVisibilityEnum
     {
         return Auth::user()->profile?->visibility ?? ProfileVisibilityEnum::PUBLIC;
     }
@@ -39,7 +43,8 @@ class ProfileStatus extends Component
     /**
      * Identify missing fields in the public profile (Recommended for full status).
      */
-    public function getMissingFieldsProperty(): array
+    #[Computed]
+    public function missingFields(): array
     {
         return Auth::user()->profile?->getRecommendedMissingFields() ?? [];
     }
@@ -47,7 +52,8 @@ class ProfileStatus extends Component
     /**
      * Get completion percentage.
      */
-    public function getCompletionPercentageProperty(): int
+    #[Computed]
+    public function completionPercentage(): int
     {
         return Auth::user()->profile?->getCompletionPercentage() ?? 0;
     }
@@ -55,7 +61,8 @@ class ProfileStatus extends Component
     /**
      * Check if the profile is fully completed.
      */
-    public function getIsCompleteProperty(): bool
+    #[Computed]
+    public function isComplete(): bool
     {
         return Auth::user()->profile?->isComplete() ?? false;
     }

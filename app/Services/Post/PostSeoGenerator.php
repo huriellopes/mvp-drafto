@@ -37,6 +37,9 @@ final class PostSeoGenerator
             description: $post->excerpt ?? Str::limit(strip_tags($post->content), 160),
             author: $post->author->display_name,
             image: $post->cover_image_url,
+            // `url` alimenta os schemas (Article.mainEntityOfPage e o último
+            // item do BreadcrumbList) — precisa ser não-nulo quando há schema.
+            url: $url,
             published_time: $post->published_at,
             modified_time: $post->updated_at,
             section: $post->category?->name,
@@ -44,9 +47,6 @@ final class PostSeoGenerator
             // og:type válido para conteúdo editorial ('post'/'article' do enum
             // não são tipos Open Graph válidos).
             type: 'article',
-            // `url` alimenta os schemas (Article.mainEntityOfPage e o último
-            // item do BreadcrumbList) — precisa ser não-nulo quando há schema.
-            url: $url,
             robots: 'index, follow',
             canonical_url: $url,
         );

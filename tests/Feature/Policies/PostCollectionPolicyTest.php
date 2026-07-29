@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Policies\PostCollectionPolicy;
 
 beforeEach(function (): void {
-    $this->policy = new PostCollectionPolicy();
+    $this->policy = new PostCollectionPolicy;
 });
 
 it('before grants everything to super admin', function (): void {

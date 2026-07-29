@@ -30,8 +30,8 @@
                 'bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400'
                     => $this->isFollowing,
 
-                // ESTADO: NÃO SEGUINDO (Azul padrão)
-                'bg-indigo-600 border-indigo-600 text-white dark:bg-indigo-500 dark:border-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-400'
+                // ESTADO: NÃO SEGUINDO (cor do perfil, ex-indigo fixo)
+                'bg-profile-primary border-profile-primary text-white hover:opacity-90'
                     => !$this->isFollowing,
             ])
         >

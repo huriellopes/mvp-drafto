@@ -25,6 +25,30 @@ services:
             - mysql
             - redis
             - mailpit
+    queue:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.4
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.4/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - mysql
+            - redis
+        # Mesmo comando de fila usado no composer.json (script "dev"), mas como
+        # container próprio — não precisa mais de terminal separado.
+        # start-container executa este comando direto (sem subir supervisord)
+        # quando argumentos são passados.
+        command: php artisan queue:listen --tries=1 --timeout=0
     mysql:
         image: 'mysql:8.4'
         ports:

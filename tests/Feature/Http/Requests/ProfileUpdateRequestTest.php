@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 function profileUpdateRules(User $user): array
 {
-    $request = new ProfileUpdateRequest();
+    $request = new ProfileUpdateRequest;
     $request->setUserResolver(fn () => $user);
 
     return $request->rules();

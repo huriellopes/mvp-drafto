@@ -59,7 +59,7 @@ trait ManagesPostCollections
     public function quickCollections(): Collection
     {
         if (!$this->postIdForCollections) {
-            return new Collection();
+            return new Collection;
         }
 
         $post = Post::query()

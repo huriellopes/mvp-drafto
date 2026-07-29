@@ -31,7 +31,7 @@ test('getAvailableUsers returns a collection of user arrays', function () {
         'user_agent' => 'Mozilla',
     ]);
 
-    $action = new GetAuditsAction();
+    $action = new GetAuditsAction;
     $users = $action->getAvailableUsers();
 
     expect($users)->toBeCollection()
@@ -52,7 +52,7 @@ test('getUniqueEvents returns a collection of event strings', function () {
         'user_agent' => 'Mozilla',
     ]);
 
-    $action = new GetAuditsAction();
+    $action = new GetAuditsAction;
     $events = $action->getUniqueEvents();
 
     expect($events)->toBeCollection()
@@ -71,7 +71,7 @@ test('getUniqueTypes returns a collection of type arrays', function () {
         'user_agent' => 'Mozilla',
     ]);
 
-    $action = new GetAuditsAction();
+    $action = new GetAuditsAction;
     $types = $action->getUniqueTypes();
 
     expect($types)->toBeCollection()

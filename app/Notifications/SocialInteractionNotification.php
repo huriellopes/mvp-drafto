@@ -41,7 +41,7 @@ class SocialInteractionNotification extends Notification implements ShouldQueue
     {
         $causerName = $this->causer?->name ?? 'Alguém';
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->mailer('contact')
             ->subject(__('notifications.social.subject', ['name' => $causerName]))
             ->line($this->getMessage())

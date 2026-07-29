@@ -23,7 +23,7 @@ function supportContactData(): SupportContactData
 it('sends to mail for anonymous notifiables and database for users', function () {
     $notification = new SupportMessageReceivedNotification(supportContactData());
 
-    $anonymous = new AnonymousNotifiable();
+    $anonymous = new AnonymousNotifiable;
     $user = User::factory()->withProfile()->create();
 
     expect($notification->via($anonymous))->toBe(['mail'])
@@ -32,7 +32,7 @@ it('sends to mail for anonymous notifiables and database for users', function ()
 
 it('builds the support message received mail message', function () {
     $notification = new SupportMessageReceivedNotification(supportContactData());
-    $mail = $notification->toMail(new AnonymousNotifiable());
+    $mail = $notification->toMail(new AnonymousNotifiable);
 
     expect($mail)->toBeInstanceOf(MailMessage::class)
         ->and($mail->subject)->toBe(__('notifications.support.subject', ['subject' => 'Ajuda']))
@@ -44,7 +44,7 @@ it('builds the support message received mail message', function () {
 it('exposes the support message received payload as an array', function () {
     $notification = new SupportMessageReceivedNotification(supportContactData());
 
-    expect($notification->toArray(new AnonymousNotifiable()))->toBe([
+    expect($notification->toArray(new AnonymousNotifiable))->toBe([
         'type' => 'support_received',
         'causer_name' => 'Cliente',
         'message' => 'notifications.support.database_admin_message',

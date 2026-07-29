@@ -33,7 +33,7 @@ it('does not allow a regular user to impersonate', function () {
 
     $this->actingAs($user1);
 
-    $action = new ImpersonateUserAction();
+    $action = new ImpersonateUserAction;
     $result = $action->exec($user2);
 
     expect($result)->toBeFalse()
@@ -49,7 +49,7 @@ it('allows leaving impersonation mode', function () {
     $this->actingAs($user);
     Session::put('impersonator_id', $admin->id);
 
-    $action = new LeaveImpersonationAction();
+    $action = new LeaveImpersonationAction;
     $result = $action->exec();
 
     expect($result)->toBeTrue()

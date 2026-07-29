@@ -34,7 +34,7 @@ function publicWriter(array $profile = []): User
 it('lists active writers with complete public profiles', function () {
     $writer = publicWriter();
 
-    $result = $this->action->exec(new ExploreWritersFilterData());
+    $result = $this->action->exec(new ExploreWritersFilterData);
 
     expect($result->total())->toBe(1)
         ->and($result->first()->id)->toBe($writer->id);
@@ -43,7 +43,7 @@ it('lists active writers with complete public profiles', function () {
 it('excludes profiles that are not public', function () {
     publicWriter(['visibility' => ProfileVisibilityEnum::PRIVATE]);
 
-    $result = $this->action->exec(new ExploreWritersFilterData());
+    $result = $this->action->exec(new ExploreWritersFilterData);
 
     expect($result->total())->toBe(0);
 });
@@ -59,7 +59,7 @@ it('excludes profiles missing a username', function () {
     // Force the username empty to trigger the exclusion rule.
     $user->profile()->update(['username' => '']);
 
-    $result = $this->action->exec(new ExploreWritersFilterData());
+    $result = $this->action->exec(new ExploreWritersFilterData);
 
     expect($result->total())->toBe(0);
 });

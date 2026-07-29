@@ -76,7 +76,7 @@ final class ProcessProfileMediaJob implements ShouldQueue
                 return $currentPath;
             }
 
-            $imageManager = ImageManager::usingDriver(new Driver());
+            $imageManager = ImageManager::usingDriver(new Driver);
             $image = $imageManager->decodePath($fullPath);
 
             // Idempotente: se já é WebP e já está dentro do alvo, não reprocessa

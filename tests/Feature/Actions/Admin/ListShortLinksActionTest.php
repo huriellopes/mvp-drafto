@@ -30,7 +30,7 @@ it('lists short links with eager loaded relations', function () {
     makeShortLink();
     makeShortLink();
 
-    $result = $this->action->exec(new ShortLinkFilterData());
+    $result = $this->action->exec(new ShortLinkFilterData);
 
     expect($result->total())->toBe(2)
         ->and($result->first()->relationLoaded('user'))->toBeTrue();

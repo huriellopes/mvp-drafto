@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Policies\ProfilePolicy;
 
 beforeEach(function (): void {
-    $this->policy = new ProfilePolicy();
+    $this->policy = new ProfilePolicy;
 });
 
 function attachProfileModule(User $user, array $settings): void

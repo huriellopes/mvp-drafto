@@ -13,7 +13,7 @@ use Mockery;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 it('exposes the expected headings', function () {
-    $export = new UsersExport(new UserFilterData());
+    $export = new UsersExport(new UserFilterData);
 
     expect($export->headings())->toBe([
         'ID',
@@ -27,7 +27,7 @@ it('exposes the expected headings', function () {
 });
 
 it('bolds the header row in styles', function () {
-    $export = new UsersExport(new UserFilterData());
+    $export = new UsersExport(new UserFilterData);
     $styles = $export->styles(Mockery::mock(Worksheet::class));
 
     expect($styles)->toBe([1 => ['font' => ['bold' => true]]]);
@@ -36,7 +36,7 @@ it('bolds the header row in styles', function () {
 it('builds a query returning seeded rows', function () {
     User::factory()->count(3)->create();
 
-    expect((new UsersExport(new UserFilterData()))->query()->count())->toBe(3);
+    expect((new UsersExport(new UserFilterData))->query()->count())->toBe(3);
 });
 
 it('filters by search, role and status', function () {
@@ -62,7 +62,7 @@ it('maps a user row that has logged in', function () {
         'last_login_at' => now(),
     ]);
 
-    $export = new UsersExport(new UserFilterData());
+    $export = new UsersExport(new UserFilterData);
     $row = $export->map($user->fresh());
 
     expect($row)->toHaveCount(7)
@@ -77,7 +77,7 @@ it('maps a user row that has logged in', function () {
 it('shows "Nunca" when the user never logged in', function () {
     $user = User::factory()->create(['last_login_at' => null]);
 
-    $export = new UsersExport(new UserFilterData());
+    $export = new UsersExport(new UserFilterData);
 
     expect($export->map($user->fresh())[6])->toBe('Nunca');
 });

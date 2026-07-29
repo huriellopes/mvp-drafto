@@ -40,7 +40,7 @@ it('saves a site view in the database when job is processed', function () {
         duration: 0,
     );
 
-    (new StoreSiteViewAction())->handle($data);
+    (new StoreSiteViewAction)->handle($data);
 
     $this->assertDatabaseHas('site_views', [
         'user_id' => $user->id,

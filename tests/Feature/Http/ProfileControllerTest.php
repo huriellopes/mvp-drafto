@@ -36,7 +36,7 @@ it('updates the user name and email', function () {
         $request->rules(),
     ));
 
-    (new ProfileController())->update($request);
+    (new ProfileController)->update($request);
 
     expect(session('status'))->toBe('profile-updated');
 
@@ -62,7 +62,7 @@ it('keeps email verification when the email is unchanged', function () {
         $request->rules(),
     ));
 
-    (new ProfileController())->update($request);
+    (new ProfileController)->update($request);
 
     expect($user->fresh()->email_verified_at)->not->toBeNull();
 });
@@ -76,7 +76,7 @@ it('deletes the account when the correct password is given', function () {
     $request->setUserResolver(fn () => $user);
     $request->setLaravelSession($this->app['session']->driver());
 
-    $response = (new ProfileController())->destroy($request);
+    $response = (new ProfileController)->destroy($request);
 
     expect($response->getTargetUrl())->toBe(url('/'));
     $this->assertDatabaseMissing('users', ['id' => $user->id]);
@@ -89,7 +89,7 @@ it('renders the edit view', function () {
     $request = Request::create('/', 'GET');
     $request->setUserResolver(fn () => $user);
 
-    $view = (new ProfileController())->edit($request);
+    $view = (new ProfileController)->edit($request);
 
     expect($view->name())->toBe('profile.edit')
         ->and($view->getData()['user']->id)->toBe($user->id);

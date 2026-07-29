@@ -97,7 +97,7 @@ final class ProcessPostMediaAndSeoJob implements ShouldQueue
                 return;
             }
 
-            $imageManager = ImageManager::usingDriver(new Driver());
+            $imageManager = ImageManager::usingDriver(new Driver);
             $image = $imageManager->decodePath($path);
 
             $maxWidth = 1200;

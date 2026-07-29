@@ -16,7 +16,7 @@ use Livewire\Livewire;
  */
 function tagFormHost(): Component
 {
-    return new class() extends Component
+    return new class extends Component
     {
         public TagForm $form;
 

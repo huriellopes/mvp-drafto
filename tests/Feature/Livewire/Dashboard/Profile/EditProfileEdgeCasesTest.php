@@ -38,7 +38,7 @@ it('re-throws a generic failure when saving the profile', function () {
 
     // UpdateProfileAction é final (não pode ser mockado pelo Mockery); ligamos o
     // abstract a um stub que apenas implementa exec() e lança a exceção.
-    app()->bind(UpdateProfileAction::class, fn () => new class()
+    app()->bind(UpdateProfileAction::class, fn () => new class
     {
         public function exec(...$args): never
         {

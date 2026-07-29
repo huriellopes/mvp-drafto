@@ -7,7 +7,7 @@ namespace Tests\Feature\DTOs;
 use App\DTOs\UserFilterData;
 
 it('uses sensible defaults', function () {
-    $dto = new UserFilterData();
+    $dto = new UserFilterData;
 
     expect($dto->search)->toBeNull()
         ->and($dto->role)->toBeNull()

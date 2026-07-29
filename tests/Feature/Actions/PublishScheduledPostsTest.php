@@ -35,7 +35,7 @@ it('publishes scheduled posts and notifies authors', function () {
         'title' => 'Future Post',
     ]);
 
-    $action = new PublishScheduledPostsAction();
+    $action = new PublishScheduledPostsAction;
     $count = $action->exec();
 
     expect($count)->toBe(1);

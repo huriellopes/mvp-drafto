@@ -8,7 +8,7 @@ use App\Notifications\SocialInteractionNotification;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
-    $this->action = new ToggleFollowAction();
+    $this->action = new ToggleFollowAction;
 });
 
 it('attaches a follow and notifies the target', function () {
