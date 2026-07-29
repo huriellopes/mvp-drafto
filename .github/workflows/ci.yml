@@ -73,7 +73,12 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          # APP_KEY não é versionada em .env.testing; geramos uma chave real
+          # aqui e exportamos como variável de ambiente do job (tem
+          # precedência sobre o dotenv), já que os testes carregam
+          # .env.testing (APP_ENV=testing definido no phpunit.xml).
+          echo "APP_KEY=$(php artisan key:generate --show)" >> "$GITHUB_ENV"
 
       - name: Run tests (with coverage gate)
         run: php artisan test --testsuite=Unit,Feature --coverage --min=98
@@ -111,7 +116,12 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          # APP_KEY não é versionada em .env.testing; geramos uma chave real
+          # aqui e exportamos como variável de ambiente do job (tem
+          # precedência sobre o dotenv), já que os testes carregam
+          # .env.testing (APP_ENV=testing definido no phpunit.xml).
+          echo "APP_KEY=$(php artisan key:generate --show)" >> "$GITHUB_ENV"
 
       - name: Run performance tests
         run: php artisan test --testsuite=Performance

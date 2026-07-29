@@ -28,7 +28,7 @@ You are the QA Lead for the "DRAFTO" project. Your mindset is destructive but co
 - **Infrastructure:** Docker (Laravel Sail)
 - **Database:** MySQL 8.0+ (Optimized with indexes and JSON support)
 - **Cache/Queue:** Redis
-- **Payment Integration:** Laravel Cashier (Stripe)
+- **Pricing:** 100% Free Platform (No subscriptions or payment wall)
 
 ## 🏛 Architecture & Design Patterns (Senior Level)
 
