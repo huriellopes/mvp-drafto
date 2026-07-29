@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pint-on-php-edit.sh",
+            "timeout": 30,
+            "statusMessage": "Rodando Pint no arquivo editado..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/guard-protected-branches.sh",
+            "timeout": 10,
+            "statusMessage": "Checando política de branches protegidas..."
+          }
+        ]
+      }
+    ]
+  }
+}
