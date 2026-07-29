@@ -23,7 +23,7 @@ final class ProfileSeoGenerator
 
         $canIndex = $profile->is_searchable &&
             $profile->user?->isActive() &&
-            !$profile->user?->banned_until;
+            !$profile->user->banned_until;
 
         $url = route('profile.show', $profile->username);
         $image = $profile->avatar_path ? Storage::url($profile->avatar_path) : null;
