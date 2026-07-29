@@ -112,7 +112,8 @@ class TwoFactorManager extends Component
         $this->generatingFormat = null;
     }
 
-    public function getTwoFactorQrCodeSvgProperty(): string
+    #[Computed]
+    public function twoFactorQrCodeSvg(): string
     {
         $user = Auth::user();
 

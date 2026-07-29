@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUnusedPublicMethodParameterRector;
 use RectorLaravel\Set\LaravelSetList;
+use RectorLaravel\Set\Packages\Livewire\LivewireSetList;
 
 return RectorConfig::configure()
     // Foco no código de produção. tests/ pode ser adicionado numa leva futura.
@@ -26,6 +27,11 @@ return RectorConfig::configure()
         LaravelSetList::LARAVEL_CODE_QUALITY,
         LaravelSetList::LARAVEL_IF_HELPERS,
         LaravelSetList::LARAVEL_COLLECTION,
+        // Modernização/lint de padrões Livewire (queryString -> #[Url],
+        // getXProperty() -> #[Computed], #[Rule] -> #[Validate]). Roda em
+        // toda execução do Rector (composer dev / CI), então também evita
+        // regressão para os idiomas antigos em código novo.
+        LivewireSetList::LIVEWIRE_30,
     ])
     ->withSkip([
         __DIR__ . '/bootstrap/cache',
