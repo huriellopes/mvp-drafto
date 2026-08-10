@@ -83,14 +83,39 @@
                 </x-ui.button>
             </div>
 
-            <x-ui.confirm-modal 
-                name="confirm-disable-2fa"
-                title="Desativar Autenticação de Dois Fatores"
-                content="Tem certeza que deseja desativar o 2FA? Sua conta ficará menos protegida contra acessos não autorizados."
-                buttonText="Sim, Desativar"
-                variant="danger"
-                action="disable"
-            />
+            <x-ui.modal name="confirm-disable-2fa" title="Desativar Autenticação de Dois Fatores">
+                <p class="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+                    Tem certeza que deseja desativar o 2FA? Sua conta ficará menos protegida contra acessos não autorizados. Confirme sua senha atual para continuar.
+                </p>
+
+                <div class="mt-6">
+                    <x-ui.input
+                        wire:model="currentPassword"
+                        type="password"
+                        label="Senha atual"
+                        placeholder="••••••••"
+                        :error="$errors->first('currentPassword')"
+                    />
+                </div>
+
+                <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button
+                        type="button"
+                        x-on:click="$dispatch('close-modal', { name: 'confirm-disable-2fa' })"
+                        class="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="button"
+                        wire:click="disable"
+                        class="inline-flex items-center justify-center rounded-2xl bg-red-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-red-700"
+                    >
+                        Sim, Desativar
+                    </button>
+                </div>
+            </x-ui.modal>
 
             @if ($showingRecoveryCodes)
                 <div class="space-y-4 animate-in slide-in-from-top-4 duration-300">

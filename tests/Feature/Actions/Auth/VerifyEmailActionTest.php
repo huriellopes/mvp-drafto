@@ -13,7 +13,7 @@ beforeEach(function () {
     $this->action = app(VerifyEmailAction::class);
 });
 
-function makeVerifyRequest(string $id, string $hash): Request
+function makeVerifyRequest(string $id, string $hash, ?User $authUser = null): Request
 {
     $request = Request::create("/verify-email/{$id}/{$hash}", 'GET');
 
@@ -23,6 +23,7 @@ function makeVerifyRequest(string $id, string $hash): Request
     $route->setParameter('hash', $hash);
 
     $request->setRouteResolver(fn () => $route);
+    $request->setUserResolver(fn () => $authUser);
 
     return $request;
 }
@@ -35,6 +36,7 @@ it('marks the email as verified and fires the Verified event', function () {
     $request = makeVerifyRequest(
         (string) $user->id,
         sha1($user->getEmailForVerification()),
+        $user,
     );
 
     $result = $this->action->exec($request);
@@ -50,7 +52,7 @@ it('returns false when the hash does not match', function () {
 
     $user = User::factory()->unverified()->create();
 
-    $request = makeVerifyRequest((string) $user->id, 'invalid-hash');
+    $request = makeVerifyRequest((string) $user->id, 'invalid-hash', $user);
 
     $result = $this->action->exec($request);
 
@@ -68,11 +70,50 @@ it('returns true without re-firing the event when already verified', function ()
     $request = makeVerifyRequest(
         (string) $user->id,
         sha1($user->getEmailForVerification()),
+        $user,
     );
 
     $result = $this->action->exec($request);
 
     expect($result)->toBeTrue();
+
+    Event::assertNotDispatched(Verified::class);
+});
+
+it('returns false when no user is authenticated on the request', function () {
+    Event::fake([Verified::class]);
+
+    $user = User::factory()->unverified()->create();
+
+    $request = makeVerifyRequest(
+        (string) $user->id,
+        sha1($user->getEmailForVerification()),
+    );
+
+    $result = $this->action->exec($request);
+
+    expect($result)->toBeFalse()
+        ->and($user->fresh()->hasVerifiedEmail())->toBeFalse();
+
+    Event::assertNotDispatched(Verified::class);
+});
+
+it('returns false when the authenticated user is not the owner of the verification link', function () {
+    Event::fake([Verified::class]);
+
+    $owner = User::factory()->unverified()->create();
+    $attacker = User::factory()->unverified()->create();
+
+    $request = makeVerifyRequest(
+        (string) $owner->id,
+        sha1($owner->getEmailForVerification()),
+        $attacker,
+    );
+
+    $result = $this->action->exec($request);
+
+    expect($result)->toBeFalse()
+        ->and($owner->fresh()->hasVerifiedEmail())->toBeFalse();
 
     Event::assertNotDispatched(Verified::class);
 });

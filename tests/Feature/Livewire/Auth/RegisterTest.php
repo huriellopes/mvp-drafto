@@ -18,6 +18,8 @@ it('renders the registration page', function () {
 it('can register a new user', function () {
     Notification::fake();
 
+    $sessionIdBefore = session()->getId();
+
     Livewire::test(Register::class)
         ->set('form.name', 'New User')
         ->set('form.email', 'newuser@example.com')
@@ -33,6 +35,10 @@ it('can register a new user', function () {
         'email' => 'newuser@example.com',
         'name' => 'New User',
     ]);
+
+    // Segurança: o ID de sessão deve ser regenerado no login pós-cadastro,
+    // como proteção contra session fixation.
+    expect(session()->getId())->not->toBe($sessionIdBefore);
 });
 
 it('validates registration required fields', function () {

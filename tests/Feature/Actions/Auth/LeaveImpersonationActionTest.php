@@ -45,3 +45,24 @@ it('logs back in as the admin, closes the audit log and clears the flag', functi
         ->and(Session::has('impersonator_id'))->toBeFalse()
         ->and($log->fresh()->ended_at)->not->toBeNull();
 });
+
+it('regenerates the session id when leaving impersonation', function () {
+    $admin = User::factory()->superAdmin()->create();
+    $target = User::factory()->create();
+
+    ImpersonationLog::create([
+        'impersonator_id' => $admin->id,
+        'impersonated_id' => $target->id,
+        'started_at' => now()->subMinute(),
+        'ended_at' => null,
+    ]);
+
+    Auth::login($target);
+    Session::put('impersonator_id', $admin->id);
+
+    $sessionIdBefore = session()->getId();
+
+    $this->action->exec();
+
+    expect(session()->getId())->not->toBe($sessionIdBefore);
+});

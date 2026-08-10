@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::livewire('/login', 'auth.login')->name('login');
-    Route::livewire('/login/two-factor', 'auth.two-factor-challenge')->name('auth.two-factor');
+    Route::livewire('/login/two-factor', 'auth.two-factor-challenge')
+        ->middleware('throttle:10,1')
+        ->name('auth.two-factor');
     Route::livewire('/register', 'auth.register')->name('register');
     Route::livewire('/forgot-password', 'auth.forgot-password')->name('password.request');
     Route::livewire('/reset-password/{token}', 'auth.reset-password')->name('password.reset');
