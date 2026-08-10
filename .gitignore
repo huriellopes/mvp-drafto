@@ -24,7 +24,12 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Artefatos órfãos de bancos SQLite soltos na raiz (o correto é
-# database/database.sqlite, já coberto por database/.gitignore).
+# Bancos SQLite soltos na raiz (o correto é database/database.sqlite, já
+# coberto por database/.gitignore). /laravel e /testing são os dois
+# artefatos órfãos já vistos (sem extensão .sqlite no nome — por isso
+# precisam de entrada própria, um padrão genérico não pega); *.sqlite* cobre
+# qualquer outro nome parecido no futuro (já aconteceu uma vez: commit
+# aaae1b8, "corrigido" em a3d0ad7 mas reintroduzido depois via merge).
 /laravel
 /testing
+*.sqlite*
