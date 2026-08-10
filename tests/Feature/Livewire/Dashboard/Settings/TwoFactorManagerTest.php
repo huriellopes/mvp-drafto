@@ -71,7 +71,7 @@ it('does not confirm two factor with an invalid code', function () {
     expect($user->fresh()->two_factor_confirmed_at)->toBeNull();
 });
 
-it('disables two factor', function () {
+it('disables two factor when the current password is correct', function () {
     $user = User::factory()->withProfile()->create([
         'two_factor_secret' => 'secret',
         'two_factor_confirmed_at' => now(),
@@ -82,12 +82,30 @@ it('disables two factor', function () {
 
     Livewire::test(TwoFactorManager::class)
         ->set('showingRecoveryCodes', true)
+        ->set('currentPassword', 'password')
         ->call('disable')
         ->assertSet('showingQrCode', false)
         ->assertSet('showingConfirmation', false)
         ->assertSet('showingRecoveryCodes', false);
 
     expect($user->fresh()->two_factor_secret)->toBeNull();
+});
+
+it('does not disable two factor when the current password is wrong', function () {
+    $user = User::factory()->withProfile()->create([
+        'two_factor_secret' => 'secret',
+        'two_factor_confirmed_at' => now(),
+        'two_factor_recovery_codes' => ['code-aaa', 'code-bbb'],
+    ]);
+
+    $this->actingAs($user);
+
+    Livewire::test(TwoFactorManager::class)
+        ->set('currentPassword', 'wrong-password')
+        ->call('disable')
+        ->assertHasErrors('currentPassword');
+
+    expect($user->fresh()->two_factor_secret)->not->toBeNull();
 });
 
 it('toggles the recovery codes visibility', function () {
