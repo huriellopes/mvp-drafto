@@ -68,7 +68,13 @@ class SavedIndex extends Component
 
     public function openEditCollectionModal(int $id): void
     {
+        // Segurança (IDOR): sem authorize(), qualquer usuário autenticado
+        // podia editar a coleção de outro usuário só sabendo o ID — a
+        // CollectionPolicy já existia e já checava a posse, só não era
+        // chamada aqui.
         $collection = Collection::findOrFail($id);
+        $this->authorize('update', $collection);
+
         $this->collectionForm->setCollection($collection);
         $this->dispatch('open-modal', name: 'edit-collection-modal');
     }
@@ -92,7 +98,9 @@ class SavedIndex extends Component
             return;
         }
 
+        // Segurança (IDOR): mesma proteção de openEditCollectionModal().
         $collection = Collection::findOrFail($this->collectionIdBeingDeleted);
+        $this->authorize('delete', $collection);
 
         if ($this->collection === $collection->slug) {
             $this->collection = null;

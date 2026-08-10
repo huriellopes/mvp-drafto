@@ -152,6 +152,10 @@ class ReportIndex extends Component
 
     public function render(): View
     {
+        // Segurança: ver comentário em SiteAnalytics::render() — mesma
+        // proteção necessária contra o bypass estrutural do Livewire.
+        $this->authorize('admin');
+
         return view('livewire.dashboard.admin.reports.report-index');
     }
 }

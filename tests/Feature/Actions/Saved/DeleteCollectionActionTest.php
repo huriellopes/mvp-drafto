@@ -24,8 +24,24 @@ it('deletes the collection and nulls the collection_id on saved posts', function
         'collection_id' => $collection->id,
     ]);
 
+    // Segurança (IDOR): a Action agora reconfirma a posse via CollectionPolicy
+    // internamente, então precisa de um usuário autenticado no contexto.
+    $this->actingAs($user);
+
     $this->action->exec($collection);
 
     $this->assertModelMissing($collection);
     expect($saved->fresh()->collection_id)->toBeNull();
+});
+
+it('does not delete a collection belonging to another user', function () {
+    $owner = User::factory()->create();
+    $intruder = User::factory()->create();
+    $collection = $owner->collections()->create(['name' => 'Box', 'slug' => 'box']);
+
+    $this->actingAs($intruder);
+
+    $this->action->exec($collection);
+
+    $this->assertModelExists($collection);
 });

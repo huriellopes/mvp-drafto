@@ -84,6 +84,10 @@ class AuditLogIndex extends Component
      */
     public function render(): View
     {
+        // Segurança: ver comentário em SiteAnalytics::render() — mesma
+        // proteção necessária contra o bypass estrutural do Livewire.
+        $this->authorize('admin');
+
         $action = new GetAuditsAction;
 
         return view('livewire.dashboard.admin.audit-log-index', [
