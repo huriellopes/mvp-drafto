@@ -29,6 +29,10 @@ class AuditDetails extends Component
 
     public function render()
     {
+        // Segurança: ver comentário em SiteAnalytics::render() — mesma
+        // proteção necessária contra o bypass estrutural do Livewire.
+        $this->authorize('admin');
+
         return view('livewire.dashboard.admin.audit-details');
     }
 }

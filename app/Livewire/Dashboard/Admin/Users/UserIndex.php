@@ -306,6 +306,13 @@ class UserIndex extends Component
 
     public function render(): View
     {
+        // Segurança: ver comentário em SiteAnalytics::render() — mesma
+        // proteção necessária contra o bypass estrutural do Livewire. Este
+        // é o componente de maior impacto: sem isto, uma sessão que perdeu
+        // o papel super_admin podia usar save()/UserForm para se
+        // reatribuir super_admin (escalonamento de privilégio persistente).
+        $this->authorize('admin');
+
         return view('livewire.dashboard.admin.users.user-index');
     }
 

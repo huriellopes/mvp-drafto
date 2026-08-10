@@ -61,3 +61,39 @@ it('does not change the password when it is empty and keeps other fields untouch
     expect($user->password)->toBe($originalPassword)
         ->and($user->name)->toBe('Keep Me');
 });
+
+it('refuses to promote a user to super_admin when the acting user is not already super_admin', function () {
+    $actor = User::factory()->create(['role' => RoleEnum::WRITER]);
+    $target = User::factory()->reader()->create();
+
+    $this->actingAs($actor);
+
+    $result = app(UpdateUserAction::class)->exec($target, new UpdateUserData(
+        role: RoleEnum::SUPER_ADMIN,
+    ));
+
+    expect($result)->toBeFalse();
+
+    $this->assertDatabaseHas('users', [
+        'id' => $target->id,
+        'role' => RoleEnum::READER->value,
+    ]);
+});
+
+it('allows promoting a user to super_admin when the acting user already is super_admin', function () {
+    $actor = User::factory()->create(['role' => RoleEnum::SUPER_ADMIN]);
+    $target = User::factory()->reader()->create();
+
+    $this->actingAs($actor);
+
+    $result = app(UpdateUserAction::class)->exec($target, new UpdateUserData(
+        role: RoleEnum::SUPER_ADMIN,
+    ));
+
+    expect($result)->toBeTrue();
+
+    $this->assertDatabaseHas('users', [
+        'id' => $target->id,
+        'role' => RoleEnum::SUPER_ADMIN->value,
+    ]);
+});

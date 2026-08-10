@@ -99,6 +99,13 @@ class LogViewerIndex extends Component
 
     public function render(): View
     {
+        // Segurança: ver comentário em SiteAnalytics::render() — mesma
+        // proteção necessária contra o bypass estrutural do Livewire. Este
+        // componente é o mais sensível dos 10: retryJob()/forgetJob()
+        // executam Artisan::call('queue:retry'/'queue:forget') sem
+        // nenhuma outra checagem.
+        $this->authorize('admin');
+
         $action = resolve(ReadLogEntriesAction::class);
 
         $entries = collect();

@@ -61,6 +61,13 @@ final class SiteAnalytics extends Component
 
     public function render(): View
     {
+        // Segurança: render() roda em toda chamada de método Livewire
+        // (wire:click/wire:submit), não só na carga inicial da página —
+        // é o único ponto que reautoriza de fato uma sessão que perdeu o
+        // papel super_admin no meio da sessão (o middleware `can:admin`
+        // da rota só protege o GET inicial).
+        $this->authorize('admin');
+
         return view('livewire.dashboard.admin.analytics.site-analytics');
     }
 }
