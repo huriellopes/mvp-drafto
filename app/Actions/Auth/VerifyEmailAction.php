@@ -17,6 +17,16 @@ final class VerifyEmailAction
     {
         $user = User::findOrFail($request->route('id'));
 
+        // Segurança: confere que quem está autenticado é o dono do link
+        // (padrão do Laravel em EmailVerificationRequest::authorize(), que
+        // esta implementação customizada não replicava). A rota já é
+        // assinada, então um atacante não forja o link sozinho — mas se o
+        // link de outra pessoa vazar (encaminhado, print, log), sem este
+        // check qualquer usuário logado poderia verificar o e-mail alheio.
+        if (!$request->user() || (int) $request->user()->id !== (int) $user->id) {
+            return false;
+        }
+
         if (!hash_equals((string) $request->route('hash'), sha1((string) $user->getEmailForVerification()))) {
             return false;
         }

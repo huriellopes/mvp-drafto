@@ -31,6 +31,13 @@ final class ImpersonateUserAction
             return false;
         }
 
+        // Segurança: um super_admin não pode impersonar outro super_admin —
+        // evita escalonamento cruzado e ações atribuídas ao alvo sem ele
+        // saber, mesmo entre contas do mesmo nível de privilégio.
+        if ($targetUser->hasRole(RoleEnum::SUPER_ADMIN)) {
+            return false;
+        }
+
         // Salva o ID do administrador original na sessão
         Session::put('impersonator_id', $currentUser->id);
 
@@ -45,6 +52,11 @@ final class ImpersonateUserAction
 
         // Realiza o login como o usuário alvo
         Auth::login($targetUser);
+
+        // Segurança: regenera o ID de sessão na troca de identidade, como já
+        // é feito em todo outro ponto de login do app (proteção contra
+        // session fixation).
+        session()->regenerate();
 
         return true;
     }

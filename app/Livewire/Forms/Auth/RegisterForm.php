@@ -52,6 +52,11 @@ class RegisterForm extends Form
 
         auth()->login($user);
 
+        // Segurança: regenera o ID de sessão no login pós-cadastro, como já
+        // é feito em todo outro ponto de login do app (proteção contra
+        // session fixation).
+        session()->regenerate();
+
         $this->clearAttempts(request()->ip());
     }
 }

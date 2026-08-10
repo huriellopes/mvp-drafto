@@ -48,7 +48,11 @@ final class RegisterUserAction
                 ]);
             }
 
-            $user->notify(new WelcomeNotification($data->password));
+            // Segurança: não envia a senha de volta por e-mail (mesmo sendo a
+            // que o próprio usuário escolheu) — evita uma cópia em texto
+            // puro trafegando por SMTP e parada na caixa de entrada/logs do
+            // provedor de e-mail.
+            $user->notify(new WelcomeNotification);
 
             $user->skipVerificationEmail = true;
 

@@ -14,10 +14,6 @@ final class WelcomeNotification extends VerifyEmail implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(
-        public string $password,
-    ) {}
-
     #[Override]
     public function via($notifiable): array
     {
@@ -34,7 +30,6 @@ final class WelcomeNotification extends VerifyEmail implements ShouldQueue
             ->subject(__('Bem-vindo à Drafto!'))
             ->view('emails.auth.welcome', [
                 'user' => $notifiable,
-                'password' => $this->password,
                 'url' => route('login'),
                 'verificationUrl' => $verificationUrl,
             ]);

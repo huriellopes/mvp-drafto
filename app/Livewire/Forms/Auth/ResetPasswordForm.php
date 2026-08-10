@@ -6,10 +6,14 @@ namespace App\Livewire\Forms\Auth;
 
 use App\Actions\Auth\ResetPasswordAction;
 use App\DTOs\ResetPasswordData;
+use App\Traits\Auth\WithRateLimiting;
+use Illuminate\Validation\ValidationException;
 use Livewire\Form;
 
 class ResetPasswordForm extends Form
 {
+    use WithRateLimiting;
+
     public string $token = '';
 
     public string $email = '';
@@ -41,15 +45,28 @@ class ResetPasswordForm extends Form
 
     public function submit(): void
     {
+        // Segurança: inconsistente sem isto — todo outro formulário de auth
+        // do app (login, cadastro, magic link) já usa WithRateLimiting; o
+        // token de reset tem entropia alta (força bruta é inviável na
+        // prática), mas mantém o padrão de defesa em profundidade.
+        $this->checkRateLimit($this->email, maxAttempts: 5, decaySeconds: 60);
         $this->validate();
 
-        resolve(ResetPasswordAction::class)->exec(
-            data: ResetPasswordData::from([
-                'token' => $this->token,
-                'email' => $this->email,
-                'password' => $this->password,
-                'password_confirmation' => $this->password_confirmation,
-            ]),
-        );
+        try {
+            resolve(ResetPasswordAction::class)->exec(
+                data: ResetPasswordData::from([
+                    'token' => $this->token,
+                    'email' => $this->email,
+                    'password' => $this->password,
+                    'password_confirmation' => $this->password_confirmation,
+                ]),
+            );
+        } catch (ValidationException $e) {
+            $this->incrementAttempts($this->email);
+
+            throw $e;
+        }
+
+        $this->clearAttempts($this->email);
     }
 }
