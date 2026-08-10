@@ -90,15 +90,45 @@ it('can login with recovery code', function () {
     expect(count($user->refresh()->two_factor_recovery_codes))->toBe(7);
 });
 
-it('can disable 2fa', function () {
+it('can disable 2fa with the correct current password', function () {
     $user = User::factory()->create();
     app(GenerateTwoFactorSecretAction::class)->exec($user);
     $user->forceFill(['two_factor_confirmed_at' => now()])->save();
 
     Livewire::actingAs($user)
         ->test(TwoFactorManager::class)
+        ->set('currentPassword', 'password')
         ->call('disable');
 
     expect($user->refresh()->hasTwoFactorEnabled())->toBeFalse();
     expect($user->two_factor_secret)->toBeNull();
+});
+
+it('cannot disable 2fa with an incorrect current password', function () {
+    $user = User::factory()->create();
+    app(GenerateTwoFactorSecretAction::class)->exec($user);
+    $user->forceFill(['two_factor_confirmed_at' => now()])->save();
+
+    Livewire::actingAs($user)
+        ->test(TwoFactorManager::class)
+        ->set('currentPassword', 'wrong-password')
+        ->call('disable')
+        ->assertHasErrors(['currentPassword']);
+
+    expect($user->refresh()->hasTwoFactorEnabled())->toBeTrue();
+    expect($user->two_factor_secret)->not->toBeNull();
+});
+
+it('cannot disable 2fa without providing the current password', function () {
+    $user = User::factory()->create();
+    app(GenerateTwoFactorSecretAction::class)->exec($user);
+    $user->forceFill(['two_factor_confirmed_at' => now()])->save();
+
+    Livewire::actingAs($user)
+        ->test(TwoFactorManager::class)
+        ->set('currentPassword', '')
+        ->call('disable')
+        ->assertHasErrors(['currentPassword' => 'required']);
+
+    expect($user->refresh()->hasTwoFactorEnabled())->toBeTrue();
 });

@@ -13,7 +13,7 @@ it('renders the verify email notice page', function () {
     $this->actingAs($user)
         ->get(route('verification.notice'))
         ->assertOk()
-        ->assertSee('Thanks for signing up');
+        ->assertSeeLivewire('auth.resend-verification');
 });
 
 it('can verify email with valid link', function () {

@@ -37,13 +37,9 @@
                 </p>
 
                 <div class="credentials-box">
-                    <div class="credentials-item">
+                    <div class="credentials-item" style="margin-bottom: 0;">
                         <span class="credentials-label">E-mail de acesso:</span>
                         <span class="credentials-value">{{ $user->email }}</span>
-                    </div>
-                    <div class="credentials-item" style="margin-bottom: 0;">
-                        <span class="credentials-label">Senha temporária:</span>
-                        <span class="credentials-value">{{ $password }}</span>
                     </div>
                 </div>
 

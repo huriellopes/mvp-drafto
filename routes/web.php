@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Actions\Auth\VerifyEmailAction;
 use App\Http\Controllers\EditorAttachmentController;
 use App\Http\Controllers\EmailPreferencesController;
 use App\Http\Controllers\Newsletter\UnsubscribeController;
@@ -16,7 +15,6 @@ use App\Http\Controllers\TemporaryFileDownloadController;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Livewire\Dashboard\Modules\LinkShortenerDashboard;
 use App\Livewire\Dashboard\Support\SupportPage;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Spatie\Health\Http\Controllers\HealthCheckJsonResultsController;
 
@@ -34,22 +32,12 @@ Route::group([], base_path('routes/parts/public.php'));
 */
 require __DIR__ . '/parts/auth.php';
 
-// Verificação de E-mail (Exigido pelo MustVerifyEmail)
-Route::get('/email/verify/{id}/{hash}', function (Request $request) {
-    $result = app(VerifyEmailAction::class)->exec($request);
-
-    if ($result) {
-        session()->flash('success', 'E-mail verificado com sucesso! Você já pode aproveitar todos os recursos.');
-    } else {
-        session()->flash('error', 'O link de verificação é inválido ou expirou.');
-    }
-
-    return redirect()->route('dashboard.index');
-})->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
-
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
+// Verificação de e-mail: rotas 'verification.verify'/'verification.notice'/
+// 'verification.send' já vivem em routes/parts/auth.php (dentro do grupo
+// 'auth'). Havia uma duplicata aqui, sem o middleware 'auth' na rota de
+// verify — inofensiva hoje só porque o require acima registra a versão
+// protegida primeiro e ela "ganha" no match, mas era frágil a qualquer
+// reordenação futura. Removida.
 
 /*
 |--------------------------------------------------------------------------

@@ -40,6 +40,11 @@ final class LeaveImpersonationAction
         // Realiza o login de volta como o administrador
         Auth::login($admin);
 
+        // Segurança: regenera o ID de sessão na troca de identidade, como já
+        // é feito em todo outro ponto de login do app (proteção contra
+        // session fixation).
+        session()->regenerate();
+
         // Remove a flag de impersonação
         Session::forget('impersonator_id');
 

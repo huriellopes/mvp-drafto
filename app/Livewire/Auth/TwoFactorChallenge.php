@@ -6,6 +6,7 @@ namespace App\Livewire\Auth;
 
 use App\Actions\Auth\VerifyTwoFactorCodeAction;
 use App\Models\User;
+use App\Traits\Auth\WithRateLimiting;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Livewire\Attributes\Layout;
@@ -15,6 +16,8 @@ use Masmerise\Toaster\Toaster;
 #[Layout('layouts.auth')]
 class TwoFactorChallenge extends Component
 {
+    use WithRateLimiting;
+
     public string $code = '';
 
     public bool $recovery = false;
@@ -31,7 +34,14 @@ class TwoFactorChallenge extends Component
         $userId = session('auth.2fa.id');
         $user = User::findOrFail($userId);
 
+        // Segurança: sem isto, quem já tem e-mail+senha da vítima (ex.: senha
+        // vazada/reusada) consegue testar códigos de 6 dígitos sem limite,
+        // anulando a proteção que o 2FA deveria dar justamente nesse cenário.
+        $this->checkRateLimit($user->email, maxAttempts: 5, decaySeconds: 60, field: 'code');
+
         if ($verifyAction->exec($user, $this->code)) {
+            $this->clearAttempts($user->email);
+
             Auth::login($user, session('auth.2fa.remember', false));
 
             session()->forget(['auth.2fa.id', 'auth.2fa.remember']);
@@ -46,6 +56,8 @@ class TwoFactorChallenge extends Component
 
             $this->redirectRoute('dashboard.index', navigate: true);
         } else {
+            $this->incrementAttempts($user->email);
+
             $this->addError('code', 'O código informado é inválido.');
         }
     }

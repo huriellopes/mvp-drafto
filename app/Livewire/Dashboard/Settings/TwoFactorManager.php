@@ -14,6 +14,7 @@ use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
@@ -29,6 +30,8 @@ class TwoFactorManager extends Component
     public bool $showingRecoveryCodes = false;
 
     public string $code = '';
+
+    public string $currentPassword = '';
 
     public ?string $generatedPath = null;
 
@@ -60,11 +63,26 @@ class TwoFactorManager extends Component
 
     public function disable(DisableTwoFactorAuthAction $disableAction): void
     {
+        // Segurança: desativar 2FA é uma ação sensível — exige reentrada da
+        // senha atual, não só uma confirmação de UI. Sem isto, uma sessão
+        // sequestrada (XSS, dispositivo destravado) conseguia desligar o
+        // segundo fator com um único clique.
+        $this->validate(['currentPassword' => ['required', 'string']]);
+
+        if (!Hash::check($this->currentPassword, Auth::user()->password)) {
+            $this->addError('currentPassword', 'Senha incorreta.');
+
+            return;
+        }
+
         $disableAction->exec(Auth::user());
 
+        $this->currentPassword = '';
         $this->showingQrCode = false;
         $this->showingConfirmation = false;
         $this->showingRecoveryCodes = false;
+
+        $this->dispatch('close-modal', name: 'confirm-disable-2fa');
 
         Toaster::info('Autenticação de dois fatores desativada.');
     }
