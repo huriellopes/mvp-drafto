@@ -85,8 +85,25 @@ REDIS_CACHE_DB=0
 > compartilhar post/perfil), que **não funciona** com `CACHE_STORE=database` ou
 > `file`: a página de post responde 500. Ou seja, o cache em produção precisa ser Redis.
 
-> **Na virada:** trocar o driver de sessão desloga todo mundo uma vez, porque as
-> sessões antigas ficam na tabela `sessions`. Faça a troca fora do horário de pico.
+### 1.4 Virada da sessão sem deslogar ninguém
+
+As sessões atuais estão na tabela `sessions`. Para não deslogar os usuários,
+copie as sessões ativas para o Redis **imediatamente antes** de trocar o driver.
+Os IDs são mantidos, então os cookies continuam válidos.
+
+```bash
+# 1. Deploy do código novo ainda com SESSION_DRIVER=database no .env
+php artisan app:migrate-sessions-to-redis --dry-run   # conta as sessões ativas
+php artisan app:migrate-sessions-to-redis             # copia (idempotente)
+
+# 2. Em seguida, sem intervalo:
+sed -i 's/^SESSION_DRIVER=.*/SESSION_DRIVER=redis/' .env
+php artisan config:cache && sudo systemctl reload php8.4-fpm
+```
+
+Quem fizer login nos poucos segundos entre os passos 1 e 2 precisa entrar de
+novo. Se quiser reduzir essa janela, rode o comando duas vezes: ele sobrescreve
+as cópias com o dado mais recente.
 
 ---
 
@@ -173,10 +190,11 @@ VITE_REVERB_PORT=443
 VITE_REVERB_SCHEME=https
 ```
 
-> As variáveis `VITE_*` são lidas **no build dos assets**, não em runtime. Elas
-> precisam estar no `.env` da máquina onde roda o `npm run build`. Hoje o
-> `deploy.php` não executa esse build. Confirme onde ele roda e garanta essas
-> variáveis lá. Depois de mudá-las, refaça o build.
+> As variáveis `VITE_*` são lidas **no build dos assets**, não em runtime. O
+> `deploy.php` agora compila os assets a cada release (`deploy:assets`: `npm ci`
+> e `npm run build`) usando o `.env` compartilhado. **O servidor precisa de
+> Node.js >= 22.12**; sem ele, o deploy falha com uma mensagem explicando o
+> motivo, antes das migrações. Depois de mudar uma `VITE_*`, faça um novo deploy.
 
 ### 3.2 Supervisor
 
@@ -241,7 +259,7 @@ server {
 
 ## 4. Deploy
 
-O `deploy.php` já faz o necessário depois de trocar o symlink `current`:
+Antes das migrações, o `deploy.php` compila os assets (`deploy:assets`). Depois de trocar o symlink `current`, ele faz:
 
 1. `artisan horizon:terminate`: o Horizon termina os jobs em andamento e sai, e
    o Supervisor sobe de novo já no release novo.
@@ -250,13 +268,14 @@ O `deploy.php` já faz o necessário depois de trocar o symlink `current`:
 
 **Ordem do primeiro deploy:**
 
-1. Redis instalado e configurado (seção 1) e `.env` de produção atualizado (seções 1.3 e 3.1).
-2. Programas do Supervisor criados (2.2 e 3.2), **mas ainda parados**.
-3. Nginx e Cloudflare (3.3 e 3.4).
-4. Build dos assets com as `VITE_REVERB_*` corretas.
-5. Deploy (`vendor/bin/dep deploy production`).
-6. `sudo supervisorctl start drafto-horizon drafto-reverb`.
-7. Desligar o `queue:work` antigo, se existir.
+1. Node.js >= 22.12 e Redis instalados no servidor (seção 1).
+2. `.env` de produção atualizado com cache, fila, Reverb e `VITE_REVERB_*`
+   (seções 1.3 e 3.1), **mantendo `SESSION_DRIVER=database` por enquanto**.
+3. Programas do Supervisor criados (2.2 e 3.2), **mas ainda parados**.
+4. Nginx e Cloudflare (3.3 e 3.4).
+5. Deploy (`vendor/bin/dep deploy production`). O build dos assets roda nele.
+6. `sudo supervisorctl start drafto-horizon drafto-reverb` e desligar o `queue:work` antigo, se existir.
+7. Virada da sessão (seção 1.4).
 
 ---
 

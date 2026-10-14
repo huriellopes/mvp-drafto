@@ -82,13 +82,37 @@ task('artisan:reverb:restart', function (): void {
 
 /*
 |--------------------------------------------------------------------------
+| Build dos assets (Vite) no release
+|--------------------------------------------------------------------------
+| `public/build` não é versionado: os assets são compilados a cada deploy, já
+| com o `.env` compartilhado — é dele que o Vite lê as VITE_REVERB_* (host e
+| porta públicos do WebSocket), que ficam embutidas no bundle do Echo.
+| Requer Node.js >= 22.12 no servidor (exigência do Vite 8).
+*/
+task('deploy:assets', function (): void {
+    if (!test('command -v npm >/dev/null 2>&1')) {
+        throw new RuntimeException('npm não encontrado no servidor: instale o Node.js >= 22.12 para compilar os assets do Vite.');
+    }
+
+    cd('{{release_path}}');
+    run('npm ci --no-audit --no-fund');
+    run('npm run build');
+    // Só o build é necessário em runtime; evita acumular node_modules por release.
+    run('rm -rf node_modules');
+})->desc('Compila os assets do Vite com o .env de produção');
+
+/*
+|--------------------------------------------------------------------------
 | Pipeline
 |--------------------------------------------------------------------------
 */
 before('deploy', 'deploy:guard_branch');
 
+// Assets antes das migrações: se o build falhar, o banco não é migrado.
+after('deploy:vendors', 'deploy:assets');
+
 // Migrações (forçadas, sem prompt) após enviar o release.
-after('deploy:vendors', 'artisan:migrate');
+after('deploy:assets', 'artisan:migrate');
 
 // Caches de produção + storage link na ordem correta.
 after('artisan:migrate', 'artisan:storage:link');
