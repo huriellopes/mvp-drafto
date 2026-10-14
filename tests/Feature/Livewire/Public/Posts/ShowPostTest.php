@@ -33,15 +33,19 @@ it('renders a published public post', function () {
         ->assertSet('canReadContent', true);
 });
 
+// Livewire 4.4+ turns ModelNotFoundException into a 404 response in tests.
 it('throws a 404 for an unknown slug', function () {
-    Livewire::test(ShowPost::class, ['slug' => 'does-not-exist']);
-})->throws(ModelNotFoundException::class);
+    Livewire::test(ShowPost::class, ['slug' => 'does-not-exist'])
+        ->assertNotFound();
+});
 
 it('does not render unpublished posts', function () {
     $post = Post::factory()->draft()->for(showPostAuthor())->create();
 
-    Livewire::test(ShowPost::class, ['slug' => $post->slug]);
-})->throws(ModelNotFoundException::class);
+    Livewire::test(ShowPost::class, ['slug' => $post->slug])
+        ->assertNotFound()
+        ->assertDontSee($post->title);
+});
 
 it('allows reading unlisted posts', function () {
     $post = Post::factory()->published()->unlisted()->for(showPostAuthor())->create();

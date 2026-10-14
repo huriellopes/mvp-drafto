@@ -168,13 +168,31 @@ return [
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
         ],
 
+        // Production may point the cache to its own instance (allkeys-lru)
+        // via REDIS_CACHE_HOST/PORT — see docs/reverb-horizon-producao.md.
         'cache' => [
-            'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'url' => env('REDIS_CACHE_URL', env('REDIS_URL')),
+            'host' => env('REDIS_CACHE_HOST', env('REDIS_HOST', '127.0.0.1')),
             'username' => env('REDIS_USERNAME'),
             'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
+            'port' => env('REDIS_CACHE_PORT', env('REDIS_PORT', '6379')),
             'database' => env('REDIS_CACHE_DB', '1'),
+            'max_retries' => env('REDIS_MAX_RETRIES', 3),
+            'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
+            'backoff_base' => env('REDIS_BACKOFF_BASE', 100),
+            'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
+        ],
+
+        // Sessions live in their own logical DB so a cache flush/eviction never
+        // logs users out. In production prefer a dedicated Redis instance with
+        // `maxmemory-policy noeviction` (REDIS_SESSION_HOST).
+        'session' => [
+            'url' => env('REDIS_SESSION_URL'),
+            'host' => env('REDIS_SESSION_HOST', env('REDIS_HOST', '127.0.0.1')),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_SESSION_PORT', env('REDIS_PORT', '6379')),
+            'database' => env('REDIS_SESSION_DB', '2'),
             'max_retries' => env('REDIS_MAX_RETRIES', 3),
             'backoff_algorithm' => env('REDIS_BACKOFF_ALGORITHM', 'decorrelated_jitter'),
             'backoff_base' => env('REDIS_BACKOFF_BASE', 100),

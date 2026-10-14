@@ -8,6 +8,7 @@ use App\DTOs\AuthenticateData;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Hash;
@@ -86,6 +87,13 @@ final class AuthenticateUserAction
         // não a política de sessão única.
         if (!$data->remember && $data->password !== '' && $data->password !== '0') {
             Auth::logoutOtherDevices($data->password);
+
+            // Since Laravel 13.30, SessionGuard::login() stores the password
+            // hash in the session; the rehash above makes it stale, and
+            // AuthenticateSession would log the user out on the next request.
+            /** @var SessionGuard $guard */
+            $guard = Auth::guard('web');
+            session()->put('password_hash_web', $guard->hashPasswordForCookie((string) $loggedUser->getAuthPassword()));
         }
 
         session()->regenerate();

@@ -20,7 +20,7 @@ class SubscribersExport implements FromQuery, WithHeadings, WithMapping
         private readonly NewsletterFilterData $filters,
     ) {}
 
-    public function query()
+    public function query(): Builder
     {
         return NewsletterSubscriber::query()
             ->with('categories')

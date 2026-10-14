@@ -20,7 +20,7 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => env('SESSION_DRIVER', 'redis'),
 
     /*
     |--------------------------------------------------------------------------
@@ -75,7 +75,9 @@ return [
     |
     */
 
-    'connection' => env('SESSION_CONNECTION'),
+    // The dedicated "session" Redis connection is only a sensible default for
+    // the redis driver; for "database" this key names a DB connection.
+    'connection' => env('SESSION_CONNECTION', env('SESSION_DRIVER', 'redis') === 'redis' ? 'session' : null),
 
     /*
     |--------------------------------------------------------------------------

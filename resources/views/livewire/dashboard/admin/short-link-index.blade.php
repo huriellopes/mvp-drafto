@@ -23,7 +23,7 @@
                     </x-ui.tooltip>
                 </div>
             @elseif($generatedPath)
-                <div wire:poll.1s class="flex items-center gap-3 px-4 py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 animate-pulse">
+                <div x-data="realtimeFallback(5000)" class="flex items-center gap-3 px-4 py-2 rounded-2xl bg-zinc-100 dark:bg-zinc-800 animate-pulse">
                     <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
                     <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Gerando...</span>
                 </div>

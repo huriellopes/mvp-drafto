@@ -41,3 +41,8 @@ Schedule::command('seo:generate-sitemap')
 Schedule::command('users:reengage')
     ->dailyAt('09:00')
     ->onOneServer();
+
+// Horizon: métricas de throughput/tempo de espera exibidas em /horizon.
+Schedule::command('horizon:snapshot')
+    ->everyFiveMinutes()
+    ->onOneServer();

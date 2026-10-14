@@ -38,9 +38,7 @@ trait HasModules
         }
 
         // Sênior: Usamos cache em memória para evitar re-processamento da relação
-        if ($this->loadedModules === null) {
-            $this->loadedModules = $this->modules;
-        }
+        $this->loadedModules ??= $this->modules;
 
         $module = $this->loadedModules->firstWhere('slug', $slug);
 
@@ -60,9 +58,7 @@ trait HasModules
             $module = $module->value;
         }
 
-        if ($this->loadedModules === null) {
-            $this->loadedModules = $this->modules;
-        }
+        $this->loadedModules ??= $this->modules;
 
         $userModule = $this->loadedModules->firstWhere('slug', $module);
 

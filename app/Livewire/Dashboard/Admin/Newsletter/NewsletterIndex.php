@@ -8,7 +8,6 @@ use App\Actions\Newsletter\DeleteSubscriberAction;
 use App\Actions\Newsletter\ListSubscribersAction;
 use App\DTOs\NewsletterFilterData;
 use App\Exports\SubscribersExport;
-use App\Jobs\ExportDataJob;
 use App\Jobs\SendNewsletterJob;
 use App\Livewire\Forms\Admin\NewsletterFilterForm;
 use App\Livewire\Traits\WithBackgroundExport;
@@ -73,9 +72,7 @@ class NewsletterIndex extends Component
     {
         $filters = NewsletterFilterData::from($this->filters->all());
         $fileName = 'inscritos-newsletter-' . now()->format('Y-m-d-His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(SubscribersExport::class, ['filters' => $filters], $fileName));
+        $this->queueExport(SubscribersExport::class, ['filters' => $filters], $fileName);
 
         Toaster::info('A lista de inscritos está sendo exportada...');
     }
