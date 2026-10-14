@@ -106,10 +106,13 @@ it('prevents a writer from managing another writer collection', function () {
     $intruder = User::factory()->writer()->create();
     $collection = PostCollection::factory()->for($owner)->create();
 
+    // Livewire 4.4+ turns ModelNotFoundException into a 404 response in tests.
     Livewire::actingAs($intruder)
         ->test(PostCollectionsIndex::class)
-        ->call('openEditModal', $collection->id);
-})->throws(ModelNotFoundException::class);
+        ->call('openEditModal', $collection->id)
+        ->assertNotFound()
+        ->assertNotDispatched('open-modal');
+});
 
 it('deletes the collection but keeps the posts', function () {
     $writer = User::factory()->writer()->create();

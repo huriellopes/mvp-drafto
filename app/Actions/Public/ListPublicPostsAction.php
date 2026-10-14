@@ -7,8 +7,10 @@ namespace App\Actions\Public;
 use App\DTOs\Public\PostFilterData;
 use App\Enums\PostVisibilityEnum;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class ListPublicPostsAction
 {
@@ -17,7 +19,16 @@ final class ListPublicPostsAction
         $query = Post::query()
             // author.profile é acessado no post-card (avatar, username, isVerified()),
             // então precisa ser eager-loaded para evitar N+1 na listagem pública.
-            ->with(['author' => fn ($q) => $q->withFollowStatus(), 'author.profile', 'category', 'tags'])
+            ->with([
+                'author' => function (BelongsTo $relation): void {
+                    /** @var Builder<User> $authors */
+                    $authors = $relation->getQuery();
+                    $authors->withFollowStatus();
+                },
+                'author.profile',
+                'category',
+                'tags',
+            ])
             ->published();
 
         // Filtro de Visibilidade Sênior (Lógica unificada)

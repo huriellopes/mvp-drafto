@@ -21,7 +21,7 @@ final class CleanupExportsCommand extends Command
         $this->info('Starting cleanup of temporary export files...');
 
         $files = Storage::disk('local')
-            ->files('temp');
+            ->allFiles('temp'); // includes temp/exports/{userId}/
 
         $count = 0;
 

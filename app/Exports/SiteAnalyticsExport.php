@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Exports;
 
 use App\Models\SiteView;
+use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -17,7 +18,7 @@ final readonly class SiteAnalyticsExport implements FromQuery, WithHeadings, Wit
         private ?string $endDate = null,
     ) {}
 
-    public function query()
+    public function query(): Builder
     {
         $start = $this->startDate
             ? now()->parse($this->startDate)->startOfDay()

@@ -71,6 +71,8 @@ it('skips logging for every-minute scheduled tasks to avoid flooding', function 
 it('alerts when a queue job fails', function () {
     $job = Mockery::mock(Job::class);
     $job->shouldReceive('resolveName')->andReturn('App\\Jobs\\ExportDataJob');
+    // Horizon's own JobFailed listener (ForgetJobTimer) reads the job id.
+    $job->shouldReceive('getJobId')->andReturn('job-1');
 
     event(new JobFailed('database', $job, new RuntimeException('boom')));
 

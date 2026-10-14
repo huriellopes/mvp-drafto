@@ -6,7 +6,6 @@ namespace App\Livewire\Dashboard\Admin\Analytics;
 
 use App\Actions\Admin\GetSiteAnalyticsAction;
 use App\Exports\SiteAnalyticsExport;
-use App\Jobs\ExportDataJob;
 use App\Livewire\Traits\WithBackgroundExport;
 use Exception;
 use Illuminate\View\View;
@@ -48,13 +47,11 @@ final class SiteAnalytics extends Component
     public function export(): void
     {
         $fileName = 'site-analytics-' . now()->format('Y-m-d-His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(SiteAnalyticsExport::class, [
+        $this->queueExport(SiteAnalyticsExport::class, [
             'days' => $this->days,
             'startDate' => $this->startDate,
             'endDate' => $this->endDate,
-        ], $fileName));
+        ], $fileName);
 
         Toaster::info('O relatório de analytics está sendo gerado...');
     }

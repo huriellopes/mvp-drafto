@@ -21,7 +21,7 @@ class PostViewsExport implements FromQuery, WithChunkReading, WithHeadings, With
         private readonly PostViewFilterData $filters,
     ) {}
 
-    public function query()
+    public function query(): Builder
     {
         return PostView::query()
             ->select('id', 'post_id', 'user_id', 'viewed_at', 'ip_hash', 'user_agent')

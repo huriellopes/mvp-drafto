@@ -7,7 +7,6 @@ namespace App\Livewire\Dashboard\Admin;
 use App\Actions\Admin\ListShortLinksAction;
 use App\DTOs\ShortLinkFilterData;
 use App\Exports\ShortLinksExport;
-use App\Jobs\ExportDataJob;
 use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\ShortLink;
 use Illuminate\View\View;
@@ -84,9 +83,7 @@ final class ShortLinkIndex extends Component
         );
 
         $fileName = 'links-encurtados-drafto-' . now()->format('Y-m-d-His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(ShortLinksExport::class, ['filters' => $filters], $fileName));
+        $this->queueExport(ShortLinksExport::class, ['filters' => $filters], $fileName);
 
         Toaster::info('A exportação dos links foi iniciada...');
     }

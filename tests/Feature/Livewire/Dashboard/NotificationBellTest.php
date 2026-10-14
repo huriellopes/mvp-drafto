@@ -46,3 +46,23 @@ it('re-renders when the notification-updated event is received', function () {
         ->call('refresh')
         ->assertOk();
 });
+
+it('subscribes to the unread-changed event on the user private channel', function () {
+    $user = User::factory()->create();
+
+    $component = Livewire::actingAs($user)->test(NotificationBell::class)->instance();
+    $listeners = (fn () => $this->getListeners())->call($component);
+
+    expect($listeners)->toBe([
+        "echo-private:App.Models.User.{$user->id},.notifications.unread-changed" => 'refresh',
+    ]);
+});
+
+it('no longer polls the server on a fixed interval', function () {
+    $user = User::factory()->create();
+
+    Livewire::actingAs($user)
+        ->test(NotificationBell::class)
+        ->assertDontSeeHtml('wire:poll')
+        ->assertSeeHtml('realtimeFallback(60000)');
+});

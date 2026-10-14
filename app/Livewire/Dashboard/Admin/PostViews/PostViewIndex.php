@@ -7,7 +7,6 @@ namespace App\Livewire\Dashboard\Admin\PostViews;
 use App\Actions\PostViews\ListPostViewsAction;
 use App\DTOs\PostViewFilterData;
 use App\Exports\PostViewsExport;
-use App\Jobs\ExportDataJob;
 use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\PostView;
 use Illuminate\View\View;
@@ -46,9 +45,7 @@ class PostViewIndex extends Component
     {
         $filters = PostViewFilterData::from($this->all());
         $fileName = 'analytics_posts_' . now()->format('Ymd_His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(PostViewsExport::class, ['filters' => $filters], $fileName));
+        $this->queueExport(PostViewsExport::class, ['filters' => $filters], $fileName);
 
         Toaster::info('O relatório de visualizações está sendo gerado...');
     }

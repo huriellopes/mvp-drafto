@@ -167,9 +167,9 @@ it('reports the generated file readiness', function () {
 
     expect($component->get('isFileReady'))->toBeFalse();
 
-    Storage::disk('local')->put('temp/ready.txt', 'codes');
+    Storage::disk('local')->put("temp/exports/{$user->id}/ready.txt", 'codes');
 
-    $component->set('generatedPath', 'temp/ready.txt');
+    $component->set('generatedPath', "temp/exports/{$user->id}/ready.txt");
 
     expect($component->get('isFileReady'))->toBeTrue();
 });

@@ -7,7 +7,6 @@ namespace App\Livewire\Dashboard\Admin;
 use App\Actions\Admin\GetAuditsAction;
 use App\DTOs\AuditFilterData;
 use App\Exports\AuditsExport;
-use App\Jobs\ExportDataJob;
 use App\Livewire\Traits\WithBackgroundExport;
 use Illuminate\View\View;
 use Livewire\Attributes\Computed;
@@ -56,9 +55,7 @@ class AuditLogIndex extends Component
     public function export(): void
     {
         $fileName = 'auditoria-' . now()->format('Y-m-d-His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(AuditsExport::class, ['filters' => $this->filters], $fileName));
+        $this->queueExport(AuditsExport::class, ['filters' => $this->filters], $fileName);
 
         Toaster::info('O relatório de auditoria está sendo gerado...');
     }

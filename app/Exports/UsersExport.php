@@ -23,7 +23,7 @@ class UsersExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMappin
         private readonly UserFilterData $filters,
     ) {}
 
-    public function query()
+    public function query(): Builder
     {
         return User::query()
             ->with(['profile'])
@@ -67,7 +67,7 @@ class UsersExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMappin
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): array
     {
         return [
             1 => ['font' => ['bold' => true]], // Cabeçalho em negrito

@@ -178,7 +178,7 @@
                             </div>
                         </div>
                     @elseif($generatedPath)
-                        <div wire:poll.1s class="rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-4 flex items-center gap-3 animate-pulse">
+                        <div x-data="realtimeFallback(5000)" class="rounded-2xl bg-zinc-100 dark:bg-zinc-800 p-4 flex items-center gap-3 animate-pulse">
                             <x-lucide-loader-2 class="h-4 w-4 animate-spin text-zinc-400" />
                             <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Processando Backup...</p>
                         </div>

@@ -15,7 +15,6 @@ use App\DTOs\AdminResetPasswordData;
 use App\DTOs\UserFilterData;
 use App\Enums\UserStatusEnum;
 use App\Exports\UsersExport;
-use App\Jobs\ExportDataJob;
 use App\Livewire\Forms\Admin\UserForm;
 use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\Module;
@@ -297,9 +296,7 @@ class UserIndex extends Component
         ]);
 
         $fileName = 'usuarios-drafto-' . now()->format('Y-m-d-His') . '.xlsx';
-        $this->generatedPath = 'temp/' . $fileName;
-
-        dispatch(new ExportDataJob(UsersExport::class, ['filters' => $filters], $fileName));
+        $this->queueExport(UsersExport::class, ['filters' => $filters], $fileName);
 
         Toaster::info('A lista de usuários está sendo exportada...');
     }
