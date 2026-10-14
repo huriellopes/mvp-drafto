@@ -101,6 +101,10 @@ class AppServiceProvider extends ServiceProvider
 
         Gate::define('admin', fn (User $user) => $user->hasRole(RoleEnum::SUPER_ADMIN));
 
+        // Pulse dashboard (/pulse): request, query and job metrics plus Reverb
+        // connections — operational data, super admins only.
+        Gate::define('viewPulse', fn (User $user) => $user->hasRole(RoleEnum::SUPER_ADMIN));
+
         Relation::morphMap([
             'user' => User::class,
             'post' => Post::class,
