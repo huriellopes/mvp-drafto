@@ -152,6 +152,56 @@ fila duas vezes.
 - Dashboard: `https://drafto.pro/horizon`, liberado **apenas para super_admin**
   (gate `viewHorizon` em `App\Providers\HorizonServiceProvider`).
 
+### 2.4 Pulse (monitoramento) e acesso aos painéis
+
+| Painel | URL | Quem acessa | Link no dashboard |
+|---|---|---|---|
+| Horizon (filas) | `https://drafto.pro/horizon` | super_admin (`viewHorizon`) | Admin → **Filas (Horizon)** |
+| Pulse (requests, queries, jobs, cache, exceções, servidor e **Reverb**) | `https://drafto.pro/pulse` | super_admin (`viewPulse`) | Admin → **Monitoramento (Pulse)** |
+
+O Reverb não tem painel próprio. As conexões abertas e as mensagens por minuto
+aparecem nos cards **Reverb** do Pulse.
+
+**Migrations:** a tabela do Pulse (`pulse_*`) é criada pelo `artisan:migrate`
+do deploy.
+
+**`.env`:** em produção, envie as métricas para o Redis em vez de gravar no
+banco a cada request:
+
+```dotenv
+PULSE_ENABLED=true
+PULSE_INGEST_DRIVER=redis
+# PULSE_INGEST_KEEP=7 days
+```
+
+**Supervisor:** dois processos a mais (no mesmo `drafto.conf`):
+
+```ini
+; coleta CPU/memória/disco e as conexões do Reverb a cada ~15s
+[program:drafto-pulse-check]
+command=php /var/www/drafto.pro/current/artisan pulse:check
+user=deploy
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/www/drafto.pro/shared/storage/logs/pulse.log
+
+; move as métricas do Redis para o banco (obrigatório com PULSE_INGEST_DRIVER=redis)
+[program:drafto-pulse-work]
+command=php /var/www/drafto.pro/current/artisan pulse:work
+user=deploy
+autostart=true
+autorestart=true
+redirect_stderr=true
+stdout_logfile=/var/www/drafto.pro/shared/storage/logs/pulse.log
+```
+
+```bash
+sudo supervisorctl reread && sudo supervisorctl update
+```
+
+O deploy já roda `pulse:restart` depois de trocar o release.
+
 ---
 
 ## 3. Reverb (WebSocket)

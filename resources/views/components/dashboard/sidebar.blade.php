@@ -171,6 +171,21 @@
                     <x-slot:icon><x-lucide-triangle-alert class="h-5 w-5" /></x-slot:icon>
                     Logs do Sistema
                 </x-ui.sidebar-link>
+
+                {{-- Painéis operacionais fora do layout Livewire: abrem em nova aba. --}}
+                @can('viewHorizon')
+                    <x-ui.sidebar-link href="{{ url(config('horizon.path', 'horizon')) }}" target="_blank" rel="noopener">
+                        <x-slot:icon><x-lucide-layers class="h-5 w-5" /></x-slot:icon>
+                        Filas (Horizon)
+                    </x-ui.sidebar-link>
+                @endcan
+
+                @can('viewPulse')
+                    <x-ui.sidebar-link href="{{ url(config('pulse.path', 'pulse')) }}" target="_blank" rel="noopener">
+                        <x-slot:icon><x-lucide-activity class="h-5 w-5" /></x-slot:icon>
+                        Monitoramento (Pulse)
+                    </x-ui.sidebar-link>
+                @endcan
             </nav>
         </div>
     @endcan
