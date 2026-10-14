@@ -44,11 +44,33 @@ services:
         depends_on:
             - mysql
             - redis
-        # Mesmo comando de fila usado no composer.json (script "dev"), mas como
-        # container próprio — não precisa mais de terminal separado.
+        # Horizon gerencia os workers das filas Redis (default + exports) com
+        # métricas e balanceamento — dashboard em /horizon (só super_admin).
         # start-container executa este comando direto (sem subir supervisord)
         # quando argumentos são passados.
-        command: php artisan queue:listen --tries=1 --timeout=0
+        command: php artisan horizon
+    reverb:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.4
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.4/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${FORWARD_REVERB_PORT:-8080}:8080'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - redis
+        # Servidor WebSocket (sino de notificações + exports em tempo real).
+        command: php artisan reverb:start --host=0.0.0.0 --port=8080
     mysql:
         image: 'mysql:8.4'
         ports:

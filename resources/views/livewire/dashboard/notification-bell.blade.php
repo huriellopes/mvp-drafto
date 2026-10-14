@@ -1,4 +1,4 @@
-<div wire:poll.60s>
+<div x-data="realtimeFallback(60000)">
     <x-ui.tooltip text="Notificações" position="bottom">
         <button
             @click="$dispatch('toggleNotifications')"

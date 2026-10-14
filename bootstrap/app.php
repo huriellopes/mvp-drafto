@@ -9,6 +9,7 @@ use App\Http\Middleware\CheckBanned;
 use App\Http\Middleware\CheckEmailVerificationInterval;
 use App\Http\Middleware\CheckModuleAccess;
 use App\Http\Middleware\CheckModuleStatus;
+use App\Http\Middleware\EnforceSingleSession;
 use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\EnsureUsernameHasAtPrefix;
 use App\Http\Middleware\LogContextMiddleware;
@@ -25,6 +26,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
+        channels: __DIR__ . '/../routes/channels.php',
         web: __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -53,6 +55,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // realmente encerrar as outras sessões. Convive com o "lembrar-me":
             // sessões recordadas com hash de senha válido permanecem ativas.
             AuthenticateSession::class,
+            // One active session per user, for any session driver
+            // (redis/database/file). See App\Support\SingleSession.
+            EnforceSingleSession::class,
             LogContextMiddleware::class,
             CheckBanned::class,
             TrackSiteView::class,

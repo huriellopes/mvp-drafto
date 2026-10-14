@@ -27,9 +27,7 @@ final class EnsureUsernameHasAtPrefix
         $username = $request->segment(1);
 
         if ($username) {
-            if (!isset(self::$profileExistsCache[$username])) {
-                self::$profileExistsCache[$username] = Profile::where('username', $username)->exists();
-            }
+            self::$profileExistsCache[$username] ??= Profile::where('username', $username)->exists();
 
             if (self::$profileExistsCache[$username]) {
                 return redirect()->to('/@' . $username, 301);

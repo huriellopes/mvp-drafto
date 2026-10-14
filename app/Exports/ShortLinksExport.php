@@ -25,7 +25,7 @@ class ShortLinksExport implements FromQuery, ShouldAutoSize, WithHeadings, WithM
         private readonly ShortLinkFilterData $filters,
     ) {}
 
-    public function query()
+    public function query(): Builder
     {
         return ShortLink::query()
             ->with(['user', 'shortable'])
@@ -77,7 +77,7 @@ class ShortLinksExport implements FromQuery, ShouldAutoSize, WithHeadings, WithM
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): array
     {
         return [
             1 => ['font' => ['bold' => true]],

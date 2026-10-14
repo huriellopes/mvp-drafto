@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Events\Exports\ExportFailed;
+use App\Events\Exports\ExportReady;
 use App\Models\User;
+use App\Support\TemporaryExport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Throwable;
 
 class GenerateRecoveryCodesJob implements ShouldQueue
 {
@@ -33,9 +37,7 @@ class GenerateRecoveryCodesJob implements ShouldQueue
             return;
         }
 
-        $username = Str::slug($this->user->profile?->username ?? $this->user->name);
-        $filename = "drafto-{$username}-{$this->timestamp}";
-        $path = "temp/{$filename}.{$this->format}";
+        $path = $this->path();
 
         if ($this->format === 'txt') {
             $content = "DRAFTO - CÓDIGOS DE RECUPERAÇÃO\n";
@@ -46,7 +48,7 @@ class GenerateRecoveryCodesJob implements ShouldQueue
             $content .= str_repeat('-', 40) . "\n";
             $content .= 'AVISO: Guarde estes códigos em um local seguro.';
 
-            Storage::disk('local')->put($path, $content);
+            Storage::disk(TemporaryExport::DISK)->put($path, $content);
         } else {
             $manager = ImageManager::usingDriver(new Driver);
             $width = 400;
@@ -99,12 +101,27 @@ class GenerateRecoveryCodesJob implements ShouldQueue
                 $font->align('center');
             });
 
-            Storage::disk('local')->put($path, (string) $image->encodeUsingMediaType('image/png'));
+            Storage::disk(TemporaryExport::DISK)->put($path, (string) $image->encodeUsingMediaType('image/png'));
         }
 
-        // Emite um evento para o Livewire avisando que o arquivo está pronto
-        // Como o Job roda em outro processo, usaremos uma abordagem de polling ou notificação
-        // Para este MVP, vamos considerar que o arquivo será acessível via URL temporária
+        // The file is already stored: a websocket outage must not fail the
+        // job. The dashboard's fallback poll still picks the file up.
+        rescue(fn () => event(new ExportReady($this->user->getKey(), $path)));
+    }
+
+    public function failed(?Throwable $exception): void
+    {
+        rescue(fn () => event(new ExportFailed($this->user->getKey(), $this->path())));
+    }
+
+    public function path(): string
+    {
+        $username = Str::slug($this->user->profile?->username ?? $this->user->name);
+
+        return TemporaryExport::pathFor(
+            $this->user->getKey(),
+            "drafto-{$username}-{$this->timestamp}.{$this->format}",
+        );
     }
 
     private function getFontPath(): string

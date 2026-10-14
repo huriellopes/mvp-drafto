@@ -34,6 +34,11 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @auth
+        @if (config('broadcasting.default') === 'reverb')
+            @vite('resources/js/echo.js')
+        @endif
+    @endauth
     @livewireStyles
     <style>
         .livewire-progressive-bar {

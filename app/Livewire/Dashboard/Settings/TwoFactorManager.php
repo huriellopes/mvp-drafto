@@ -8,14 +8,15 @@ use App\Actions\Auth\ConfirmTwoFactorAuthAction;
 use App\Actions\Auth\DisableTwoFactorAuthAction;
 use App\Actions\Auth\GenerateTwoFactorSecretAction;
 use App\Jobs\GenerateRecoveryCodesJob;
+use App\Livewire\Traits\WithBackgroundExport;
 use App\Models\User;
+use App\Support\TemporaryExport;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -23,6 +24,8 @@ use Masmerise\Toaster\Toaster;
 
 class TwoFactorManager extends Component
 {
+    use WithBackgroundExport;
+
     public bool $showingQrCode = false;
 
     public bool $showingConfirmation = false;
@@ -32,8 +35,6 @@ class TwoFactorManager extends Component
     public string $code = '';
 
     public string $currentPassword = '';
-
-    public ?string $generatedPath = null;
 
     public ?string $generatingFormat = null;
 
@@ -107,21 +108,11 @@ class TwoFactorManager extends Component
         $timestamp = now()->format('d-m-Y');
         $username = Str::slug($user->profile?->username ?? $user->name);
         $filename = "drafto-{$username}-{$timestamp}";
-        $this->generatedPath = "temp/{$filename}.{$format}";
+        $this->generatedPath = TemporaryExport::pathFor($user->id, "{$filename}.{$format}");
 
         dispatch(new GenerateRecoveryCodesJob($user, $format, $timestamp));
 
         Toaster::info('Seu arquivo está sendo gerado em segundo plano...');
-    }
-
-    #[Computed]
-    public function isFileReady(): bool
-    {
-        if (!$this->generatedPath) {
-            return false;
-        }
-
-        return Storage::disk('local')->exists($this->generatedPath);
     }
 
     public function clearGeneratedFile(): void

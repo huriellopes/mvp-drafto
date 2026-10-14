@@ -27,3 +27,14 @@ it('runs successfully when there are no temp files', function () {
     $this->artisan('app:cleanup-exports')
         ->assertExitCode(0);
 });
+
+it('also deletes the per-user export files', function () {
+    Storage::fake('local');
+
+    Storage::disk('local')->put('temp/exports/7/report.xlsx', 'a');
+
+    $this->artisan('app:cleanup-exports')
+        ->assertExitCode(0);
+
+    Storage::disk('local')->assertMissing('temp/exports/7/report.xlsx');
+});

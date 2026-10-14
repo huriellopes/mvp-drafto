@@ -6,7 +6,7 @@ namespace App\Providers;
 
 use App\Contracts\Services\LoggerInterface;
 use App\Enums\RoleEnum;
-use App\Events\Posts\PostSaved;
+use App\Listeners\BroadcastUnreadNotificationsChanged;
 use App\Listeners\EnforceSingleSession;
 use App\Listeners\PlatformMonitor;
 use App\Listeners\Posts\HandlePostMediaAndSeo;
@@ -33,7 +33,6 @@ use App\Policies\PostViewPolicy;
 use App\Policies\ProfilePolicy;
 use App\Policies\ReportPolicy;
 use App\Services\SystemLogger;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\ScheduledTaskFailed;
@@ -65,10 +64,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(PostSaved::class, HandlePostMediaAndSeo::class);
-
-        // Sessão única: ao logar, encerra as outras sessões ativas do usuário.
-        Event::listen(Login::class, EnforceSingleSession::class);
+        // Listeners in app/Listeners with a handle() method (HandlePostMediaAndSeo,
+        // EnforceSingleSession, BroadcastUnreadNotificationsChanged) are
+        // auto-discovered by Laravel. Registering them here too made each one
+        // run twice (e.g. the SEO/media job was queued twice per saved post).
+        // Only non-handle methods (PlatformMonitor) need explicit wiring.
 
         // Observabilidade → Telegram (falhas de comandos/crons/jobs/notifications + execução de crons)
         Event::listen(CommandFinished::class, [PlatformMonitor::class, 'commandFinished']);

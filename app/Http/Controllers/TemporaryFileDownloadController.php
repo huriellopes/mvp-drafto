@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Support\TemporaryExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -15,15 +16,17 @@ final class TemporaryFileDownloadController extends Controller
      */
     public function __invoke(Request $request): BinaryFileResponse
     {
-        $path = $request->query('path');
+        $path = (string) $request->query('path', '');
 
-        abort_if(!$path || !Storage::disk('local')->exists($path), 404);
+        // Security: only the owner may download (temp/exports/{userId}/...).
+        // Previously knowing the (predictable) file name was enough to fetch
+        // another user's export, including 2FA recovery codes.
+        abort_unless(TemporaryExport::isOwnedBy($path, (int) $request->user()->getKey()), 403);
 
-        // Segurança: Apenas arquivos dentro da pasta temp/
-        abort_unless(str_starts_with($path, 'temp/'), 403);
+        $disk = Storage::disk(TemporaryExport::DISK);
 
-        $fullPath = Storage::disk('local')->path($path);
+        abort_unless($disk->exists($path), 404);
 
-        return response()->download($fullPath)->deleteFileAfterSend(true);
+        return response()->download($disk->path($path))->deleteFileAfterSend(true);
     }
 }

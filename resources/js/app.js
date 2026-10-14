@@ -25,6 +25,42 @@ const applyTheme = () => {
 document.addEventListener('livewire:navigated', applyTheme);
 applyTheme();
 
+/* ---------------------------------------------------------------------------
+ | Poll de reserva para telas atualizadas por push (Reverb/Echo)
+ |
+ | Com o Echo conectado, o servidor avisa (export pronto, nova notificação) e
+ | este poll fica praticamente parado: só uma checagem de segurança a cada 6
+ | intervalos. Sem Echo (Reverb fora do ar, aba sem websocket), volta a
+ | consultar no intervalo informado. Abas em segundo plano nunca consultam.
+ --------------------------------------------------------------------------- */
+document.addEventListener('alpine:init', () => {
+    Alpine.data('realtimeFallback', (intervalMs = 5000) => ({
+        timer: null,
+        lastRefresh: Date.now(),
+
+        init() {
+            this.timer = setInterval(() => this.tick(), intervalMs);
+        },
+
+        destroy() {
+            if (this.timer) clearInterval(this.timer);
+        },
+
+        tick() {
+            if (document.visibilityState !== 'visible') return;
+
+            const connected = window.Echo?.connector?.pusher?.connection?.state === 'connected';
+            const wait = connected ? intervalMs * 6 : intervalMs;
+
+            // Tolerância de 250ms para o atraso natural do setInterval.
+            if (Date.now() - this.lastRefresh < wait - 250) return;
+
+            this.lastRefresh = Date.now();
+            this.$wire.$refresh();
+        },
+    }));
+});
+
 // Analytics Tracking
 document.addEventListener('alpine:init', () => {
     Alpine.data('analyticsTracking', () => ({
