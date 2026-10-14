@@ -71,6 +71,8 @@ task('deploy:guard_branch', function (): void {
 | Supervisor (servidor) — programas esperados:
 |   [program:drafto-horizon]  command=php /var/www/drafto.pro/current/artisan horizon
 |   [program:drafto-reverb]   command=php /var/www/drafto.pro/current/artisan reverb:start
+|   [program:drafto-pulse-check] command=php /var/www/drafto.pro/current/artisan pulse:check
+|   [program:drafto-pulse-work]  command=php /var/www/drafto.pro/current/artisan pulse:work
 */
 task('artisan:horizon:terminate', function (): void {
     run('{{bin/php}} {{release_or_current_path}}/artisan horizon:terminate');
@@ -79,6 +81,10 @@ task('artisan:horizon:terminate', function (): void {
 task('artisan:reverb:restart', function (): void {
     run('{{bin/php}} {{release_or_current_path}}/artisan reverb:restart');
 })->desc('Reinicia o Reverb para carregar o novo release');
+
+task('artisan:pulse:restart', function (): void {
+    run('{{bin/php}} {{release_or_current_path}}/artisan pulse:restart');
+})->desc('Reinicia pulse:check e pulse:work para carregarem o novo release');
 
 /*
 |--------------------------------------------------------------------------
@@ -121,10 +127,11 @@ after('artisan:config:cache', 'artisan:route:cache');
 after('artisan:route:cache', 'artisan:view:cache');
 after('artisan:view:cache', 'artisan:event:cache');
 
-// Após trocar o symlink (current → novo release), reinicia Horizon, Reverb e PHP-FPM.
+// Após trocar o symlink (current → novo release), reinicia Horizon, Reverb, Pulse e PHP-FPM.
 after('deploy:symlink', 'artisan:horizon:terminate');
 after('artisan:horizon:terminate', 'artisan:reverb:restart');
-after('artisan:reverb:restart', 'php-fpm:reload');
+after('artisan:reverb:restart', 'artisan:pulse:restart');
+after('artisan:pulse:restart', 'php-fpm:reload');
 
 // Rollback automático se qualquer passo falhar.
 after('deploy:failed', 'deploy:unlock');
