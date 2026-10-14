@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400" role="img" aria-label="Drafto — Escreva, publique e cresça">
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="20%" r="70%">
+      <stop offset="0" stop-color="#0e5ef8" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#0e5ef8" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#0e5ef8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bar" x1="0" x2="1">
+      <stop offset="0" stop-color="#0e5ef8"/>
+      <stop offset="1" stop-color="#5b8fff"/>
+    </linearGradient>
+    <pattern id="lines" width="1280" height="36" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="35.5" x2="1280" y2="35.5" stroke="#ffffff" stroke-opacity="0.045"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="400" fill="#071833"/>
+  <rect width="1280" height="400" fill="url(#lines)"/>
+  <rect width="1280" height="400" fill="url(#glow)"/>
+  <line x1="128" y1="0" x2="128" y2="400" stroke="#0e5ef8" stroke-opacity="0.35"/>
+
+  <!-- logo -->
+  <g transform="translate(170 70) scale(0.5)">
+    <path fill="#ffffff" fill-opacity="0.06" d="M43.57,338.53V22.86h208.08s153.24,2.32,200.4,148.6c0,0,59.15,129.5-50.36,251,0,0-52.76,71.14-193.45,66.35L43.57,338.53Z" transform="translate(10 10)"/>
+    <path fill="#0b2550" stroke="#2a5bb8" stroke-width="3" d="M43.57,338.53V22.86h208.08s153.24,2.32,200.4,148.6c0,0,59.15,129.5-50.36,251,0,0-52.76,71.14-193.45,66.35L43.57,338.53Z"/>
+    <path fill="#ffffff" d="M184.26,117.9s56.76-13.59,94.73,0l57.16,190.25s-75.14,35.97-92.73,143.09h-6.83l-1.17-135.89s25.58-9.59,10.57-33.8c-4.51-7.28-33.66-10.5-34.55,13.01-.24,6.37,1.6,16.79,13.59,21.58l1.29,135.09h-6.91s-.78,28.78-11.18,37.57c0,0,22.38-70.35-39.17-118.31-16.97-13.22-55.96-27.98-125.5-31.98,0,0,47.99-.11,63.95.8,15.21.87,35.97,5.6,58.35,17.59,9.11,4.88,24.78,16.79,31.18,27.18,0,0-21.58-55.16-68.75-75.94l55.96-190.25Z"/>
+    <path fill="#0e5ef8" d="M43.57,338.53l162.27,149.48s31.18-88.73-52.76-128.7c-30.04-14.31-53.96-18.79-109.51-20.78Z"/>
+  </g>
+
+  <!-- wordmark -->
+  <g font-family="-apple-system, 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial, sans-serif">
+    <text x="470" y="180" fill="#ffffff" font-size="112" font-weight="800" letter-spacing="-3">Drafto</text>
+    <rect x="474" y="206" width="96" height="6" rx="3" fill="url(#bar)"/>
+    <text x="472" y="262" fill="#9dbcff" font-size="32" font-weight="500">Escreva, publique e cresça —</text>
+    <text x="472" y="302" fill="#9dbcff" font-size="32" font-weight="500">tudo em um só lugar.</text>
+    <text x="1200" y="360" fill="#ffffff" fill-opacity="0.45" font-size="18" font-weight="600" letter-spacing="4" text-anchor="end">DRAFTO.PRO</text>
+  </g>
+
+  <!-- folded corner accent -->
+  <path d="M1280 400 L1280 300 L1180 400 Z" fill="#0e5ef8"/>
+  <rect y="394" width="1280" height="6" fill="url(#bar)"/>
+</svg>
